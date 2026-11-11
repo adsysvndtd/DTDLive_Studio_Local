@@ -29,6 +29,9 @@ final class StudioEngine: ObservableObject {
 
     // MARK: Production state (library / quick keys)
     let library = MediaLibrary()
+    let replayEditor = ReplayEditor()
+    /// Lets any view jump the studio to a category (e.g. "open in Replay" from the Video library).
+    @Published var requestedCategory: ProdCategory?
     @Published var favorites: Set<UUID> = []
     @Published var pipPreset: PiPPreset = .bottomRight { didSet { applyPiPPreset() } }
     @Published var pipOn = false { didSet { pip?.visible = pipOn; if pipOn { pip?.opacity = 1; pipFade = 1 } } }
@@ -458,6 +461,58 @@ final class StudioEngine: ObservableObject {
     }
 
     func stopReplay() { replay.cancel() }
+
+    private func ensureReplaySource() {
+        if !sources.contains(where: { $0.id == replay.id }) {
+            sources.append(replay)
+            switcher.register(replay.id, store: replay.frames)
+            Task { await replay.start() }
+        }
+    }
+
+    /// Plays the editor's current MARK IN → MARK OUT range and takes it to air.
+    func playEditorRange(toAir: Bool = true) {
+        let ed = replayEditor
+        switch ed.material {
+        case .buffer:
+            let r = ed.bufferRange()
+            guard !r.samples.isEmpty else { return }
+            ensureReplaySource()
+            replay.play(samples: r.samples, inPTS: r.inPTS, outPTS: r.outPTS, speed: ed.speed, loop: ed.loop)
+            switcher.setPreview(replay.id)
+        case .file(let url):
+            cueMovie(url)
+            if let f = sources.first(where: { ($0 as? FileSource)?.url == url }) as? FileSource {
+                f.playRange(in: ed.effectiveRange.lowerBound, out: ed.effectiveRange.upperBound, rate: Float(ed.speed), loop: ed.loop)
+                switcher.setPreview(f.id)
+            }
+        }
+        syncState()
+        if toAir { autoTransition() }
+    }
+
+    func playClip(_ c: ReplayClip, toAir: Bool = true) {
+        let ed = replayEditor
+        switch c.material {
+        case .buffer:
+            ensureReplaySource()
+            replay.play(samples: c.samples, inPTS: c.basePTS + c.inT, outPTS: c.basePTS + c.outT, speed: ed.speed, loop: ed.loop)
+            switcher.setPreview(replay.id)
+        case .file(let url):
+            cueMovie(url)
+            if let f = sources.first(where: { ($0 as? FileSource)?.url == url }) as? FileSource {
+                f.playRange(in: c.inT, out: c.outT, rate: Float(ed.speed), loop: ed.loop)
+                switcher.setPreview(f.id)
+            }
+        }
+        syncState()
+        if toAir { autoTransition() }
+    }
+
+    func openInReplay(_ url: URL) {
+        replayEditor.loadFile(url)
+        requestedCategory = .replay
+    }
 
     private func replayFinished() {
         // Return to the previous program source.

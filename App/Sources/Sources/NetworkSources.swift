@@ -151,6 +151,22 @@ final class FileSource: VideoSource {
     }
 
     private(set) var isPlaying = false
+    private var boundary: Any?
+
+    /// Plays [inT, outT] (seconds in the file) at `rate`; loops or pauses at the out point.
+    func playRange(in inT: Double, out outT: Double, rate: Float, loop: Bool) {
+        looper?.disableLooping()
+        if let b = boundary { player.removeTimeObserver(b); boundary = nil }
+        let inTime = CMTime(seconds: inT, preferredTimescale: 600), outTime = CMTime(seconds: outT, preferredTimescale: 600)
+        player.seek(to: inTime, toleranceBefore: .zero, toleranceAfter: .zero)
+        boundary = player.addBoundaryTimeObserver(forTimes: [NSValue(time: outTime)], queue: .main) { [weak self] in
+            guard let self else { return }
+            if loop { self.player.seek(to: inTime, toleranceBefore: .zero, toleranceAfter: .zero) } else { self.player.pause(); self.isPlaying = false }
+        }
+        player.rate = rate
+        isPlaying = true
+    }
+
     func play() { player.play(); isPlaying = true }
     func pause() { player.pause(); isPlaying = false }
     func restart() { player.seek(to: .zero); player.play(); isPlaying = true }

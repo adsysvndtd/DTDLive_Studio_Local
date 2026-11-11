@@ -193,7 +193,7 @@ final class RecordOutput: OutputTarget, @unchecked Sendable {
     init(config: OutputConfig) { self.config = config }
 
     func connect(_ desc: StreamDescription) async throws {
-        let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let dir = MediaLibrary.directory(.movie)
         let df = DateFormatter(); df.dateFormat = "yyyyMMdd-HHmmss"
         let url = dir.appendingPathComponent("DTD-\(df.string(from: Date())).mp4")
         let w = try AVAssetWriter(outputURL: url, fileType: .mp4)

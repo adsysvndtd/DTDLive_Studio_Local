@@ -306,7 +306,12 @@ struct CategoryContent: View {
                 ForEach(items, id: \.self) { url in
                     LibraryCell(url: url, kind: k, selected: url == selected)
                         .onTapGesture { onTap(url) }
-                        .contextMenu { Button("Xoá khỏi thư viện", role: .destructive) { library.delete(url) } }
+                        .contextMenu {
+                            if k == .movie {
+                                Button { engine.openInReplay(url) } label: { Label("Mở trong Replay (mark in/out)", systemImage: "scissors") }
+                            }
+                            Button("Xoá khỏi thư viện", role: .destructive) { library.delete(url) }
+                        }
                 }
             }
         }

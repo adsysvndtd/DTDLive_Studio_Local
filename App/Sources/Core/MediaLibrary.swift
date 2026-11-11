@@ -26,7 +26,7 @@ final class MediaLibrary: ObservableObject {
 
     init() { refresh() }
 
-    static func directory(_ k: LibraryKind) -> URL {
+    nonisolated static func directory(_ k: LibraryKind) -> URL {
         let d = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("Library").appendingPathComponent(k.folder)
         try? FileManager.default.createDirectory(at: d, withIntermediateDirectories: true)

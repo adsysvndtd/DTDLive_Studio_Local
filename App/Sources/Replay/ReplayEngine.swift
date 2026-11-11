@@ -10,7 +10,7 @@ import VideoToolbox
 final class ReplayBuffer: @unchecked Sendable {
     private var samples: [CMSampleBuffer] = []
     private var lock = os_unfair_lock()
-    var window: Double = 15
+    var window: Double = 60
     private(set) var frozen = false
 
     func append(_ sb: CMSampleBuffer) {
@@ -33,6 +33,12 @@ final class ReplayBuffer: @unchecked Sendable {
             ?? samples.firstIndex { $0.isKeyframe }
         if start == nil { start = 0 }
         return Array(samples[start!...])
+    }
+
+    /// Copy of everything currently buffered (for the clip editor; the live buffer keeps rolling).
+    func snapshot() -> [CMSampleBuffer] {
+        os_unfair_lock_lock(&lock); defer { os_unfair_lock_unlock(&lock) }
+        return samples
     }
 
     func setFrozen(_ f: Bool) { os_unfair_lock_lock(&lock); frozen = f; os_unfair_lock_unlock(&lock) }
@@ -75,6 +81,33 @@ final class ReplaySource: VideoSource {
                 previousPTS = pts
                 if let pb = decoder.decode(sb) { store.put(pb) }
             }
+            await MainActor.run { self?.finish() }
+        }
+    }
+
+    /// Plays an explicit clip: decodes from the keyframe before `inPTS` (frames before it are
+    /// decoded but not shown), shows frames up to `outPTS` at `speed`, optionally looping.
+    func play(samples: [CMSampleBuffer], inPTS: Double, outPTS: Double, speed: Double, loop: Bool) {
+        cancel()
+        guard let fd = samples.first?.formatDescription else { return }
+        let startIdx = samples.lastIndex { $0.isKeyframe && $0.presentationTimeStamp.seconds <= inPTS } ?? 0
+        let clip = Array(samples[startIdx...]).filter { $0.presentationTimeStamp.seconds <= outPTS }
+        isPlaying = true
+        let store = frames
+        task = Task.detached(priority: .userInitiated) { [weak self] in
+            repeat {
+                let decoder = FrameDecoder(format: fd)
+                var previousPTS: Double?
+                for sb in clip {
+                    if Task.isCancelled { break }
+                    let pts = sb.presentationTimeStamp.seconds
+                    guard let pb = decoder.decode(sb) else { continue }
+                    if pts < inPTS { continue } // pre-roll from the keyframe
+                    if let p = previousPTS { try? await Task.sleep(nanoseconds: UInt64(max(0, (pts - p) / speed) * 1e9)) }
+                    previousPTS = pts
+                    store.put(pb)
+                }
+            } while loop && !Task.isCancelled
             await MainActor.run { self?.finish() }
         }
     }

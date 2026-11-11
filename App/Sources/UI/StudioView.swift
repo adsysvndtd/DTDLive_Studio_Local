@@ -40,6 +40,9 @@ struct StudioView: View {
         .background(DS.bg.ignoresSafeArea())
         .preferredColorScheme(.dark)
         .tint(DS.accent)
+        .onChange(of: engine.requestedCategory) { _, c in
+            if let c { category = c; engine.requestedCategory = nil }
+        }
         .sheet(isPresented: $showAddSource) { AddSourceSheet(engine: engine) }
         .sheet(isPresented: $showOutputs) { OutputsSheet(engine: engine) }
         .sheet(isPresented: $showShows) { ShowsSheet(engine: engine) }

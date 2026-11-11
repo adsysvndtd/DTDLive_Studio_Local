@@ -424,21 +424,176 @@ struct AutoPanel: View {
 
 struct ReplayPanel: View {
     @ObservedObject var engine: StudioEngine
-    @State private var speed = 0.5
-    @State private var length = 8.0
+    var body: some View { ReplayEditorView(engine: engine, editor: engine.replayEditor) }
+}
+
+/// Clip editor: frame preview, thumbnail strip with playhead + in/out, frame stepping,
+/// MARK IN / MARK OUT, slow-motion replay to air, clip list with export.
+struct ReplayEditorView: View {
+    @ObservedObject var engine: StudioEngine
+    @ObservedObject var editor: ReplayEditor
+    @State private var pickFile = false
+
     var body: some View {
-        SectionCard("Replay chậm", systemImage: "gobackward") {
-            Picker("Tốc độ", selection: $speed) {
-                Text("0.25×").tag(0.25); Text("0.5×").tag(0.5); Text("0.75×").tag(0.75); Text("1×").tag(1.0)
-            }.pickerStyle(.segmented)
-            Stepper("Độ dài: \(Int(length)) giây", value: $length, in: 3...15)
-            HStack {
-                Button("REPLAY") { engine.startReplay(speed: speed, length: length) }
-                    .buttonStyle(.borderedProminent).tint(.orange)
-                Button("Dừng") { engine.stopReplay() }.buttonStyle(.bordered)
+        VStack(alignment: .leading, spacing: DS.gap) {
+            HStack(spacing: 8) {
+                Menu {
+                    Button { editor.loadBuffer(engine.replayBuffer) } label: { Label("Bộ đệm replay (Program)", systemImage: "dot.radiowaves.left.and.right") }
+                    Section("Video đã ghi / thư viện") {
+                        ForEach(engine.library.list(.movie), id: \.self) { u in
+                            Button(u.deletingPathExtension().lastPathComponent) { editor.loadFile(u) }
+                        }
+                    }
+                } label: {
+                    Label(editor.material.label, systemImage: editor.material == .buffer ? "gobackward" : "film")
+                        .font(.subheadline.weight(.semibold))
+                }
+                Spacer()
+                if editor.material == .buffer {
+                    Button { editor.loadBuffer(engine.replayBuffer) } label: { Label("Lấy mới", systemImage: "arrow.clockwise") }
+                        .buttonStyle(.bordered).font(.caption)
+                }
             }
-            Text("Phát lại vài giây cuối của Program dạng slow-motion như một nguồn riêng. Có thể gọi từ web remote hoặc OSC /dtd/replay.")
-                .font(.caption2).foregroundStyle(.secondary)
+
+            // Frame preview
+            ZStack {
+                Color.black
+                if let img = editor.preview { Image(uiImage: img).resizable().scaledToFit() }
+                else { Text(editor.duration > 0 ? "Đang giải mã…" : "Chưa có hình").font(.caption).foregroundStyle(DS.text3) }
+            }
+            .aspectRatio(16 / 9, contentMode: .fit)
+            .clipShape(RoundedRectangle(cornerRadius: 6))
+            .overlay(alignment: .bottomLeading) {
+                Text(timeLabel(editor.playhead)).font(.system(size: 12, weight: .bold, design: .monospaced))
+                    .padding(5).background(.black.opacity(0.65), in: RoundedRectangle(cornerRadius: 4)).padding(6)
+            }
+            .frame(maxWidth: 640)
+
+            // Thumbnail strip with in/out and playhead; drag to scrub
+            TimelineStrip(editor: editor).frame(height: 54)
+
+            // Transport + marks
+            HStack(spacing: 6) {
+                transport("backward.end.fill") { editor.scrub(to: editor.markIn ?? 0) }
+                transport("backward.frame.fill") { editor.step(-1) }.keyboardShortcut(.leftArrow, modifiers: [])
+                transport("forward.frame.fill") { editor.step(1) }.keyboardShortcut(.rightArrow, modifiers: [])
+                transport("forward.end.fill") { editor.scrub(to: editor.markOut ?? editor.duration) }
+                Spacer(minLength: 8)
+                markKey("MARK IN", value: editor.markIn, color: DS.pvw) { editor.setIn() }.keyboardShortcut("i", modifiers: [])
+                markKey("MARK OUT", value: editor.markOut, color: DS.pgm) { editor.setOut() }.keyboardShortcut("o", modifiers: [])
+                Button { editor.clearMarks() } label: { Image(systemName: "xmark.circle") }.foregroundStyle(DS.text2)
+            }
+
+            HStack(spacing: 10) {
+                Picker("Tốc độ", selection: $editor.speed) {
+                    Text("0.25×").tag(0.25); Text("0.5×").tag(0.5); Text("0.75×").tag(0.75); Text("1×").tag(1.0)
+                }
+                .pickerStyle(.segmented).frame(maxWidth: 260)
+                Toggle("Lặp", isOn: $editor.loop).fixedSize()
+                Spacer()
+                let r = editor.effectiveRange
+                Text(String(format: "Đoạn %.1f s", r.upperBound - r.lowerBound)).font(.caption.monospacedDigit()).foregroundStyle(DS.text2)
+            }
+
+            HStack(spacing: 8) {
+                Button { engine.playEditorRange(toAir: true) } label: {
+                    Label("PHÁT REPLAY", systemImage: "play.fill").font(.subheadline.weight(.heavy))
+                        .frame(maxWidth: .infinity, minHeight: 40)
+                }
+                .buttonStyle(.borderedProminent).tint(DS.accent)
+                Button { engine.playEditorRange(toAir: false) } label: { Label("Lên Preview", systemImage: "rectangle.on.rectangle").frame(minHeight: 40) }
+                    .buttonStyle(.bordered)
+                Button { engine.stopReplay() } label: { Image(systemName: "stop.fill").frame(minWidth: 30, minHeight: 40) }
+                    .buttonStyle(.bordered)
+                Button { editor.saveClip() } label: { Label("Lưu clip", systemImage: "plus.rectangle.on.rectangle").frame(minHeight: 40) }
+                    .buttonStyle(.bordered)
+            }
+
+            if let m = editor.message { Text(m).font(.caption).foregroundStyle(DS.text2) }
+
+            SectionCard("Clip đã lưu", systemImage: "film.stack") {
+                if editor.clips.isEmpty { Text("Đặt MARK IN / MARK OUT rồi bấm Lưu clip").font(.caption).foregroundStyle(DS.text3) }
+                ForEach(editor.clips) { c in
+                    HStack(spacing: 8) {
+                        Image(systemName: c.material == .buffer ? "gobackward" : "film").foregroundStyle(DS.accent)
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text(c.name).font(.subheadline.weight(.semibold))
+                            Text("\(c.material.label) · \(timeLabel(c.inT)) → \(timeLabel(c.outT)) · \(String(format: "%.1f s", c.duration))")
+                                .font(.caption2.monospacedDigit()).foregroundStyle(DS.text3).lineLimit(1)
+                        }
+                        Spacer()
+                        Button { engine.playClip(c) } label: { Image(systemName: "play.fill") }.buttonStyle(.borderedProminent).tint(DS.accent)
+                        Menu {
+                            Button { engine.playClip(c, toAir: false) } label: { Label("Lên Preview", systemImage: "rectangle.on.rectangle") }
+                            Button { editor.export(c, library: engine.library) } label: { Label("Xuất MP4 vào thư viện", systemImage: "square.and.arrow.down") }
+                            Button(role: .destructive) { editor.deleteClip(c) } label: { Label("Xoá", systemImage: "trash") }
+                        } label: { Image(systemName: "ellipsis.circle").font(.title3).foregroundStyle(DS.text2) }
+                    }
+                }
+            }
+        }
+        .onAppear { if editor.duration == 0 && editor.material == .buffer { editor.loadBuffer(engine.replayBuffer) } }
+    }
+
+    private func timeLabel(_ t: Double) -> String {
+        let f = Int((t - floor(t)) * 30)
+        return String(format: "%02d:%02d:%02d", Int(t) / 60, Int(t) % 60, f)
+    }
+
+    private func transport(_ icon: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) { Image(systemName: icon).frame(width: 34, height: 32) }
+            .buttonStyle(.bordered)
+    }
+
+    private func markKey(_ title: String, value: Double?, color: Color, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            VStack(spacing: 0) {
+                Text(title).font(.system(size: 11, weight: .heavy))
+                Text(value.map(timeLabel) ?? "--:--:--").font(.system(size: 10, design: .monospaced))
+            }
+            .frame(width: 86, height: 38)
+            .foregroundStyle(value != nil ? .black : .white)
+            .background(value != nil ? color : DS.surface2, in: RoundedRectangle(cornerRadius: 8))
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+/// Thumbnail strip: in/out region highlighted, playhead line; tap/drag to scrub.
+struct TimelineStrip: View {
+    @ObservedObject var editor: ReplayEditor
+
+    var body: some View {
+        GeometryReader { g in
+            let w = g.size.width, d = max(editor.duration, 0.001)
+            ZStack(alignment: .leading) {
+                HStack(spacing: 0) {
+                    if editor.thumbnails.isEmpty {
+                        Rectangle().fill(DS.surface2)
+                    } else {
+                        ForEach(Array(editor.thumbnails.enumerated()), id: \.offset) { _, img in
+                            Image(uiImage: img).resizable().scaledToFill()
+                                .frame(width: w / CGFloat(editor.thumbnails.count), height: g.size.height).clipped()
+                        }
+                    }
+                }
+                .opacity(0.85)
+                if editor.markIn != nil || editor.markOut != nil {
+                    let r = editor.effectiveRange
+                    Rectangle().fill(DS.accent.opacity(0.28))
+                        .overlay(Rectangle().stroke(DS.accent, lineWidth: 2))
+                        .frame(width: max(2, w * CGFloat((r.upperBound - r.lowerBound) / d)))
+                        .offset(x: w * CGFloat(r.lowerBound / d))
+                }
+                Rectangle().fill(Color.white).frame(width: 2)
+                    .offset(x: w * CGFloat(editor.playhead / d) - 1)
+                    .shadow(radius: 2)
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 6))
+            .contentShape(Rectangle())
+            .gesture(DragGesture(minimumDistance: 0).onChanged { v in
+                editor.scrub(to: Double(max(0, min(w, v.location.x)) / w) * d)
+            })
         }
     }
 }
