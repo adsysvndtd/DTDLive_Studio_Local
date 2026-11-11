@@ -67,6 +67,25 @@ final class AudioCapture: @unchecked Sendable {
         try engine.start()
     }
 
+    // MARK: Input device / monitoring
+
+    struct Input: Identifiable, Hashable { let id: String; let name: String }
+
+    var inputs: [Input] {
+        (AVAudioSession.sharedInstance().availableInputs ?? []).map { Input(id: $0.uid, name: $0.portName) }
+    }
+
+    var currentInputID: String? { AVAudioSession.sharedInstance().preferredInput?.uid ?? AVAudioSession.sharedInstance().currentRoute.inputs.first?.uid }
+
+    /// Select microphone / USB interface / headset mic (nil = system default).
+    func setInput(_ uid: String?) {
+        let s = AVAudioSession.sharedInstance()
+        try? s.setPreferredInput(s.availableInputs?.first { $0.uid == uid })
+    }
+
+    /// Hear Program on headphones / speaker. Off by default: the speaker would feed back into the mic.
+    var monitorProgram = false { didSet { engine.mainMixerNode.outputVolume = monitorProgram ? 1 : 0 } }
+
     func stop() {
         bus.removeTap(onBus: 0)
         engine.stop()

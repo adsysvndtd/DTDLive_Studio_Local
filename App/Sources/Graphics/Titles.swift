@@ -3,7 +3,7 @@ import SwiftUI
 import UIKit
 
 enum TitleStyle: String, Codable, CaseIterable, Identifiable {
-    case lowerThird, nameStrap, fullScreen, ticker, scoreBug, clock
+    case lowerThird, nameStrap, fullScreen, ticker, scoreBug, clock, countdown
     var id: String { rawValue }
     var label: String {
         switch self {
@@ -13,6 +13,7 @@ enum TitleStyle: String, Codable, CaseIterable, Identifiable {
         case .ticker: return "Chữ chạy"
         case .scoreBug: return "Tỉ số"
         case .clock: return "Đồng hồ"
+        case .countdown: return "Đếm ngược"
         }
     }
 }
@@ -93,19 +94,25 @@ final class TitleRenderer: @unchecked Sendable {
 
     private func image(for item: TitleItem, canvas: CGSize, now: CFTimeInterval) -> CIImage? {
         // Clock changes every second; everything else is cached by content.
-        let dynamic = item.style == .clock
+        let dynamic = item.style == .clock || item.style == .countdown
         lock.lock()
         if !dynamic, let c = cache[item.id], c.0 == item, c.1 == canvas { lock.unlock(); return c.2 }
         lock.unlock()
         let k = canvas.height / 1080 * item.scale
-        let ui = Self.draw(item, k: k)
+        var remaining: Int?
+        if item.style == .countdown {
+            lock.lock(); let start = shownAt[item.id]; lock.unlock()
+            let total = item.scoreA * 60 + item.scoreB
+            remaining = max(0, total - Int(now - (start ?? now)))
+        }
+        let ui = Self.draw(item, k: k, remaining: remaining)
         guard let cg = ui.cgImage else { return nil }
         let ci = CIImage(cgImage: cg)
         lock.lock(); cache[item.id] = (item, canvas, ci); lock.unlock()
         return ci
     }
 
-    static func draw(_ t: TitleItem, k: CGFloat) -> UIImage {
+    static func draw(_ t: TitleItem, k: CGFloat, remaining: Int? = nil) -> UIImage {
         let accent = UIColor(hex: t.accentHex)
         let big = UIFont.systemFont(ofSize: 44 * k, weight: .bold)
         let small = UIFont.systemFont(ofSize: 30 * k, weight: .medium)
@@ -156,6 +163,18 @@ final class TitleRenderer: @unchecked Sendable {
                 n2.draw(at: CGPoint(x: x, y: (h - n2.size().height) / 2)); x += n2.size().width + pad
                 accent.setFill(); UIBezierPath(rect: CGRect(x: x, y: 0, width: p.size().width + pad * 2, height: h)).fill()
                 p.draw(at: CGPoint(x: x + pad, y: (h - p.size().height) / 2))
+            }
+        case .countdown:
+            let r = remaining ?? (t.scoreA * 60 + t.scoreB)
+            let label = attr(t.line1.isEmpty ? "Bắt đầu sau" : t.line1, small)
+            let time = attr(String(format: "%02d:%02d", r / 60, r % 60), UIFont.monospacedDigitSystemFont(ofSize: 64 * k, weight: .heavy),
+                            r <= 10 ? UIColor.systemRed : .white)
+            let w = max(label.size().width, time.size().width) + 60 * k, h = label.size().height + time.size().height + 30 * k
+            return UIGraphicsImageRenderer(size: CGSize(width: w, height: h), format: fmt).image { _ in
+                UIColor(white: 0, alpha: 0.7).setFill(); UIBezierPath(roundedRect: CGRect(x: 0, y: 0, width: w, height: h), cornerRadius: 12 * k).fill()
+                accent.setFill(); UIBezierPath(rect: CGRect(x: 0, y: 0, width: w, height: 6 * k)).fill()
+                label.draw(at: CGPoint(x: (w - label.size().width) / 2, y: 12 * k))
+                time.draw(at: CGPoint(x: (w - time.size().width) / 2, y: 14 * k + label.size().height))
             }
         case .clock:
             let df = DateFormatter(); df.dateFormat = "HH:mm:ss"

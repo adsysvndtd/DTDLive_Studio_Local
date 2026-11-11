@@ -122,6 +122,12 @@ final class FileSource: VideoSource {
     private var link: CADisplayLink?
 
     let url: URL
+    /// Movie sound goes to the program mixer (set by the engine before start()).
+    var onAudio: (@Sendable (AVAudioPCMBuffer) -> Void)? {
+        didSet { tap = onAudio.map { h in PlayerAudioTap(handler: h) } }
+    }
+    private var tap: PlayerAudioTap?
+    private var tappedItems = Set<ObjectIdentifier>()
 
     init(name: String, url: URL) {
         self.name = name
@@ -129,7 +135,16 @@ final class FileSource: VideoSource {
         let item = AVPlayerItem(url: url)
         player = AVQueuePlayer()
         looper = AVPlayerLooper(player: player, templateItem: item)
-        player.isMuted = true
+        player.isMuted = false // audio is silenced inside the tap and routed to the mixer
+    }
+
+    /// AVPlayerLooper plays copies of the template item; tap each one as it comes up.
+    private func tapCurrentItem() {
+        guard let tap else { player.isMuted = true; return }
+        for item in player.items() where !tappedItems.contains(ObjectIdentifier(item)) {
+            tappedItems.insert(ObjectIdentifier(item))
+            Task { await tap.attach(to: item) }
+        }
     }
 
     func start() async {
@@ -144,6 +159,7 @@ final class FileSource: VideoSource {
     }
 
     @objc private func tick() {
+        tapCurrentItem()
         let t = output.itemTime(forHostTime: CACurrentMediaTime())
         if output.hasNewPixelBuffer(forItemTime: t), let pb = output.copyPixelBuffer(forItemTime: t, itemTimeForDisplay: nil) {
             frames.put(pb)

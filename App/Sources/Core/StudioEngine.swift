@@ -21,7 +21,13 @@ final class StudioEngine: ObservableObject {
     @Published var encoder = EncoderSettings() {
         didSet { videoEncoder.update(encoder); currentBitrate = encoder.bitrate; UserDefaults.standard.set(try? JSONEncoder().encode(encoder), forKey: "dtd.encoder.v1") }
     }
-    @Published var format = ProgramFormat() { didSet { switcher.setFormat(format) } }
+    @Published var format = ProgramFormat() {
+        didSet {
+            switcher.setFormat(format)
+            videoEncoder.fps = Double(format.fps)
+            UserDefaults.standard.set(try? JSONEncoder().encode(format), forKey: "dtd.format.v1")
+        }
+    }
     @Published var logo: OverlayLayer? { didSet { pushOverlays() } }
     @Published var pip: OverlayLayer? { didSet { pushOverlays() } }
     /// Full-frame foreground graphic (PNG with alpha: frames, bugs, sponsor bars).
@@ -192,6 +198,7 @@ final class StudioEngine: ObservableObject {
             Task { @MainActor in await self?.adaptBitrate() }
         })
         if let saved = Self.load(EncoderSettings.self, key: "dtd.encoder.v1") { encoder = saved }
+        if let f = Self.load(ProgramFormat.self, key: "dtd.format.v1") { format = f }
     }
 
     static let defaultTitles: [TitleItem] = [
@@ -210,6 +217,7 @@ final class StudioEngine: ObservableObject {
         if let s = source as? SRTInputSource { s.sink.onAudio = { a.feed(sourceID: id, name: name, buffer: $0) } }
         if let s = source as? RTMPInputSource { s.sink.onAudio = { a.feed(sourceID: id, name: name, buffer: $0) } }
         if let s = source as? RTSPInputSource { s.onAudio = { a.feed(sourceID: id, name: name, buffer: $0) } }
+        if let s = source as? FileSource { s.onAudio = { a.feed(sourceID: id, name: name, buffer: $0) } }
         Task { await source.start(); objectWillChange.send() }
         if programID == nil { switcher.take(source.id) } else if previewID == nil { switcher.setPreview(source.id) }
         syncState()
@@ -445,6 +453,13 @@ final class StudioEngine: ObservableObject {
     // MARK: Audio
 
     func updateAudioChannel(_ c: AudioChannelState) { audio.update(c) }
+    var audioInputs: [AudioCapture.Input] { audio.inputs }
+    var audioInputID: String? { audio.currentInputID }
+    func setAudioInput(_ id: String?) { audio.setInput(id); objectWillChange.send() }
+    var monitorProgram: Bool {
+        get { audio.monitorProgram }
+        set { audio.monitorProgram = newValue; objectWillChange.send() }
+    }
     func playMusic(_ url: URL) { try? audio.playMusic(url) }
     func stopMusic() { audio.stopMusic() }
     func playEffect(_ url: URL) { audio.playEffect(url) }

@@ -40,12 +40,26 @@ enum TransitionStyle: String, CaseIterable, Identifiable, Codable {
     }
 }
 
-struct ProgramFormat: Equatable {
+struct ProgramFormat: Equatable, Codable, Hashable {
     var width = 1920
     var height = 1080
     var fps = 30
     /// Vertical (9:16) output for TikTok/Reels-style platforms.
     static let vertical1080 = ProgramFormat(width: 1080, height: 1920, fps: 30)
+
+    struct Resolution: Identifiable, Hashable {
+        let id: String; let label: String; let width: Int; let height: Int
+    }
+    static let resolutions: [Resolution] = [
+        .init(id: "720p", label: "1280×720 (HD)", width: 1280, height: 720),
+        .init(id: "1080p", label: "1920×1080 (Full HD)", width: 1920, height: 1080),
+        .init(id: "2160p", label: "3840×2160 (4K, iPad Pro M-series)", width: 3840, height: 2160),
+        .init(id: "v720", label: "720×1280 (dọc)", width: 720, height: 1280),
+        .init(id: "v1080", label: "1080×1920 (dọc)", width: 1080, height: 1920)
+    ]
+    static let frameRates = [25, 30, 50, 60]
+    var isVertical: Bool { height > width }
+    var resolutionID: String { Self.resolutions.first { $0.width == width && $0.height == height }?.id ?? "1080p" }
 }
 
 /// Overlay drawn on top of program: logo / lower third / PiP.

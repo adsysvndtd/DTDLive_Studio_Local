@@ -31,6 +31,8 @@ final class VideoEncoder: @unchecked Sendable {
     private var size: (Int32, Int32) = (0, 0)
     private var forceKeyframe = false
     private var liveBitrate: Int
+    /// Program frame rate; changing it rebuilds the session on the next frame.
+    var fps: Double = 30 { didSet { if fps != oldValue { invalidate(); forceKeyframe = true } } }
     /// encode() runs on the switcher's render queue; settings/ABR/keyframe requests come from
     /// the main thread and output actors. One recursive lock serialises all session access.
     private let lock = NSRecursiveLock()
@@ -96,7 +98,7 @@ final class VideoEncoder: @unchecked Sendable {
         guard VTCompressionSessionCreate(allocator: nil, width: w, height: h, codecType: settings.codec == .h264 ? kCMVideoCodecType_H264 : kCMVideoCodecType_HEVC,
                                          encoderSpecification: spec, imageBufferAttributes: nil, compressedDataAllocator: nil,
                                          outputCallback: nil, refcon: nil, compressionSessionOut: &s) == noErr, let s else { return }
-        let fps = 30.0
+        let fps = self.fps
         let p: [CFString: Any] = [
             kVTCompressionPropertyKey_RealTime: true,
             kVTCompressionPropertyKey_ProfileLevel: settings.profile,

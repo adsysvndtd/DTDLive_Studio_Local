@@ -24,6 +24,7 @@ struct ShowFile: Codable {
     var transitionDuration: Double
     var encoder: EncoderSettings
     var vertical: Bool
+    var format: ProgramFormat?
     var programIndex: Int?
     var previewIndex: Int?
 }
@@ -77,7 +78,7 @@ extension StudioEngine {
         let ids = sources.map(\.id)
         return ShowFile(name: name, sources: src, outputs: outputs, titles: titles.map { var t = $0; t.visible = false; return t },
                         transition: transition, transitionDuration: transitionDuration, encoder: encoder,
-                        vertical: format == .vertical1080,
+                        vertical: format.isVertical, format: format,
                         programIndex: programID.flatMap { ids.firstIndex(of: $0) }, previewIndex: previewID.flatMap { ids.firstIndex(of: $0) })
     }
 
@@ -88,7 +89,7 @@ extension StudioEngine {
         let show = try ShowStore.load(name)
         stopAll()
         for s in sources { remove(s) }
-        format = show.vertical ? .vertical1080 : ProgramFormat()
+        format = show.format ?? (show.vertical ? .vertical1080 : ProgramFormat())
         encoder = show.encoder
         transition = show.transition
         transitionDuration = show.transitionDuration

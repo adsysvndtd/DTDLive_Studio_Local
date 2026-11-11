@@ -126,10 +126,17 @@ struct TitlesPanel: View {
                 } label: { Image(systemName: "ellipsis.circle").font(.title3).foregroundStyle(DS.text2) }
             }
             if item.style != .clock {
-                CaptionField(title: item.style == .scoreBug ? "Đội A" : item.style == .ticker ? "Nội dung chữ chạy" : "Dòng 1", text: t.line1)
+                CaptionField(title: item.style == .scoreBug ? "Đội A" : item.style == .ticker ? "Nội dung chữ chạy" : item.style == .countdown ? "Nhãn (vd: Bắt đầu sau)" : "Dòng 1", text: t.line1)
             }
             if [.lowerThird, .nameStrap, .fullScreen, .scoreBug].contains(item.style) {
                 CaptionField(title: item.style == .scoreBug ? "Đội B" : "Dòng 2", text: t.line2)
+            }
+            if item.style == .countdown {
+                HStack {
+                    Stepper("Phút \(item.scoreA)", value: t.scoreA, in: 0...180).font(.subheadline.monospacedDigit())
+                    Stepper("Giây \(item.scoreB)", value: t.scoreB, in: 0...59).font(.subheadline.monospacedDigit())
+                }
+                Text("Bắt đầu đếm khi bấm LÊN SÓNG").font(.caption2).foregroundStyle(DS.text3)
             }
             if item.style == .scoreBug {
                 HStack {
@@ -290,6 +297,9 @@ struct SourcePanel: View {
                     Toggle("Xoay 180°", isOn: Binding(get: { p.rotate180 }, set: { var n = p; n.rotate180 = $0; engine.setProcessing(id, n) }))
                 }
                 .font(.subheadline)
+                if let cam = engine.sources.first(where: { $0.id == id }) as? CameraSource {
+                    CameraControlCard(camera: cam)
+                }
                 SectionCard("Điều khiển PTZ", systemImage: "move.3d") {
                     PTZPanel(engine: engine, sourceID: id)
                 }
@@ -595,5 +605,35 @@ struct TimelineStrip: View {
                 editor.scrub(to: Double(max(0, min(w, v.location.x)) / w) * d)
             })
         }
+    }
+}
+
+
+/// Built-in / USB camera controls.
+struct CameraControlCard: View {
+    let camera: CameraSource
+    @State private var c = CameraSource.Controls()
+
+    var body: some View {
+        SectionCard("Điều khiển camera", systemImage: "camera.aperture") {
+            if c.maxZoom > 1 {
+                LabeledSlider(title: "Zoom", value: Binding(get: { c.zoom }, set: { c.zoom = $0; camera.setZoom($0) }),
+                              range: 1...c.maxZoom) { String(format: "%.1f×", $0) }
+            }
+            Toggle("Lấy nét tự động", isOn: Binding(get: { c.autoFocus }, set: { c.autoFocus = $0; camera.setAutoFocus($0) }))
+            if !c.autoFocus {
+                LabeledSlider(title: "Lấy nét (gần → xa)", value: Binding(get: { Double(c.lensPosition) }, set: { c.lensPosition = Float($0); camera.setLensPosition(Float($0)) }),
+                              range: 0...1) { String(format: "%.2f", $0) }
+            }
+            LabeledSlider(title: "Bù phơi sáng", value: Binding(get: { Double(c.exposureBias) }, set: { c.exposureBias = Float($0); camera.setExposureBias(Float($0)) }),
+                          range: Double(c.minBias)...Double(c.maxBias)) { String(format: "%+.1f EV", $0) }
+            Toggle("Khoá cân bằng trắng", isOn: Binding(get: { c.whiteBalanceLocked }, set: { c.whiteBalanceLocked = $0; camera.setWhiteBalanceLocked($0) }))
+            Toggle("Chống rung", isOn: Binding(get: { c.stabilization }, set: { c.stabilization = $0; camera.setStabilization($0) }))
+            if c.hasTorch {
+                Toggle("Đèn", isOn: Binding(get: { c.torch }, set: { c.torch = $0; camera.setTorch($0) }))
+            }
+        }
+        .font(.subheadline)
+        .onAppear { camera.refreshControls(); c = camera.controls }
     }
 }

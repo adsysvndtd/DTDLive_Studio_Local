@@ -13,6 +13,8 @@ struct StudioView: View {
     @State private var tbarValue = 0.0
     @State private var category: ProdCategory = ProdCategory(rawValue: DemoMode.arg("-category") ?? "") ?? .camera
     @State private var scopesOnPreview = false
+    @State private var arranging = false
+    @State private var showSettings = false
     @Environment(\.verticalSizeClass) private var vSize
 
     /// iPhone (or any height-compact window): smaller chrome, same structure.
@@ -51,6 +53,7 @@ struct StudioView: View {
         .sheet(isPresented: $showAddSource) { AddSourceSheet(engine: engine) }
         .sheet(isPresented: $showOutputs) { OutputsSheet(engine: engine) }
         .sheet(isPresented: $showShows) { ShowsSheet(engine: engine) }
+        .sheet(isPresented: $showSettings) { SettingsSheet(engine: engine) }
         .task {
             guard DemoMode.isOn else { return }
             DemoMode.populate(engine)
@@ -60,6 +63,7 @@ struct StudioView: View {
             case "shows": showShows = true
             case "addsource": showAddSource = true
             case "pairing": engine.pairing.injectDemoRequest()
+            case "settings": showSettings = true
             default: break
             }
         }
@@ -86,6 +90,7 @@ struct StudioView: View {
                 .keyboardShortcut("z", modifiers: [.command, .shift])
             barButton(engine.isRecording ? "record.circle.fill" : "record.circle", "Ghi", tint: engine.isRecording ? DS.pgm : .white) { engine.toggleRecording() }
             barButton("folder", "Show") { showShows = true }
+            barButton("gearshape", "Cài đặt") { showSettings = true }
             if engine.externalDisplayConnected {
                 Menu {
                     Picker("Màn ngoài", selection: $engine.externalMode) {
@@ -146,7 +151,8 @@ struct StudioView: View {
                 if isProgram {
                     monitorChip(engine.isAnyLive ? "ON AIR" : "OFF AIR", on: engine.isAnyLive, onColor: DS.pgm) { showOutputs = true }
                     if !compact { monitorChip("Thông số", on: engine.showMonitorInfo) { engine.showMonitorInfo.toggle() } }
-                    monitorChip("Vẽ", on: drawing) { drawing.toggle() }
+                    if engine.pip != nil || engine.logo != nil { monitorChip("Sắp xếp", on: arranging) { arranging.toggle(); if arranging { drawing = false } } }
+                    monitorChip("Vẽ", on: drawing) { drawing.toggle(); if drawing { arranging = false } }
                     if drawing { monitorChip("Xoá nét", on: false) { clearDrawing += 1 } }
                 } else {
                     monitorChip("Scopes", on: scopesOnPreview) {
@@ -160,6 +166,7 @@ struct StudioView: View {
                 if engine.showSafeGuides { SafeGuides() }
                 if isProgram {
                     if engine.showMonitorInfo && !compact { monitorInfo.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top) }
+                    if arranging { ArrangeOverlay(engine: engine) }
                     if drawing {
                         AnnotationCanvas(layer: engine.annotation,
                                          programSize: CGSize(width: engine.format.width, height: engine.format.height),
@@ -405,11 +412,13 @@ struct OutputsSheet: View {
                         Stepper(String(format: "Tối thiểu: %.1f Mbps", Double(engine.encoder.minBitrate) / 1e6), value: $engine.encoder.minBitrate, in: 500_000...10_000_000, step: 250_000)
                         Text(String(format: "Đang dùng: %.1f Mbps", Double(engine.currentBitrate) / 1e6)).font(.caption)
                     }
-                    Picker("Khung hình", selection: Binding(
-                        get: { engine.format == .vertical1080 ? 1 : 0 },
-                        set: { engine.format = $0 == 1 ? .vertical1080 : ProgramFormat() })) {
-                        Text("1920×1080 (ngang)").tag(0)
-                        Text("1080×1920 (dọc)").tag(1)
+                    Picker("Độ phân giải", selection: Binding(
+                        get: { engine.format.resolutionID },
+                        set: { id in if let r = ProgramFormat.resolutions.first(where: { $0.id == id }) { engine.format.width = r.width; engine.format.height = r.height } })) {
+                        ForEach(ProgramFormat.resolutions) { Text($0.label).tag($0.id) }
+                    }
+                    Picker("Tốc độ khung", selection: $engine.format.fps) {
+                        ForEach(ProgramFormat.frameRates, id: \.self) { Text("\($0) fps").tag($0) }
                     }
                 }
             }
@@ -433,7 +442,7 @@ extension OutputsSheet {
             defer { platformBusy = false }
             do {
                 let d = p == .youtube
-                    ? try await platform.createYouTube(title: liveTitle, vertical: engine.format == .vertical1080)
+                    ? try await platform.createYouTube(title: liveTitle, vertical: engine.format.isVertical)
                     : try await platform.createFacebook(title: liveTitle)
                 var cfg = OutputConfig(name: d.name, proto: .rtmp, url: d.url)
                 cfg.enabled = true

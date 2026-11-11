@@ -46,7 +46,88 @@ final class CameraSource: NSObject, VideoSource {
         session.commitConfiguration()
         let s = session
         queue.async { s.startRunning() }
+        refreshControls()
         status = .live
+    }
+
+    // MARK: Camera control (zoom, focus, exposure, white balance, torch)
+
+    struct Controls: Equatable {
+        var zoom: Double = 1
+        var maxZoom: Double = 1
+        var autoFocus = true
+        var lensPosition: Float = 0.5
+        var exposureBias: Float = 0
+        var minBias: Float = -2, maxBias: Float = 2
+        var whiteBalanceLocked = false
+        var torch = false
+        var hasTorch = false
+        var stabilization = true
+    }
+
+    private(set) var controls = Controls()
+
+    private var device: AVCaptureDevice? { AVCaptureDevice(uniqueID: deviceID) }
+
+    private func configure(_ body: (AVCaptureDevice) throws -> Void) {
+        guard let d = device else { return }
+        do { try d.lockForConfiguration(); try body(d); d.unlockForConfiguration() } catch {}
+    }
+
+    func refreshControls() {
+        guard let d = device else { return }
+        controls.maxZoom = min(Double(d.activeFormat.videoMaxZoomFactor), 10)
+        controls.zoom = Double(d.videoZoomFactor)
+        controls.minBias = d.minExposureTargetBias; controls.maxBias = d.maxExposureTargetBias
+        controls.exposureBias = d.exposureTargetBias
+        controls.hasTorch = d.hasTorch
+        controls.torch = d.torchMode == .on
+        controls.autoFocus = d.focusMode == .continuousAutoFocus
+        controls.lensPosition = d.lensPosition
+        controls.whiteBalanceLocked = d.whiteBalanceMode == .locked
+    }
+
+    func setZoom(_ z: Double) {
+        configure { $0.videoZoomFactor = CGFloat(min(max(1, z), Double($0.activeFormat.videoMaxZoomFactor))) }
+        controls.zoom = z
+    }
+
+    func setAutoFocus(_ on: Bool) {
+        configure { d in
+            if on, d.isFocusModeSupported(.continuousAutoFocus) { d.focusMode = .continuousAutoFocus }
+            else if !on, d.isLockingFocusWithCustomLensPositionSupported { d.setFocusModeLocked(lensPosition: d.lensPosition) }
+        }
+        controls.autoFocus = on
+    }
+
+    func setLensPosition(_ p: Float) {
+        configure { d in if d.isLockingFocusWithCustomLensPositionSupported { d.setFocusModeLocked(lensPosition: max(0, min(1, p))) } }
+        controls.lensPosition = p; controls.autoFocus = false
+    }
+
+    func setExposureBias(_ b: Float) {
+        configure { d in d.setExposureTargetBias(max(d.minExposureTargetBias, min(d.maxExposureTargetBias, b))) }
+        controls.exposureBias = b
+    }
+
+    func setWhiteBalanceLocked(_ locked: Bool) {
+        configure { d in
+            if locked, d.isWhiteBalanceModeSupported(.locked) { d.whiteBalanceMode = .locked }
+            else if d.isWhiteBalanceModeSupported(.continuousAutoWhiteBalance) { d.whiteBalanceMode = .continuousAutoWhiteBalance }
+        }
+        controls.whiteBalanceLocked = locked
+    }
+
+    func setTorch(_ on: Bool) {
+        configure { d in if d.hasTorch { d.torchMode = on ? .on : .off } }
+        controls.torch = on
+    }
+
+    func setStabilization(_ on: Bool) {
+        for c in output.connections where c.isVideoStabilizationSupported {
+            c.preferredVideoStabilizationMode = on ? .standard : .off
+        }
+        controls.stabilization = on
     }
 
     func stop() async {
