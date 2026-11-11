@@ -55,10 +55,12 @@ final class StudioEngine: ObservableObject {
     @Published var logoOn = false { didSet { logo?.visible = logoOn } }
     @Published var foregroundOn = false { didSet { foreground?.visible = foregroundOn } }
     @Published var armedTitleID: UUID?
+    /// Title assigned to the "Title 2 On" key (default: first title other than the armed one).
+    @Published var armedTitle2ID: UUID?
     @Published private(set) var currentLogoURL: URL?
     @Published private(set) var currentForegroundURL: URL?
     @Published private(set) var nowPlayingMusic: URL?
-    @Published var showSafeGuides = true
+    @Published var showSafeGuides = false
     @Published var showMonitorInfo = false
     /// One-line operator message (import / playback errors), shown as an alert.
     @Published var message: String?
@@ -270,7 +272,7 @@ final class StudioEngine: ObservableObject {
         guard program != tally.program || preview != tally.preview else { return }
         let old = tally.program
         tally = (program, preview)
-        audio.setProgram(program)
+        audio.setProgram(program, main: switcher.state.program)
         for id in program.symmetricDifference(old) {
             Task { await ptzControllers[id]?.tally(program.contains(id)) }
         }
@@ -297,8 +299,6 @@ final class StudioEngine: ObservableObject {
     }
 
     /// Double-tap on a library item: straight to program (cut).
-    func takeMovie(_ url: URL) { cueMovie(url); if let id = previewID { take(id) } }
-    func takePicture(_ url: URL) { cuePicture(url); if let id = previewID { take(id) } }
 
     func cuePicture(_ url: URL) {
         if let s = sources.first(where: { ($0 as? ImageSource)?.url == url }) { select(s.id); return }
@@ -313,8 +313,8 @@ final class StudioEngine: ObservableObject {
         let aspect = img.size.width / max(img.size.height, 1)
         let h: CGFloat = 0.12, w = min(0.3, h * aspect * CGFloat(format.height) / CGFloat(format.width))
         var l = OverlayLayer(image: ci, rect: logoCorner.rect(size: CGSize(width: w, height: h)))
-        l.visible = true
-        logo = l; currentLogoURL = url; logoOn = true
+        l.visible = logoOn                      // armed; goes on air with the Logo On key (live swap if already on)
+        logo = l; currentLogoURL = url
     }
 
     /// SuperFG from the library: PNG with alpha, or a video with alpha (HEVC .mov) that loops.
@@ -333,8 +333,8 @@ final class StudioEngine: ObservableObject {
             }
             foreground = OverlayLayer(image: ci, rect: CGRect(x: 0, y: 0, width: 1, height: 1))
         }
-        foreground?.visible = true
-        currentForegroundURL = url; superFGActiveTemplate = nil; foregroundOn = true
+        foreground?.visible = foregroundOn       // armed; SuperFG On key puts it on air
+        currentForegroundURL = url; superFGActiveTemplate = nil
     }
 
     func clearForeground() {
@@ -368,9 +368,9 @@ final class StudioEngine: ObservableObject {
         let img = t.render(superFG, size: CGSize(width: format.width, height: format.height))
         guard let ci = CIImage(image: img) else { return }
         var l = OverlayLayer(image: ci, rect: CGRect(x: 0, y: 0, width: 1, height: 1))
-        l.visible = true
+        l.visible = foregroundOn
         foreground = l
-        currentForegroundURL = nil; superFGActiveTemplate = templateID; foregroundOn = true
+        currentForegroundURL = nil; superFGActiveTemplate = templateID
     }
 
     func toggleMusic(_ url: URL) {
@@ -389,6 +389,7 @@ final class StudioEngine: ObservableObject {
     /// Second title key: the first title other than the armed one (e.g. a ticker under a lower third).
     var secondTitle: TitleItem? {
         let armed = armedTitleID ?? titles.first?.id
+        if let id = armedTitle2ID, id != armed, let t = titles.first(where: { $0.id == id }) { return t }
         return titles.first { $0.id != armed && $0.style != .clock }
     }
     func toggleSecondTitle() { if let t = secondTitle { setTitleVisible(t.id, !t.visible) } }
@@ -452,8 +453,9 @@ final class StudioEngine: ObservableObject {
     func setPiP(_ id: UUID?) {
         checkpoint()
         guard let id, sources.contains(where: { $0.id == id }) else { pip = nil; return }
-        pip = OverlayLayer(pipSourceID: id, rect: pipPreset.rect)
-        pipOn = true
+        var l = OverlayLayer(pipSourceID: id, rect: pipPreset.rect)
+        l.visible = pipOn                       // armed; PiP On key / PiP T-Bar puts it on air
+        pip = l
     }
 
     /// Move/resize PiP or logo; snaps to edges and the safe-area grid (5% margins, thirds).
@@ -681,6 +683,33 @@ final class StudioEngine: ObservableObject {
     /// The movie currently on program (if any) and its loop state.
     var programMovie: FileSource? { sources.first { $0.id == programID } as? FileSource }
     func toggleProgramLoop() { programMovie?.loops.toggle(); objectWillChange.send() }
+
+    /// Mixer AFV keys: AFV1 / AFV2 switch every source channel to follow video; tapping the active key turns AFV off.
+    var afvMode: AudioCapture.AFVMode? {
+        let src = audioChannels.filter { $0.id != AudioCapture.micID && $0.id != AudioCapture.musicID }
+        guard !src.isEmpty, src.allSatisfy(\.followVideo) else { return nil }
+        return audio.afvMode
+    }
+    func setAFVMode(_ m: AudioCapture.AFVMode?) {
+        if let m { audio.afvMode = m }
+        setAFVAll(m != nil)
+        objectWillChange.send()
+    }
+    func nudgeGain(_ id: UUID, dB: Float) {
+        guard var c = audioChannels.first(where: { $0.id == id }) else { return }
+        let cur = 20 * log10(max(c.gain, 0.0001)) + dB
+        c.gain = cur <= -60 ? 0 : min(2, powf(10, cur / 20))
+        audio.update(c)
+    }
+    func nudgeTrim(_ id: UUID, dB: Float) {
+        guard var c = audioChannels.first(where: { $0.id == id }) else { return }
+        c.trim = min(24, max(-12, c.trim + dB)); audio.update(c)
+    }
+    var masterNudge: (Float) -> Void { { [weak self] d in
+        guard let self else { return }
+        let cur = 20 * log10(max(self.masterGain, 0.0001)) + d
+        self.masterGain = cur <= -60 ? 0 : min(2, powf(10, cur / 20))
+    } }
 
     func setAFVAll(_ on: Bool) {
         for var c in audioChannels where c.id != AudioCapture.micID && c.id != AudioCapture.musicID {

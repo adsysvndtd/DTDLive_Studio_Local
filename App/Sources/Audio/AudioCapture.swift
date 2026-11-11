@@ -10,6 +10,7 @@ struct AudioChannelState: Identifiable, Equatable {
     var muted = false
     var followVideo = false      // AFV: only audible while its source is on program
     var solo = false             // when any channel is soloed, only soloed channels are heard
+    var trim: Float = 0          // input gain in dB (−12…+24), applied before the fader
     var level: Float = -60       // dBFS peak (read-only for UI)
 }
 
@@ -29,6 +30,12 @@ final class AudioCapture: @unchecked Sendable {
     private var playerFormats: [UUID: AVAudioFormat] = [:]
     private var states: [UUID: AudioChannelState] = [:]
     private var programIDs: Set<UUID> = []
+    private var programMain: UUID?
+
+    /// Audio-follow-video rule for channels with followVideo:
+    ///   afv1 = only the source on PGM is heard; afv2 = every source visible on PGM (incl. PiP / layout windows).
+    enum AFVMode: String { case afv1, afv2 }
+    var afvMode: AFVMode = .afv1 { didSet { DispatchQueue.main.async { self.applyGains() } } }
     private var lock = os_unfair_lock()
     private var musicFile: AVAudioFile?
     private let micDelay = AVAudioUnitDelay()
@@ -208,17 +215,21 @@ final class AudioCapture: @unchecked Sendable {
     }
 
     /// Called with the sources on program (audio-follow-video).
-    func setProgram(_ ids: Set<UUID>) {
-        os_unfair_lock_lock(&lock); let changed = ids != programIDs; programIDs = ids; os_unfair_lock_unlock(&lock)
+    func setProgram(_ ids: Set<UUID>, main: UUID? = nil) {
+        os_unfair_lock_lock(&lock)
+        let changed = ids != programIDs || main != programMain
+        programIDs = ids; programMain = main
+        os_unfair_lock_unlock(&lock)
         if changed { DispatchQueue.main.async { self.applyGains() } }
     }
 
     private func applyGains() {
-        os_unfair_lock_lock(&lock); let st = states; let pgm = programIDs; os_unfair_lock_unlock(&lock)
+        os_unfair_lock_lock(&lock); let st = states; let all = programIDs; let main = programMain; os_unfair_lock_unlock(&lock)
+        let pgm: Set<UUID> = afvMode == .afv1 ? Set([main].compactMap { $0 }) : all
         let anySolo = st.values.contains { $0.solo }
         for (id, s) in st {
             let audible = !s.muted && (!s.followVideo || pgm.contains(id)) && (!anySolo || s.solo)
-            channelMixers[id]?.outputVolume = audible ? s.gain : 0
+            channelMixers[id]?.outputVolume = audible ? s.gain * powf(10, s.trim / 20) : 0
         }
     }
 

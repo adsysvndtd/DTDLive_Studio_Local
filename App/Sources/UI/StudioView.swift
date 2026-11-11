@@ -184,7 +184,6 @@ struct StudioView: View {
             .foregroundStyle(.white)
             .padding(.horizontal, compact ? 6 : 9).padding(.vertical, compact ? 2 : 3)
             .background(Color.black.opacity(0.6), in: RoundedRectangle(cornerRadius: 4))
-            .overlay(alignment: .bottom) { Rectangle().fill(color).frame(height: 2) }
             .padding(.bottom, compact ? 4 : 6)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
             .allowsHitTesting(false)
@@ -257,7 +256,7 @@ struct StudioView: View {
                     .allowsHitTesting(false)
             }
             .clipShape(RoundedRectangle(cornerRadius: 4))
-            .overlay(RoundedRectangle(cornerRadius: 4).stroke(color, lineWidth: 2))
+            .overlay(RoundedRectangle(cornerRadius: 4).strokeBorder(color, lineWidth: 1.5))
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
@@ -365,12 +364,16 @@ struct TBar: View {
         GeometryReader { g in
             let h = g.size.height
             ZStack(alignment: .top) {
-                RoundedRectangle(cornerRadius: 6).fill(DS.surface2)
-                RoundedRectangle(cornerRadius: 6).fill(DS.accent.opacity(0.35))
-                    .frame(height: max(0, h * value))
-                RoundedRectangle(cornerRadius: 4).fill(Color.white)
-                    .frame(height: 14).padding(.horizontal, 3)
-                    .offset(y: (h - 14) * value)
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(LinearGradient(colors: [Color(white: 0.55), Color(white: 0.85), Color(white: 0.5)], startPoint: .leading, endPoint: .trailing))
+                    .frame(width: 22)
+                Capsule().fill(Color.black).frame(width: 4).padding(.vertical, 10)
+                RoundedRectangle(cornerRadius: 5)
+                    .fill(LinearGradient(colors: [Color(white: 0.95), Color(white: 0.6), Color(white: 0.85)], startPoint: .top, endPoint: .bottom))
+                    .frame(height: 16)
+                    .overlay(Rectangle().fill(Color.black.opacity(0.7)).frame(width: 3))
+                    .shadow(color: .black.opacity(0.5), radius: 3, y: 2)
+                    .offset(y: (h - 16) * value)
             }
             .contentShape(Rectangle())
             .gesture(DragGesture(minimumDistance: 0)
@@ -384,6 +387,26 @@ struct TBar: View {
                 })
         }
         .overlay(alignment: .bottom) { Text("T").font(.caption2.weight(.heavy)).foregroundStyle(DS.text3).offset(y: 14) }
+    }
+}
+
+/// LED ladder beside the T-bar: full at rest, empties as the bar is pulled (amber when it drives the PiP).
+struct TBarLEDs: View {
+    let value: Double
+    var pip = false
+    private let count = 10
+    var body: some View {
+        GeometryReader { g in
+            let lit = Int(((1 - value) * Double(count)).rounded())
+            VStack(spacing: 3) {
+                ForEach(0..<count, id: \.self) { i in
+                    RoundedRectangle(cornerRadius: 1.5)
+                        .fill(count - 1 - i < lit ? (pip ? Color.orange : Color.green) : Color(white: 0.18))
+                        .frame(height: max(3, (g.size.height - CGFloat(count - 1) * 3) / CGFloat(count)))
+                }
+            }
+        }
+        .frame(width: 8)
     }
 }
 

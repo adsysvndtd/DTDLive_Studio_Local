@@ -12,7 +12,8 @@ struct SuperFGPanel: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 10) {
-                Toggle("SuperFG trên Program", isOn: $engine.foregroundOn).disabled(engine.foreground == nil).fixedSize()
+                Label(engine.foreground == nil ? "Chưa nạp SuperFG" : (engine.foregroundOn ? "SuperFG đang trên PGM" : "Đã nạp — bấm SuperFG On ở cột phải"),
+                      systemImage: "square.3.layers.3d").font(.caption).foregroundStyle(engine.foregroundOn ? DS.pgm : DS.text2)
                 Spacer()
                 if engine.foreground != nil {
                     Button("Bỏ SuperFG") { engine.clearForeground() }
@@ -31,7 +32,7 @@ struct SuperFGPanel: View {
             }
             LazyVGrid(columns: columns, spacing: compact ? 6 : 10) {
                 ForEach(SuperFGTemplate.all) { t in
-                    let active = engine.superFGActiveTemplate == t.id && engine.foregroundOn
+                    let active = engine.superFGActiveTemplate == t.id
                     Button { engine.applySuperFG(t.id) } label: {
                         VStack(spacing: 0) {
                             ZStack {
@@ -43,12 +44,12 @@ struct SuperFGPanel: View {
                                 .frame(maxWidth: .infinity, minHeight: 24).background(DS.surface)
                         }
                         .clipShape(RoundedRectangle(cornerRadius: 8))
-                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(active ? DS.pgm : DS.stroke, lineWidth: active ? 3 : 1))
+                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(active ? (engine.foregroundOn ? DS.pgm : DS.pvw) : DS.stroke, lineWidth: active ? 3 : 1))
                     }
                     .buttonStyle(.plain)
                 }
             }
-            Text("Chạm một mẫu để đưa lên Program; sửa chữ, màu sẽ cập nhật ngay. Phím SUPER FG ở cột phải để bật/tắt.")
+            Text("Chạm một mẫu để nạp (đang trên sóng thì thay ngay); bật/tắt bằng SuperFG On ở cột phải. Sửa chữ, màu cập nhật ngay.")
                 .font(.caption2).foregroundStyle(DS.text3)
         }
     }

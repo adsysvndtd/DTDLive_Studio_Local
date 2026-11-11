@@ -17,12 +17,9 @@ struct ScoreboardControl: View {
                     Image(systemName: "sportscourt.fill").foregroundStyle(DS.accent)
                     Text("Bảng tỉ số").font(.subheadline.weight(.bold))
                     Spacer()
-                    Button { engine.setTitleVisible(t.id, !t.visible) } label: {
-                        Text(t.visible ? "TRÊN SÓNG" : "LÊN SÓNG").font(.caption.weight(.heavy))
-                            .padding(.horizontal, 10).padding(.vertical, 6)
-                            .foregroundStyle(t.visible ? .white : DS.text2)
-                            .background(t.visible ? DS.pgm : DS.surface2, in: Capsule())
-                    }.buttonStyle(.plain)
+                    if t.visible { Text("TRÊN SÓNG").font(.caption2.weight(.heavy)).foregroundStyle(DS.pgm) }
+                    assign("→ Title", on: (engine.armedTitleID ?? engine.titles.first?.id) == t.id) { engine.armedTitleID = t.id }
+                    assign("→ Title 2", on: engine.secondTitle?.id == t.id) { engine.armedTitle2ID = t.id }
                 }
                 ViewThatFits(in: .horizontal) {
                     HStack(spacing: 10) { teams(t); clock(t); tools(t) }
@@ -108,6 +105,14 @@ struct ScoreboardControl: View {
             }
         }
         .foregroundStyle(DS.text2)
+    }
+
+    private func assign(_ t: String, on: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(t).font(.caption.weight(.bold)).padding(.horizontal, 9).padding(.vertical, 5)
+                .foregroundStyle(on ? .black : DS.text2)
+                .background(on ? Color.white : DS.surface2, in: Capsule())
+        }.buttonStyle(.plain)
     }
 
     private func iconButton(_ icon: String, on: Bool, _ act: @escaping () -> Void) -> some View {

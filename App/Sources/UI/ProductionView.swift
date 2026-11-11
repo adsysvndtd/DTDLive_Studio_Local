@@ -256,14 +256,15 @@ struct CategoryContent: View {
             TitlesPanel(engine: engine)
         case .logo:
             HStack {
-                Toggle("Hiện logo", isOn: $engine.logoOn).disabled(engine.logo == nil).fixedSize()
+                Label(engine.logo == nil ? "Chưa nạp logo" : (engine.logoOn ? "Logo đang trên PGM" : "Logo đã nạp — bấm Logo On"),
+                      systemImage: "seal").font(.caption).foregroundStyle(engine.logoOn ? DS.pgm : DS.text2)
                 Spacer()
                 Picker("Vị trí", selection: $engine.logoCorner) { ForEach(StudioEngine.Corner.allCases) { Text($0.label).tag($0) } }
                     .pickerStyle(.segmented).frame(maxWidth: 380)
             }
             libraryGrid(.logo, selected: engine.currentLogoURL) { engine.useLogo($0) }
         case .audio:
-            AudioMixerView(engine: engine, compact: compact)
+            AudioMixerView(engine: engine, library: library, compact: compact)
             musicList
             effectsPads
         case .adjust:
@@ -403,25 +404,16 @@ struct CategoryContent: View {
 
     // MARK: Media library grids
 
-    /// Double tap: video / picture straight to program; other kinds behave like a single tap.
-    private func onDoubleTap(_ k: LibraryKind, _ url: URL) {
-        switch k {
-        case .movie: engine.takeMovie(url)
-        case .picture: engine.takePicture(url)
-        default: break
-        }
-    }
-
     private func libraryGrid(_ k: LibraryKind, selected: URL? = nil, onTap: @escaping (URL) -> Void) -> some View {
         let items = library.list(k)
         return VStack(alignment: .leading, spacing: 6) {
             if items.isEmpty { emptyHint("Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTD Studio › Library › \(k.folder)") }
-            else if k == .movie || k == .picture { Text("Chạm: đưa lên PVW · chạm đúp: lên thẳng PGM").font(.caption2).foregroundStyle(DS.text3) }
+            else if k == .movie || k == .picture { Text("Chạm để đưa lên PVW, rồi Cut / chuyển cảnh ở cột phải").font(.caption2).foregroundStyle(DS.text3) }
+            else if k == .logo || k == .overlay { Text("Chạm để nạp, bật/tắt bằng phím ở cột phải").font(.caption2).foregroundStyle(DS.text3) }
             LazyVGrid(columns: columns, spacing: compact ? 6 : 10) {
                 ForEach(items, id: \.self) { url in
                     LibraryCell(url: url, kind: k, selected: url == selected)
-                        .onTapGesture(count: 2) { onDoubleTap(k, url) }
-                        .simultaneousGesture(TapGesture().onEnded { onTap(url) })
+                        .onTapGesture { onTap(url) }
                         .contextMenu {
                             if k == .movie {
                                 Button { engine.openInReplay(url) } label: { Label("Mở trong Replay (mark in/out)", systemImage: "scissors") }
@@ -534,7 +526,6 @@ struct SourceCell: View {
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .overlay(RoundedRectangle(cornerRadius: 8).stroke(pgm ? DS.pgm : pvw ? DS.pvw : DS.stroke, lineWidth: pgm || pvw ? 3 : 1))
         .contentShape(Rectangle())
-        .onTapGesture(count: 2) { engine.take(source.id) }
         .onTapGesture { engine.select(source.id) }
     }
 }
@@ -601,6 +592,27 @@ struct TransitionColumn: View {
     @ObservedObject var engine: StudioEngine
     @Binding var tbarValue: Double
     var compact = false
+    /// PiP T-Bar: the T-bar fades the PiP in/out instead of running the program transition.
+    @State private var pipTBar = false
+    @State private var pipDir: Double?
+
+    /// PiP T-bar: pulls the PiP in when it is off, out when it is on; releasing early restores it.
+    private func pipT(_ v: Double) {
+        if pipDir == nil {
+            if v <= 0.001 { return }
+            pipDir = engine.pipOn ? -1 : 1
+            if !engine.pipOn { engine.pipOn = true; engine.pipFade = 0 }
+        }
+        let dir = pipDir ?? 1
+        engine.pipFade = dir < 0 ? 1 - v : v
+        if v >= 0.999 {
+            if dir < 0 { engine.pipOn = false } else { engine.pipFade = 1 }
+            pipDir = nil
+        } else if v <= 0.001 {
+            if dir > 0 { engine.pipOn = false } else { engine.pipFade = 1 }
+            pipDir = nil
+        }
+    }
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -615,25 +627,22 @@ struct TransitionColumn: View {
                     .buttonStyle(.plain)
                     .background(DS.surface2, in: Capsule())
                 }
-                Text(engine.transition.label).font(.caption.weight(.heavy)).foregroundStyle(DS.accent)
-                key("PiP TRANS") { engine.layoutTransition() }
-                key("FLASH") { engine.flashTransition() }
-                key("CUT") { engine.cut() }.keyboardShortcut(.space, modifiers: [])
-                key("AUTO", color: DS.accent, text: .black) { engine.autoTransition() }.keyboardShortcut(.return, modifiers: [])
-                TBar(value: $tbarValue) { engine.tbar($0) }
-                    .frame(width: compact ? 30 : 40, height: compact ? 90 : 130)
-                    .padding(.vertical, 4)
-                toggleKey("TITLE", on: engine.armedTitleVisible) { engine.toggleArmedTitle() }
-                toggleKey("TITLE 2", on: engine.secondTitle?.visible ?? false, enabled: engine.secondTitle != nil) { engine.toggleSecondTitle() }
-                toggleKey("LOGO", on: engine.logoOn, enabled: engine.logo != nil) { engine.logoOn.toggle() }
-                toggleKey("SUPER FG", on: engine.foregroundOn, enabled: engine.foreground != nil) { engine.foregroundOn.toggle() }
-                toggleKey("PiP", on: engine.pipOn, enabled: engine.pip != nil) { engine.pipOn.toggle() }
-                if engine.pip != nil {
-                    VStack(spacing: 2) {
-                        Text("PiP T-bar").font(.caption2).foregroundStyle(DS.text2)
-                        Slider(value: $engine.pipFade, in: 0...1).tint(DS.accent2)
-                    }
+                key("PiP Trans", enabled: engine.layoutSlots.count > 0) { engine.layoutTransition() }
+                // AUTO key named after the selected transition (Dissolve, Wipe…)
+                key(engine.transition.label, color: DS.accent, text: .black) { engine.autoTransition() }.keyboardShortcut(.return, modifiers: [])
+                key("Cut") { engine.cut() }.keyboardShortcut(.space, modifiers: [])
+                HStack(spacing: 6) {
+                    TBarLEDs(value: tbarValue, pip: pipTBar)
+                    TBar(value: $tbarValue) { v in if pipTBar { pipT(v) } else { engine.tbar(v) } }
+                        .frame(width: compact ? 34 : 46, height: compact ? 100 : 150)
                 }
+                .padding(.vertical, 4)
+                onKey("SuperFG", on: engine.foregroundOn, enabled: engine.foreground != nil) { engine.foregroundOn.toggle() }
+                onKey("Title", on: engine.armedTitleVisible, enabled: !engine.titles.isEmpty) { engine.toggleArmedTitle() }
+                onKey("Title 2", on: engine.secondTitle?.visible ?? false, enabled: engine.secondTitle != nil) { engine.toggleSecondTitle() }
+                onKey("Logo", on: engine.logoOn, enabled: engine.logo != nil) { engine.logoOn.toggle() }
+                onKey("PiP", on: engine.pipOn, enabled: engine.pip != nil) { engine.pipOn.toggle() }
+                onKey("PiP T-Bar", on: pipTBar, enabled: engine.pip != nil, suffix: false) { pipTBar.toggle() }
                 toggleKey("FTB", on: engine.fadeToBlack, onColor: DS.pgm) { engine.fadeToBlack.toggle() }
             }
             .padding(compact ? 6 : 10)
@@ -641,7 +650,21 @@ struct TransitionColumn: View {
         .background(DS.surface)
     }
 
-    private func key(_ t: String, color: Color = DS.surface2, text: Color = .white, action: @escaping () -> Void) -> some View {
+    /// Layer keys styled like hardware: "<name> On", lit white while the layer is on air.
+    private func onKey(_ t: String, on: Bool, enabled: Bool = true, suffix: Bool = true, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(suffix ? "\(t) On" : t).font(.system(size: compact ? 11 : 14, weight: .semibold)).lineLimit(1).minimumScaleFactor(0.7)
+                .frame(maxWidth: .infinity, minHeight: compact ? 32 : 42)
+                .foregroundStyle(on ? .black : DS.text2)
+                .background(on ? Color.white : DS.surface2, in: RoundedRectangle(cornerRadius: 8))
+                .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.white.opacity(on ? 0 : 0.12)))
+                .shadow(color: on ? .white.opacity(0.35) : .clear, radius: 6)
+        }
+        .buttonStyle(.plain)
+        .disabled(!enabled).opacity(enabled ? 1 : 0.4)
+    }
+
+    private func key(_ t: String, color: Color = DS.surface2, text: Color = .white, enabled: Bool = true, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Text(t).font(.system(size: compact ? 12 : 14, weight: .heavy))
                 .frame(maxWidth: .infinity, minHeight: compact ? 34 : 44)
@@ -650,6 +673,7 @@ struct TransitionColumn: View {
                 .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.white.opacity(0.1)))
         }
         .buttonStyle(.plain)
+        .disabled(!enabled).opacity(enabled ? 1 : 0.4)
     }
 
     private func toggleKey(_ t: String, on: Bool, enabled: Bool = true, onColor: Color = DS.pvw, action: @escaping () -> Void) -> some View {

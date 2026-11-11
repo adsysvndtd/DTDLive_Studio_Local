@@ -1,159 +1,220 @@
 import SwiftUI
 
-/// Console-style mixer: one vertical strip per channel (fader with dB scale, level meter,
-/// mute / long-press solo, AFV), plus the Program master.
+/// Console-style mixer: header keys AFV1 / AFV2 / Gain, one strip per channel (fader scale, fader,
+/// meter with its own dB scale, ▲▼ gain nudge, mute / long-press solo) and the PGM master.
+/// Gain mode swaps the fader for the channel's input trim (−12…+24 dB).
 struct AudioMixerView: View {
     @ObservedObject var engine: StudioEngine
+    @ObservedObject var library: MediaLibrary
     var compact = false
+    @State private var gainMode = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack(spacing: 8) {
-                let afvAll = !sourceChannels.isEmpty && sourceChannels.allSatisfy(\.followVideo)
-                chip(afvAll ? "AFV: BẬT" : "AFV: TẮT", on: afvAll, color: DS.accent2) { engine.setAFVAll(!afvAll) }
-                Text("Âm thanh theo hình: kênh của nguồn đang lên PGM được mở, các kênh khác tắt").font(.caption2).foregroundStyle(DS.text3)
-                    .lineLimit(2)
-                Spacer()
-                VStack(alignment: .trailing, spacing: 0) {
-                    Text("Trễ Mic/Line \(Int(engine.micDelayMs)) ms").font(.caption2).foregroundStyle(DS.text2)
-                    Slider(value: Binding(get: { engine.micDelayMs }, set: { engine.micDelayMs = $0 }), in: 0...500, step: 10)
-                        .frame(width: compact ? 120 : 200).tint(DS.accent)
-                }
-            }
+        VStack(alignment: .leading, spacing: 8) {
+            header
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(alignment: .top, spacing: compact ? 6 : 10) {
+                HStack(alignment: .top, spacing: compact ? 4 : 8) {
                     ForEach(engine.audioChannels) { c in
-                        ChannelStrip(name: c.name, gain: Double(c.gain), level: c.level, muted: c.muted, solo: c.solo,
-                                     afv: c.followVideo, compact: compact,
-                                     onGain: { var n = c; n.gain = Float($0); engine.updateAudioChannel(n) },
+                        ChannelStrip(name: c.name,
+                                     db: gainMode ? Double(c.trim) : dB(c.gain),
+                                     gainMode: gainMode,
+                                     level: c.level, muted: c.muted, solo: c.solo, afv: c.followVideo, compact: compact,
+                                     delayMs: c.id == AudioCapture.micID ? engine.micDelayMs : nil,
+                                     onDB: { v in
+                                         var n = c
+                                         if gainMode { n.trim = Float(v) } else { n.gain = v <= -59 ? 0 : Float(pow(10, v / 20)) }
+                                         engine.updateAudioChannel(n)
+                                     },
+                                     onNudge: { d in gainMode ? engine.nudgeTrim(c.id, dB: Float(d)) : engine.nudgeGain(c.id, dB: Float(d)) },
                                      onMute: { var n = c; n.muted.toggle(); engine.updateAudioChannel(n) },
                                      onSolo: { var n = c; n.solo.toggle(); engine.updateAudioChannel(n) },
-                                     onAFV: { var n = c; n.followVideo.toggle(); engine.updateAudioChannel(n) })
+                                     onAFV: { var n = c; n.followVideo.toggle(); engine.updateAudioChannel(n) },
+                                     onDelay: { engine.micDelayMs = min(500, max(0, engine.micDelayMs + $0)) })
                     }
-                    Divider().frame(height: compact ? 180 : 260).overlay(DS.stroke)
-                    ChannelStrip(name: "PGM", gain: Double(engine.masterGain), level: engine.audioLevel, muted: false, solo: false,
-                                 afv: false, compact: compact, isMaster: true,
-                                 onGain: { engine.masterGain = Float($0) }, onMute: {}, onSolo: {}, onAFV: {})
+                    ChannelStrip(name: "PGM", db: dB(engine.masterGain), gainMode: false, level: engine.audioLevel,
+                                 muted: false, solo: false, afv: false, compact: compact, isMaster: true,
+                                 onDB: { v in engine.masterGain = v <= -59 ? 0 : Float(pow(10, v / 20)) },
+                                 onNudge: { engine.masterNudge(Float($0)) },
+                                 onMute: {}, onSolo: {}, onAFV: {}, onDelay: { _ in })
                 }
                 .padding(.vertical, 4)
             }
-            Text("Chạm nút tên kênh để tắt/mở tiếng · giữ để SOLO").font(.caption2).foregroundStyle(DS.text3)
+            Text(gainMode ? "Gain: chỉnh độ lợi đầu vào từng nguồn (−12…+24 dB) · ▲▼ = 1 dB"
+                          : "Kéo fader hoặc ▲▼ (1 dB) · chạm đúp fader = 0 dB · chạm tên = tắt tiếng · giữ = SOLO")
+                .font(.caption2).foregroundStyle(DS.text3)
         }
     }
 
-    private var sourceChannels: [AudioChannelState] {
-        engine.audioChannels.filter { $0.id != AudioCapture.micID && $0.id != AudioCapture.musicID }
+    private func dB(_ g: Float) -> Double { 20 * log10(max(Double(g), 0.0001)) }
+
+    private var header: some View {
+        HStack(spacing: 10) {
+            HStack(spacing: 2) {
+                modeKey("AFV1", on: engine.afvMode == .afv1) { engine.setAFVMode(engine.afvMode == .afv1 ? nil : .afv1) }
+                modeKey("AFV2", on: engine.afvMode == .afv2) { engine.setAFVMode(engine.afvMode == .afv2 ? nil : .afv2) }
+                modeKey("Gain", on: gainMode) { gainMode.toggle() }
+            }
+            .padding(3)
+            .background(DS.surface2, in: Capsule())
+            if !compact {
+                Text(engine.afvMode == .afv1 ? "AFV1: chỉ nguồn trên PGM" : engine.afvMode == .afv2 ? "AFV2: mọi nguồn hiện trên PGM (cả PiP)" : "AFV tắt")
+                    .font(.caption2).foregroundStyle(DS.text3).lineLimit(1)
+            }
+            Spacer()
+            // first four sound effects as quick pads
+            HStack(spacing: 4) {
+                ForEach(library.list(.sound).prefix(4), id: \.self) { url in
+                    Button { engine.playEffect(url) } label: {
+                        Image(systemName: "waveform").font(.system(size: 14, weight: .semibold))
+                            .frame(width: compact ? 34 : 42, height: compact ? 28 : 32)
+                            .background(DS.surface2, in: Capsule())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(url.deletingPathExtension().lastPathComponent)
+                }
+            }
+            .foregroundStyle(DS.text2)
+        }
     }
 
-    private func chip(_ t: String, on: Bool, color: Color, action: @escaping () -> Void) -> some View {
+    private func modeKey(_ t: String, on: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Text(t).font(.caption.weight(.heavy)).padding(.horizontal, 10).padding(.vertical, 6)
-                .foregroundStyle(on ? .black : .white).background(on ? color : DS.surface2, in: Capsule())
-        }.buttonStyle(.plain)
+            Text(t).font(.system(size: compact ? 12 : 14, weight: .bold))
+                .padding(.horizontal, compact ? 10 : 14).frame(height: compact ? 28 : 32)
+                .foregroundStyle(on ? .black : .white)
+                .background(on ? Color.white : Color.clear, in: Capsule())
+        }
+        .buttonStyle(.plain)
     }
 }
 
 struct ChannelStrip: View {
     let name: String
-    let gain: Double        // linear 0...2  (0 dB = 1)
-    let level: Float        // dBFS
+    let db: Double            // fader position in dB (or trim in Gain mode)
+    let gainMode: Bool
+    let level: Float          // dBFS
     let muted: Bool
     let solo: Bool
     let afv: Bool
     var compact = false
     var isMaster = false
-    let onGain: (Double) -> Void
+    var delayMs: Double? = nil
+    let onDB: (Double) -> Void
+    let onNudge: (Double) -> Void
     let onMute: () -> Void
     let onSolo: () -> Void
     let onAFV: () -> Void
+    let onDelay: (Double) -> Void
 
-    private var height: CGFloat { compact ? 150 : 220 }
-    private let marks: [Double] = [6, 3, 0, -6, -12, -24, -48]
+    private var height: CGFloat { compact ? 150 : 230 }
+    private var faderMarks: [Double] { gainMode ? [24, 12, 6, 0, -6, -12] : [6, 3, 0, -3, -6, -12, -24, -60] }
+    private let meterMarks: [Double] = [0, -12, -24, -36, -48, -60]
 
     var body: some View {
-        VStack(spacing: 6) {
+        VStack(spacing: 5) {
             HStack(spacing: 4) {
                 if !isMaster {
                     Button(action: onAFV) {
-                        Text("AFV").font(.system(size: 9, weight: .heavy)).padding(.horizontal, 5).padding(.vertical, 2)
-                            .foregroundStyle(afv ? .black : DS.text3).background(afv ? DS.accent2 : DS.surface2, in: Capsule())
-                    }.buttonStyle(.plain)
+                        Image(systemName: afv ? "link.circle.fill" : "link.circle").font(.system(size: 16))
+                            .foregroundStyle(afv ? DS.accent2 : DS.text3)
+                    }.buttonStyle(.plain).accessibilityLabel("AFV")
                 }
-                Text(String(format: "%+.0f", gainDB)).font(.system(size: 10, weight: .semibold, design: .monospaced)).foregroundStyle(DS.text2)
+                Text(db <= -59 && !gainMode ? "−∞" : String(format: "%+.0f", db))
+                    .font(.system(size: 11, weight: .semibold, design: .monospaced)).foregroundStyle(gainMode ? DS.accent : DS.text2)
             }
-            HStack(alignment: .top, spacing: 4) {
-                scale
+            HStack(alignment: .top, spacing: 2) {
+                scale(faderMarks, pos: faderPos)
                 fader
                 meter
+                scale(meterMarks, pos: meterPos)
             }
             .frame(height: height)
+            HStack(spacing: 4) {
+                nudge("chevron.down") { onNudge(-1) }
+                nudge("chevron.up") { onNudge(1) }
+            }
+            if let delayMs {
+                HStack(spacing: 2) {
+                    Text("Delay \(Int(delayMs))ms").font(.system(size: 9)).foregroundStyle(DS.text3).lineLimit(1)
+                    Stepper("", onIncrement: { onDelay(10) }, onDecrement: { onDelay(-10) }).labelsHidden().scaleEffect(0.6).frame(width: 60, height: 20)
+                }
+            }
             Button(action: onMute) {
                 HStack(spacing: 3) {
-                    Image(systemName: muted ? "speaker.slash.fill" : "speaker.wave.2.fill").font(.system(size: 10))
-                    Text(name).font(.system(size: 11, weight: .bold)).lineLimit(1).minimumScaleFactor(0.6)
+                    Image(systemName: muted ? "speaker.slash" : "speaker.wave.1").font(.system(size: 11))
+                    Text(name).font(.system(size: compact ? 11 : 13, weight: .semibold)).lineLimit(1).minimumScaleFactor(0.6)
                 }
-                .frame(width: compact ? 66 : 84, height: 30)
-                .foregroundStyle(muted ? DS.text2 : (solo ? .black : .white))
-                .background(solo ? Color.yellow : (muted ? DS.surface2 : (isMaster ? DS.pgm.opacity(0.6) : DS.surface2.opacity(0.6))),
-                            in: RoundedRectangle(cornerRadius: 6))
-                .overlay(RoundedRectangle(cornerRadius: 6).stroke(muted ? DS.pgm.opacity(0.6) : DS.stroke))
+                .frame(width: compact ? 66 : 86, height: compact ? 28 : 34)
+                .foregroundStyle(solo ? .black : (muted ? DS.pgm : .white))
+                .background(solo ? Color.yellow : DS.surface2, in: RoundedRectangle(cornerRadius: 6))
+                .overlay(RoundedRectangle(cornerRadius: 6).stroke(muted ? DS.pgm.opacity(0.7) : DS.stroke))
             }
             .buttonStyle(.plain)
             .simultaneousGesture(LongPressGesture(minimumDuration: 0.5).onEnded { _ in if !isMaster { onSolo() } })
         }
-        .padding(6)
-        .background(DS.surface, in: RoundedRectangle(cornerRadius: 8))
+        .padding(.horizontal, 4).padding(.vertical, 6)
     }
 
-    private var gainDB: Double { 20 * log10(max(gain, 0.0001)) }
+    private func nudge(_ icon: String, _ act: @escaping () -> Void) -> some View {
+        Button(action: act) {
+            Image(systemName: icon).font(.system(size: 11, weight: .bold))
+                .frame(width: compact ? 28 : 36, height: compact ? 22 : 26)
+                .background(DS.surface2, in: RoundedRectangle(cornerRadius: 5))
+        }
+        .buttonStyle(.plain).foregroundStyle(DS.text2)
+    }
 
-    /// dB → 0...1 position (−60 dB bottom, +6 dB top, roughly linear in dB).
-    private func pos(_ db: Double) -> CGFloat { CGFloat((max(-60, min(6, db)) + 60) / 66) }
+    /// Fader: −60…+6 dB (Gain mode: −12…+24 dB), roughly linear in dB.
+    private func faderPos(_ v: Double) -> CGFloat {
+        gainMode ? CGFloat((max(-12, min(24, v)) + 12) / 36) : CGFloat((max(-60, min(6, v)) + 60) / 66)
+    }
+    private func faderValue(_ p: CGFloat) -> Double { gainMode ? Double(p) * 36 - 12 : Double(p) * 66 - 60 }
+    private func meterPos(_ v: Double) -> CGFloat { CGFloat((max(-60, min(0, v)) + 60) / 60) }
 
-    private var scale: some View {
+    private func scale(_ marks: [Double], pos: @escaping (Double) -> CGFloat) -> some View {
         GeometryReader { g in
             ForEach(marks, id: \.self) { m in
-                Text(m > 0 ? "+\(Int(m))" : "\(Int(m))").font(.system(size: 8, design: .monospaced)).foregroundStyle(DS.text3)
-                    .position(x: 10, y: g.size.height * (1 - pos(m)))
+                Text(m <= -60 ? "-∞" : m > 0 ? "\(Int(m))" : "\(Int(m))")
+                    .font(.system(size: compact ? 8 : 10, design: .monospaced)).foregroundStyle(DS.text3)
+                    .position(x: g.size.width / 2, y: 6 + (g.size.height - 12) * (1 - pos(m)))
             }
         }
-        .frame(width: 20)
+        .frame(width: compact ? 18 : 24)
     }
 
     private var fader: some View {
         GeometryReader { g in
-            let h = g.size.height
+            let h = g.size.height, cap: CGFloat = compact ? 22 : 28
             ZStack(alignment: .top) {
-                Capsule().fill(Color.black).frame(width: 4)
-                RoundedRectangle(cornerRadius: 3).fill(LinearGradient(colors: [Color(white: 0.85), Color(white: 0.55)], startPoint: .top, endPoint: .bottom))
-                    .frame(width: 26, height: 14)
-                    .overlay(Rectangle().fill(Color.black.opacity(0.6)).frame(height: 1.5))
-                    .offset(y: (1 - pos(gainDB)) * (h - 14))
+                Capsule().fill(Color.black).frame(width: 5).padding(.vertical, cap / 2)
+                RoundedRectangle(cornerRadius: 3)
+                    .fill(LinearGradient(colors: [Color(white: 0.75), Color(white: 0.45), Color(white: 0.7)], startPoint: .top, endPoint: .bottom))
+                    .frame(width: compact ? 22 : 26, height: cap)
+                    .overlay(Rectangle().fill(isMaster ? DS.pgm : (gainMode ? DS.accent : Color.green)).frame(height: 2))
+                    .offset(y: (1 - faderPos(db)) * (h - cap))
             }
             .frame(maxWidth: .infinity)
             .contentShape(Rectangle())
             .gesture(DragGesture(minimumDistance: 0).onChanged { v in
-                let p = 1 - max(0, min(1, v.location.y / h))
-                let db = Double(p) * 66 - 60
-                onGain(db <= -59 ? 0 : pow(10, db / 20))
+                onDB(faderValue(1 - max(0, min(1, (v.location.y - cap / 2) / (h - cap)))))
             })
-            .onTapGesture(count: 2) { onGain(1) } // double tap = 0 dB
+            .onTapGesture(count: 2) { onDB(0) }
         }
-        .frame(width: 30)
+        .frame(width: compact ? 26 : 32)
     }
 
     private var meter: some View {
         GeometryReader { g in
-            let p = pos(Double(level))
             ZStack(alignment: .bottom) {
                 RoundedRectangle(cornerRadius: 2).fill(Color.black)
                 RoundedRectangle(cornerRadius: 2)
                     .fill(LinearGradient(stops: [.init(color: .green, location: 0), .init(color: .green, location: 0.7),
                                                  .init(color: .yellow, location: 0.85), .init(color: .red, location: 1)],
                                          startPoint: .bottom, endPoint: .top))
-                    .mask(alignment: .bottom) { Rectangle().frame(height: g.size.height * p) }
+                    .mask(alignment: .bottom) { Rectangle().frame(height: g.size.height * meterPos(Double(level))) }
             }
         }
-        .frame(width: 8)
+        .frame(width: compact ? 5 : 7)
+        .padding(.vertical, 6)
     }
 }

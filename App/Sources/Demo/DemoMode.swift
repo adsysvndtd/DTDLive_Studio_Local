@@ -38,6 +38,7 @@ enum DemoMode {
             engine.take(engine.sources[0].id)
             engine.select(engine.sources[1].id)
             engine.setPiP(engine.sources[2].id)
+            engine.pipOn = true
         }
         engine.titles = [
             TitleItem(style: .lowerThird, line1: "Nguyễn Văn A", line2: "Giám đốc Trung tâm Truyền hình", visible: true),

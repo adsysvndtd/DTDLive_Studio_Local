@@ -80,7 +80,7 @@ struct TitlesPanel: View {
     var body: some View {
         VStack(alignment: .leading, spacing: DS.gap) {
             HStack {
-                Text("🔑 = title gán vào phím TITLE ở cột bên phải").font(.caption).foregroundStyle(DS.text3)
+                Text("Gán title vào phím Title / Title 2, rồi bấm “Title On” ở cột phải để lên sóng").font(.caption).foregroundStyle(DS.text3)
                 Spacer()
                 Button("Ẩn tất cả") { engine.setTitleVisible(nil, false) }.buttonStyle(.bordered)
             }
@@ -107,19 +107,11 @@ struct TitlesPanel: View {
                     .foregroundStyle(.white)
                 }
                 Spacer()
-                Button { engine.armedTitleID = item.id } label: {
-                    Image(systemName: (engine.armedTitleID ?? engine.titles.first?.id) == item.id ? "key.fill" : "key")
-                        .foregroundStyle((engine.armedTitleID ?? engine.titles.first?.id) == item.id ? DS.accent : DS.text3)
+                if item.visible {
+                    Text("TRÊN SÓNG").font(.caption2.weight(.heavy)).foregroundStyle(DS.pgm)
                 }
-                .buttonStyle(.plain)
-                .help("Gán vào phím TITLE")
-                Button { engine.setTitleVisible(item.id, !item.visible) } label: {
-                    Text(item.visible ? "TRÊN SÓNG" : "LÊN SÓNG").font(.caption.weight(.heavy))
-                        .padding(.horizontal, 10).padding(.vertical, 6)
-                        .foregroundStyle(item.visible ? .white : DS.text2)
-                        .background(item.visible ? DS.pgm : DS.surface2, in: Capsule())
-                }
-                .buttonStyle(.plain)
+                assignChip("Title", on: (engine.armedTitleID ?? engine.titles.first?.id) == item.id) { engine.armedTitleID = item.id }
+                assignChip("Title 2", on: engine.secondTitle?.id == item.id) { engine.armedTitle2ID = item.id }
                 Menu {
                     Button(expanded.contains(item.id) ? "Ẩn tuỳ chỉnh" : "Vị trí, cỡ, màu…") { toggle(item.id) }
                     Button("Xoá", role: .destructive) { engine.removeTitle(item.id) }
@@ -160,6 +152,15 @@ struct TitlesPanel: View {
     }
 
     private func toggle(_ id: UUID) { if expanded.contains(id) { expanded.remove(id) } else { expanded.insert(id) } }
+
+    private func assignChip(_ t: String, on: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(t).font(.caption.weight(.bold)).padding(.horizontal, 9).padding(.vertical, 5)
+                .foregroundStyle(on ? .black : DS.text2)
+                .background(on ? Color.white : DS.surface2, in: Capsule())
+        }
+        .buttonStyle(.plain)
+    }
 }
 
 extension UIColor {
