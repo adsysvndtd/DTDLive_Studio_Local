@@ -208,9 +208,6 @@ struct StudioView: View {
     private func monitorPane(title: String, color: Color, store: FrameStore, isProgram: Bool) -> some View {
         VStack(spacing: 4) {
             HStack(spacing: 6) {
-                Text(title).font(.system(size: compact ? 10 : 12, weight: .heavy))
-                    .padding(.horizontal, 6).padding(.vertical, 2)
-                    .background(color, in: RoundedRectangle(cornerRadius: 3))
                 Spacer(minLength: 4)
                 // chips scroll sideways only when the monitor is too narrow (iPhone landscape)
                 ViewThatFits(in: .horizontal) {
@@ -249,6 +246,13 @@ struct StudioView: View {
                 }
             }
             .aspectRatio(CGFloat(engine.format.width) / CGFloat(engine.format.height), contentMode: .fit)
+            .overlay(alignment: .topTrailing) {
+                // PVW / PGM tag flush in the top-right corner of the card
+                Text(title).font(.system(size: compact ? 10 : 12, weight: .heavy)).foregroundStyle(.white)
+                    .padding(.horizontal, compact ? 6 : 8).padding(.vertical, compact ? 2 : 3)
+                    .background(color, in: UnevenRoundedRectangle(bottomLeadingRadius: 4, topTrailingRadius: 4))
+                    .allowsHitTesting(false)
+            }
             .clipShape(RoundedRectangle(cornerRadius: 4))
             .overlay(RoundedRectangle(cornerRadius: 4).stroke(color, lineWidth: 2))
             .frame(maxWidth: .infinity, maxHeight: .infinity)
