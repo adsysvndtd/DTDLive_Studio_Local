@@ -111,6 +111,28 @@ jobs:
             -destination "id=${{ steps.sim.outputs.udid }}" -derivedDataPath build-sim \
             -only-testing:DTDStudioUITests/ScreenshotTests -resultBundlePath screenshots.xcresult \
             2>&1 | tee screenshots.log
+      - name: Diagnose (simctl launch, screenshot, main-thread sample)
+        if: always()
+        run: |
+          UDID=${{ steps.sim.outputs.udid }}
+          APP=$(find build-sim/Build/Products -maxdepth 2 -name "DTDStudio.app" | head -1)
+          [ -n "$APP" ] || exit 0
+          xcrun simctl terminate "$UDID" vn.com.dtdsolution.DTDStudio || true
+          xcrun simctl install "$UDID" "$APP"
+          xcrun simctl launch "$UDID" vn.com.dtdsolution.DTDStudio -demo -uitest -panel titles
+          sleep 25
+          mkdir -p diag
+          xcrun simctl io "$UDID" screenshot diag/simctl-launch.png || true
+          PID=$(pgrep -f 'DTDStudio.app/DTDStudio' | head -1)
+          echo "pid=$PID"
+          [ -n "$PID" ] && sample "$PID" 5 -file diag/main-thread-sample.txt || true
+          xcrun simctl spawn "$UDID" log show --last 2m --predicate 'process == "DTDStudio"' --style compact > diag/app-log.txt 2>&1 || true
+          ls -la diag
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: diagnostics
+          path: diag/
       - name: Screenshot summary
         if: always()
         run: |

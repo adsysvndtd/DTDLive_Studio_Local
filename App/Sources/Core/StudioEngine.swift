@@ -113,8 +113,11 @@ final class StudioEngine: ObservableObject {
         timers.append(Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
             Task { @MainActor in
                 guard let self else { return }
-                self.audioLevel = self.audio.peakDB
-                self.audioChannels = self.audio.channels
+                // Assign only on change: every @Published write re-renders the whole studio view.
+                let level = (self.audio.peakDB * 2).rounded() / 2
+                if level != self.audioLevel { self.audioLevel = level }
+                let ch = self.audio.channels.map { c -> AudioChannelState in var c = c; c.level = (c.level * 2).rounded() / 2; return c }
+                if ch != self.audioChannels { self.audioChannels = ch }
             }
         })
         timers.append(Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { [weak self] _ in
