@@ -16,6 +16,8 @@ Review thủ công toàn bộ mã nguồn trước lần build đầu. Dưới �
 | 8 | `Switcher.auto` | AUTO khi preview trống hoặc trùng program thì program thành màn trống | Bỏ qua (không làm gì) |
 | 9 | Cổng mạng | OSC dùng UDP 9000, trùng ví dụ SRT listener | OSC chuyển sang UDP 8000, SRT mặc định 9001 |
 | 10 | `AppDelegate` | Trả về cấu hình scene tự đặt tên cho scene chính, có thể phá WindowGroup của SwiftUI | Chỉ xử lý màn hình ngoài; scene chính trả `session.configuration` |
+| 12 | `AppDelegate` | Trả `session.configuration` cho scene chính → SwiftUI AppSceneDelegate tự gọi lại chính nó vô hạn, app treo ngay khi mở (phát hiện nhờ sample luồng chính trên CI) | Trả `UISceneConfiguration(name: nil, sessionRole:)` không có delegateClass |
+| 13 | `StudioEngine` | Ghi `@Published` mức âm thanh 10 lần/giây kể cả khi không đổi → vẽ lại toàn bộ UI liên tục | Chỉ gán khi thay đổi |
 | 11 | `AudioEncoder` | Đọc magic cookie qua KVC (không có API đó) | Bỏ; dùng ASC tự tính |
 
 ## Rủi ro còn lại (cần kiểm tra trên máy thật)

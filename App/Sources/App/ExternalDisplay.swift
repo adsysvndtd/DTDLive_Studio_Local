@@ -29,7 +29,11 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
             c.delegateClass = ExternalDisplaySceneDelegate.self
             return c
         }
-        return session.configuration // let SwiftUI configure its WindowGroup scene
+        // Main scene: a fresh configuration WITHOUT delegateClass. SwiftUI installs its own scene
+        // delegate and forwards to `delegateClass` when one is set; returning `session.configuration`
+        // (whose delegateClass is SwiftUI's own AppSceneDelegate) made it forward to itself forever
+        // → infinite recursion in scene(_:willConnectTo:) and a frozen app at launch.
+        return UISceneConfiguration(name: nil, sessionRole: session.role)
     }
 }
 
