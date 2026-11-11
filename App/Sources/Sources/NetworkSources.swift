@@ -216,4 +216,3 @@ final class FileSource: VideoSource {
         status = .idle
     }
 }
-}

@@ -29,9 +29,9 @@ struct SuperFGTemplate: Identifiable {
             let band = CGRect(x: 0, y: s.height - 190 * k, width: s.width, height: 130 * k)
             UIColor(white: 0.06, alpha: 0.88).setFill(); g.fill(band)
             accent.setFill(); g.fill(CGRect(x: 0, y: band.minY, width: 300 * k, height: band.height))
-            text("TIN TỨC", in: CGRect(x: 0, y: band.minY, width: 300 * k, height: band.height), size: 46 * k, weight: .black, align: .center)
-            text(c.line1, in: CGRect(x: 340 * k, y: band.minY + 14 * k, width: s.width - 380 * k, height: 62 * k), size: 50 * k, weight: .heavy)
-            text(c.line2, in: CGRect(x: 340 * k, y: band.minY + 74 * k, width: s.width - 380 * k, height: 44 * k), size: 32 * k, weight: .medium,
+            SuperFGTemplate.text("TIN TỨC", in: CGRect(x: 0, y: band.minY, width: 300 * k, height: band.height), size: 46 * k, weight: .black, align: .center)
+            SuperFGTemplate.text(c.line1, in: CGRect(x: 340 * k, y: band.minY + 14 * k, width: s.width - 380 * k, height: 62 * k), size: 50 * k, weight: .heavy)
+            SuperFGTemplate.text(c.line2, in: CGRect(x: 340 * k, y: band.minY + 74 * k, width: s.width - 380 * k, height: 44 * k), size: 32 * k, weight: .medium,
                  color: UIColor(white: 0.85, alpha: 1))
             accent.setFill(); g.fill(CGRect(x: 0, y: band.maxY, width: s.width, height: 8 * k))
         },
@@ -42,10 +42,10 @@ struct SuperFGTemplate: Identifiable {
             let badge = CGRect(x: 60 * k, y: 50 * k, width: 190 * k, height: 70 * k)
             accent.setFill(); UIBezierPath(roundedRect: badge, cornerRadius: 10 * k).fill()
             UIColor.white.setFill(); g.fillEllipse(in: CGRect(x: badge.minX + 22 * k, y: badge.midY - 11 * k, width: 22 * k, height: 22 * k))
-            text("LIVE", in: badge.offsetBy(dx: 26 * k, dy: 0), size: 44 * k, weight: .black, align: .center)
+            SuperFGTemplate.text("LIVE", in: badge.offsetBy(dx: 26 * k, dy: 0), size: 44 * k, weight: .black, align: .center)
             let tag = CGRect(x: s.width - 760 * k, y: 50 * k, width: 700 * k, height: 70 * k)
             UIColor(white: 0, alpha: 0.6).setFill(); UIBezierPath(roundedRect: tag, cornerRadius: 10 * k).fill()
-            text(c.line1, in: tag.insetBy(dx: 24 * k, dy: 0), size: 36 * k, weight: .bold, align: .right)
+            SuperFGTemplate.text(c.line1, in: tag.insetBy(dx: 24 * k, dy: 0), size: 36 * k, weight: .bold, align: .right)
         },
         SuperFGTemplate(id: "breaking", name: "Tin nóng") { g, s, c in
             let k = s.height / 1080, accent = UIColor(hex: c.accentHex)
@@ -54,33 +54,34 @@ struct SuperFGTemplate: Identifiable {
             tag.move(to: CGPoint(x: 0, y: y)); tag.addLine(to: CGPoint(x: 470 * k, y: y))
             tag.addLine(to: CGPoint(x: 420 * k, y: y + 90 * k)); tag.addLine(to: CGPoint(x: 0, y: y + 90 * k)); tag.close()
             accent.setFill(); tag.fill()
-            text("TIN NÓNG", in: CGRect(x: 40 * k, y: y, width: 380 * k, height: 90 * k), size: 56 * k, weight: .black)
+            SuperFGTemplate.text("TIN NÓNG", in: CGRect(x: 40 * k, y: y, width: 380 * k, height: 90 * k), size: 56 * k, weight: .black)
             let bar = CGRect(x: 0, y: y + 90 * k, width: s.width, height: 110 * k)
             UIColor.white.withAlphaComponent(0.95).setFill(); g.fill(bar)
-            text(c.line1, in: bar.insetBy(dx: 40 * k, dy: 0), size: 54 * k, weight: .heavy, color: UIColor(white: 0.08, alpha: 1))
+            SuperFGTemplate.text(c.line1, in: bar.insetBy(dx: 40 * k, dy: 0), size: 54 * k, weight: .heavy, color: UIColor(white: 0.08, alpha: 1))
             UIColor(white: 0.08, alpha: 0.9).setFill(); g.fill(CGRect(x: 0, y: bar.maxY, width: s.width, height: 50 * k))
-            text(c.line2, in: CGRect(x: 40 * k, y: bar.maxY, width: s.width - 80 * k, height: 50 * k), size: 28 * k, weight: .semibold)
+            SuperFGTemplate.text(c.line2, in: CGRect(x: 40 * k, y: bar.maxY, width: s.width - 80 * k, height: 50 * k), size: 28 * k, weight: .semibold)
         },
         SuperFGTemplate(id: "corners", name: "Góc ngắm") { g, s, c in
             let k = s.height / 1080, accent = UIColor(hex: c.accentHex)
             let m = 70 * k, l = 120 * k
             g.setStrokeColor(UIColor.white.withAlphaComponent(0.9).cgColor); g.setLineWidth(8 * k); g.setLineCap(.square)
-            for (x, y, dx, dy) in [(m, m, 1.0, 1.0), (s.width - m, m, -1.0, 1.0), (m, s.height - m, 1.0, -1.0), (s.width - m, s.height - m, -1.0, -1.0)] {
+            let corners: [(CGFloat, CGFloat, CGFloat, CGFloat)] = [(m, m, 1, 1), (s.width - m, m, -1, 1), (m, s.height - m, 1, -1), (s.width - m, s.height - m, -1, -1)]
+            for (x, y, dx, dy) in corners {
                 g.move(to: CGPoint(x: x, y: y + l * dy)); g.addLine(to: CGPoint(x: x, y: y)); g.addLine(to: CGPoint(x: x + l * dx, y: y))
             }
             g.strokePath()
             accent.setFill(); g.fillEllipse(in: CGRect(x: m + 30 * k, y: m + 30 * k, width: 26 * k, height: 26 * k))
-            text("REC", in: CGRect(x: m + 66 * k, y: m + 20 * k, width: 200 * k, height: 46 * k), size: 36 * k, weight: .bold)
-            text(c.line1, in: CGRect(x: 0, y: s.height - m - 90 * k, width: s.width, height: 60 * k), size: 44 * k, weight: .bold, align: .center)
+            SuperFGTemplate.text("REC", in: CGRect(x: m + 66 * k, y: m + 20 * k, width: 200 * k, height: 46 * k), size: 36 * k, weight: .bold)
+            SuperFGTemplate.text(c.line1, in: CGRect(x: 0, y: s.height - m - 90 * k, width: s.width, height: 60 * k), size: 44 * k, weight: .bold, align: .center)
         },
         SuperFGTemplate(id: "event", name: "Sự kiện") { g, s, c in
             let k = s.height / 1080, accent = UIColor(hex: c.accentHex)
             let pill = CGRect(x: 60 * k, y: 50 * k, width: 820 * k, height: 96 * k)
             UIColor(white: 0.05, alpha: 0.75).setFill(); UIBezierPath(roundedRect: pill, cornerRadius: 48 * k).fill()
             accent.setFill(); UIBezierPath(roundedRect: CGRect(x: pill.minX, y: pill.minY, width: 96 * k, height: 96 * k), cornerRadius: 48 * k).fill()
-            text("★", in: CGRect(x: pill.minX, y: pill.minY, width: 96 * k, height: 96 * k), size: 48 * k, weight: .bold, align: .center)
-            text(c.line1, in: CGRect(x: pill.minX + 120 * k, y: pill.minY + 8 * k, width: pill.width - 150 * k, height: 50 * k), size: 38 * k, weight: .heavy)
-            text(c.line2, in: CGRect(x: pill.minX + 120 * k, y: pill.minY + 52 * k, width: pill.width - 150 * k, height: 36 * k), size: 26 * k, weight: .medium,
+            SuperFGTemplate.text("★", in: CGRect(x: pill.minX, y: pill.minY, width: 96 * k, height: 96 * k), size: 48 * k, weight: .bold, align: .center)
+            SuperFGTemplate.text(c.line1, in: CGRect(x: pill.minX + 120 * k, y: pill.minY + 8 * k, width: pill.width - 150 * k, height: 50 * k), size: 38 * k, weight: .heavy)
+            SuperFGTemplate.text(c.line2, in: CGRect(x: pill.minX + 120 * k, y: pill.minY + 52 * k, width: pill.width - 150 * k, height: 36 * k), size: 26 * k, weight: .medium,
                  color: UIColor(white: 0.85, alpha: 1))
             accent.setFill(); g.fill(CGRect(x: 0, y: s.height - 12 * k, width: s.width, height: 12 * k))
         },
@@ -90,17 +91,17 @@ struct SuperFGTemplate: Identifiable {
             UIColor.white.withAlphaComponent(0.94).setFill(); UIBezierPath(roundedRect: box, cornerRadius: 16 * k).fill()
             accent.setFill(); UIBezierPath(roundedRect: CGRect(x: box.minX, y: box.minY, width: box.width, height: 46 * k),
                                            byRoundingCorners: [.topLeft, .topRight], cornerRadii: CGSize(width: 16 * k, height: 16 * k)).fill()
-            text("ĐỒNG HÀNH CÙNG CHƯƠNG TRÌNH", in: CGRect(x: box.minX, y: box.minY, width: box.width, height: 46 * k), size: 22 * k, weight: .bold, align: .center)
-            text(c.line1, in: CGRect(x: box.minX + 20 * k, y: box.minY + 56 * k, width: box.width - 40 * k, height: 60 * k), size: 46 * k, weight: .black,
+            SuperFGTemplate.text("ĐỒNG HÀNH CÙNG CHƯƠNG TRÌNH", in: CGRect(x: box.minX, y: box.minY, width: box.width, height: 46 * k), size: 22 * k, weight: .bold, align: .center)
+            SuperFGTemplate.text(c.line1, in: CGRect(x: box.minX + 20 * k, y: box.minY + 56 * k, width: box.width - 40 * k, height: 60 * k), size: 46 * k, weight: .black,
                  color: UIColor(white: 0.08, alpha: 1), align: .center)
-            text(c.line2, in: CGRect(x: box.minX + 20 * k, y: box.minY + 116 * k, width: box.width - 40 * k, height: 40 * k), size: 26 * k, weight: .medium,
+            SuperFGTemplate.text(c.line2, in: CGRect(x: box.minX + 20 * k, y: box.minY + 116 * k, width: box.width - 40 * k, height: 40 * k), size: 26 * k, weight: .medium,
                  color: UIColor(white: 0.3, alpha: 1), align: .center)
         },
         SuperFGTemplate(id: "letterbox", name: "Điện ảnh") { g, s, c in
             let k = s.height / 1080, h = 130 * k
             UIColor.black.setFill(); g.fill(CGRect(x: 0, y: 0, width: s.width, height: h)); g.fill(CGRect(x: 0, y: s.height - h, width: s.width, height: h))
-            text(c.line1, in: CGRect(x: 80 * k, y: s.height - h, width: s.width - 160 * k, height: h * 0.6), size: 40 * k, weight: .semibold)
-            text(c.line2, in: CGRect(x: 80 * k, y: s.height - h * 0.45, width: s.width - 160 * k, height: h * 0.4), size: 26 * k, weight: .regular,
+            SuperFGTemplate.text(c.line1, in: CGRect(x: 80 * k, y: s.height - h, width: s.width - 160 * k, height: h * 0.6), size: 40 * k, weight: .semibold)
+            SuperFGTemplate.text(c.line2, in: CGRect(x: 80 * k, y: s.height - h * 0.45, width: s.width - 160 * k, height: h * 0.4), size: 26 * k, weight: .regular,
                  color: UIColor(white: 0.75, alpha: 1))
         },
         SuperFGTemplate(id: "split", name: "Khung đôi") { g, s, c in
@@ -111,7 +112,7 @@ struct SuperFGTemplate: Identifiable {
                 let r = CGRect(x: (i == 0 ? 60 : s.width / k / 2 + 60) * k, y: s.height - 130 * k, width: s.width / 2 - 120 * k, height: 70 * k)
                 UIColor(white: 0, alpha: 0.65).setFill(); UIBezierPath(roundedRect: r, cornerRadius: 10 * k).fill()
                 accent.setFill(); g.fill(CGRect(x: r.minX, y: r.minY, width: 10 * k, height: r.height))
-                text(t, in: r.insetBy(dx: 30 * k, dy: 0), size: 36 * k, weight: .bold)
+                SuperFGTemplate.text(t, in: r.insetBy(dx: 30 * k, dy: 0), size: 36 * k, weight: .bold)
             }
         }
     ]
