@@ -43,8 +43,8 @@ struct SuperFGPanel: View {
                             Text(t.name).font(.caption.weight(.semibold)).lineLimit(1)
                                 .frame(maxWidth: .infinity, minHeight: 24).background(DS.surface)
                         }
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(active ? (engine.foregroundOn ? DS.pgm : DS.pvw) : DS.stroke, lineWidth: active ? 3 : 1))
+                        .clipShape(Rectangle())
+                        .overlay(Rectangle().stroke(active ? (engine.foregroundOn ? DS.pgm : DS.pvw) : DS.stroke, lineWidth: active ? 3 : 1))
                     }
                     .buttonStyle(.plain)
                 }
@@ -58,7 +58,7 @@ struct SuperFGPanel: View {
         TextField(title, text: text)
             .font(.system(size: 14, weight: .semibold))
             .padding(.horizontal, 8).frame(height: 34)
-            .background(DS.surface2, in: RoundedRectangle(cornerRadius: 6))
+            .background(DS.surface2, in: Rectangle())
     }
 }
 

@@ -173,6 +173,8 @@ final class StudioEngine: ObservableObject {
         ve.onEncoded = { sb in om.video(sb); rb.append(sb) }
         audio.onBuffer = { pcm, when in ae.append(pcm, when: when) }
         ae.onEncoded = { buf, when in om.audio(buf, when: when) }
+        let ac = audio
+        om.hasAudio = { ac.isRunning }
         om.onStatus = { [weak self] id, st in Task { @MainActor in self?.outputStatus[id] = st } }
         switcher.graphicsProvider = { [weak self] size, now in
             let items = MainActorBox.titles(self)

@@ -41,6 +41,8 @@ final class AudioCapture: @unchecked Sendable {
     private let micDelay = AVAudioUnitDelay()
 
     /// Mic/line delay in milliseconds (0–500) to match camera/network video latency.
+    var isRunning: Bool { engine.isRunning }
+
     var micDelayMs: Double = 0 {
         didSet {
             micDelay.delayTime = micDelayMs / 1000

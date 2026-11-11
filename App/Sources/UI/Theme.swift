@@ -12,7 +12,7 @@ enum DS {
     static let pvw = Color(red: 0.16, green: 0.78, blue: 0.38)
     static let accent = Color(red: 0.98, green: 0.45, blue: 0.13)   // logo orange
     static let accent2 = Color(red: 0.10, green: 0.80, blue: 0.86)  // logo cyan
-    static let radius: CGFloat = 10
+    static let radius: CGFloat = 0
     static let gap: CGFloat = 10
 }
 
@@ -38,8 +38,8 @@ struct SectionCard<Content: View>: View {
             content
         }
         .padding(12)
-        .background(DS.surface, in: RoundedRectangle(cornerRadius: DS.radius))
-        .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(DS.stroke))
+        .background(DS.surface, in: Rectangle())
+        .overlay(Rectangle().stroke(DS.stroke))
     }
 }
 
@@ -71,7 +71,7 @@ struct CaptionField: View {
             Text(title).font(.caption2).foregroundStyle(DS.text3)
             TextField(title, text: $text)
                 .padding(.horizontal, 10).padding(.vertical, 7)
-                .background(DS.surface2, in: RoundedRectangle(cornerRadius: 7))
+                .background(DS.surface2, in: Rectangle())
         }
     }
 }
@@ -106,7 +106,7 @@ struct ToolButton: View {
             }
             .frame(width: 58, height: 40)
             .foregroundStyle(active ? .black : tint)
-            .background(active ? DS.accent : DS.surface2, in: RoundedRectangle(cornerRadius: 8))
+            .background(active ? DS.accent : DS.surface2, in: Rectangle())
         }
         .buttonStyle(.plain)
     }
@@ -125,8 +125,8 @@ struct KeyButton: View {
             Text(title).font(.system(size: 15, weight: .heavy))
                 .frame(width: width, height: height)
                 .foregroundStyle(textColor)
-                .background(color, in: RoundedRectangle(cornerRadius: 9))
-                .overlay(RoundedRectangle(cornerRadius: 9).stroke(Color.white.opacity(0.10)))
+                .background(color, in: Rectangle())
+                .overlay(Rectangle().stroke(Color.white.opacity(0.10)))
         }
         .buttonStyle(.plain)
     }

@@ -18,6 +18,10 @@ final class CameraSource: NSObject, VideoSource {
     private let output = AVCaptureVideoDataOutput()
     private let queue = DispatchQueue(label: "camera.capture", qos: .userInteractive)
     private lazy var delegate = Delegate(store: frames)
+    /// Keeps the picture upright for any interface orientation (the sensor delivers landscape-right
+    /// buffers, so holding the iPad the other way round gave a 180° rotated image).
+    private var rotation: AVCaptureDevice.RotationCoordinator?
+    private var rotationObservation: NSKeyValueObservation?
 
     init(device: AVCaptureDevice) {
         self.deviceID = device.uniqueID
@@ -43,7 +47,12 @@ final class CameraSource: NSObject, VideoSource {
         output.alwaysDiscardsLateVideoFrames = true
         output.setSampleBufferDelegate(delegate, queue: queue)
         if session.canAddOutput(output) { session.addOutput(output) }
+        if let c = output.connection(with: .video), c.isVideoMirroringSupported {
+            c.automaticallyAdjustsVideoMirroring = false
+            c.isVideoMirrored = device.position == .front
+        }
         session.commitConfiguration()
+        startRotationTracking(device)
         let s = session
         queue.async { s.startRunning() }
         refreshControls()
@@ -130,7 +139,28 @@ final class CameraSource: NSObject, VideoSource {
         controls.stabilization = on
     }
 
+    private func startRotationTracking(_ device: AVCaptureDevice) {
+        let rc = AVCaptureDevice.RotationCoordinator(device: device, previewLayer: nil)
+        rotation = rc
+        apply(angle: rc.videoRotationAngleForHorizonLevelCapture)
+        rotationObservation = rc.observe(\.videoRotationAngleForHorizonLevelCapture, options: [.new]) { [weak self] rc, _ in
+            let a = rc.videoRotationAngleForHorizonLevelCapture
+            DispatchQueue.main.async { self?.apply(angle: a) }
+        }
+    }
+
+    private func apply(angle: CGFloat) {
+        guard let c = output.connection(with: .video), c.isVideoRotationAngleSupported(angle) else { return }
+        let s = session
+        queue.async {
+            s.beginConfiguration()
+            c.videoRotationAngle = angle
+            s.commitConfiguration()
+        }
+    }
+
     func stop() async {
+        rotationObservation?.invalidate(); rotationObservation = nil; rotation = nil
         let s = session
         queue.async { s.stopRunning() }
         frames.clear()

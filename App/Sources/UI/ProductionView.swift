@@ -73,7 +73,7 @@ struct CategoryList: View {
                             }
                         }
                         .foregroundStyle(selection == c ? Color.black : DS.text2)
-                        .background(selection == c ? Color.white : DS.surface2, in: RoundedRectangle(cornerRadius: 8))
+                        .background(selection == c ? Color.white : DS.surface2, in: Rectangle())
                     }
                     .buttonStyle(.plain)
                 }
@@ -310,8 +310,8 @@ struct CategoryContent: View {
                         Text("\(t.id). \(t.name)").font(.caption.weight(.semibold)).lineLimit(1)
                             .frame(maxWidth: .infinity, minHeight: 26).background(DS.surface)
                     }
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(engine.layoutTemplateID == t.id ? DS.accent : DS.stroke,
+                    .clipShape(Rectangle())
+                    .overlay(Rectangle().stroke(engine.layoutTemplateID == t.id ? DS.accent : DS.stroke,
                                                                      lineWidth: engine.layoutTemplateID == t.id ? 3 : 1))
                 }
                 .buttonStyle(.plain)
@@ -340,8 +340,8 @@ struct CategoryContent: View {
                             Text(s.name).font(.caption2.weight(.semibold)).lineLimit(1).padding(4)
                                 .frame(maxWidth: .infinity, alignment: .leading).background(Color.black.opacity(0.55))
                         }
-                        .clipShape(RoundedRectangle(cornerRadius: 6))
-                        .overlay(RoundedRectangle(cornerRadius: 6).stroke(engine.layoutSlots.contains(s.id) ? DS.accent2 : DS.stroke,
+                        .clipShape(Rectangle())
+                        .overlay(Rectangle().stroke(engine.layoutSlots.contains(s.id) ? DS.accent2 : DS.stroke,
                                                                          lineWidth: engine.layoutSlots.contains(s.id) ? 2 : 1))
                     }
                     .buttonStyle(.plain)
@@ -364,8 +364,8 @@ struct CategoryContent: View {
                         Text(s.name).font(.caption2.weight(.semibold)).lineLimit(1).padding(4)
                             .frame(maxWidth: .infinity, alignment: .leading).background(Color.black.opacity(0.55))
                     }
-                    .clipShape(RoundedRectangle(cornerRadius: 6))
-                    .overlay(RoundedRectangle(cornerRadius: 6).stroke(on ? DS.accent2 : DS.stroke, lineWidth: on ? 3 : 1))
+                    .clipShape(Rectangle())
+                    .overlay(Rectangle().stroke(on ? DS.accent2 : DS.stroke, lineWidth: on ? 3 : 1))
                 }
                 .buttonStyle(.plain)
             }
@@ -395,8 +395,8 @@ struct CategoryContent: View {
                             .foregroundStyle(engine.transition == t ? Color.black : .white)
                             .background(engine.transition == t ? DS.accent : DS.surface)
                     }
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(engine.transition == t ? DS.accent : DS.stroke, lineWidth: engine.transition == t ? 3 : 1))
+                    .clipShape(Rectangle())
+                    .overlay(Rectangle().stroke(engine.transition == t ? DS.accent : DS.stroke, lineWidth: engine.transition == t ? 3 : 1))
                 }
                 .buttonStyle(.plain)
             }
@@ -441,7 +441,7 @@ struct CategoryContent: View {
                         }
                         .frame(maxWidth: .infinity, minHeight: compact ? 56 : 70)
                         .foregroundStyle(.white)
-                        .background(DS.surface2, in: RoundedRectangle(cornerRadius: 10))
+                        .background(DS.surface2, in: Rectangle())
                     }
                     .buttonStyle(.plain)
                     .contextMenu { Button("Xoá", role: .destructive) { library.delete(url) } }
@@ -498,7 +498,7 @@ struct SourceCell: View {
             }
             HStack(spacing: 6) {
                 Text("\(index)").font(.caption2.weight(.heavy)).frame(width: 18, height: 18)
-                    .background(pgm ? DS.pgm : pvw ? DS.pvw : DS.surface2, in: RoundedRectangle(cornerRadius: 4))
+                    .background(pgm ? DS.pgm : pvw ? DS.pvw : DS.surface2, in: Rectangle())
                 Text(source.name).font(.caption.weight(.semibold)).lineLimit(1)
                 Spacer(minLength: 2)
                 Button { engine.toggleFavorite(source.id) } label: {
@@ -524,8 +524,8 @@ struct SourceCell: View {
             .padding(.horizontal, 6).frame(height: compact ? 24 : 28)
             .background(DS.surface)
         }
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay(RoundedRectangle(cornerRadius: 8).stroke(pgm ? DS.pgm : pvw ? DS.pvw : DS.stroke, lineWidth: pgm || pvw ? 3 : 1))
+        .clipShape(Rectangle())
+        .overlay(Rectangle().stroke(pgm ? DS.pgm : pvw ? DS.pvw : DS.stroke, lineWidth: pgm || pvw ? 3 : 1))
         .contentShape(Rectangle())
         .onTapGesture { engine.select(source.id) }
     }
@@ -555,8 +555,8 @@ struct LibraryCell: View {
             Text(url.deletingPathExtension().lastPathComponent).font(.caption.weight(.semibold)).lineLimit(1)
                 .padding(.horizontal, 6).frame(maxWidth: .infinity, minHeight: 26).background(DS.surface)
         }
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay(RoundedRectangle(cornerRadius: 8).stroke(selected ? DS.accent : DS.stroke, lineWidth: selected ? 3 : 1))
+        .clipShape(Rectangle())
+        .overlay(Rectangle().stroke(selected ? DS.accent : DS.stroke, lineWidth: selected ? 3 : 1))
         .task(id: url) {
             let u = url, k = kind
             thumb = await Task.detached { MediaLibrary.thumbnail(u, kind: k) }.value
@@ -657,8 +657,8 @@ struct TransitionColumn: View {
             Text(suffix ? "\(t) On" : t).font(.system(size: compact ? 11 : 14, weight: .semibold)).lineLimit(1).minimumScaleFactor(0.7)
                 .frame(maxWidth: .infinity, minHeight: compact ? 32 : 42)
                 .foregroundStyle(on ? .black : DS.text2)
-                .background(on ? Color.white : DS.surface2, in: RoundedRectangle(cornerRadius: 8))
-                .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.white.opacity(on ? 0 : 0.12)))
+                .background(on ? Color.white : DS.surface2, in: RoundedRectangle(cornerRadius: 4))
+                .overlay(RoundedRectangle(cornerRadius: 4).stroke(Color.white.opacity(on ? 0 : 0.12)))
                 .shadow(color: on ? .white.opacity(0.35) : .clear, radius: 6)
         }
         .buttonStyle(.plain)
@@ -670,8 +670,8 @@ struct TransitionColumn: View {
             Text(t).font(.system(size: compact ? 12 : 14, weight: .heavy))
                 .frame(maxWidth: .infinity, minHeight: compact ? 34 : 44)
                 .foregroundStyle(text)
-                .background(color, in: RoundedRectangle(cornerRadius: 8))
-                .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.white.opacity(0.1)))
+                .background(color, in: RoundedRectangle(cornerRadius: 4))
+                .overlay(RoundedRectangle(cornerRadius: 4).stroke(Color.white.opacity(0.1)))
         }
         .buttonStyle(.plain)
         .disabled(!enabled).opacity(enabled ? 1 : 0.4)
@@ -685,8 +685,8 @@ struct TransitionColumn: View {
             }
             .frame(maxWidth: .infinity, minHeight: compact ? 30 : 36)
             .foregroundStyle(on ? .white : DS.text2)
-            .background(on ? onColor.opacity(0.28) : DS.surface2, in: RoundedRectangle(cornerRadius: 8))
-            .overlay(RoundedRectangle(cornerRadius: 8).stroke(on ? onColor : Color.clear))
+            .background(on ? onColor.opacity(0.28) : DS.surface2, in: RoundedRectangle(cornerRadius: 4))
+            .overlay(RoundedRectangle(cornerRadius: 4).stroke(on ? onColor : Color.clear))
         }
         .buttonStyle(.plain)
         .disabled(!enabled).opacity(enabled ? 1 : 0.4)

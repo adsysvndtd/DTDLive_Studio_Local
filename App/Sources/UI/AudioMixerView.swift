@@ -146,8 +146,8 @@ struct ChannelStrip: View {
                 }
                 .frame(width: compact ? 66 : 86, height: compact ? 28 : 34)
                 .foregroundStyle(solo ? .black : (muted ? DS.pgm : .white))
-                .background(solo ? Color.yellow : DS.surface2, in: RoundedRectangle(cornerRadius: 6))
-                .overlay(RoundedRectangle(cornerRadius: 6).stroke(muted ? DS.pgm.opacity(0.7) : DS.stroke))
+                .background(solo ? Color.yellow : DS.surface2, in: Rectangle())
+                .overlay(Rectangle().stroke(muted ? DS.pgm.opacity(0.7) : DS.stroke))
             }
             .buttonStyle(.plain)
             .simultaneousGesture(LongPressGesture(minimumDuration: 0.5).onEnded { _ in if !isMaster { onSolo() } })
@@ -159,7 +159,7 @@ struct ChannelStrip: View {
         Button(action: act) {
             Image(systemName: icon).font(.system(size: 11, weight: .bold))
                 .frame(width: compact ? 28 : 36, height: compact ? 22 : 26)
-                .background(DS.surface2, in: RoundedRectangle(cornerRadius: 5))
+                .background(DS.surface2, in: Rectangle())
         }
         .buttonStyle(.plain).foregroundStyle(DS.text2)
     }
@@ -187,7 +187,7 @@ struct ChannelStrip: View {
             let h = g.size.height, cap: CGFloat = compact ? 22 : 28
             ZStack(alignment: .top) {
                 Capsule().fill(Color.black).frame(width: 5).padding(.vertical, cap / 2)
-                RoundedRectangle(cornerRadius: 3)
+                Rectangle()
                     .fill(LinearGradient(colors: [Color(white: 0.75), Color(white: 0.45), Color(white: 0.7)], startPoint: .top, endPoint: .bottom))
                     .frame(width: compact ? 22 : 26, height: cap)
                     .overlay(Rectangle().fill(isMaster ? DS.pgm : (gainMode ? DS.accent : Color.green)).frame(height: 2))
@@ -206,8 +206,8 @@ struct ChannelStrip: View {
     private var meter: some View {
         GeometryReader { g in
             ZStack(alignment: .bottom) {
-                RoundedRectangle(cornerRadius: 2).fill(Color.black)
-                RoundedRectangle(cornerRadius: 2)
+                Rectangle().fill(Color.black)
+                Rectangle()
                     .fill(LinearGradient(stops: [.init(color: .green, location: 0), .init(color: .green, location: 0.7),
                                                  .init(color: .yellow, location: 0.85), .init(color: .red, location: 1)],
                                          startPoint: .bottom, endPoint: .top))

@@ -131,7 +131,7 @@ struct StudioView: View {
                     .font(.caption.weight(.bold)).lineLimit(1).fixedSize()
                     .padding(.horizontal, 10).frame(height: compact ? 28 : 32)
                     .foregroundStyle(.white)
-                    .background(engine.isAnyLive ? DS.pgm : DS.accent, in: RoundedRectangle(cornerRadius: 7))
+                    .background(engine.isAnyLive ? DS.pgm : DS.accent, in: Rectangle())
             }
             .buttonStyle(.plain)
         }
@@ -150,7 +150,7 @@ struct StudioView: View {
         }
         .foregroundStyle(tint)
         .padding(.horizontal, compact ? 8 : 10).frame(height: compact ? 28 : 32)
-        .background(DS.surface2, in: RoundedRectangle(cornerRadius: 7))
+        .background(DS.surface2, in: Rectangle())
     }
 
     // MARK: Monitors (PVW | info | PGM)
@@ -183,7 +183,7 @@ struct StudioView: View {
             .lineLimit(1)
             .foregroundStyle(.white)
             .padding(.horizontal, compact ? 6 : 9).padding(.vertical, compact ? 2 : 3)
-            .background(Color.black.opacity(0.6), in: RoundedRectangle(cornerRadius: 4))
+            .background(Color.black.opacity(0.6), in: Rectangle())
             .padding(.bottom, compact ? 4 : 6)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
             .allowsHitTesting(false)
@@ -252,11 +252,11 @@ struct StudioView: View {
                 // PVW / PGM tag flush in the top-right corner of the card
                 Text(title).font(.system(size: compact ? 10 : 12, weight: .heavy)).foregroundStyle(.white)
                     .padding(.horizontal, compact ? 6 : 8).padding(.vertical, compact ? 2 : 3)
-                    .background(color, in: UnevenRoundedRectangle(bottomLeadingRadius: 4, topTrailingRadius: 4))
+                    .background(color, in: Rectangle())
                     .allowsHitTesting(false)
             }
-            .clipShape(RoundedRectangle(cornerRadius: 4))
-            .overlay(RoundedRectangle(cornerRadius: 4).strokeBorder(color, lineWidth: 1.5))
+            .clipShape(Rectangle())
+            .overlay(Rectangle().strokeBorder(color, lineWidth: 1.5))
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
@@ -277,7 +277,7 @@ struct StudioView: View {
             Text(String(format: "%.1f Mbps · Âm thanh %.0f dBFS", Double(engine.currentBitrate) / 1e6, engine.audioLevel))
         }
         .font(.system(size: 10, weight: .semibold, design: .monospaced))
-        .padding(5).background(Color.black.opacity(0.55), in: RoundedRectangle(cornerRadius: 4))
+        .padding(5).background(Color.black.opacity(0.55), in: Rectangle())
         .padding(6)
     }
 }
@@ -351,7 +351,7 @@ struct ToolButtonLabel: View {
         }
         .frame(width: 58, height: 40)
         .foregroundStyle(active ? .black : .white)
-        .background(active ? DS.accent : DS.surface2, in: RoundedRectangle(cornerRadius: 8))
+        .background(active ? DS.accent : DS.surface2, in: Rectangle())
     }
 }
 
@@ -364,11 +364,11 @@ struct TBar: View {
         GeometryReader { g in
             let h = g.size.height
             ZStack(alignment: .top) {
-                RoundedRectangle(cornerRadius: 8)
+                Rectangle()
                     .fill(LinearGradient(colors: [Color(white: 0.55), Color(white: 0.85), Color(white: 0.5)], startPoint: .leading, endPoint: .trailing))
                     .frame(width: 22)
                 Capsule().fill(Color.black).frame(width: 4).padding(.vertical, 10)
-                RoundedRectangle(cornerRadius: 5)
+                Rectangle()
                     .fill(LinearGradient(colors: [Color(white: 0.95), Color(white: 0.6), Color(white: 0.85)], startPoint: .top, endPoint: .bottom))
                     .frame(height: 16)
                     .overlay(Rectangle().fill(Color.black.opacity(0.7)).frame(width: 3))
@@ -400,7 +400,7 @@ struct TBarLEDs: View {
             let lit = Int(((1 - value) * Double(count)).rounded())
             VStack(spacing: 3) {
                 ForEach(0..<count, id: \.self) { i in
-                    RoundedRectangle(cornerRadius: 1.5)
+                    Rectangle()
                         .fill(count - 1 - i < lit ? (pip ? Color.orange : Color.green) : Color(white: 0.18))
                         .frame(height: max(3, (g.size.height - CGFloat(count - 1) * 3) / CGFloat(count)))
                 }

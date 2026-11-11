@@ -55,6 +55,8 @@ struct StreamDescription: Sendable {
     var isHEVC: Bool
     var videoFormat: CMFormatDescription
     var audioFormat: AVAudioFormat
+    /// False when the audio engine is not running (no mic permission): muxers must not wait for audio.
+    var hasAudio = true
 }
 
 /// A push destination. Receives already-encoded media (encode once, fan out).
@@ -117,7 +119,7 @@ final class SRTOutput: OutputTarget, @unchecked Sendable {
         let c = SRTConnection()
         let s = SRTStream(connection: c)
         connection = c; stream = s
-        await s.setExpectedMedias([.video, .audio])
+        await s.setExpectedMedias(desc.hasAudio ? [.video, .audio] : [.video])
         try await c.connect(url)
         await s.publish()
     }

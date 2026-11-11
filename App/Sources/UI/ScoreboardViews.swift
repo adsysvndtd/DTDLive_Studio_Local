@@ -28,8 +28,8 @@ struct ScoreboardControl: View {
                 if showLayout { layoutPanel(t) }
             }
             .padding(12)
-            .background(DS.surface, in: RoundedRectangle(cornerRadius: DS.radius))
-            .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(t.visible ? DS.pgm : DS.stroke, lineWidth: t.visible ? 1.5 : 1))
+            .background(DS.surface, in: Rectangle())
+            .overlay(Rectangle().stroke(t.visible ? DS.pgm : DS.stroke, lineWidth: t.visible ? 1.5 : 1))
             .sheet(isPresented: $editing) {
                 NavigationStack {
                     ScrollView {
@@ -155,14 +155,14 @@ struct ScoreboardControl: View {
             }
         }
         .padding(8)
-        .background(DS.surface2.opacity(0.5), in: RoundedRectangle(cornerRadius: 10))
+        .background(DS.surface2.opacity(0.5), in: Rectangle())
     }
 
     private func pos(_ icon: String, _ act: @escaping () -> Void) -> some View {
         Button(action: act) {
             Image(systemName: icon).font(.system(size: 13, weight: .semibold))
                 .frame(width: compact ? 40 : 52, height: 28)
-                .background(DS.surface2, in: RoundedRectangle(cornerRadius: 6))
+                .background(DS.surface2, in: Rectangle())
         }
         .buttonStyle(.plain)
     }
@@ -201,7 +201,7 @@ struct ScoreboardEditor: View {
             HStack(spacing: 8) {
                 TextField("Hiệp (vd H1, Q2)", text: $item.period).font(.system(size: 14))
                     .padding(.horizontal, 8).frame(height: 34)
-                    .background(DS.surface2, in: RoundedRectangle(cornerRadius: 6))
+                    .background(DS.surface2, in: Rectangle())
                 Toggle("Đồng hồ", isOn: board.showClock).toggleStyle(.button).controlSize(.small)
                 Toggle("Đếm ngược", isOn: board.countDown).toggleStyle(.button).controlSize(.small)
             }
@@ -226,7 +226,7 @@ struct ScoreboardEditor: View {
                 .resizable().scaledToFit()
                 .frame(maxWidth: .infinity, maxHeight: 110)
                 .padding(8)
-                .background(CheckerBackground().opacity(0.5).clipShape(RoundedRectangle(cornerRadius: 8)))
+                .background(CheckerBackground().opacity(0.5).clipShape(Rectangle()))
         }
     }
 
@@ -237,7 +237,7 @@ struct ScoreboardEditor: View {
             HStack(spacing: 8) {
                 PhotosPicker(selection: pick, matching: .images) {
                     ZStack {
-                        RoundedRectangle(cornerRadius: 6).fill(DS.surface2)
+                        Rectangle().fill(DS.surface2)
                         if let ui = ScoreboardLogos.image(logo) {
                             Image(uiImage: ui).resizable().scaledToFit().padding(3)
                         } else {
@@ -249,18 +249,18 @@ struct ScoreboardEditor: View {
                 .contextMenu { if logo != nil { Button("Bỏ logo", role: .destructive, action: clearLogo) } }
                 TextField("Tên đội", text: name).font(.system(size: 14, weight: .semibold))
                     .padding(.horizontal, 8).frame(height: 34)
-                    .background(DS.surface2, in: RoundedRectangle(cornerRadius: 6))
+                    .background(DS.surface2, in: Rectangle())
                 Stepper("\(score.wrappedValue)", value: score, in: 0...999).font(.system(size: 14, weight: .bold)).fixedSize()
             }
             HStack(spacing: 8) {
                 TextField("Dòng phụ (tuỳ chọn)", text: sub).font(.system(size: 13))
                     .padding(.horizontal, 8).frame(height: 30)
-                    .background(DS.surface2, in: RoundedRectangle(cornerRadius: 6))
+                    .background(DS.surface2, in: Rectangle())
                 colorPick("Màu dải", color)
             }
         }
         .padding(8)
-        .background(DS.surface, in: RoundedRectangle(cornerRadius: 8))
+        .background(DS.surface, in: Rectangle())
     }
 
     private func colorPick(_ title: String, _ hex: Binding<String>) -> some View {

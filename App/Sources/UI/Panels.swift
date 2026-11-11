@@ -43,7 +43,7 @@ struct SidePanel: View {
                         }
                         .frame(maxWidth: .infinity, minHeight: 44)
                         .foregroundStyle(tab == t ? DS.accent : DS.text2)
-                        .background(tab == t ? DS.surface2 : .clear, in: RoundedRectangle(cornerRadius: 8))
+                        .background(tab == t ? DS.surface2 : .clear, in: Rectangle())
                     }
                     .buttonStyle(.plain)
                 }
@@ -66,8 +66,8 @@ struct SidePanel: View {
             }
         }
         .background(DS.bg)
-        .clipShape(RoundedRectangle(cornerRadius: DS.radius))
-        .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(DS.stroke))
+        .clipShape(Rectangle())
+        .overlay(Rectangle().stroke(DS.stroke))
     }
 }
 
@@ -147,8 +147,8 @@ struct TitlesPanel: View {
             }
         }
         .padding(12)
-        .background(DS.surface, in: RoundedRectangle(cornerRadius: DS.radius))
-        .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(item.visible ? DS.pgm : DS.stroke, lineWidth: item.visible ? 1.5 : 1))
+        .background(DS.surface, in: Rectangle())
+        .overlay(Rectangle().stroke(item.visible ? DS.pgm : DS.stroke, lineWidth: item.visible ? 1.5 : 1))
     }
 
     private func toggle(_ id: UUID) { if expanded.contains(id) { expanded.remove(id) } else { expanded.insert(id) } }
@@ -353,7 +353,7 @@ struct PTZPanel: View {
                 Text("Preset: chạm = gọi, giữ = lưu").font(.caption2)
                 HStack {
                     ForEach(1...6, id: \.self) { n in
-                        Text("\(n)").frame(width: 34, height: 30).background(Color(white: 0.2), in: RoundedRectangle(cornerRadius: 6))
+                        Text("\(n)").frame(width: 34, height: 30).background(Color(white: 0.2), in: Rectangle())
                             .onTapGesture { engine.ptzPreset(sourceID, n, store: false) }
                             .onLongPressGesture { engine.ptzPreset(sourceID, n, store: true) }
                     }
@@ -469,10 +469,10 @@ struct ReplayEditorView: View {
                 else { Text(editor.duration > 0 ? "Đang giải mã…" : "Chưa có hình").font(.caption).foregroundStyle(DS.text3) }
             }
             .aspectRatio(16 / 9, contentMode: .fit)
-            .clipShape(RoundedRectangle(cornerRadius: 6))
+            .clipShape(Rectangle())
             .overlay(alignment: .bottomLeading) {
                 Text(timeLabel(editor.playhead)).font(.system(size: 12, weight: .bold, design: .monospaced))
-                    .padding(5).background(.black.opacity(0.65), in: RoundedRectangle(cornerRadius: 4)).padding(6)
+                    .padding(5).background(.black.opacity(0.65), in: Rectangle()).padding(6)
             }
             .frame(maxWidth: 640)
 
@@ -560,7 +560,7 @@ struct ReplayEditorView: View {
             }
             .frame(width: 86, height: 38)
             .foregroundStyle(value != nil ? .black : .white)
-            .background(value != nil ? color : DS.surface2, in: RoundedRectangle(cornerRadius: 8))
+            .background(value != nil ? color : DS.surface2, in: Rectangle())
         }
         .buttonStyle(.plain)
     }
@@ -596,7 +596,7 @@ struct TimelineStrip: View {
                     .offset(x: w * CGFloat(editor.playhead / d) - 1)
                     .shadow(radius: 2)
             }
-            .clipShape(RoundedRectangle(cornerRadius: 6))
+            .clipShape(Rectangle())
             .contentShape(Rectangle())
             .gesture(DragGesture(minimumDistance: 0).onChanged { v in
                 editor.scrub(to: Double(max(0, min(w, v.location.x)) / w) * d)

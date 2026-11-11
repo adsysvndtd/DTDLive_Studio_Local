@@ -155,6 +155,9 @@ final class OutputManager: @unchecked Sendable {
         }
     }
 
+    /// Whether encoded audio will arrive (set by the engine).
+    var hasAudio: @Sendable () -> Bool = { true }
+
     func start(_ c: OutputConfig) {
         let slot = OutputSlot(target: makeTarget(c), requestKeyframe: requestKeyframe)
         lock.lock(); slots[c.id] = slot; let d = description; lock.unlock()
@@ -188,7 +191,7 @@ final class OutputManager: @unchecked Sendable {
         lock.lock()
         if description == nil || sb.isKeyframe, let ps = sb.videoParameterSets, let fd = sb.formatDescription {
             let old = description
-            let d = StreamDescription(parameterSets: ps, isHEVC: sb.isHEVC, videoFormat: fd, audioFormat: audioFormat)
+            let d = StreamDescription(parameterSets: ps, isHEVC: sb.isHEVC, videoFormat: fd, audioFormat: audioFormat, hasAudio: hasAudio())
             description = d
             let all = Array(slots.values)
             if old == nil {

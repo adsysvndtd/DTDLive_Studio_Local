@@ -28,7 +28,7 @@ struct ArrangeOverlay: View {
                 .background(color.opacity(0.12))
                 .overlay(alignment: .topLeading) {
                     Text(label).font(.caption2.weight(.heavy)).padding(.horizontal, 5).padding(.vertical, 2)
-                        .background(color, in: RoundedRectangle(cornerRadius: 3)).foregroundStyle(.black).padding(3)
+                        .background(color, in: Rectangle()).foregroundStyle(.black).padding(3)
                 }
                 .gesture(DragGesture().onChanged { v in
                     var n = r

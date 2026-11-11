@@ -36,8 +36,8 @@ struct PairingBanner: View {
             }
             .padding(compact ? 12 : 18)
             .frame(width: compact ? 340 : 420)
-            .background(DS.surface, in: RoundedRectangle(cornerRadius: 16))
-            .overlay(RoundedRectangle(cornerRadius: 16).stroke(DS.accent2.opacity(0.6), lineWidth: 1.5))
+            .background(DS.surface, in: Rectangle())
+            .overlay(Rectangle().stroke(DS.accent2.opacity(0.6), lineWidth: 1.5))
             .shadow(color: .black.opacity(0.5), radius: 20)
             .transition(.scale.combined(with: .opacity))
         }
