@@ -226,7 +226,7 @@ struct ScoreboardEditor: View {
                 .resizable().scaledToFit()
                 .frame(maxWidth: .infinity, maxHeight: 110)
                 .padding(8)
-                .background(CheckerBackground().opacity(0.5), in: RoundedRectangle(cornerRadius: 8))
+                .background(CheckerBackground().opacity(0.5).clipShape(RoundedRectangle(cornerRadius: 8)))
         }
     }
 
