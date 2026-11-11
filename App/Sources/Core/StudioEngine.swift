@@ -30,6 +30,8 @@ final class StudioEngine: ObservableObject {
     // MARK: Production state (library / quick keys)
     let library = MediaLibrary()
     let replayEditor = ReplayEditor()
+    let pairing = PairingManager()
+    var controlPort: UInt16 { control.httpPort }
     /// Lets any view jump the studio to a category (e.g. "open in Replay" from the Video library).
     @Published var requestedCategory: ProdCategory?
     @Published var favorites: Set<UUID> = []
@@ -172,6 +174,7 @@ final class StudioEngine: ObservableObject {
         }
 
         replay.onFinished = { [weak self] in self?.replayFinished() }
+        pairing.engine = self
         timers.append(Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
             Task { @MainActor in
                 guard let self else { return }
@@ -596,6 +599,9 @@ extension StudioEngine: ControlTarget {
         case .ptzPreset(let n, let k, let store): if let s = sourceIndex(n) { ptzPreset(s.id, k, store: store) }
         }
     }
+
+    func pairRequest(_ body: Data) async -> Data { pairing.handleRequest(body) }
+    func pairStatus(_ requestID: String) async -> Data { pairing.handleStatus(requestID) }
 
     func stateJSON() async -> Data {
         let score = titles.first { $0.style == .scoreBug }

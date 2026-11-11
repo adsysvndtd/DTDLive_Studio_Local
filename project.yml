@@ -48,7 +48,7 @@ targets:
         NSMicrophoneUsageDescription: Thu âm thanh cho chương trình phát trực tiếp.
         NSLocalNetworkUsageDescription: Nhận/phát luồng SRT, RTMP, RTSP trong mạng nội bộ.
         NSPhotoLibraryUsageDescription: Chọn logo để chèn lên hình.
-        NSBonjourServices: [_http._tcp, _ndi._tcp]
+        NSBonjourServices: [_dtdstudio._tcp, _http._tcp, _ndi._tcp]
         # Optional: enable "YouTube Live" / "Facebook Live" buttons (see docs/PLATFORMS.md)
         DTDGoogleClientID: ""
         DTDFacebookAppID: ""

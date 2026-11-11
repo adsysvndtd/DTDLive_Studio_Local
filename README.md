@@ -138,4 +138,4 @@ DTD Studio không kèm app camera riêng. App camera dùng **DTDLive** (dự án
 1. Trong DTD Studio, thêm nguồn **SRT** `srt://0.0.0.0:9001?mode=listener`.
 2. Trong DTDLive, phát SRT về `srt://<IP iPad>:9001?mode=caller&streamid=<tên camera>`, hoặc phát RTMP tới một máy chủ trung gian.
 3. **Tally:** DTDLive gọi `GET http://<IP iPad>:8080/api/tally?name=<tên camera>` mỗi 300 ms. Kết quả trả về dạng `{"program":bool,"preview":bool}`: `program` là true thì hiện viền đỏ ON AIR, `preview` là true thì hiện viền xanh.
-4. **Tự tìm DTD Studio trong mạng LAN:** duyệt Bonjour `_http._tcp`, lấy dịch vụ có tên bắt đầu bằng `DTD Studio`.
+4. **Ghép nối qua Wi-Fi không cần nhập mã:** DTDLive tìm dịch vụ Bonjour `_dtdstudio._tcp`, gửi yêu cầu ghép nối, hai màn hình hiện cùng một **ID xác nhận 6 số**, người vận hành bấm Chấp nhận. Studio tự mở SRT listener có mã hoá cho thiết bị đó. Chi tiết giao thức ở `docs/PAIRING.md`.

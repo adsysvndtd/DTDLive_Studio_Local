@@ -14,6 +14,8 @@ protocol ControlTarget: AnyObject, Sendable {
     func handle(_ cmd: ControlCommand) async
     func stateJSON() async -> Data
     func tallyJSON(for name: String) async -> Data
+    func pairRequest(_ body: Data) async -> Data
+    func pairStatus(_ requestID: String) async -> Data
 }
 
 /// Tiny HTTP/1.1 server (port 8080) + OSC/UDP listener (port 8000).
@@ -26,6 +28,8 @@ protocol ControlTarget: AnyObject, Sendable {
 ///   POST /api/title  (JSON TitleItem)  | POST /api/title/show?id=UUID&on=1
 ///   POST /api/score?a=N&b=N | /api/stream/start | /api/stream/stop | /api/record | /api/replay
 ///   POST /api/ptz?input=N&pan=-1..1&tilt=-1..1&zoom=-1..1 | /api/ptz/preset?input=N&preset=K[&store=1]
+///   POST /api/pair/request  {deviceID,name,model,app,protocols,pullURL,nonce,token} -> {requestId, confirmCode}
+///   GET  /api/pair/status?id=<requestId>  -> pending | rejected | expired | {status:"accepted", pushURL, token, ...}
 ///   GET  /api/tally?name=<source name>   -> {"program":bool,"preview":bool}  (camera app DTDLive polls this)
 /// OSC (same verbs): /dtd/cut, /dtd/auto, /dtd/take i, /dtd/preview i, /dtd/ftb i, /dtd/score ii, /dtd/replay
 final class ControlServer: @unchecked Sendable {
@@ -40,7 +44,9 @@ final class ControlServer: @unchecked Sendable {
 
     func start() throws {
         let h = try NWListener(using: .tcp, on: NWEndpoint.Port(rawValue: httpPort)!)
-        h.service = NWListener.Service(name: "DTD Studio", type: "_http._tcp")
+        // Camera apps (DTDLive…) browse for this service to pair; TXT carries protocol version.
+        h.service = NWListener.Service(name: "DTD Studio", type: "_dtdstudio._tcp",
+                                       txtRecord: NWTXTRecord(["v": "1", "api": "/api/pair"]))
         h.newConnectionHandler = { [weak self] c in self?.serveHTTP(c) }
         h.start(queue: queue)
         http = h
@@ -85,6 +91,8 @@ final class ControlServer: @unchecked Sendable {
         case ("GET", "/"): return HTTPRequest.response(200, "text/html; charset=utf-8", Data(RemotePage.html.utf8))
         case ("GET", "/api/state"): return HTTPRequest.response(200, "application/json", await target.stateJSON())
         case ("GET", "/api/tally"): return HTTPRequest.response(200, "application/json", await target.tallyJSON(for: q["name"] ?? ""))
+        case ("POST", "/api/pair/request"): return HTTPRequest.response(200, "application/json", await target.pairRequest(r.body))
+        case ("GET", "/api/pair/status"): return HTTPRequest.response(200, "application/json", await target.pairStatus(q["id"] ?? ""))
         case ("POST", "/api/cut"): await target.handle(.cut)
         case ("POST", "/api/auto"): await target.handle(.auto)
         case ("POST", "/api/ftb"): await target.handle(.ftb(q["on"] == "1"))

@@ -19,7 +19,8 @@ final class ScreenshotTests: XCTestCase {
         ("13-replay", ["-category", "replay"]),
         ("14-outputs", ["-screen", "outputs"]),
         ("15-add-source", ["-screen", "addsource"]),
-        ("16-shows", ["-screen", "shows"])
+        ("16-shows", ["-screen", "shows"]),
+        ("17-pairing", ["-screen", "pairing", "-category", "camera"])
     ]
 
     override func setUp() {

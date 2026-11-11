@@ -37,6 +37,11 @@ struct StudioView: View {
                 }
             }
         }
+        .overlay(alignment: .top) {
+            PairingBanner(pairing: engine.pairing, compact: compact)
+                .padding(.top, compact ? 40 : 60)
+                .animation(.spring(duration: 0.3), value: engine.pairing.pending)
+        }
         .background(DS.bg.ignoresSafeArea())
         .preferredColorScheme(.dark)
         .tint(DS.accent)
@@ -54,6 +59,7 @@ struct StudioView: View {
             case "outputs": showOutputs = true
             case "shows": showShows = true
             case "addsource": showAddSource = true
+            case "pairing": engine.pairing.injectDemoRequest()
             default: break
             }
         }
