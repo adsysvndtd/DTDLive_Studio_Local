@@ -132,6 +132,9 @@ jobs:
           echo "pid=$PID"
           [ -n "$PID" ] && sample "$PID" 5 -file diag/main-thread-sample.txt || true
           xcrun simctl spawn "$UDID" log show --last 2m --predicate 'process == "DTDStudio"' --style compact > diag/app-log.txt 2>&1 || true
+          # Crash reports from the UI test run (symbolicated .ips from the Simulator)
+          cp ~/Library/Logs/DiagnosticReports/DTDStudio*.ips diag/ 2>/dev/null || true
+          find screenshots.xcresult -name "*.ips" -o -name "*crash*" 2>/dev/null | head -5 | while read f; do cp "$f" diag/ 2>/dev/null; done || true
           ls -la diag
       - uses: actions/upload-artifact@v4
         if: always()

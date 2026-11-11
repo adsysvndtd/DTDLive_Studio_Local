@@ -70,7 +70,7 @@ final class MediaLibrary: ObservableObject {
     func delete(_ url: URL) { try? FileManager.default.removeItem(at: url); refresh() }
 
     /// Small thumbnail for grids (images directly; videos via first frame).
-    static func thumbnail(_ url: URL, kind: LibraryKind) -> UIImage? {
+    nonisolated static func thumbnail(_ url: URL, kind: LibraryKind) -> UIImage? {
         switch kind {
         case .picture, .overlay, .logo:
             return UIImage(contentsOfFile: url.path)?.preparingThumbnail(of: CGSize(width: 320, height: 180))

@@ -27,7 +27,7 @@ struct StudioView: View {
                 Divider().overlay(DS.stroke)
                 HStack(spacing: 0) {
                     CategoryList(selection: $category, compact: compact)
-                        .frame(width: compact ? 74 : 150)
+                        .frame(width: compact ? 74 : 168)
                     Divider().overlay(DS.stroke)
                     CategoryContent(engine: engine, library: engine.library, category: category,
                                     compact: compact, showAddSource: $showAddSource)
@@ -136,6 +136,7 @@ struct StudioView: View {
                 Spacer()
                 if isProgram {
                     monitorChip(engine.isAnyLive ? "ON AIR" : "OFF AIR", on: engine.isAnyLive, onColor: DS.pgm) { showOutputs = true }
+                    if !compact { monitorChip("Thông số", on: engine.showMonitorInfo) { engine.showMonitorInfo.toggle() } }
                     monitorChip("Vẽ", on: drawing) { drawing.toggle() }
                     if drawing { monitorChip("Xoá nét", on: false) { clearDrawing += 1 } }
                 } else {
@@ -149,7 +150,7 @@ struct StudioView: View {
                 MonitorView(store: store)
                 if engine.showSafeGuides { SafeGuides() }
                 if isProgram {
-                    if engine.showMonitorInfo && !compact { monitorInfo.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading) }
+                    if engine.showMonitorInfo && !compact { monitorInfo.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top) }
                     if drawing {
                         AnnotationCanvas(layer: engine.annotation,
                                          programSize: CGSize(width: engine.format.width, height: engine.format.height),

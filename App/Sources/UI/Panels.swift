@@ -80,12 +80,7 @@ struct TitlesPanel: View {
     var body: some View {
         VStack(alignment: .leading, spacing: DS.gap) {
             HStack {
-                Menu {
-                    ForEach(TitleStyle.allCases) { s in
-                        Button(s.label) { engine.upsertTitle(TitleItem(style: s, line1: s == .clock ? "" : s.label)) }
-                    }
-                } label: { Label("Thêm title", systemImage: "plus") }
-                .buttonStyle(.borderedProminent)
+                Text("🔑 = title gán vào phím TITLE ở cột bên phải").font(.caption).foregroundStyle(DS.text3)
                 Spacer()
                 Button("Ẩn tất cả") { engine.setTitleVisible(nil, false) }.buttonStyle(.bordered)
             }

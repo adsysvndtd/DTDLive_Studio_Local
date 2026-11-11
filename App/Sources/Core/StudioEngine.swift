@@ -42,7 +42,7 @@ final class StudioEngine: ObservableObject {
     @Published private(set) var currentForegroundURL: URL?
     @Published private(set) var nowPlayingMusic: URL?
     @Published var showSafeGuides = true
-    @Published var showMonitorInfo = true
+    @Published var showMonitorInfo = false
 
     enum PiPPreset: String, CaseIterable, Identifiable {
         case topLeft, topRight, bottomLeft, bottomRight, large, sideLeft

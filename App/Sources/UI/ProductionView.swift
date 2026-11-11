@@ -63,7 +63,7 @@ struct CategoryList: View {
                             } else {
                                 HStack(spacing: 8) {
                                     Image(systemName: c.icon).font(.system(size: 14, weight: .semibold)).frame(width: 18)
-                                    Text(c.label).font(.subheadline.weight(.semibold)).lineLimit(1)
+                                    Text(c.label).font(.subheadline.weight(.semibold)).lineLimit(1).minimumScaleFactor(0.75)
                                     Spacer(minLength: 0)
                                 }
                                 .padding(.horizontal, 10).frame(height: 38)
@@ -346,13 +346,16 @@ struct SourceCell: View {
         VStack(spacing: 0) {
             ZStack {
                 MonitorView(store: source.frames, maxFPS: 10).aspectRatio(16 / 9, contentMode: .fit)
-                if case .error(let e) = source.status {
-                    Text(e).font(.caption2).padding(6).background(.black.opacity(0.7), in: Capsule()).lineLimit(1)
-                } else if source.status == .connecting {
-                    Text("Đang kết nối…").font(.caption2.weight(.semibold)).padding(6).background(.black.opacity(0.7), in: Capsule())
-                } else if source.frames.latest() == nil {
-                    Text("Không có tín hiệu").font(.caption.weight(.bold)).padding(.horizontal, 10).padding(.vertical, 5)
-                        .overlay(Capsule().stroke(.white, lineWidth: 1.5))
+                TimelineView(.periodic(from: .now, by: 1)) { _ in
+                    if case .error(let e) = source.status {
+                        Text(e).font(.caption2).padding(6).background(.black.opacity(0.7), in: Capsule()).lineLimit(1)
+                    } else if source.status == .connecting {
+                        Text("Đang kết nối…").font(.caption2.weight(.semibold)).padding(6).background(.black.opacity(0.7), in: Capsule())
+                    } else if source.frames.latest() == nil {
+                        Text("Không có tín hiệu").font(.caption.weight(.bold)).padding(.horizontal, 10).padding(.vertical, 5)
+                            .background(.black.opacity(0.6), in: Capsule())
+                            .overlay(Capsule().stroke(.white, lineWidth: 1.5))
+                    }
                 }
             }
             HStack(spacing: 6) {
