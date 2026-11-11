@@ -45,7 +45,7 @@ final class LayoutSource: VideoSource {
 
     private let renderer = LayoutRenderer()
     private var timer: DispatchSourceTimer?
-    private let queue = DispatchQueue(label: "layout.render", qos: .userInitiated)
+    private let queue = DispatchQueue(label: "layout.render", qos: .userInteractive)
 
     func configure(template: LayoutTemplate, inputs: [FrameStore?], size: CGSize, background: FrameStore?) {
         renderer.update(template: template, inputs: inputs, size: size, background: background)

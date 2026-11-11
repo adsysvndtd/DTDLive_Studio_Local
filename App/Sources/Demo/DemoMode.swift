@@ -105,7 +105,7 @@ final class DemoSource: VideoSource {
     private let top: CIColor, bottom: CIColor
     private var timer: DispatchSourceTimer?
     private let renderer = DemoRenderer()
-    private let queue = DispatchQueue(label: "demo.source", qos: .utility)
+    private let queue = DispatchQueue(label: "demo.source", qos: .userInteractive)
 
     init(name: String, index: Int, top: CIColor, bottom: CIColor) {
         self.name = name; self.index = index; self.top = top; self.bottom = bottom

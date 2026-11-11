@@ -23,20 +23,43 @@ struct StudioView: View {
 
     var body: some View {
         GeometryReader { geo in
-            VStack(spacing: 0) {
-                topBar
-                monitorStrip
-                    .frame(height: geo.size.height * (compact ? 0.46 : 0.44))
-                Divider().overlay(DS.stroke)
+            if compact {
+                // iPhone landscape: the key column runs the full height (CUT/AUTO/T-bar always reachable),
+                // monitors get half the height so PVW/PGM fill their width without black side bars.
                 HStack(spacing: 0) {
-                    CategoryList(selection: $category, compact: compact)
-                        .frame(width: compact ? 74 : 168)
+                    VStack(spacing: 0) {
+                        topBar
+                        monitorStrip
+                            .frame(height: max(150, (geo.size.height - 32) * 0.52))
+                        Divider().overlay(DS.stroke)
+                        HStack(spacing: 0) {
+                            CategoryList(selection: $category, compact: true)
+                                .frame(width: 64)
+                            Divider().overlay(DS.stroke)
+                            CategoryContent(engine: engine, library: engine.library, category: category,
+                                            compact: true, showAddSource: $showAddSource)
+                        }
+                    }
                     Divider().overlay(DS.stroke)
-                    CategoryContent(engine: engine, library: engine.library, category: category,
-                                    compact: compact, showAddSource: $showAddSource)
+                    TransitionColumn(engine: engine, tbarValue: $tbarValue, compact: true)
+                        .frame(width: 92)
+                }
+            } else {
+                VStack(spacing: 0) {
+                    topBar
+                    monitorStrip
+                        .frame(height: geo.size.height * 0.44)
                     Divider().overlay(DS.stroke)
-                    TransitionColumn(engine: engine, tbarValue: $tbarValue, compact: compact)
-                        .frame(width: compact ? 96 : 150)
+                    HStack(spacing: 0) {
+                        CategoryList(selection: $category, compact: false)
+                            .frame(width: 168)
+                        Divider().overlay(DS.stroke)
+                        CategoryContent(engine: engine, library: engine.library, category: category,
+                                        compact: false, showAddSource: $showAddSource)
+                        Divider().overlay(DS.stroke)
+                        TransitionColumn(engine: engine, tbarValue: $tbarValue, compact: false)
+                            .frame(width: 150)
+                    }
                 }
             }
         }
@@ -109,7 +132,7 @@ struct StudioView: View {
             }
             .buttonStyle(.plain)
         }
-        .padding(.horizontal, 10).frame(height: compact ? 36 : 44)
+        .padding(.horizontal, 10).frame(height: compact ? 32 : 44)
         .background(DS.surface)
     }
 
@@ -164,13 +187,7 @@ struct StudioView: View {
             .allowsHitTesting(false)
     }
 
-    private func monitorPane(title: String, color: Color, store: FrameStore, isProgram: Bool) -> some View {
-        VStack(spacing: 4) {
-            HStack(spacing: 6) {
-                Text(title).font(.system(size: compact ? 10 : 12, weight: .heavy))
-                    .padding(.horizontal, 6).padding(.vertical, 2)
-                    .background(color, in: RoundedRectangle(cornerRadius: 3))
-                Spacer()
+    @ViewBuilder private func chips(isProgram: Bool) -> some View {
                 if isProgram {
                     monitorChip(engine.isAnyLive ? "ON AIR" : "OFF AIR", on: engine.isAnyLive, onColor: DS.pgm) { showOutputs = true }
                     if !compact { monitorChip("Thông số", on: engine.showMonitorInfo) { engine.showMonitorInfo.toggle() } }
@@ -185,6 +202,23 @@ struct StudioView: View {
                         scopesOnPreview.toggle(); engine.scopesEnabled = scopesOnPreview
                     }
                     monitorChip("Khung an toàn", on: engine.showSafeGuides) { engine.showSafeGuides.toggle() }
+                }
+    }
+
+    private func monitorPane(title: String, color: Color, store: FrameStore, isProgram: Bool) -> some View {
+        VStack(spacing: 4) {
+            HStack(spacing: 6) {
+                Text(title).font(.system(size: compact ? 10 : 12, weight: .heavy))
+                    .padding(.horizontal, 6).padding(.vertical, 2)
+                    .background(color, in: RoundedRectangle(cornerRadius: 3))
+                Spacer(minLength: 4)
+                // chips scroll sideways only when the monitor is too narrow (iPhone landscape)
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: compact ? 4 : 6) { chips(isProgram: isProgram) }
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: compact ? 4 : 6) { chips(isProgram: isProgram) }
+                    }
+                    .defaultScrollAnchor(.trailing)
                 }
             }
             ZStack {

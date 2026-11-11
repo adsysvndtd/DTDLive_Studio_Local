@@ -31,7 +31,7 @@ struct MonitorView: UIViewRepresentable {
 final class LayerMonitorView: UIView {
     var store: FrameStore
     private static let ci = CIContext(options: [.useSoftwareRenderer: true, .cacheIntermediates: false])
-    private static let queue = DispatchQueue(label: "monitor.sim", qos: .utility)
+    private static let queue = DispatchQueue(label: "monitor.sim", qos: .userInteractive)
     private var timer: Timer?
     private var busy = false
 
