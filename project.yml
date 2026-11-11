@@ -15,7 +15,8 @@ targets:
     type: application
     platform: iOS
     sources: [App/Sources]
-    scheme: {}
+    scheme:
+      testTargets: [DTDStudioUITests]
     dependencies:
       - package: HaishinKit
         product: HaishinKit
@@ -88,6 +89,18 @@ targets:
         NSMicrophoneUsageDescription: Thu âm thanh gửi về DTD Studio.
         NSLocalNetworkUsageDescription: Tìm và kết nối DTD Studio trong mạng nội bộ.
         NSBonjourServices: [_http._tcp]
+
+  DTDStudioUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources: [App/UITests]
+    dependencies:
+      - target: DTDStudio
+    settings:
+      base:
+        SWIFT_VERSION: "5.0"
+        TEST_TARGET_NAME: DTDStudio
+        GENERATE_INFOPLIST_FILE: YES
 
   RTSPPushTests:
     type: bundle.unit-test

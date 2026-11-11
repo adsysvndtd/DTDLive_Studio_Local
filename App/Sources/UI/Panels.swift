@@ -29,7 +29,7 @@ enum PanelTab: String, CaseIterable, Identifiable {
 
 struct SidePanel: View {
     @ObservedObject var engine: StudioEngine
-    @State private var tab: PanelTab = .titles
+    @State private var tab: PanelTab = PanelTab(rawValue: DemoMode.arg("-panel") ?? "") ?? .titles
 
     var body: some View {
         VStack(spacing: 6) {

@@ -96,9 +96,12 @@ final class StudioEngine: ObservableObject {
         titlesSnapshot = titles
         MainActorBox.setTitles(titles)
         switcher.start()
-        try? audio.start()
-        control.target = self
-        try? control.start()
+        // Demo/screenshot mode: no microphone or LAN listeners, so no permission alerts cover the UI.
+        if !DemoMode.isOn {
+            try? audio.start()
+            control.target = self
+            try? control.start()
+        }
 
         replay.onFinished = { [weak self] in self?.replayFinished() }
         timers.append(Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in

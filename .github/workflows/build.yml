@@ -11,6 +11,11 @@ concurrency:
   group: build-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  SELECT_XCODE: |
+    X=$(ls -d /Applications/Xcode_*.app | sed -E 's/.*Xcode_([0-9.]+)\.app/\1 &/' | sort -V | tail -1 | cut -d' ' -f2)
+    echo "Using $X"; sudo xcode-select -s "$X/Contents/Developer"; xcodebuild -version
+
 jobs:
   rtsp-tests:
     name: RTSPPush unit tests
@@ -18,11 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Select newest Xcode
-        run: |
-          ls -d /Applications/Xcode*.app
-          X=$(ls -d /Applications/Xcode_*.app | sed -E 's/.*Xcode_([0-9.]+)\.app/\1 &/' | sort -V | tail -1 | cut -d' ' -f2)
-          echo "Using $X"
-          sudo xcode-select -s "$X/Contents/Developer"
+        run: eval "$SELECT_XCODE"
       - name: swift test
         working-directory: Packages/RTSPPush
         run: swift test 2>&1 | tee ../../rtsp-tests.log
@@ -33,7 +34,7 @@ jobs:
           path: rtsp-tests.log
 
   build:
-    name: Build ${{ matrix.scheme }}
+    name: Build ${{ matrix.scheme }} (.ipa unsigned)
     runs-on: macos-15
     strategy:
       fail-fast: false
@@ -41,23 +42,10 @@ jobs:
         scheme: [DTDStudio, DTDCam]
     steps:
       - uses: actions/checkout@v4
-
       - name: Select newest Xcode
-        run: |
-          ls -d /Applications/Xcode*.app
-          X=$(ls -d /Applications/Xcode_*.app | sed -E 's/.*Xcode_([0-9.]+)\.app/\1 &/' | sort -V | tail -1 | cut -d' ' -f2)
-          echo "Using $X"
-          sudo xcode-select -s "$X/Contents/Developer"
-
-      - name: Xcode version
-        run: xcodebuild -version
-
-      - name: Install XcodeGen
-        run: brew install xcodegen
-
-      - name: Generate project
-        run: xcodegen generate
-
+        run: eval "$SELECT_XCODE"
+      - name: Install XcodeGen & generate project
+        run: brew install xcodegen && xcodegen generate
       - name: Cache SwiftPM
         uses: actions/cache@v4
         with:
@@ -65,20 +53,13 @@ jobs:
             ~/Library/Caches/org.swift.swiftpm
             build/SourcePackages
           key: spm-${{ runner.os }}-${{ hashFiles('project.yml') }}
-
       - name: Build (iOS device, unsigned)
         run: |
           set -o pipefail
-          xcodebuild \
-            -project DTDStudio.xcodeproj \
-            -scheme "${{ matrix.scheme }}" \
-            -configuration Debug \
-            -destination 'generic/platform=iOS' \
-            -derivedDataPath build \
+          xcodebuild -project DTDStudio.xcodeproj -scheme "${{ matrix.scheme }}" -configuration Release \
+            -destination 'generic/platform=iOS' -derivedDataPath build \
             -clonedSourcePackagesDirPath build/SourcePackages \
-            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO \
-            build 2>&1 | tee build-${{ matrix.scheme }}.log
-
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO build 2>&1 | tee build-${{ matrix.scheme }}.log
       - name: Error summary
         if: failure()
         run: |
@@ -86,21 +67,128 @@ jobs:
           echo '```' >> "$GITHUB_STEP_SUMMARY"
           grep -E "error:|fatal error" build-${{ matrix.scheme }}.log | sort -u | head -100 >> "$GITHUB_STEP_SUMMARY" || true
           echo '```' >> "$GITHUB_STEP_SUMMARY"
-
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: build-log-${{ matrix.scheme }}
           path: build-${{ matrix.scheme }}.log
-
-      - name: Package unsigned .app
-        if: success()
+      - name: Package unsigned .ipa
         run: |
-          APP=$(find build/Build/Products -maxdepth 2 -name "*.app" | head -1)
-          ditto -c -k --keepParent "$APP" "${{ matrix.scheme }}-unsigned.zip"
-
+          APP=$(find build/Build/Products/Release-iphoneos -maxdepth 1 -name "*.app" | head -1)
+          mkdir -p ipa/Payload && cp -R "$APP" ipa/Payload/
+          (cd ipa && zip -qry "../${{ matrix.scheme }}-unsigned.ipa" Payload)
+          ls -lh "${{ matrix.scheme }}-unsigned.ipa"
       - uses: actions/upload-artifact@v4
-        if: success()
         with:
-          name: ${{ matrix.scheme }}-unsigned-app
-          path: ${{ matrix.scheme }}-unsigned.zip
+          name: ${{ matrix.scheme }}-unsigned-ipa
+          path: ${{ matrix.scheme }}-unsigned.ipa
+
+  screenshots:
+    name: UI screenshots (iPad Simulator, demo mode)
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select newest Xcode
+        run: eval "$SELECT_XCODE"
+      - name: Install XcodeGen & generate project
+        run: brew install xcodegen && xcodegen generate
+      - name: Pick an iPad simulator
+        id: sim
+        run: |
+          xcrun simctl list devices available
+          UDID=$(xcrun simctl list devices available -j | jq -r '[.devices | to_entries[] | select(.key|test("iOS")) | .value[] | select(.name|test("iPad Pro.*13|iPad Pro"))][0].udid // empty')
+          if [ -z "$UDID" ]; then UDID=$(xcrun simctl list devices available -j | jq -r '[.devices | to_entries[] | select(.key|test("iOS")) | .value[] | select(.name|test("iPad"))][0].udid'); fi
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+          xcrun simctl boot "$UDID" || true
+          xcrun simctl bootstatus "$UDID" -b
+          xcrun simctl ui "$UDID" appearance dark
+          xcrun simctl status_bar "$UDID" override --time "9:41" --batteryState charged --batteryLevel 100 --wifiBars 3 || true
+      - name: Run screenshot UI test
+        run: |
+          set -o pipefail
+          mkdir -p screenshots
+          TEST_RUNNER_SCREENSHOT_DIR="$PWD/screenshots" xcodebuild test -project DTDStudio.xcodeproj -scheme DTDStudio \
+            -destination "id=${{ steps.sim.outputs.udid }}" -derivedDataPath build-sim \
+            -only-testing:DTDStudioUITests/ScreenshotTests -resultBundlePath screenshots.xcresult \
+            2>&1 | tee screenshots.log
+      - name: Screenshot summary
+        if: always()
+        run: |
+          ls -la screenshots || true
+          echo "### Ảnh chụp UI: $(ls screenshots/*.png 2>/dev/null | wc -l | tr -d ' ') màn hình — tải artifact **ui-screenshots**" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ui-screenshots
+          path: screenshots/*.png
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: screenshots-log
+          path: screenshots.log
+
+  # Bản .ipa đã ký, cài thẳng lên iPad (Ad Hoc). Chỉ chạy khi repo có đủ secrets:
+  #   IOS_CERT_P12_BASE64, IOS_CERT_PASSWORD, IOS_PROFILE_BASE64, IOS_TEAM_ID
+  # Xem docs/SIGNING.md.
+  signed-ipa:
+    name: Signed DTDStudio .ipa (Ad Hoc)
+    runs-on: macos-15
+    env:
+      HAS_CERT: ${{ secrets.IOS_CERT_P12_BASE64 != '' && secrets.IOS_PROFILE_BASE64 != '' }}
+    steps:
+      - name: Skip (no signing secrets)
+        if: env.HAS_CERT != 'true'
+        run: echo "Chưa cấu hình secrets ký app — bỏ qua. Xem docs/SIGNING.md" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/checkout@v4
+        if: env.HAS_CERT == 'true'
+      - name: Select newest Xcode
+        if: env.HAS_CERT == 'true'
+        run: eval "$SELECT_XCODE"
+      - name: Install certificate & profile
+        if: env.HAS_CERT == 'true'
+        env:
+          P12: ${{ secrets.IOS_CERT_P12_BASE64 }}
+          P12_PASSWORD: ${{ secrets.IOS_CERT_PASSWORD }}
+          PROFILE: ${{ secrets.IOS_PROFILE_BASE64 }}
+        run: |
+          KC=$RUNNER_TEMP/build.keychain-db; KCPW=$(uuidgen)
+          echo "$P12" | base64 --decode > $RUNNER_TEMP/cert.p12
+          echo "$PROFILE" | base64 --decode > $RUNNER_TEMP/app.mobileprovision
+          security create-keychain -p "$KCPW" "$KC"
+          security set-keychain-settings -lut 21600 "$KC"
+          security unlock-keychain -p "$KCPW" "$KC"
+          security import $RUNNER_TEMP/cert.p12 -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k "$KC"
+          security set-key-partition-list -S apple-tool:,apple: -k "$KCPW" "$KC" >/dev/null
+          security list-keychain -d user -s "$KC"
+          PROFILE_UUID=$(security cms -D -i $RUNNER_TEMP/app.mobileprovision | plutil -extract UUID raw -)
+          PROFILE_NAME=$(security cms -D -i $RUNNER_TEMP/app.mobileprovision | plutil -extract Name raw -)
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp $RUNNER_TEMP/app.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/$PROFILE_UUID.mobileprovision
+          echo "PROFILE_NAME=$PROFILE_NAME" >> "$GITHUB_ENV"
+      - name: Archive & export
+        if: env.HAS_CERT == 'true'
+        env:
+          TEAM_ID: ${{ secrets.IOS_TEAM_ID }}
+        run: |
+          set -o pipefail
+          brew install xcodegen && xcodegen generate
+          xcodebuild -project DTDStudio.xcodeproj -scheme DTDStudio -configuration Release \
+            -destination 'generic/platform=iOS' -archivePath build/DTDStudio.xcarchive \
+            CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM="$TEAM_ID" CODE_SIGN_IDENTITY="Apple Distribution" \
+            PROVISIONING_PROFILE_SPECIFIER="$PROFILE_NAME" archive 2>&1 | tee archive.log
+          cat > ExportOptions.plist <<PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>method</key><string>release-testing</string>
+            <key>teamID</key><string>$TEAM_ID</string>
+            <key>signingStyle</key><string>manual</string>
+            <key>provisioningProfiles</key><dict><key>vn.vnpt.dtd.DTDStudio</key><string>$PROFILE_NAME</string></dict>
+          </dict></plist>
+          PLIST
+          xcodebuild -exportArchive -archivePath build/DTDStudio.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath export
+      - uses: actions/upload-artifact@v4
+        if: env.HAS_CERT == 'true'
+        with:
+          name: DTDStudio-signed-ipa
+          path: export/*.ipa

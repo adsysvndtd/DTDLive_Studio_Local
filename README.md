@@ -120,4 +120,14 @@ Workflow `.github/workflows/build.yml` chạy trên máy `macos-15` của GitHub
 - chạy `xcodegen generate`, rồi build **DTDStudio** và **DTDCam** cho iOS ở dạng không ký (unsigned)
 - đưa log build và file `.app` chưa ký vào mục Artifacts; khi build lỗi, danh sách `error:` hiện ở phần Summary của lần chạy
 
-Muốn cài lên iPad thì vẫn phải ký bằng tài khoản Apple Developer trong Xcode. CI chỉ dùng để kiểm tra mã biên dịch được.
+Mỗi lần chạy còn tạo:
+- **file `.ipa` chưa ký**: cài bằng Sideloadly/AltStore, không cần Xcode;
+- **file `.ipa` đã ký Ad Hoc**: chỉ có khi repo đã khai báo secrets;
+- **ảnh chụp 10 màn hình** chạy ở chế độ demo trên iPad Simulator (artifact `ui-screenshots`).
+
+Hướng dẫn chi tiết ở `docs/SIGNING.md`.
+
+### Chế độ demo
+Mở app với tham số `-demo` để tự thêm 5 nguồn hình mẫu có chuyển động, kèm title, PiP và danh sách đầu ra, không cần camera hay mạng. Có thể thêm:
+- `-panel titles|audio|source|scopes|auto|replay` để mở sẵn tab tương ứng ở panel bên phải;
+- `-screen outputs|addsource|shows|nopanel` để mở sẵn màn hình tương ứng.

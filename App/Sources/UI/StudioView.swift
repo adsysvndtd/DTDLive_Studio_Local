@@ -43,6 +43,18 @@ struct StudioView: View {
         .sheet(isPresented: $showAddSource) { AddSourceSheet(engine: engine) }
         .sheet(isPresented: $showOutputs) { OutputsSheet(engine: engine) }
         .sheet(isPresented: $showShows) { ShowsSheet(engine: engine) }
+        .task {
+            guard DemoMode.isOn else { return }
+            DemoMode.populate(engine)
+            try? await Task.sleep(nanoseconds: 1_500_000_000) // let monitors fill before opening sheets
+            switch DemoMode.arg("-screen") {
+            case "outputs": showOutputs = true
+            case "shows": showShows = true
+            case "addsource": showAddSource = true
+            case "nopanel": showPanel = false
+            default: break
+            }
+        }
         .photosPicker(isPresented: $showLogoPicker, selection: $logoItem, matching: .images)
         .onChange(of: logoItem) { _, item in
             Task {
