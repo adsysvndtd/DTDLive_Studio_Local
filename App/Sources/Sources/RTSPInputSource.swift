@@ -103,6 +103,26 @@ final class RTSPDecodePipeline: @unchecked Sendable {
         }
     }
 
+    /// RTMP / SRT: AAC from an AudioSpecificConfig instead of SDP.
+    func configureAAC(asc: [UInt8], sampleRate: Int, channels: Int) {
+        lock.lock(); defer { lock.unlock() }
+        var asbd = AudioStreamBasicDescription(mSampleRate: Double(sampleRate), mFormatID: kAudioFormatMPEG4AAC,
+                                               mFormatFlags: 0, mBytesPerPacket: 0, mFramesPerPacket: 1024,
+                                               mBytesPerFrame: 0, mChannelsPerFrame: UInt32(max(1, channels)),
+                                               mBitsPerChannel: 0, mReserved: 0)
+        guard let f = AVAudioFormat(streamDescription: &asbd) else { return }
+        aacFormat = f
+        audioConverter = AVAudioConverter(from: f, to: pcmFormat)
+        if !asc.isEmpty { audioConverter?.magicCookie = Data(asc) }
+    }
+    var hasAudioDecoder: Bool { lock.lock(); defer { lock.unlock() }; return audioConverter != nil }
+
+    /// RTMP: codec known from the FLV tag (H.264 or enhanced-RTMP HEVC).
+    func setHEVC(_ on: Bool) {
+        lock.lock(); defer { lock.unlock() }
+        if isHEVC != on { isHEVC = on; format = nil; decoder = nil; parameterSets = [] }
+    }
+
     // MARK: Video
 
     func video(_ au: AccessUnit) -> CVPixelBuffer? {

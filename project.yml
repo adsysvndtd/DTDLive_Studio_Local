@@ -25,6 +25,12 @@ targets:
       - package: HaishinKit
         product: SRTHaishinKit
       - package: RTSPPush
+      # SRTKit (from DTDLive): DTDLive camera pairing + multi-camera SRT ingest. Built by Vendor/srtkit/scripts/build-ios.sh
+      - framework: Vendor/srtkit/SRTKit.xcframework
+        embed: false
+      - sdk: libc++.tbd
+      - sdk: VideoToolbox.framework
+      - sdk: AudioToolbox.framework
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: vn.com.dtdsolution.DTDStudio
@@ -48,7 +54,7 @@ targets:
         NSMicrophoneUsageDescription: Thu âm thanh cho chương trình phát trực tiếp.
         NSLocalNetworkUsageDescription: Nhận/phát luồng SRT, RTMP, RTSP trong mạng nội bộ.
         NSPhotoLibraryUsageDescription: Chọn logo để chèn lên hình.
-        NSBonjourServices: [_dtdstudio._tcp, _http._tcp, _ndi._tcp]
+        NSBonjourServices: [_dtdstudio._tcp, _dtd-pair._tcp, _http._tcp, _ndi._tcp]
         # Optional: enable "YouTube Live" / "Facebook Live" buttons (see docs/PLATFORMS.md)
         DTDGoogleClientID: ""
         DTDFacebookAppID: ""

@@ -5,3 +5,5 @@ DerivedData/
 .build/
 .swiftpm/
 Vendor/NDI/
+Vendor/srtkit/SRTKit.xcframework/
+Vendor/srtkit/build-ios/

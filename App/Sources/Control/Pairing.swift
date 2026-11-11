@@ -21,6 +21,8 @@ struct PairRequest: Identifiable, Equatable {
     let pullURL: String?             // device-hosted RTSP URL, or RTMP URL on a server, for pull modes
     let confirmCode: String          // "482 913"
     let created: Date
+    /// Set for requests that come from DTDLive's own pairing protocol (`_dtd-pair._tcp`).
+    var dtdLiveRequest: String? = nil
     var expired: Bool { Date().timeIntervalSince(created) > 120 }
 }
 
@@ -116,12 +118,19 @@ final class PairingManager: ObservableObject {
 
     // MARK: Operator actions
 
+    /// DTDLive protocol: shown in the same banner, decided by DTDLiveLink.
+    weak var dtdLive: DTDLiveLink?
+    func addExternal(_ r: PairRequest) { pending.removeAll { $0.deviceID == r.deviceID }; pending.append(r) }
+    func removeExternal(dtdLiveRequest id: String) { pending.removeAll { $0.dtdLiveRequest == id } }
+
     func reject(_ r: PairRequest) {
+        if let req = r.dtdLiveRequest { dtdLive?.decide(req, allow: false); pending.removeAll { $0.id == r.id }; return }
         states[r.id] = .rejected
         pending.removeAll { $0.id == r.id }
     }
 
     func accept(_ r: PairRequest, reuse: PairedDevice? = nil) {
+        if let req = r.dtdLiveRequest { dtdLive?.decide(req, allow: true); pending.removeAll { $0.id == r.id }; return }
         guard let engine else { return }
         pending.removeAll { $0.id == r.id }
         let token = reuse?.token ?? Self.randomToken()

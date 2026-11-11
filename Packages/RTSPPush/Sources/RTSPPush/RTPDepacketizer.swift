@@ -27,6 +27,9 @@ public struct AccessUnit: Equatable {
     public var nalUnits: [[UInt8]]
     public var timestamp: UInt32
     public var isKeyframe: Bool
+    public init(nalUnits: [[UInt8]], timestamp: UInt32, isKeyframe: Bool) {
+        self.nalUnits = nalUnits; self.timestamp = timestamp; self.isKeyframe = isKeyframe
+    }
 }
 
 /// RFC 6184 depacketizer: single NAL, STAP-A (24), FU-A (28). Emits one access unit

@@ -231,6 +231,7 @@ struct CategoryContent: View {
             sectionHeader("Camera mạng (SRT · RTSP · RTMP · DTDLive)")
             if net.isEmpty { emptyHint("Chưa có camera mạng") }
             sourceGrid(net)
+            IngestSection(ingest: engine.ingest, pairing: engine.pairing).padding(.top, 8)
             PairedDevicesSection(pairing: engine.pairing, port: engine.controlPort).padding(.top, 8)
         case .settings:
             EmptyView()

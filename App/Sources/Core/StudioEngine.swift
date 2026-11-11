@@ -37,6 +37,8 @@ final class StudioEngine: ObservableObject {
     let library = MediaLibrary()
     let replayEditor = ReplayEditor()
     let pairing = PairingManager()
+    /// Push ingest (SRT / RTMP / RTSP, one port each, many stream keys) + DTDLive pairing.
+    let ingest = IngestHub()
 
     // MARK: Multi-source layouts (PiP templates)
     private(set) lazy var layoutSource = LayoutSource()
@@ -196,6 +198,8 @@ final class StudioEngine: ObservableObject {
 
         replay.onFinished = { [weak self] in self?.replayFinished() }
         pairing.engine = self
+        ingest.engine = self
+        if !DemoMode.isOn { ingest.start() }
         timers.append(Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
             Task { @MainActor in
                 guard let self else { return }
@@ -633,6 +637,12 @@ final class StudioEngine: ObservableObject {
     // MARK: Audio
 
     func updateAudioChannel(_ c: AudioChannelState) { audio.update(c) }
+
+    /// PCM from a pushed camera (ingest server thread) into its own mixer channel.
+    nonisolated func audioFeed(sourceID: UUID, name: String) -> @Sendable (AVAudioPCMBuffer) -> Void {
+        let a = audio
+        return { a.feed(sourceID: sourceID, name: name, buffer: $0) }
+    }
 
     func injectDemoAudio() {
         var list = [AudioChannelState(id: AudioCapture.micID, name: "Mic"),

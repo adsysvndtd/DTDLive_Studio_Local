@@ -77,3 +77,83 @@ struct PairedDevicesSection: View {
         }
     }
 }
+
+/// Push-to-Studio addresses: one port per protocol, each camera uses its own stream key.
+struct IngestSection: View {
+    @ObservedObject var ingest: IngestHub
+    @ObservedObject var pairing: PairingManager
+
+    var body: some View {
+        SectionCard("Nhận camera (đẩy về DTD Studio)", systemImage: "antenna.radiowaves.left.and.right") {
+            Text("Mỗi giao thức dùng chung một cổng; mỗi camera đặt một stream key riêng (cam1, cam2…) và tự hiện thành một nguồn.")
+                .font(.caption).foregroundStyle(DS.text2)
+            let ip = NetworkInfo.wifiIPv4() ?? "<IP iPad>"
+            ForEach(ingest.urls(ip: ip)) { u in
+                HStack(spacing: 8) {
+                    Text(u.proto).font(.caption.weight(.heavy)).frame(width: 44, alignment: .leading).foregroundStyle(DS.accent)
+                    Text(u.url).font(.caption.monospaced()).foregroundStyle(DS.text2).textSelection(.enabled).lineLimit(1).minimumScaleFactor(0.7)
+                    Spacer(minLength: 0)
+                    if let err = ingest.listenErrors[u.proto.lowercased()] {
+                        Label("lỗi cổng", systemImage: "exclamationmark.triangle.fill").font(.caption2).foregroundStyle(DS.pgm).help(err)
+                    }
+                }
+            }
+            HStack(spacing: 8) {
+                Image(systemName: "iphone.radiowaves.left.and.right").foregroundStyle(DS.pvw)
+                Text(ingest.dtdLive.listening ? "DTDLive: đang hiện tên \(DTDLiveLink.serviceName) — trên DTDLive chọn Gửi tới máy khác › \(DTDLiveLink.serviceName), so mã 6 số rồi Chấp nhận"
+                                              : "DTDLive: đang tắt")
+                    .font(.caption).foregroundStyle(DS.text2)
+            }
+            if !ingest.streams.isEmpty {
+                Divider().overlay(DS.stroke)
+                ForEach(ingest.streams) { s in
+                    HStack(spacing: 8) {
+                        Circle().fill(s.online ? Color.green : DS.text3).frame(width: 8, height: 8)
+                        Text("\(s.proto.uppercased()) · \(s.key)").font(.caption.weight(.semibold))
+                        Text(s.peer).font(.caption2.monospaced()).foregroundStyle(DS.text3)
+                        Spacer()
+                    }
+                }
+            }
+        }
+    }
+}
+
+/// Settings rows for the ingest servers (ports, SRT passphrase, protocol switches).
+struct IngestSettingsRows: View {
+    @ObservedObject var ingest: IngestHub
+    @State private var draft = IngestHub.Settings()
+    @State private var loaded = false
+
+    var body: some View {
+        Group {
+            Toggle("SRT (một cổng, nhiều streamid)", isOn: $draft.srtEnabled)
+            if draft.srtEnabled {
+                portRow("Cổng SRT", $draft.srtPort)
+                TextField("Mật khẩu SRT (để trống = không mã hoá, 10–79 ký tự)", text: $draft.srtPassphrase)
+                    .textInputAutocapitalization(.never).autocorrectionDisabled()
+                Stepper("Độ trễ SRT \(draft.srtLatencyMs) ms", value: $draft.srtLatencyMs, in: 20...2000, step: 20)
+            }
+            Toggle("RTMP (một cổng, nhiều stream key)", isOn: $draft.rtmpEnabled)
+            if draft.rtmpEnabled { portRow("Cổng RTMP", $draft.rtmpPort) }
+            Toggle("RTSP (ANNOUNCE/RECORD, nhiều đường dẫn)", isOn: $draft.rtspEnabled)
+            if draft.rtspEnabled { portRow("Cổng RTSP", $draft.rtspPort) }
+            Toggle("Cho phép DTDLive tìm và ghép nối", isOn: $draft.dtdLiveEnabled)
+            if draft != ingest.settings {
+                Button("Áp dụng (khởi động lại máy chủ nhận)") { ingest.settings = draft }
+                    .disabled(!draft.srtPassphrase.isEmpty && !(10...79).contains(draft.srtPassphrase.count))
+            }
+            Button("Quên mọi DTDLive đã ghép", role: .destructive) { ingest.dtdLive.forgetAll() }
+        }
+        .onAppear { if !loaded { draft = ingest.settings; loaded = true } }
+    }
+
+    private func portRow(_ title: String, _ v: Binding<Int>) -> some View {
+        HStack {
+            Text(title)
+            Spacer()
+            TextField("", value: v, format: .number.grouping(.never))
+                .keyboardType(.numberPad).multilineTextAlignment(.trailing).frame(width: 90)
+        }
+    }
+}

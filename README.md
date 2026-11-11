@@ -44,6 +44,21 @@
 | Undo không giới hạn, snap | Undo 100 bước, snap |
 | Đăng nhập Facebook/YouTube | Có (cần Client ID / App ID, xem `docs/PLATFORMS.md`) |
 
+## Nhận camera về DTD Studio (SRT · RTMP · RTSP · DTDLive)
+
+Mỗi giao thức dùng **một cổng chung**, mỗi camera đặt **stream key riêng**; camera mới tự hiện thành một nguồn, rớt mạng thì nguồn giữ lại (không tín hiệu) và tự lên lại khi cùng key kết nối lại.
+
+| Giao thức | Địa chỉ đẩy về iPad | Ghi chú |
+|---|---|---|
+| SRT | `srt://<IP>:9000?streamid=cam1` (cả dạng `#!::r=live/cam1,m=publish`) | MPEG-TS H.264/HEVC + AAC, mật khẩu chung tuỳ chọn |
+| RTMP | `rtmp://<IP>:1935/live/cam1` | H.264, HEVC (enhanced RTMP), AAC |
+| RTSP | `rtsp://<IP>:8554/live/cam1` | ANNOUNCE/RECORD, RTP qua TCP, H.264/H.265 + AAC |
+| DTDLive | DTDLive › Gửi tới máy khác › `DTDStudio-xxxxxx` | so mã 6 số rồi Chấp nhận; lần sau tự kết nối |
+
+DTD Studio nói đúng giao thức ghép đôi của DTDLive (`_dtd-pair._tcp`, lõi SRTKit lấy từ `broadcaster-ios/Vendor/srtkit`), nên các máy DTDLive vẫn tìm và nối với nhau như cũ và thấy thêm DTD Studio trong danh sách — không cần sửa DTDLive. Mỗi máy DTDLive được một cổng SRT mã hoá riêng (mật khẩu từ khoá ghép đôi). Ở chế độ này DTDLive chỉ gửi hình.
+
+Cổng, mật khẩu SRT và bật/tắt từng giao thức: **Cài đặt › Nhận camera**. CI build SRTKit (`Vendor/srtkit/scripts/build-ios.sh`, `SRTKIT_LINK_LIBSRT=0` để dùng chung libsrt 1.5.7 của HaishinKit).
+
 ## Kiến trúc
 
 ```

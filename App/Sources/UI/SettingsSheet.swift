@@ -78,6 +78,14 @@ struct SettingsForm: View {
                         }
                     }
                 }
+                Section("Nhận camera: SRT · RTMP · RTSP · DTDLive") {
+                    IngestSettingsRows(ingest: engine.ingest)
+                    let ip = NetworkInfo.wifiIPv4() ?? "<IP iPad>"
+                    ForEach(engine.ingest.urls(ip: ip)) { u in
+                        LabeledContent(u.proto, value: u.url).font(.caption.monospaced())
+                    }
+                }
+                .textSelection(.enabled)
                 Section("Điều khiển từ xa & ghép nối") {
                     let ip = NetworkInfo.wifiIPv4() ?? "—"
                     LabeledContent("Web remote", value: "http://\(ip):\(engine.controlPort)")

@@ -44,6 +44,17 @@ jobs:
       - uses: actions/checkout@v4
       - name: Select newest Xcode
         run: eval "$SELECT_XCODE"
+      - name: Cache SRTKit.xcframework
+        id: cache-srtkit
+        uses: actions/cache@v4
+        with:
+          path: Vendor/srtkit/SRTKit.xcframework
+          key: srtkit-${{ runner.os }}-${{ hashFiles('Vendor/srtkit/src/**', 'Vendor/srtkit/include/**', 'Vendor/srtkit/ios/**', 'Vendor/srtkit/scripts/**', 'Vendor/srtkit/CMakeLists.txt') }}
+      - name: Build SRTKit (libsrt + mbedTLS)
+        if: steps.cache-srtkit.outputs.cache-hit != 'true'
+        run: |
+          command -v cmake || brew install cmake
+          IOS_MIN=17.0 SRTKIT_LINK_LIBSRT=0 ./Vendor/srtkit/scripts/build-ios.sh
       - name: Install XcodeGen & generate project
         run: brew install xcodegen && xcodegen generate
       - name: Cache SwiftPM
@@ -94,6 +105,17 @@ jobs:
       - uses: actions/checkout@v4
       - name: Select newest Xcode
         run: eval "$SELECT_XCODE"
+      - name: Cache SRTKit.xcframework
+        id: cache-srtkit
+        uses: actions/cache@v4
+        with:
+          path: Vendor/srtkit/SRTKit.xcframework
+          key: srtkit-${{ runner.os }}-${{ hashFiles('Vendor/srtkit/src/**', 'Vendor/srtkit/include/**', 'Vendor/srtkit/ios/**', 'Vendor/srtkit/scripts/**', 'Vendor/srtkit/CMakeLists.txt') }}
+      - name: Build SRTKit (libsrt + mbedTLS)
+        if: steps.cache-srtkit.outputs.cache-hit != 'true'
+        run: |
+          command -v cmake || brew install cmake
+          IOS_MIN=17.0 SRTKIT_LINK_LIBSRT=0 ./Vendor/srtkit/scripts/build-ios.sh
       - name: Install XcodeGen & generate project
         run: brew install xcodegen && xcodegen generate
       - name: Pick a ${{ matrix.device }} simulator
@@ -195,6 +217,18 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $RUNNER_TEMP/app.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/$PROFILE_UUID.mobileprovision
           echo "PROFILE_NAME=$PROFILE_NAME" >> "$GITHUB_ENV"
+      - name: Cache SRTKit.xcframework
+        if: env.HAS_CERT == 'true'
+        id: cache-srtkit
+        uses: actions/cache@v4
+        with:
+          path: Vendor/srtkit/SRTKit.xcframework
+          key: srtkit-${{ runner.os }}-${{ hashFiles('Vendor/srtkit/src/**', 'Vendor/srtkit/include/**', 'Vendor/srtkit/ios/**', 'Vendor/srtkit/scripts/**', 'Vendor/srtkit/CMakeLists.txt') }}
+      - name: Build SRTKit (libsrt + mbedTLS)
+        if: env.HAS_CERT == 'true' && steps.cache-srtkit.outputs.cache-hit != 'true'
+        run: |
+          command -v cmake || brew install cmake
+          IOS_MIN=17.0 SRTKIT_LINK_LIBSRT=0 ./Vendor/srtkit/scripts/build-ios.sh
       - name: Archive & export
         if: env.HAS_CERT == 'true'
         env:
