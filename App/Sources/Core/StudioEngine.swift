@@ -76,7 +76,13 @@ final class StudioEngine: ObservableObject {
         Self.shared = self
 
         let om = outputManager, rb = replayBuffer, titlesR = titleRenderer, ann = annotation
-        switcher.onProgramFrame = { pb, t in ve.encode(pb, pts: t) }
+        #if targetEnvironment(simulator)
+        // No hardware encoder in the Simulator: skip encoding in UI-test/demo runs (outputs can't work there anyway).
+        let encodeOn = !DemoMode.isOn
+        #else
+        let encodeOn = true
+        #endif
+        switcher.onProgramFrame = { pb, t in if encodeOn { ve.encode(pb, pts: t) } }
         ve.onEncoded = { sb in om.video(sb); rb.append(sb) }
         audio.onBuffer = { pcm, when in ae.append(pcm, when: when) }
         ae.onEncoded = { buf, when in om.audio(buf, when: when) }
