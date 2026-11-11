@@ -78,6 +78,9 @@ struct StudioView: View {
         .sheet(isPresented: $showOutputs) { OutputsSheet(engine: engine) }
         .sheet(isPresented: $showShows) { ShowsSheet(engine: engine) }
         .sheet(isPresented: $showSettings) { SettingsSheet(engine: engine) }
+        .alert(engine.message ?? "", isPresented: Binding(get: { engine.message != nil }, set: { if !$0 { engine.message = nil } })) {
+            Button("OK", role: .cancel) {}
+        }
         .task {
             guard DemoMode.isOn else { return }
             DemoMode.populate(engine)

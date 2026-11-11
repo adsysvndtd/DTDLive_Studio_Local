@@ -54,8 +54,16 @@ final class AudioCapture: @unchecked Sendable {
         try session.setActive(true)
 
         engine.attach(bus)
-        engine.connect(bus, to: engine.mainMixerNode, format: format)
-        engine.mainMixerNode.outputVolume = 0 // monitor muted: avoids feedback into the mic
+        // Local listening (device speaker / headphones):
+        //   programMon = the whole program incl. mic (headphones only, the speaker would feed back)
+        //   localMix   = music, effects, movie and network-source sound without the mic (safe on the speaker)
+        engine.attach(programMon)
+        engine.attach(localMix)
+        engine.connect(bus, to: programMon, format: format)
+        engine.connect(programMon, to: engine.mainMixerNode, format: format)
+        engine.connect(localMix, to: engine.mainMixerNode, format: format)
+        engine.mainMixerNode.outputVolume = 1
+        applyMonitor()
 
         // Microphone channel (through a delay line to line mic/line audio up with late video)
         let mic = makeChannel(Self.micID, name: "Mic")
@@ -98,8 +106,18 @@ final class AudioCapture: @unchecked Sendable {
         try? s.setPreferredInput(s.availableInputs?.first { $0.uid == uid })
     }
 
-    /// Hear Program on headphones / speaker. Off by default: the speaker would feed back into the mic.
-    var monitorProgram = false { didSet { engine.mainMixerNode.outputVolume = monitorProgram ? 1 : 0 } }
+    /// Hear the full Program (with mic) — headphones only: on the speaker the mic would feed back.
+    var monitorProgram = false { didSet { applyMonitor() } }
+    /// Hear music, sound effects, movie and camera sound on the device (no mic, so no feedback). On by default.
+    var speakerMonitor = true { didSet { applyMonitor() } }
+
+    private let programMon = AVAudioMixerNode()
+    private let localMix = AVAudioMixerNode()
+
+    private func applyMonitor() {
+        programMon.outputVolume = monitorProgram ? 1 : 0
+        localMix.outputVolume = (speakerMonitor && !monitorProgram) ? 1 : 0
+    }
 
     func stop() {
         bus.removeTap(onBus: 0)
@@ -110,7 +128,14 @@ final class AudioCapture: @unchecked Sendable {
     private func makeChannel(_ id: UUID, name: String) -> AVAudioMixerNode {
         let m = AVAudioMixerNode()
         engine.attach(m)
-        engine.connect(m, to: bus, format: format)
+        if id == Self.micID {
+            engine.connect(m, to: bus, format: format)
+        } else {
+            // fan out: program bus + local listening mix (fader / mute apply to both)
+            engine.connect(m, to: [AVAudioConnectionPoint(node: bus, bus: bus.nextAvailableInputBus),
+                                   AVAudioConnectionPoint(node: localMix, bus: localMix.nextAvailableInputBus)],
+                           fromBus: 0, format: format)
+        }
         m.installTap(onBus: 0, bufferSize: 2048, format: nil) { [weak self] b, _ in
             guard let self else { return }
             let db = Self.peak(b)
@@ -199,8 +224,10 @@ final class AudioCapture: @unchecked Sendable {
 
     // MARK: Background music
 
+    struct NotRunning: LocalizedError { var errorDescription: String? { "bộ trộn âm thanh chưa chạy (kiểm tra quyền micro)" } }
+
     func playMusic(_ url: URL, loop: Bool = true) throws {
-        guard let player = players[Self.musicID] else { return }
+        guard engine.isRunning, let player = players[Self.musicID] else { throw NotRunning() }
         let file = try AVAudioFile(forReading: url)
         musicFile = file
         player.stop()
@@ -219,7 +246,7 @@ final class AudioCapture: @unchecked Sendable {
 
     /// One-shot sound effect (stinger) on the music channel without stopping the bed.
     func playEffect(_ url: URL) {
-        guard let file = try? AVAudioFile(forReading: url), let m = channelMixers[Self.musicID] else { return }
+        guard engine.isRunning, let file = try? AVAudioFile(forReading: url), let m = channelMixers[Self.musicID] else { return }
         let p = AVAudioPlayerNode()
         engine.attach(p)
         engine.connect(p, to: m, format: file.processingFormat)

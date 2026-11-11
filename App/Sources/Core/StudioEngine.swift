@@ -60,6 +60,8 @@ final class StudioEngine: ObservableObject {
     @Published private(set) var nowPlayingMusic: URL?
     @Published var showSafeGuides = true
     @Published var showMonitorInfo = false
+    /// One-line operator message (import / playback errors), shown as an alert.
+    @Published var message: String?
     /// Swipe on PVW toward PGM: 1 finger = CUT, 2 fingers = AUTO.
     @Published var swipeToTake = UserDefaults.standard.object(forKey: "swipeToTake") as? Bool ?? true {
         didSet { UserDefaults.standard.set(swipeToTake, forKey: "swipeToTake") }
@@ -209,6 +211,7 @@ final class StudioEngine: ObservableObject {
             Task { @MainActor in await self?.adaptBitrate() }
         })
         if let saved = Self.load(EncoderSettings.self, key: "dtd.encoder.v1") { encoder = saved }
+        if let fg = Self.load(SuperFGConfig.self, key: "dtd.superfg.v1") { superFG = fg }
         if let f = Self.load(ProgramFormat.self, key: "dtd.format.v1") { format = f }
     }
 
@@ -288,12 +291,18 @@ final class StudioEngine: ObservableObject {
     /// Adds (or reuses) a movie as an input and puts it on preview.
     func cueMovie(_ url: URL) {
         if let s = sources.first(where: { ($0 as? FileSource)?.url == url }) { select(s.id); (s as? FileSource)?.restart(); return }
+        guard FileManager.default.isReadableFile(atPath: url.path) else { message = "Không đọc được video \(url.lastPathComponent)"; return }
         let s = FileSource(name: url.deletingPathExtension().lastPathComponent, url: url)
         add(s); select(s.id)
     }
 
+    /// Double-tap on a library item: straight to program (cut).
+    func takeMovie(_ url: URL) { cueMovie(url); if let id = previewID { take(id) } }
+    func takePicture(_ url: URL) { cuePicture(url); if let id = previewID { take(id) } }
+
     func cuePicture(_ url: URL) {
         if let s = sources.first(where: { ($0 as? ImageSource)?.url == url }) { select(s.id); return }
+        guard UIImage(contentsOfFile: url.path) != nil else { message = "Không đọc được ảnh \(url.lastPathComponent)"; return }
         let s = ImageSource(url: url)
         add(s); select(s.id)
     }
@@ -308,15 +317,65 @@ final class StudioEngine: ObservableObject {
         logo = l; currentLogoURL = url; logoOn = true
     }
 
+    /// SuperFG from the library: PNG with alpha, or a video with alpha (HEVC .mov) that loops.
     func useForeground(_ url: URL) {
-        guard let img = UIImage(contentsOfFile: url.path), let ci = CIImage(image: img) else { return }
         checkpoint()
-        foreground = OverlayLayer(image: ci, rect: CGRect(x: 0, y: 0, width: 1, height: 1))
-        currentForegroundURL = url; foregroundOn = true
+        stopForegroundVideo()
+        if ["mov", "mp4", "m4v"].contains(url.pathExtension.lowercased()) {
+            let v = FileSource(name: "SuperFG", url: url)      // muted: no onAudio, not listed as an input
+            switcher.register(v.id, store: v.frames)
+            Task { await v.start() }
+            foregroundVideo = v
+            foreground = OverlayLayer(pipSourceID: v.id, rect: CGRect(x: 0, y: 0, width: 1, height: 1))
+        } else {
+            guard let img = UIImage(contentsOfFile: url.path)?.normalized(), let ci = CIImage(image: img) else {
+                message = "Không đọc được \(url.lastPathComponent)"; return
+            }
+            foreground = OverlayLayer(image: ci, rect: CGRect(x: 0, y: 0, width: 1, height: 1))
+        }
+        foreground?.visible = true
+        currentForegroundURL = url; superFGActiveTemplate = nil; foregroundOn = true
+    }
+
+    func clearForeground() {
+        foregroundOn = false; stopForegroundVideo()
+        foreground = nil; currentForegroundURL = nil; superFGActiveTemplate = nil
+    }
+
+    private var foregroundVideo: FileSource?
+    private func stopForegroundVideo() {
+        guard let v = foregroundVideo else { return }
+        switcher.unregister(v.id)
+        Task { await v.stop() }
+        foregroundVideo = nil
+    }
+
+    // MARK: SuperFG templates (DTD Studio's own designs)
+
+    @Published var superFG = SuperFGConfig() {
+        didSet {
+            if let d = try? JSONEncoder().encode(superFG) { UserDefaults.standard.set(d, forKey: "dtd.superfg.v1") }
+            if superFGActiveTemplate != nil { applySuperFG(superFG.templateID) }
+        }
+    }
+    @Published private(set) var superFGActiveTemplate: String?
+
+    /// Renders a template at program size and keys it as the foreground layer.
+    func applySuperFG(_ templateID: String) {
+        guard let t = SuperFGTemplate.all.first(where: { $0.id == templateID }) else { return }
+        stopForegroundVideo()
+        if superFG.templateID != templateID { superFG.templateID = templateID }
+        let img = t.render(superFG, size: CGSize(width: format.width, height: format.height))
+        guard let ci = CIImage(image: img) else { return }
+        var l = OverlayLayer(image: ci, rect: CGRect(x: 0, y: 0, width: 1, height: 1))
+        l.visible = true
+        foreground = l
+        currentForegroundURL = nil; superFGActiveTemplate = templateID; foregroundOn = true
     }
 
     func toggleMusic(_ url: URL) {
-        if nowPlayingMusic == url { stopMusic(); nowPlayingMusic = nil } else { playMusic(url); nowPlayingMusic = url }
+        if nowPlayingMusic == url { stopMusic(); nowPlayingMusic = nil; return }
+        do { try audio.playMusic(url); nowPlayingMusic = url } catch { message = "Không phát được nhạc: \(error.localizedDescription)" }
     }
 
     private func applyPiPPreset() { pip?.rect = pipPreset.rect }
@@ -632,7 +691,13 @@ final class StudioEngine: ObservableObject {
         get { audio.monitorProgram }
         set { audio.monitorProgram = newValue; objectWillChange.send() }
     }
-    func playMusic(_ url: URL) { try? audio.playMusic(url) }
+    func playMusic(_ url: URL) {
+        do { try audio.playMusic(url) } catch { message = "Không phát được nhạc: \(error.localizedDescription)" }
+    }
+    var speakerMonitor: Bool {
+        get { audio.speakerMonitor }
+        set { audio.speakerMonitor = newValue; objectWillChange.send() }
+    }
     func stopMusic() { audio.stopMusic() }
     func playEffect(_ url: URL) { audio.playEffect(url) }
 

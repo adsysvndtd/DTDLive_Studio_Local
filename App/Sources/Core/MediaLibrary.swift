@@ -7,7 +7,7 @@ import UIKit
 /// Files the operator has imported for use in the show, stored in Documents/Library/<kind>
 /// (also visible/manageable in the Files app).
 enum LibraryKind: String, CaseIterable, Identifiable {
-    case movie, picture, overlay, logo, music
+    case movie, picture, overlay, logo, music, sound
     var id: String { rawValue }
     var folder: String {
         switch self {
@@ -16,6 +16,7 @@ enum LibraryKind: String, CaseIterable, Identifiable {
         case .overlay: return "Lớp phủ"
         case .logo: return "Logo"
         case .music: return "Nhạc"
+        case .sound: return "Hiệu ứng âm thanh"
         }
     }
 }
@@ -45,7 +46,10 @@ final class MediaLibrary: ObservableObject {
     func list(_ k: LibraryKind) -> [URL] { items[k] ?? [] }
 
     /// Copies picked files into the library (security-scoped URLs from the document picker).
-    func importFiles(_ urls: [URL], into k: LibraryKind) {
+    /// Returns an error line for files that could not be copied.
+    @discardableResult
+    func importFiles(_ urls: [URL], into k: LibraryKind) -> String? {
+        var failed: [String] = []
         for u in urls {
             let scoped = u.startAccessingSecurityScopedResource()
             defer { if scoped { u.stopAccessingSecurityScopedResource() } }
@@ -55,15 +59,26 @@ final class MediaLibrary: ObservableObject {
                 dest = Self.directory(k).appendingPathComponent("\(u.deletingPathExtension().lastPathComponent)-\(n).\(u.pathExtension)")
                 n += 1
             }
-            try? FileManager.default.copyItem(at: u, to: dest)
+            do {
+                // iCloud/Drive files may not be downloaded yet: coordinate the read so the system fetches them
+                var err: NSError?
+                var copyErr: Error?
+                NSFileCoordinator().coordinate(readingItemAt: u, options: .forUploading, error: &err) { src in
+                    do { try FileManager.default.copyItem(at: src, to: dest) } catch { copyErr = error }
+                }
+                if let e = err ?? copyErr as NSError? { throw e }
+            } catch {
+                failed.append(u.lastPathComponent)
+            }
         }
         refresh()
+        return failed.isEmpty ? nil : "Không nhập được: " + failed.joined(separator: ", ")
     }
 
     func importImage(_ data: Data, into k: LibraryKind, name: String = "Ảnh") {
         let df = DateFormatter(); df.dateFormat = "yyyyMMdd-HHmmss"
         let url = Self.directory(k).appendingPathComponent("\(name)-\(df.string(from: Date())).png")
-        if let img = UIImage(data: data), let png = img.pngData() { try? png.write(to: url) }
+        if let img = UIImage(data: data), let png = img.normalized().pngData() { try? png.write(to: url) }
         refresh()
     }
 
@@ -79,7 +94,7 @@ final class MediaLibrary: ObservableObject {
             gen.appliesPreferredTrackTransform = true
             gen.maximumSize = CGSize(width: 320, height: 180)
             return (try? gen.copyCGImage(at: CMTime(seconds: 1, preferredTimescale: 600), actualTime: nil)).map(UIImage.init(cgImage:))
-        case .music:
+        case .music, .sound:
             return nil
         }
     }
@@ -100,7 +115,7 @@ final class ImageSource: VideoSource {
     init(url: URL) { self.url = url; name = url.deletingPathExtension().lastPathComponent }
 
     func start() async {
-        guard let img = UIImage(contentsOfFile: url.path), let cg = img.cgImage else { status = .error("Không đọc được ảnh"); return }
+        guard let img = UIImage(contentsOfFile: url.path)?.normalized(), let cg = img.cgImage else { status = .error("Không đọc được ảnh"); return }
         let ci = CIImage(cgImage: cg)
         var pb: CVPixelBuffer?
         CVPixelBufferCreate(nil, cg.width, cg.height, kCVPixelFormatType_32BGRA,
@@ -117,4 +132,14 @@ final class ImageSource: VideoSource {
     }
 
     func stop() async { timer?.invalidate(); timer = nil; frames.clear(); status = .idle }
+}
+
+extension UIImage {
+    /// Pixels rotated to .up (photos from the camera carry an EXIF orientation that CIImage(cgImage:) ignores).
+    func normalized() -> UIImage {
+        guard imageOrientation != .up else { return self }
+        let fmt = UIGraphicsImageRendererFormat(); fmt.scale = 1; fmt.opaque = false
+        let px = CGSize(width: size.width * scale, height: size.height * scale)
+        return UIGraphicsImageRenderer(size: px, format: fmt).image { _ in draw(in: CGRect(origin: .zero, size: px)) }
+    }
 }

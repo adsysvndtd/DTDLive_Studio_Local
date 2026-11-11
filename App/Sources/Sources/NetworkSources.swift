@@ -107,7 +107,9 @@ enum RTMPURL {
     }
 }
 
-/// Looping local video file (intro, ads, replays).
+/// Local video file as an input (intro, ads, replays): loops by default, its sound goes to the mixer.
+/// One AVPlayerItem with one AVPlayerItemVideoOutput (an output can only be attached to a single item,
+/// so AVPlayerLooper's copies never delivered frames after the first pass).
 @MainActor
 final class FileSource: VideoSource {
     let id = UUID()
@@ -116,10 +118,16 @@ final class FileSource: VideoSource {
     let frames = FrameStore()
     private(set) var status: SourceStatus = .idle
 
-    private let player: AVQueuePlayer
-    private var looper: AVPlayerLooper?
-    private let output = AVPlayerItemVideoOutput(pixelBufferAttributes: [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA])
+    private let player = AVPlayer()
+    private let item: AVPlayerItem
+    private let output = AVPlayerItemVideoOutput(pixelBufferAttributes: [
+        kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA,
+        kCVPixelBufferIOSurfacePropertiesKey as String: [:]
+    ])
     private var link: CADisplayLink?
+    private var endObserver: NSObjectProtocol?
+    private var boundary: Any?
+    private var tapAttached = false
 
     let url: URL
     /// Movie sound goes to the program mixer (set by the engine before start()).
@@ -127,28 +135,34 @@ final class FileSource: VideoSource {
         didSet { tap = onAudio.map { h in PlayerAudioTap(handler: h) } }
     }
     private var tap: PlayerAudioTap?
-    private var tappedItems = Set<ObjectIdentifier>()
+
+    /// Loop at end of file (default) or hold the last frame.
+    var loops = true
+
+    private(set) var isPlaying = false
 
     init(name: String, url: URL) {
         self.name = name
         self.url = url
-        let item = AVPlayerItem(url: url)
-        player = AVQueuePlayer()
-        looper = AVPlayerLooper(player: player, templateItem: item)
-        player.isMuted = false // audio is silenced inside the tap and routed to the mixer
-    }
-
-    /// AVPlayerLooper plays copies of the template item; tap each one as it comes up.
-    private func tapCurrentItem() {
-        guard let tap else { player.isMuted = true; return }
-        for item in player.items() where !tappedItems.contains(ObjectIdentifier(item)) {
-            tappedItems.insert(ObjectIdentifier(item))
-            Task { await tap.attach(to: item) }
-        }
+        item = AVPlayerItem(url: url)
+        item.add(output)
+        player.replaceCurrentItem(with: item)
+        player.actionAtItemEnd = .pause
     }
 
     func start() async {
-        player.items().forEach { $0.add(output) }
+        if let tap, !tapAttached {
+            tapAttached = true
+            await tap.attach(to: item)        // routes the sound into the mixer (player itself is muted by the tap)
+        } else if tap == nil {
+            player.isMuted = true             // no mixer: never play from the device speaker directly
+        }
+        endObserver = NotificationCenter.default.addObserver(forName: AVPlayerItem.didPlayToEndTimeNotification, object: item, queue: .main) { [weak self] _ in
+            MainActor.assumeIsolated {
+                guard let self else { return }
+                if self.loops { self.player.seek(to: .zero); self.player.play() } else { self.isPlaying = false }
+            }
+        }
         player.play()
         isPlaying = true
         let l = CADisplayLink(target: self, selector: #selector(tick))
@@ -159,47 +173,27 @@ final class FileSource: VideoSource {
     }
 
     @objc private func tick() {
-        tapCurrentItem()
         let t = output.itemTime(forHostTime: CACurrentMediaTime())
         if output.hasNewPixelBuffer(forItemTime: t), let pb = output.copyPixelBuffer(forItemTime: t, itemTimeForDisplay: nil) {
             frames.put(pb)
+        } else if !isPlaying, let last = lastFrame {
+            frames.put(last)                  // paused / ended: keep the still alive (no "no signal" slate)
+            return
         }
+        if let pb = frames.latest(staleAfter: 10) { lastFrame = pb }
     }
-
-    private(set) var isPlaying = false
-    private var boundary: Any?
-    private var endObserver: NSObjectProtocol?
-
-    /// Loop at end of file (default) or hold the last frame.
-    var loops = true {
-        didSet {
-            guard loops != oldValue else { return }
-            if loops {
-                if let o = endObserver { NotificationCenter.default.removeObserver(o); endObserver = nil }
-                if looper == nil || looper?.status == .cancelled, let item = player.currentItem {
-                    looper = AVPlayerLooper(player: player, templateItem: AVPlayerItem(asset: item.asset))
-                }
-            } else {
-                looper?.disableLooping()
-                endObserver = NotificationCenter.default.addObserver(forName: AVPlayerItem.didPlayToEndTimeNotification, object: nil, queue: .main) { [weak self] n in
-                    MainActor.assumeIsolated {
-                        guard let self, let item = n.object as? AVPlayerItem, self.player.items().contains(item) else { return }
-                        self.player.pause(); self.isPlaying = false
-                    }
-                }
-            }
-        }
-    }
+    private var lastFrame: CVPixelBuffer?
 
     /// Plays [inT, outT] (seconds in the file) at `rate`; loops or pauses at the out point.
     func playRange(in inT: Double, out outT: Double, rate: Float, loop: Bool) {
-        looper?.disableLooping()
         if let b = boundary { player.removeTimeObserver(b); boundary = nil }
         let inTime = CMTime(seconds: inT, preferredTimescale: 600), outTime = CMTime(seconds: outT, preferredTimescale: 600)
         player.seek(to: inTime, toleranceBefore: .zero, toleranceAfter: .zero)
         boundary = player.addBoundaryTimeObserver(forTimes: [NSValue(time: outTime)], queue: .main) { [weak self] in
-            guard let self else { return }
-            if loop { self.player.seek(to: inTime, toleranceBefore: .zero, toleranceAfter: .zero) } else { self.player.pause(); self.isPlaying = false }
+            MainActor.assumeIsolated {
+                guard let self else { return }
+                if loop { self.player.seek(to: inTime, toleranceBefore: .zero, toleranceAfter: .zero) } else { self.player.pause(); self.isPlaying = false }
+            }
         }
         player.rate = rate
         isPlaying = true
@@ -207,13 +201,19 @@ final class FileSource: VideoSource {
 
     func play() { player.play(); isPlaying = true }
     func pause() { player.pause(); isPlaying = false }
-    func restart() { player.seek(to: .zero); player.play(); isPlaying = true }
+    func restart() {
+        if let b = boundary { player.removeTimeObserver(b); boundary = nil }
+        player.seek(to: .zero); player.play(); isPlaying = true
+    }
 
     func stop() async {
         link?.invalidate(); link = nil
+        if let o = endObserver { NotificationCenter.default.removeObserver(o); endObserver = nil }
+        if let b = boundary { player.removeTimeObserver(b); boundary = nil }
         isPlaying = false
         player.pause()
         frames.clear()
         status = .idle
     }
+}
 }

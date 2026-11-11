@@ -15,7 +15,7 @@ enum ProdCategory: String, CaseIterable, Identifiable {
         case .movie: return "Video"
         case .picture: return "Ảnh"
         case .transition: return "Chuyển cảnh"
-        case .overlay: return "Lớp phủ"
+        case .overlay: return "SuperFG"
         case .title: return "Title"
         case .logo: return "Logo"
         case .audio: return "Âm thanh"
@@ -128,7 +128,12 @@ struct CategoryContent: View {
         .background(DS.bg)
         .fileImporter(isPresented: Binding(get: { importing != nil }, set: { if !$0 { importing = nil } }),
                       allowedContentTypes: importing.map(types) ?? [.data], allowsMultipleSelection: true) { r in
-            if case .success(let urls) = r, let k = importing { library.importFiles(urls, into: k) }
+            switch r {
+            case .success(let urls):
+                if let k = importing, let err = library.importFiles(urls, into: k) { engine.message = err }
+            case .failure(let e):
+                engine.message = "Không mở được tệp: \(e.localizedDescription)"
+            }
             importing = nil
         }
         .photosPicker(isPresented: Binding(get: { photoKind != nil }, set: { if !$0 { photoKind = nil } }),
@@ -171,6 +176,7 @@ struct CategoryContent: View {
                 headerButton("Tệp", "folder") { importing = k }
             case .audio:
                 headerButton("Nhập nhạc", "square.and.arrow.down") { importing = .music }
+                headerButton("Nhập hiệu ứng", "sparkles") { importing = .sound }
             case .title:
                 Menu {
                     ForEach(TitleStyle.allCases) { s in
@@ -200,8 +206,9 @@ struct CategoryContent: View {
     private func types(_ k: LibraryKind) -> [UTType] {
         switch k {
         case .movie: return [.movie, .video, .mpeg4Movie, .quickTimeMovie]
-        case .picture, .overlay, .logo: return [.image, .png, .jpeg]
-        case .music: return [.audio, .mp3, .mpeg4Audio, .wav]
+        case .picture, .logo: return [.image, .png, .jpeg, .heic]
+        case .overlay: return [.image, .png, .movie, .quickTimeMovie, .mpeg4Movie]
+        case .music, .sound: return [.audio, .mp3, .mpeg4Audio, .wav, .aiff]
         }
     }
 
@@ -241,8 +248,8 @@ struct CategoryContent: View {
         case .transition:
             transitionContent
         case .overlay:
-            Toggle("Hiện lớp phủ trên Program", isOn: $engine.foregroundOn).disabled(engine.foreground == nil)
-            Text("Ảnh PNG có nền trong suốt, phủ toàn khung hình (khung viền, băng rôn nhà tài trợ…)").font(.caption).foregroundStyle(DS.text3)
+            SuperFGPanel(engine: engine, compact: compact)
+            sectionHeader("SuperFG của bạn (PNG trong suốt · video có kênh alpha .mov)")
             libraryGrid(.overlay, selected: engine.currentForegroundURL) { engine.useForeground($0) }
         case .title:
             ScoreboardControl(engine: engine, compact: compact).padding(.bottom, 4)
@@ -258,6 +265,7 @@ struct CategoryContent: View {
         case .audio:
             AudioMixerView(engine: engine, compact: compact)
             musicList
+            effectsPads
         case .adjust:
             SourcePanel(engine: engine)
         case .auto:
@@ -395,20 +403,55 @@ struct CategoryContent: View {
 
     // MARK: Media library grids
 
+    /// Double tap: video / picture straight to program; other kinds behave like a single tap.
+    private func onDoubleTap(_ k: LibraryKind, _ url: URL) {
+        switch k {
+        case .movie: engine.takeMovie(url)
+        case .picture: engine.takePicture(url)
+        default: break
+        }
+    }
+
     private func libraryGrid(_ k: LibraryKind, selected: URL? = nil, onTap: @escaping (URL) -> Void) -> some View {
         let items = library.list(k)
         return VStack(alignment: .leading, spacing: 6) {
             if items.isEmpty { emptyHint("Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTD Studio › Library › \(k.folder)") }
+            else if k == .movie || k == .picture { Text("Chạm: đưa lên PVW · chạm đúp: lên thẳng PGM").font(.caption2).foregroundStyle(DS.text3) }
             LazyVGrid(columns: columns, spacing: compact ? 6 : 10) {
                 ForEach(items, id: \.self) { url in
                     LibraryCell(url: url, kind: k, selected: url == selected)
-                        .onTapGesture { onTap(url) }
+                        .onTapGesture(count: 2) { onDoubleTap(k, url) }
+                        .simultaneousGesture(TapGesture().onEnded { onTap(url) })
                         .contextMenu {
                             if k == .movie {
                                 Button { engine.openInReplay(url) } label: { Label("Mở trong Replay (mark in/out)", systemImage: "scissors") }
                             }
                             Button("Xoá khỏi thư viện", role: .destructive) { library.delete(url) }
                         }
+                }
+            }
+        }
+    }
+
+    /// Sound-effect pads: one tap plays the file once on the music channel (applause, stinger, whistle…).
+    @ViewBuilder private var effectsPads: some View {
+        SectionCard("Hiệu ứng âm thanh", systemImage: "sparkles") {
+            let items = library.list(.sound)
+            if items.isEmpty { Text("Chưa có hiệu ứng — bấm Nhập hiệu ứng (vỗ tay, chuông, còi…)").font(.caption).foregroundStyle(DS.text3) }
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: compact ? 90 : 120), spacing: 8)], spacing: 8) {
+                ForEach(items, id: \.self) { url in
+                    Button { engine.playEffect(url) } label: {
+                        VStack(spacing: 4) {
+                            Image(systemName: "speaker.wave.2.circle.fill").font(.title2)
+                            Text(url.deletingPathExtension().lastPathComponent).font(.caption.weight(.semibold)).lineLimit(2)
+                                .multilineTextAlignment(.center)
+                        }
+                        .frame(maxWidth: .infinity, minHeight: compact ? 56 : 70)
+                        .foregroundStyle(.white)
+                        .background(DS.surface2, in: RoundedRectangle(cornerRadius: 10))
+                    }
+                    .buttonStyle(.plain)
+                    .contextMenu { Button("Xoá", role: .destructive) { library.delete(url) } }
                 }
             }
         }
@@ -583,7 +626,7 @@ struct TransitionColumn: View {
                 toggleKey("TITLE", on: engine.armedTitleVisible) { engine.toggleArmedTitle() }
                 toggleKey("TITLE 2", on: engine.secondTitle?.visible ?? false, enabled: engine.secondTitle != nil) { engine.toggleSecondTitle() }
                 toggleKey("LOGO", on: engine.logoOn, enabled: engine.logo != nil) { engine.logoOn.toggle() }
-                toggleKey("LỚP PHỦ", on: engine.foregroundOn, enabled: engine.foreground != nil) { engine.foregroundOn.toggle() }
+                toggleKey("SUPER FG", on: engine.foregroundOn, enabled: engine.foreground != nil) { engine.foregroundOn.toggle() }
                 toggleKey("PiP", on: engine.pipOn, enabled: engine.pip != nil) { engine.pipOn.toggle() }
                 if engine.pip != nil {
                     VStack(spacing: 2) {

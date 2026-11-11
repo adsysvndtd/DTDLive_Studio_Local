@@ -54,6 +54,7 @@ struct SettingsForm: View {
                         Text("Mặc định").tag("")
                         ForEach(engine.audioInputs) { Text($0.name).tag($0.id) }
                     }
+                    Toggle("Nghe nhạc, hiệu ứng, video trên loa máy", isOn: Binding(get: { engine.speakerMonitor }, set: { engine.speakerMonitor = $0 }))
                     Toggle("Nghe Program (tai nghe)", isOn: Binding(get: { engine.monitorProgram }, set: { engine.monitorProgram = $0 }))
                     VStack(alignment: .leading) {
                         Text("Trễ âm thanh Mic/Line: \(Int(engine.micDelayMs)) ms")
