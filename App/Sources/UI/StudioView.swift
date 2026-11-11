@@ -140,14 +140,36 @@ struct StudioView: View {
 
     private func name(_ id: UUID?) -> String { engine.sources.first { $0.id == id }?.name ?? "—" }
 
+    /// Short label for a source: "CAM 1 · Sân khấu" → "CAM 1", "intro_final.mp4" → "intro_final".
+    static func shortName(_ full: String) -> String {
+        var n = full
+        if let r = n.range(of: " · ") { n = String(n[..<r.lowerBound]) }
+        let ext = (n as NSString).pathExtension.lowercased()
+        if ["mp4", "mov", "m4v", "png", "jpg", "jpeg", "heic", "gif"].contains(ext) { n = (n as NSString).deletingPathExtension }
+        return n.count > 16 ? String(n.prefix(15)) + "…" : n
+    }
+
+    /// Source name at the foot of PVW / PGM.
+    private func sourceCaption(_ id: UUID?, color: Color) -> some View {
+        let label = engine.sources.first { $0.id == id }.map { Self.shortName($0.name) } ?? "—"
+        return Text(label)
+            .font(.system(size: compact ? 10 : 13, weight: .bold))
+            .lineLimit(1)
+            .foregroundStyle(.white)
+            .padding(.horizontal, compact ? 6 : 9).padding(.vertical, compact ? 2 : 3)
+            .background(Color.black.opacity(0.6), in: RoundedRectangle(cornerRadius: 4))
+            .overlay(alignment: .bottom) { Rectangle().fill(color).frame(height: 2) }
+            .padding(.bottom, compact ? 4 : 6)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+            .allowsHitTesting(false)
+    }
+
     private func monitorPane(title: String, color: Color, store: FrameStore, isProgram: Bool) -> some View {
         VStack(spacing: 4) {
             HStack(spacing: 6) {
                 Text(title).font(.system(size: compact ? 10 : 12, weight: .heavy))
                     .padding(.horizontal, 6).padding(.vertical, 2)
                     .background(color, in: RoundedRectangle(cornerRadius: 3))
-                Text(name(isProgram ? engine.programID : engine.previewID))
-                    .font(.system(size: compact ? 10 : 12, weight: .semibold)).lineLimit(1)
                 Spacer()
                 if isProgram {
                     monitorChip(engine.isAnyLive ? "ON AIR" : "OFF AIR", on: engine.isAnyLive, onColor: DS.pgm) { showOutputs = true }
@@ -168,6 +190,7 @@ struct StudioView: View {
             ZStack {
                 MonitorView(store: store)
                 if engine.showSafeGuides { SafeGuides() }
+                sourceCaption(isProgram ? engine.programID : engine.previewID, color: color)
                 if !isProgram && engine.swipeToTake && !scopesOnPreview {
                     SwipeTakeOverlay(onCut: { engine.cut() }, onAuto: { engine.autoTransition() })
                 }
