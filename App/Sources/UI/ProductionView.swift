@@ -245,6 +245,7 @@ struct CategoryContent: View {
             Text("Ảnh PNG có nền trong suốt, phủ toàn khung hình (khung viền, băng rôn nhà tài trợ…)").font(.caption).foregroundStyle(DS.text3)
             libraryGrid(.overlay, selected: engine.currentForegroundURL) { engine.useForeground($0) }
         case .title:
+            ScoreboardControl(engine: engine, compact: compact).padding(.bottom, 4)
             TitlesPanel(engine: engine)
         case .logo:
             HStack {

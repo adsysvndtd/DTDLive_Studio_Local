@@ -20,7 +20,7 @@ enum TitleStyle: String, Codable, CaseIterable, Identifiable {
 
 /// One graphic item. Text fields meaning depends on style:
 ///   lowerThird/nameStrap: line1 = name, line2 = role
-///   scoreBug: line1 = "TEAM A", line2 = "TEAM B", scoreA/scoreB, period
+///   scoreBug: line1 = home team, line2 = away team, scoreA/scoreB, period; look in `board`
 ///   ticker: line1 = scrolling text
 struct TitleItem: Identifiable, Codable, Equatable {
     var id = UUID()
@@ -35,12 +35,15 @@ struct TitleItem: Identifiable, Codable, Equatable {
     var scale: CGFloat = 1
     var visible = false
     var tickerSpeed: CGFloat = 120 // px/s at 1080p
+    /// scoreBug look (logos, colours, match clock, wide/compact) — see Scoreboard.swift
+    var board: ScoreboardData? = nil
 }
 
 /// Renders TitleItems to CIImages (cached; re-rendered only when content changes),
 /// plus animated fade/slide in-out and ticker scrolling.
 final class TitleRenderer: @unchecked Sendable {
     private var cache: [UUID: (TitleItem, CGSize, CIImage)] = [:]
+    private var boardCache: [UUID: (String, CGSize, CIImage)] = [:]
     private var shownAt: [UUID: CFTimeInterval] = [:]
     private var hiddenAt: [UUID: CFTimeInterval] = [:]
     private let lock = NSLock()
@@ -93,6 +96,18 @@ final class TitleRenderer: @unchecked Sendable {
     }
 
     private func image(for item: TitleItem, canvas: CGSize, now: CFTimeInterval) -> CIImage? {
+        if item.style == .scoreBug {
+            // Scoreboard: re-drawn only when its signature (scores, names, clock second…) changes.
+            let sig = ScoreboardRenderer.signature(item) + "|\(item.scale)"
+            lock.lock()
+            if let c = boardCache[item.id], c.0 == sig, c.1 == canvas { lock.unlock(); return c.2 }
+            lock.unlock()
+            guard let cg = ScoreboardRenderer.render(item).cgImage else { return nil }
+            let k = canvas.width / 1920 * item.scale
+            let ci = CIImage(cgImage: cg).transformed(by: .init(scaleX: k, y: k))
+            lock.lock(); boardCache[item.id] = (sig, canvas, ci); lock.unlock()
+            return ci
+        }
         // Clock changes every second; everything else is cached by content.
         let dynamic = item.style == .clock || item.style == .countdown
         lock.lock()
@@ -150,20 +165,7 @@ final class TitleRenderer: @unchecked Sendable {
                 a.draw(at: CGPoint(x: 20 * k, y: 10 * k))
             }
         case .scoreBug:
-            let n1 = attr(t.line1.uppercased(), small), n2 = attr(t.line2.uppercased(), small)
-            let s = attr("\(t.scoreA) - \(t.scoreB)", big, .black), p = attr(t.period, UIFont.systemFont(ofSize: 22 * k, weight: .semibold))
-            let pad = 18 * k, h = s.size().height + 12 * k
-            let w = n1.size().width + n2.size().width + s.size().width + p.size().width + pad * 8
-            return UIGraphicsImageRenderer(size: CGSize(width: w, height: h), format: fmt).image { _ in
-                UIColor(white: 0.08, alpha: 0.92).setFill(); UIBezierPath(roundedRect: CGRect(x: 0, y: 0, width: w, height: h), cornerRadius: 8 * k).fill()
-                var x = pad
-                n1.draw(at: CGPoint(x: x, y: (h - n1.size().height) / 2)); x += n1.size().width + pad
-                UIColor.white.setFill(); UIBezierPath(rect: CGRect(x: x, y: 0, width: s.size().width + pad * 2, height: h)).fill()
-                s.draw(at: CGPoint(x: x + pad, y: 6 * k)); x += s.size().width + pad * 3
-                n2.draw(at: CGPoint(x: x, y: (h - n2.size().height) / 2)); x += n2.size().width + pad
-                accent.setFill(); UIBezierPath(rect: CGRect(x: x, y: 0, width: p.size().width + pad * 2, height: h)).fill()
-                p.draw(at: CGPoint(x: x + pad, y: (h - p.size().height) / 2))
-            }
+            return ScoreboardRenderer.render(t)
         case .countdown:
             let r = remaining ?? (t.scoreA * 60 + t.scoreB)
             let label = attr(t.line1.isEmpty ? "Bắt đầu sau" : t.line1, small)

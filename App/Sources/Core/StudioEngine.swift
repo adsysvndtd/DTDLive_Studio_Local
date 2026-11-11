@@ -214,7 +214,7 @@ final class StudioEngine: ObservableObject {
 
     static let defaultTitles: [TitleItem] = [
         TitleItem(style: .lowerThird, line1: "Tên khách mời", line2: "Chức danh"),
-        TitleItem(style: .scoreBug, line1: "Đội A", line2: "Đội B", period: "H1", position: CGPoint(x: 0.04, y: 0.04)),
+        TitleItem(style: .scoreBug, line1: "Đội A", line2: "Đội B", period: "H1", position: CGPoint(x: 0.083, y: 0.03)),
         TitleItem(style: .ticker, line1: "Tin nhanh: nhập nội dung chữ chạy tại đây"),
         TitleItem(style: .clock, position: CGPoint(x: 0.88, y: 0.04))
     ]
@@ -435,6 +435,66 @@ final class StudioEngine: ObservableObject {
             if let b { titles[i].scoreB = max(0, b) }
         }
     }
+
+    // MARK: Scoreboard (same look as DTDLive)
+
+    var scoreboardIndex: Int? { titles.firstIndex { $0.style == .scoreBug } }
+
+    /// Adds a scoreboard title if there is none; returns its id.
+    @discardableResult
+    func ensureScoreboard() -> UUID {
+        if let i = scoreboardIndex { return titles[i].id }
+        let t = TitleItem(style: .scoreBug, line1: "HOME", line2: "AWAY", position: CGPoint(x: 0.083, y: 0.03))
+        upsertTitle(t)
+        return t.id
+    }
+
+    func updateScoreboard(_ f: (inout TitleItem) -> Void) {
+        guard let i = scoreboardIndex else { return }
+        f(&titles[i])
+    }
+
+    /// Fraction of the program frame the scoreboard covers at its current scale.
+    func scoreboardFraction(_ t: TitleItem) -> CGSize {
+        let sz = ScoreboardRenderer.size(compact: t.sb.compact)
+        let W = CGFloat(format.width), H = CGFloat(max(format.height, 1))
+        let k = W / 1920 * t.scale
+        return CGSize(width: sz.width * k / W, height: sz.height * k / H)
+    }
+
+    /// Quick placement: x 0 = left, 0.5 = centre, 1 = right; top or bottom; 3 % margin.
+    func placeScoreboard(x: CGFloat, top: Bool) {
+        updateScoreboard { t in
+            let f = scoreboardFraction(t), m: CGFloat = 0.03
+            t.position.x = x == 0.5 ? (1 - f.width) / 2 : (x < 0.5 ? m : 1 - m - f.width)
+            t.position.y = top ? m : 1 - m - f.height
+            t.position.x = min(max(0, t.position.x), max(0, 1 - f.width))
+        }
+    }
+
+    func setScoreboardScale(_ s: CGFloat) {
+        updateScoreboard { t in
+            t.scale = min(max(s, 0.3), 1.6)
+            let f = scoreboardFraction(t)
+            t.position.x = min(max(0, t.position.x), max(0, 1 - f.width))
+            t.position.y = min(max(0, t.position.y), max(0, 1 - f.height))
+        }
+    }
+
+    /// Wide strip across the top or the compact two-row corner board.
+    func setScoreboardCompact(_ c: Bool) {
+        updateScoreboard { t in
+            var b = t.sb; b.compact = c; t.sb = b
+            let landscape = format.width >= format.height
+            // width as a fraction of the frame: wide 80 % (98 % portrait), compact 30 % (50 % portrait)
+            let wf: CGFloat = c ? (landscape ? 0.3 : 0.5) : (landscape ? 0.8 : 0.98)
+            t.scale = wf * 1920 / ScoreboardRenderer.size(compact: c).width
+        }
+        placeScoreboard(x: c ? 0 : 0.5, top: true)
+    }
+
+    func scoreboardClockToggle() { updateScoreboard { var b = $0.sb; b.toggleClock(); $0.sb = b } }
+    func scoreboardClockReset() { updateScoreboard { var b = $0.sb; b.resetClock(); $0.sb = b } }
 
     func removeTitle(_ id: UUID) { checkpoint(); titles.removeAll { $0.id == id } }
 

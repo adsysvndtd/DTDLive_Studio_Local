@@ -12,7 +12,7 @@
 | Ghép nối Wi-Fi | Camera (DTDLive…) tự tìm Studio, xác nhận bằng **ID 6 số trên cả hai màn hình**, SRT mã hoá riêng từng thiết bị, thiết bị tin cậy tự kết nối lại |
 | Xử lý hình từng nguồn | Phơi sáng, tương phản, bão hoà, nhiệt độ màu/tint, **LUT .cube**, **chroma key** (xanh lá/xanh dương, nền thay thế), lật gương, xoay 180°, cắt khung |
 | PiP | **10 mẫu bố cục nhiều nguồn** (2 cạnh nhau, 1+2, 1+3, lưới 2×2, phối cảnh…), gán nguồn từng ô, phím PiP TRANS |
-| Đồ hoạ | **Lower third, tên + chức danh, title toàn màn hình, chữ chạy, bảng tỉ số, đồng hồ, đếm ngược**; thư viện logo (4 góc); lớp phủ PNG toàn khung; PiP 6 vị trí + PiP T-bar; **kéo thả PiP/logo trực tiếp trên PGM** |
+| Đồ hoạ | **Lower third, tên + chức danh, title toàn màn hình, chữ chạy, bảng tỉ số kiểu DTDLive (logo đội, dòng phụ, màu, đồng hồ trận chạy/đếm ngược, dải ngang hoặc gọn ở góc, 6 vị trí, đổi bên), đồng hồ, đếm ngược**; thư viện logo (4 góc); lớp phủ PNG toàn khung; PiP 6 vị trí + PiP T-bar; **kéo thả PiP/logo trực tiếp trên PGM** |
 | Vẽ chú thích | **Vẽ bằng Apple Pencil** (hoặc ngón tay) lên Program, nét vẽ có trong luồng phát |
 | Scopes | **Histogram, Waveform, RGB Parade, Vectorscope** |
 | Âm thanh | Chọn đầu vào (mic/USB/tai nghe), nghe Program qua tai nghe, **tiếng của video vào mixer**; **Mixer nhiều kênh**: mic/USB, âm thanh từng nguồn SRT/RTMP, nhạc nền lặp, hiệu ứng âm thanh; **fader dọc có thang dB**, đồng hồ mức từng kênh + PGM, mute, **giữ để SOLO**, **AFV** từng kênh hoặc toàn bộ, **trễ Mic/Line 0–500 ms** |

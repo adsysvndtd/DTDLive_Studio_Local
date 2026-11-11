@@ -125,10 +125,10 @@ struct TitlesPanel: View {
                     Button("Xoá", role: .destructive) { engine.removeTitle(item.id) }
                 } label: { Image(systemName: "ellipsis.circle").font(.title3).foregroundStyle(DS.text2) }
             }
-            if item.style != .clock {
+            if item.style != .clock && item.style != .scoreBug {
                 CaptionField(title: item.style == .scoreBug ? "Đội A" : item.style == .ticker ? "Nội dung chữ chạy" : item.style == .countdown ? "Nhãn (vd: Bắt đầu sau)" : "Dòng 1", text: t.line1)
             }
-            if [.lowerThird, .nameStrap, .fullScreen, .scoreBug].contains(item.style) {
+            if [.lowerThird, .nameStrap, .fullScreen].contains(item.style) {
                 CaptionField(title: item.style == .scoreBug ? "Đội B" : "Dòng 2", text: t.line2)
             }
             if item.style == .countdown {
@@ -139,11 +139,7 @@ struct TitlesPanel: View {
                 Text("Bắt đầu đếm khi bấm LÊN SÓNG").font(.caption2).foregroundStyle(DS.text3)
             }
             if item.style == .scoreBug {
-                HStack {
-                    Stepper("A  \(item.scoreA)", value: t.scoreA, in: 0...999).font(.subheadline.monospacedDigit())
-                    Stepper("B  \(item.scoreB)", value: t.scoreB, in: 0...999).font(.subheadline.monospacedDigit())
-                }
-                CaptionField(title: "Hiệp / thời gian", text: t.period)
+                Text("Điều khiển tỉ số, đồng hồ, logo, màu ở thẻ Bảng tỉ số phía trên").font(.caption2).foregroundStyle(DS.text3)
             }
             if expanded.contains(item.id) {
                 LabeledSlider(title: "Ngang", value: Binding(get: { Double(t.wrappedValue.position.x) }, set: { t.wrappedValue.position.x = $0 }),

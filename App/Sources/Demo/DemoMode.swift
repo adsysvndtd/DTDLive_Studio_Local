@@ -42,7 +42,9 @@ enum DemoMode {
         engine.titles = [
             TitleItem(style: .lowerThird, line1: "Nguyễn Văn A", line2: "Giám đốc Trung tâm Truyền hình", visible: true),
             TitleItem(style: .scoreBug, line1: "VNPT", line2: "FPT", scoreA: 2, scoreB: 1, period: "H2",
-                      position: CGPoint(x: 0.04, y: 0.04), visible: true),
+                      position: CGPoint(x: 0.03, y: 0.03), scale: 0.9, visible: true,
+                      board: { var b = ScoreboardData(); b.homeSub = "Hà Nội"; b.awaySub = "TP.HCM"; b.homeColor = "#0A5BD3"
+                               b.awayColor = "#E8641E"; b.compact = true; b.clockBase = 23 * 60 + 41; return b }()),
             TitleItem(style: .ticker, line1: "Tin nhanh: DTD Studio — bàn trộn hình nhiều camera và phát trực tiếp RTMP · SRT · RTSP",
                       visible: true),
             TitleItem(style: .clock, position: CGPoint(x: 0.86, y: 0.04), visible: true)
