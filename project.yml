@@ -14,7 +14,7 @@ targets:
   DTDStudio:
     type: application
     platform: iOS
-    sources: [App/Sources]
+    sources: [App/Sources, App/Resources]
     scheme:
       testTargets: [DTDStudioUITests]
     dependencies:
@@ -28,6 +28,8 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: vn.com.dtdsolution.DTDStudio
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         SWIFT_VERSION: "5.0"
         TARGETED_DEVICE_FAMILY: "1,2"
         SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: YES
