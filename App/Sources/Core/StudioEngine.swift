@@ -171,6 +171,9 @@ final class StudioEngine: ObservableObject {
         DispatchQueue.main.asyncAfter(deadline: .now() + transitionDuration + 0.05) { [weak self] in self?.syncState() }
     }
 
+    /// T-bar position 0...1; releasing at the end completes the transition.
+    func tbar(_ p: Double) { switcher.setManual(p, style: transition); if p >= 0.999 || p <= 0.001 { syncState() } }
+
     private func syncState() {
         let s = switcher.state
         programID = s.program; previewID = s.preview

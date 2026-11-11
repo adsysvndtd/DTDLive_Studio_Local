@@ -32,25 +32,42 @@ struct SidePanel: View {
     @State private var tab: PanelTab = PanelTab(rawValue: DemoMode.arg("-panel") ?? "") ?? .titles
 
     var body: some View {
-        VStack(spacing: 6) {
-            Picker("", selection: $tab) {
-                ForEach(PanelTab.allCases) { Image(systemName: $0.icon).tag($0) }
-            }
-            .pickerStyle(.segmented)
-            Text(tab.label).font(.caption.bold()).frame(maxWidth: .infinity, alignment: .leading)
-            ScrollView {
-                switch tab {
-                case .titles: TitlesPanel(engine: engine)
-                case .audio: AudioPanel(engine: engine)
-                case .source: SourcePanel(engine: engine)
-                case .scopes: ScopesPanel(engine: engine)
-                case .auto: AutoPanel(auto: engine.autoSwitcher, engine: engine)
-                case .replay: ReplayPanel(engine: engine)
+        VStack(spacing: 0) {
+            // Icon + label tabs (never icon-only, never wrapping)
+            HStack(spacing: 2) {
+                ForEach(PanelTab.allCases) { t in
+                    Button { tab = t } label: {
+                        VStack(spacing: 3) {
+                            Image(systemName: t.icon).font(.system(size: 15, weight: .semibold))
+                            Text(t.label).font(.system(size: 9.5, weight: .semibold)).lineLimit(1).minimumScaleFactor(0.7)
+                        }
+                        .frame(maxWidth: .infinity, minHeight: 44)
+                        .foregroundStyle(tab == t ? DS.accent : DS.text2)
+                        .background(tab == t ? DS.surface2 : .clear, in: RoundedRectangle(cornerRadius: 8))
+                    }
+                    .buttonStyle(.plain)
                 }
             }
+            .padding(6)
+            .background(DS.surface)
+            Divider().overlay(DS.stroke)
+            ScrollView {
+                VStack(spacing: DS.gap) {
+                    switch tab {
+                    case .titles: TitlesPanel(engine: engine)
+                    case .audio: AudioPanel(engine: engine)
+                    case .source: SourcePanel(engine: engine)
+                    case .scopes: ScopesPanel(engine: engine)
+                    case .auto: AutoPanel(auto: engine.autoSwitcher, engine: engine)
+                    case .replay: ReplayPanel(engine: engine)
+                    }
+                }
+                .padding(DS.gap)
+            }
         }
-        .padding(8)
-        .background(Color(white: 0.09), in: RoundedRectangle(cornerRadius: 10))
+        .background(DS.bg)
+        .clipShape(RoundedRectangle(cornerRadius: DS.radius))
+        .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(DS.stroke))
     }
 }
 
@@ -58,54 +75,87 @@ struct SidePanel: View {
 
 struct TitlesPanel: View {
     @ObservedObject var engine: StudioEngine
+    @State private var expanded: Set<UUID> = []
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: DS.gap) {
+            HStack {
+                Menu {
+                    ForEach(TitleStyle.allCases) { s in
+                        Button(s.label) { engine.upsertTitle(TitleItem(style: s, line1: s == .clock ? "" : s.label)) }
+                    }
+                } label: { Label("Thêm title", systemImage: "plus") }
+                .buttonStyle(.borderedProminent)
+                Spacer()
+                Button("Ẩn tất cả") { engine.setTitleVisible(nil, false) }.buttonStyle(.bordered)
+            }
             ForEach($engine.titles) { $t in
-                VStack(alignment: .leading, spacing: 4) {
-                    HStack {
-                        Picker("", selection: $t.style) { ForEach(TitleStyle.allCases) { Text($0.label).tag($0) } }
-                            .labelsHidden()
-                        Spacer()
-                        Button(t.visible ? "ẨN" : "HIỆN") { engine.setTitleVisible(t.id, !t.visible) }
-                            .buttonStyle(.borderedProminent).tint(t.visible ? .red : .gray)
-                        Button(role: .destructive) { engine.removeTitle(t.id) } label: { Image(systemName: "trash") }
-                    }
-                    if t.style != .clock {
-                        TextField("Dòng 1", text: $t.line1).textFieldStyle(.roundedBorder)
-                    }
-                    if [.lowerThird, .nameStrap, .fullScreen, .scoreBug].contains(t.style) {
-                        TextField("Dòng 2", text: $t.line2).textFieldStyle(.roundedBorder)
-                    }
-                    if t.style == .scoreBug {
-                        HStack {
-                            Stepper("A: \(t.scoreA)", value: $t.scoreA, in: 0...999)
-                            Stepper("B: \(t.scoreB)", value: $t.scoreB, in: 0...999)
-                        }
-                        TextField("Hiệp", text: $t.period).textFieldStyle(.roundedBorder)
-                    }
-                    HStack {
-                        Text("Vị trí").font(.caption)
-                        Slider(value: $t.position.x, in: 0...0.9)
-                        Slider(value: $t.position.y, in: 0...0.95)
-                        Slider(value: $t.scale, in: 0.5...2).frame(width: 70)
-                    }
-                    ColorPicker("Màu nhấn", selection: Binding(
-                        get: { Color(UIColor(hex: t.accentHex)) },
-                        set: { t.accentHex = UIColor($0).hexString })).font(.caption)
-                }
-                .padding(8)
-                .background(t.visible ? Color.red.opacity(0.15) : Color(white: 0.13), in: RoundedRectangle(cornerRadius: 8))
+                titleCard($t)
             }
-            Menu("+ Thêm title") {
-                ForEach(TitleStyle.allCases) { s in
-                    Button(s.label) { engine.upsertTitle(TitleItem(style: s, line1: s == .clock ? "" : s.label)) }
-                }
-            }
-            Button("Ẩn tất cả") { engine.setTitleVisible(nil, false) }
-            Text("Điều khiển title từ điện thoại/laptop: mở http://<IP iPad>:8080").font(.caption2).foregroundStyle(.secondary)
+            Text("Điều khiển title từ điện thoại/laptop: http://<IP máy>:8080")
+                .font(.caption2).foregroundStyle(DS.text3)
         }
     }
+
+    @ViewBuilder
+    private func titleCard(_ t: Binding<TitleItem>) -> some View {
+        let item = t.wrappedValue
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 8) {
+                Menu {
+                    Picker("Kiểu", selection: t.style) { ForEach(TitleStyle.allCases) { Text($0.label).tag($0) } }
+                } label: {
+                    HStack(spacing: 4) {
+                        Text(item.style.label).font(.subheadline.weight(.semibold))
+                        Image(systemName: "chevron.down").font(.caption2)
+                    }
+                    .foregroundStyle(.white)
+                }
+                Spacer()
+                Button { engine.setTitleVisible(item.id, !item.visible) } label: {
+                    Text(item.visible ? "TRÊN SÓNG" : "LÊN SÓNG").font(.caption.weight(.heavy))
+                        .padding(.horizontal, 10).padding(.vertical, 6)
+                        .foregroundStyle(item.visible ? .white : DS.text2)
+                        .background(item.visible ? DS.pgm : DS.surface2, in: Capsule())
+                }
+                .buttonStyle(.plain)
+                Menu {
+                    Button(expanded.contains(item.id) ? "Ẩn tuỳ chỉnh" : "Vị trí, cỡ, màu…") { toggle(item.id) }
+                    Button("Xoá", role: .destructive) { engine.removeTitle(item.id) }
+                } label: { Image(systemName: "ellipsis.circle").font(.title3).foregroundStyle(DS.text2) }
+            }
+            if item.style != .clock {
+                CaptionField(title: item.style == .scoreBug ? "Đội A" : item.style == .ticker ? "Nội dung chữ chạy" : "Dòng 1", text: t.line1)
+            }
+            if [.lowerThird, .nameStrap, .fullScreen, .scoreBug].contains(item.style) {
+                CaptionField(title: item.style == .scoreBug ? "Đội B" : "Dòng 2", text: t.line2)
+            }
+            if item.style == .scoreBug {
+                HStack {
+                    Stepper("A  \(item.scoreA)", value: t.scoreA, in: 0...999).font(.subheadline.monospacedDigit())
+                    Stepper("B  \(item.scoreB)", value: t.scoreB, in: 0...999).font(.subheadline.monospacedDigit())
+                }
+                CaptionField(title: "Hiệp / thời gian", text: t.period)
+            }
+            if expanded.contains(item.id) {
+                LabeledSlider(title: "Ngang", value: Binding(get: { Double(t.wrappedValue.position.x) }, set: { t.wrappedValue.position.x = $0 }),
+                              range: 0...0.9) { "\(Int($0 * 100))%" }
+                LabeledSlider(title: "Dọc", value: Binding(get: { Double(t.wrappedValue.position.y) }, set: { t.wrappedValue.position.y = $0 }),
+                              range: 0...0.95) { "\(Int($0 * 100))%" }
+                LabeledSlider(title: "Cỡ chữ", value: Binding(get: { Double(t.wrappedValue.scale) }, set: { t.wrappedValue.scale = $0 }),
+                              range: 0.5...2) { String(format: "%.1f×", $0) }
+                ColorPicker("Màu nhấn", selection: Binding(
+                    get: { Color(UIColor(hex: t.wrappedValue.accentHex)) },
+                    set: { t.wrappedValue.accentHex = UIColor($0).hexString }))
+                    .font(.caption).foregroundStyle(DS.text2)
+            }
+        }
+        .padding(12)
+        .background(DS.surface, in: RoundedRectangle(cornerRadius: DS.radius))
+        .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(item.visible ? DS.pgm : DS.stroke, lineWidth: item.visible ? 1.5 : 1))
+    }
+
+    private func toggle(_ id: UUID) { if expanded.contains(id) { expanded.remove(id) } else { expanded.insert(id) } }
 }
 
 extension UIColor {
@@ -124,27 +174,35 @@ struct AudioPanel: View {
     @State private var pickEffect = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            ForEach(engine.audioChannels) { c in
-                VStack(alignment: .leading, spacing: 2) {
-                    HStack {
-                        Text(c.name).font(.caption.bold()).lineLimit(1)
-                        Spacer()
-                        Toggle("AFV", isOn: bind(c, \.followVideo)).toggleStyle(.button).font(.caption2)
-                        Toggle(isOn: bind(c, \.muted)) { Image(systemName: c.muted ? "speaker.slash" : "speaker.wave.2") }
-                            .toggleStyle(.button)
-                    }
-                    Slider(value: bind(c, \.gain), in: 0...2)
-                    LevelMeter(db: c.level).frame(height: 5)
+        VStack(alignment: .leading, spacing: DS.gap) {
+            SectionCard("Kênh âm thanh", systemImage: "slider.horizontal.3") {
+                if engine.audioChannels.isEmpty {
+                    Text("Chưa có kênh nào").font(.caption).foregroundStyle(DS.text3)
                 }
-                .padding(6).background(Color(white: 0.13), in: RoundedRectangle(cornerRadius: 6))
+                ForEach(engine.audioChannels) { c in
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack(spacing: 6) {
+                            Text(c.name).font(.subheadline.weight(.semibold)).lineLimit(1)
+                            Spacer()
+                            chip("AFV", on: c.followVideo) { var n = c; n.followVideo.toggle(); engine.updateAudioChannel(n) }
+                            chip(c.muted ? "TẮT" : "BẬT", on: !c.muted, onColor: DS.pvw) { var n = c; n.muted.toggle(); engine.updateAudioChannel(n) }
+                        }
+                        LabeledSlider(title: "Âm lượng", value: Binding(get: { Double(c.gain) }, set: { var n = c; n.gain = Float($0); engine.updateAudioChannel(n) }),
+                                      range: 0...2) { String(format: "%+.0f dB", 20 * log10(max($0, 0.001))) }
+                        LevelMeter(db: c.level).frame(height: 6)
+                    }
+                    .padding(.vertical, 4)
+                    if c.id != engine.audioChannels.last?.id { Divider().overlay(DS.stroke) }
+                }
             }
-            HStack {
-                Button("Nhạc nền…") { pickMusic = true }
-                Button("Dừng nhạc") { engine.stopMusic() }
-                Button("Hiệu ứng…") { pickEffect = true }
+            SectionCard("Nhạc nền & hiệu ứng", systemImage: "music.note") {
+                HStack {
+                    Button { pickMusic = true } label: { Label("Nhạc nền", systemImage: "music.note.list") }
+                    Button { engine.stopMusic() } label: { Label("Dừng", systemImage: "stop.fill") }
+                    Button { pickEffect = true } label: { Label("Hiệu ứng", systemImage: "sparkles") }
+                }
+                .buttonStyle(.bordered).font(.caption)
             }
-            .buttonStyle(.bordered)
         }
         .fileImporter(isPresented: $pickMusic, allowedContentTypes: [.audio]) { r in
             if case .success(let u) = r, u.startAccessingSecurityScopedResource() { engine.playMusic(u) }
@@ -154,8 +212,14 @@ struct AudioPanel: View {
         }
     }
 
-    private func bind<T>(_ c: AudioChannelState, _ kp: WritableKeyPath<AudioChannelState, T>) -> Binding<T> {
-        Binding(get: { c[keyPath: kp] }, set: { var n = c; n[keyPath: kp] = $0; engine.updateAudioChannel(n) })
+    private func chip(_ text: String, on: Bool, onColor: Color = DS.accent, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(text).font(.caption2.weight(.heavy))
+                .padding(.horizontal, 8).padding(.vertical, 4)
+                .foregroundStyle(on ? .black : DS.text2)
+                .background(on ? onColor : DS.surface2, in: Capsule())
+        }
+        .buttonStyle(.plain)
     }
 }
 
@@ -168,47 +232,65 @@ struct SourcePanel: View {
 
     var body: some View {
         let id = selected ?? engine.previewID
-        VStack(alignment: .leading, spacing: 8) {
-            Picker("Nguồn", selection: Binding(get: { id }, set: { selected = $0 })) {
-                ForEach(engine.sources, id: \.id) { Text($0.name).tag(Optional($0.id)) }
+        VStack(alignment: .leading, spacing: DS.gap) {
+            SectionCard("Nguồn đang chỉnh", systemImage: "camera") {
+                Picker("Nguồn", selection: Binding(get: { id }, set: { selected = $0 })) {
+                    ForEach(engine.sources, id: \.id) { Text($0.name).tag(Optional($0.id)) }
+                }
+                .pickerStyle(.menu)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
             if let id {
                 let p = engine.processingFor(id)
-                Group {
-                    Text("Màu").font(.caption.bold())
-                    slider("Phơi sáng", p.exposure, -2...2) { var n = p; n.exposure = $0; return n }
-                    slider("Tương phản", p.contrast, 0.5...1.5) { var n = p; n.contrast = $0; return n }
-                    slider("Bão hoà", p.saturation, 0...2) { var n = p; n.saturation = $0; return n }
-                    slider("Nhiệt độ", p.temperature, 3000...10000) { var n = p; n.temperature = $0; return n }
-                    slider("Tint", p.tint, -100...100) { var n = p; n.tint = $0; return n }
+                SectionCard("Màu sắc", systemImage: "camera.filters",
+                            trailing: AnyView(Button("Đặt lại") { engine.setProcessing(id, SourceProcessing()) }.font(.caption))) {
+                    slider(id, "Phơi sáng", Double(p.exposure), -2...2, { String(format: "%+.1f EV", $0) }) { var n = p; n.exposure = Float($0); return n }
+                    slider(id, "Tương phản", Double(p.contrast), 0.5...1.5, { String(format: "%.2f", $0) }) { var n = p; n.contrast = Float($0); return n }
+                    slider(id, "Bão hoà", Double(p.saturation), 0...2, { String(format: "%.2f", $0) }) { var n = p; n.saturation = Float($0); return n }
+                    slider(id, "Nhiệt độ màu", Double(p.temperature), 3000...10000, { "\(Int($0)) K" }) { var n = p; n.temperature = Float($0); return n }
+                    slider(id, "Tint", Double(p.tint), -100...100, { "\(Int($0))" }) { var n = p; n.tint = Float($0); return n }
                     HStack {
+                        Text("LUT").font(.caption).foregroundStyle(DS.text2)
                         Picker("LUT", selection: Binding(get: { p.lutName }, set: { var n = p; n.lutName = $0; engine.setProcessing(id, n) })) {
                             Text("Không").tag(String?.none)
                             ForEach(ProcessingRenderer.availableLUTs(), id: \.self) { Text($0).tag(Optional($0)) }
                         }
-                        Button("Nạp .cube") { importLUT = true }
+                        .pickerStyle(.menu)
+                        Spacer()
+                        Button("Nạp .cube") { importLUT = true }.font(.caption)
                     }
                 }
-                Group {
-                    Text("Chroma key").font(.caption.bold())
-                    Toggle("Bật", isOn: Binding(get: { p.chromaEnabled }, set: { var n = p; n.chromaEnabled = $0; engine.setProcessing(id, n) }))
-                    Picker("Màu nền", selection: Binding(get: { p.keyHue }, set: { var n = p; n.keyHue = $0; engine.setProcessing(id, n) })) {
-                        Text("Xanh lá").tag(Float(120)); Text("Xanh dương").tag(Float(240))
-                    }.pickerStyle(.segmented)
-                    slider("Dung sai", p.keyTolerance, 5...80) { var n = p; n.keyTolerance = $0; return n }
-                    slider("Mềm biên", p.keySoftness, 0...40) { var n = p; n.keySoftness = $0; return n }
-                    Picker("Nền thay thế", selection: Binding(get: { p.keyBackgroundID }, set: { var n = p; n.keyBackgroundID = $0; engine.setProcessing(id, n) })) {
-                        Text("Trong suốt").tag(UUID?.none)
-                        ForEach(engine.sources.filter { $0.id != id }, id: \.id) { Text($0.name).tag(Optional($0.id)) }
+                SectionCard("Chroma key", systemImage: "person.crop.rectangle",
+                            trailing: AnyView(Toggle("", isOn: Binding(get: { p.chromaEnabled }, set: { var n = p; n.chromaEnabled = $0; engine.setProcessing(id, n) })).labelsHidden())) {
+                    if p.chromaEnabled {
+                        Picker("Màu nền", selection: Binding(get: { p.keyHue }, set: { var n = p; n.keyHue = $0; engine.setProcessing(id, n) })) {
+                            Text("Xanh lá").tag(Float(120)); Text("Xanh dương").tag(Float(240))
+                        }.pickerStyle(.segmented)
+                        slider(id, "Dung sai", Double(p.keyTolerance), 5...80, { "\(Int($0))°" }) { var n = p; n.keyTolerance = Float($0); return n }
+                        slider(id, "Mềm biên", Double(p.keySoftness), 0...40, { "\(Int($0))°" }) { var n = p; n.keySoftness = Float($0); return n }
+                        HStack {
+                            Text("Nền thay thế").font(.caption).foregroundStyle(DS.text2)
+                            Spacer()
+                            Picker("Nền", selection: Binding(get: { p.keyBackgroundID }, set: { var n = p; n.keyBackgroundID = $0; engine.setProcessing(id, n) })) {
+                                Text("Trong suốt").tag(UUID?.none)
+                                ForEach(engine.sources.filter { $0.id != id }, id: \.id) { Text($0.name).tag(Optional($0.id)) }
+                            }
+                            .pickerStyle(.menu)
+                        }
+                    } else {
+                        Text("Bật để xoá phông xanh lá / xanh dương").font(.caption).foregroundStyle(DS.text3)
                     }
                 }
-                Group {
-                    Text("Hình học").font(.caption.bold())
+                SectionCard("Hình học", systemImage: "crop.rotate") {
                     Toggle("Lật gương", isOn: Binding(get: { p.mirror }, set: { var n = p; n.mirror = $0; engine.setProcessing(id, n) }))
                     Toggle("Xoay 180°", isOn: Binding(get: { p.rotate180 }, set: { var n = p; n.rotate180 = $0; engine.setProcessing(id, n) }))
-                    Button("Đặt lại tất cả") { engine.setProcessing(id, SourceProcessing()) }
                 }
-                PTZPanel(engine: engine, sourceID: id)
+                .font(.subheadline)
+                SectionCard("Điều khiển PTZ", systemImage: "move.3d") {
+                    PTZPanel(engine: engine, sourceID: id)
+                }
+            } else {
+                Text("Chọn một nguồn ở hàng PREVIEW để chỉnh").font(.caption).foregroundStyle(DS.text3)
             }
         }
         .fileImporter(isPresented: $importLUT, allowedContentTypes: [UTType(filenameExtension: "cube") ?? .data]) { r in
@@ -217,12 +299,10 @@ struct SourcePanel: View {
         }
     }
 
-    private func slider(_ title: String, _ v: Float, _ range: ClosedRange<Float>, _ make: @escaping (Float) -> SourceProcessing) -> some View {
-        let id = selected ?? engine.previewID
-        return HStack {
-            Text(title).font(.caption).frame(width: 80, alignment: .leading)
-            Slider(value: Binding(get: { v }, set: { if let id { engine.setProcessing(id, make($0), undoable: false) } }), in: range)
-        }
+    private func slider(_ id: UUID, _ title: String, _ v: Double, _ range: ClosedRange<Double>,
+                        _ fmt: @escaping (Double) -> String, _ make: @escaping (Double) -> SourceProcessing) -> some View {
+        LabeledSlider(title: title, value: Binding(get: { v }, set: { engine.setProcessing(id, make($0), undoable: false) }),
+                      range: range, format: fmt)
     }
 }
 
@@ -234,7 +314,7 @@ struct PTZPanel: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text("PTZ (VISCA over IP)").font(.caption.bold())
+            Text("VISCA over IP").font(.caption).foregroundStyle(DS.text3)
             if engine.ptz[sourceID] == nil {
                 HStack {
                     TextField("IP camera", text: $host).textFieldStyle(.roundedBorder).keyboardType(.numbersAndPunctuation)
@@ -302,7 +382,7 @@ struct Joystick: View {
 struct ScopesPanel: View {
     @ObservedObject var engine: StudioEngine
     var body: some View {
-        VStack(alignment: .leading) {
+        SectionCard("Scopes (Program)", systemImage: "waveform.path.ecg") {
             Toggle("Bật scopes (Program)", isOn: $engine.scopesEnabled)
             Picker("", selection: $engine.scopeKind) { ForEach(ScopeKind.allCases) { Text($0.label).tag($0) } }
                 .pickerStyle(.segmented)
@@ -319,7 +399,7 @@ struct AutoPanel: View {
     @ObservedObject var auto: AutoSwitcher
     @ObservedObject var engine: StudioEngine
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        SectionCard("Tự động chuyển cảnh", systemImage: "arrow.triangle.2.circlepath") {
             Toggle("Tự động chuyển cảnh", isOn: $auto.enabled)
             Picker("Chế độ", selection: $auto.mode) { ForEach(AutoSwitcher.Mode.allCases) { Text($0.label).tag($0) } }
                 .pickerStyle(.segmented)
@@ -343,7 +423,7 @@ struct ReplayPanel: View {
     @State private var speed = 0.5
     @State private var length = 8.0
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        SectionCard("Replay chậm", systemImage: "gobackward") {
             Picker("Tốc độ", selection: $speed) {
                 Text("0.25×").tag(0.25); Text("0.5×").tag(0.5); Text("0.75×").tag(0.75); Text("1×").tag(1.0)
             }.pickerStyle(.segmented)

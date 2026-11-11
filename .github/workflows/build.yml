@@ -84,20 +84,25 @@ jobs:
           path: ${{ matrix.scheme }}-unsigned.ipa
 
   screenshots:
-    name: UI screenshots (iPad Simulator, demo mode)
+    name: UI screenshots (${{ matrix.device }} Simulator, demo mode)
     runs-on: macos-15
+    strategy:
+      fail-fast: false
+      matrix:
+        device: [iPad, iPhone]
     steps:
       - uses: actions/checkout@v4
       - name: Select newest Xcode
         run: eval "$SELECT_XCODE"
       - name: Install XcodeGen & generate project
         run: brew install xcodegen && xcodegen generate
-      - name: Pick an iPad simulator
+      - name: Pick a ${{ matrix.device }} simulator
         id: sim
         run: |
-          xcrun simctl list devices available
-          UDID=$(xcrun simctl list devices available -j | jq -r '[.devices | to_entries[] | select(.key|test("iOS")) | .value[] | select(.name|test("iPad Pro.*13|iPad Pro"))][0].udid // empty')
-          if [ -z "$UDID" ]; then UDID=$(xcrun simctl list devices available -j | jq -r '[.devices | to_entries[] | select(.key|test("iOS")) | .value[] | select(.name|test("iPad"))][0].udid'); fi
+          if [ "${{ matrix.device }}" = "iPad" ]; then PREF="iPad Pro.*13|iPad Pro"; ANY="iPad"; else PREF="iPhone 1[6-9] Pro$|iPhone 1[6-9]$"; ANY="iPhone"; fi
+          UDID=$(xcrun simctl list devices available -j | jq -r --arg p "$PREF" '[.devices | to_entries[] | select(.key|test("iOS")) | .value[] | select(.name|test($p))][0].udid // empty')
+          if [ -z "$UDID" ]; then UDID=$(xcrun simctl list devices available -j | jq -r --arg p "$ANY" '[.devices | to_entries[] | select(.key|test("iOS")) | .value[] | select(.name|test($p))][0].udid'); fi
+          echo "Using $(xcrun simctl list devices | grep $UDID)"
           echo "udid=$UDID" >> "$GITHUB_OUTPUT"
           xcrun simctl boot "$UDID" || true
           xcrun simctl bootstatus "$UDID" -b
@@ -131,22 +136,22 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: diagnostics
+          name: diagnostics-${{ matrix.device }}
           path: diag/
       - name: Screenshot summary
         if: always()
         run: |
           ls -la screenshots || true
-          echo "### Ảnh chụp UI: $(ls screenshots/*.png 2>/dev/null | wc -l | tr -d ' ') màn hình — tải artifact **ui-screenshots**" >> "$GITHUB_STEP_SUMMARY"
+          echo "### Ảnh chụp UI ${{ matrix.device }}: $(ls screenshots/*.png 2>/dev/null | wc -l | tr -d ' ') màn hình — tải artifact **ui-screenshots-${{ matrix.device }}**" >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: ui-screenshots
+          name: ui-screenshots-${{ matrix.device }}
           path: screenshots/*.png
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: screenshots-log
+          name: screenshots-log-${{ matrix.device }}
           path: screenshots.log
 
   # Bản .ipa đã ký, cài thẳng lên iPad (Ad Hoc). Chỉ chạy khi repo có đủ secrets:

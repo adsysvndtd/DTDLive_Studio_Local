@@ -102,6 +102,22 @@ final class Switcher: @unchecked Sendable {
         }
     }
 
+    /// Manual T-bar. 0 = program only, 1 = transition finished (preview becomes program).
+    /// Progress is held (not timed) while the bar is moved.
+    func setManual(_ progress: Double, style: TransitionStyle) {
+        let p = max(0, min(1, progress))
+        locked {
+            if p >= 0.999 {
+                guard let to = transition?.to ?? previewID else { transition = nil; return }
+                previewID = programID; programID = to; transition = nil
+                return
+            }
+            guard p > 0.001, let to = transition?.to ?? previewID, to != programID else { transition = nil; return }
+            let hold: CFTimeInterval = 1_000_000 // huge duration -> progress stays put between bar moves
+            transition = (style == .cut ? .mix : style, programID, to, HostClock.now - p * hold, hold)
+        }
+    }
+
     /// Hot-punch a source straight to program (multiview double-tap).
     func take(_ id: UUID) { locked { previewID = programID; programID = id; transition = nil } }
 
