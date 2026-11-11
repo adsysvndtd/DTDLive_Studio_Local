@@ -3,10 +3,15 @@ import Foundation
 /// Builds the SDP body sent with ANNOUNCE.
 public struct SDPDescription {
     public struct Video {
-        public var sps: [UInt8]
-        public var pps: [UInt8]
+        public enum Codec { case h264, h265 }
+        public var codec: Codec = .h264
+        /// H.264: [SPS, PPS]; H.265: [VPS, SPS, PPS]
+        public var parameterSets: [[UInt8]]
         public var payloadType: UInt8 = 96
-        public init(sps: [UInt8], pps: [UInt8]) { self.sps = sps; self.pps = pps }
+        public var sps: [UInt8] { codec == .h264 ? (parameterSets.first ?? []) : (parameterSets.count > 1 ? parameterSets[1] : []) }
+        public var pps: [UInt8] { parameterSets.last ?? [] }
+        public init(sps: [UInt8], pps: [UInt8]) { parameterSets = [sps, pps] }
+        public init(hevc vps: [UInt8], sps: [UInt8], pps: [UInt8]) { codec = .h265; parameterSets = [vps, sps, pps] }
     }
 
     public struct Audio {
@@ -49,7 +54,13 @@ public struct SDPDescription {
         l.append("c=IN IP4 0.0.0.0")
         l.append("t=0 0")
         l.append("a=control:*")
-        if let v = video {
+        if let v = video, v.codec == .h265 {
+            func b64(_ b: [UInt8]) -> String { Data(b).base64EncodedString() }
+            l.append("m=video 0 RTP/AVP \(v.payloadType)")
+            l.append("a=rtpmap:\(v.payloadType) H265/90000")
+            l.append("a=fmtp:\(v.payloadType) sprop-vps=\(b64(v.parameterSets[0])); sprop-sps=\(b64(v.parameterSets[1])); sprop-pps=\(b64(v.parameterSets[2]))")
+            l.append("a=control:\(Self.videoTrack)")
+        } else if let v = video {
             let profile = v.sps.count >= 4 ? String(format: "%02X%02X%02X", v.sps[1], v.sps[2], v.sps[3]) : "42E01F"
             let sprop = Data(v.sps).base64EncodedString() + "," + Data(v.pps).base64EncodedString()
             l.append("m=video 0 RTP/AVP \(v.payloadType)")

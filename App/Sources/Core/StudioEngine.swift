@@ -18,7 +18,9 @@ final class StudioEngine: ObservableObject {
     @Published var transitionDuration: Double = 0.8
     @Published var outputs: [OutputConfig] = [] { didSet { saveOutputs() } }
     @Published private(set) var outputStatus: [UUID: OutputStatus] = [:]
-    @Published var encoder = EncoderSettings() { didSet { videoEncoder.update(encoder) } }
+    @Published var encoder = EncoderSettings() {
+        didSet { videoEncoder.update(encoder); currentBitrate = encoder.bitrate; UserDefaults.standard.set(try? JSONEncoder().encode(encoder), forKey: "dtd.encoder.v1") }
+    }
     @Published var format = ProgramFormat() { didSet { switcher.setFormat(format) } }
     @Published var logo: OverlayLayer? { didSet { pushOverlays() } }
     @Published var pip: OverlayLayer? { didSet { pushOverlays() } }
@@ -35,6 +37,9 @@ final class StudioEngine: ObservableObject {
     @Published var externalDisplayConnected = false
     @Published private(set) var canUndo = false
     @Published private(set) var canRedo = false
+    /// Bitrate actually in use (adaptive bitrate may lower it below `encoder.bitrate`).
+    @Published private(set) var currentBitrate = EncoderSettings().bitrate
+    private var calmSeconds = 0
 
     enum ExternalMode: String, CaseIterable { case program, multiview }
 
@@ -106,6 +111,10 @@ final class StudioEngine: ObservableObject {
         timers.append(Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { [weak self] _ in
             Task { @MainActor in self?.updateScopes() }
         })
+        timers.append(Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+            Task { @MainActor in await self?.adaptBitrate() }
+        })
+        if let saved = Self.load(EncoderSettings.self, key: "dtd.encoder.v1") { encoder = saved }
     }
 
     static let defaultTitles: [TitleItem] = [
@@ -123,6 +132,7 @@ final class StudioEngine: ObservableObject {
         let a = audio, id = source.id, name = source.name
         if let s = source as? SRTInputSource { s.sink.onAudio = { a.feed(sourceID: id, name: name, buffer: $0) } }
         if let s = source as? RTMPInputSource { s.sink.onAudio = { a.feed(sourceID: id, name: name, buffer: $0) } }
+        if let s = source as? RTSPInputSource { s.onAudio = { a.feed(sourceID: id, name: name, buffer: $0) } }
         Task { await source.start(); objectWillChange.send() }
         if programID == nil { switcher.take(source.id) } else if previewID == nil { switcher.setPreview(source.id) }
         syncState()
@@ -242,6 +252,29 @@ final class StudioEngine: ObservableObject {
             let r = s.analyze(pb)
             await MainActor.run { [weak self] in self?.scopeResult = r }
         }
+    }
+
+    // MARK: Adaptive bitrate
+
+    /// AIMD on the shared encoder: drop 25% when any destination is >1 s behind,
+    /// climb 8% after 5 calm seconds. One slow destination lowers quality for all —
+    /// the price of encoding once; disable `adaptive` to let that destination drop frames instead.
+    private func adaptBitrate() async {
+        guard encoder.adaptive, isAnyLive else {
+            if currentBitrate != encoder.bitrate { currentBitrate = encoder.bitrate; videoEncoder.setBitrate(currentBitrate) }
+            return
+        }
+        let lag = await outputManager.congestion(fps: Double(format.fps))
+        var next = currentBitrate
+        if lag > 1.0 {
+            next = max(encoder.minBitrate, Int(Double(currentBitrate) * 0.75)); calmSeconds = 0
+        } else if lag < 0.2 {
+            calmSeconds += 1
+            if calmSeconds >= 5 { next = min(encoder.bitrate, Int(Double(currentBitrate) * 1.08)); calmSeconds = 0 }
+        } else {
+            calmSeconds = 0
+        }
+        if next != currentBitrate { currentBitrate = next; videoEncoder.setBitrate(next) }
     }
 
     // MARK: Undo / redo

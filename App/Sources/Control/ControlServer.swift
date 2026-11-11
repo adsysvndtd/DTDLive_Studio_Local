@@ -16,7 +16,7 @@ protocol ControlTarget: AnyObject, Sendable {
     func tallyJSON(for name: String) async -> Data
 }
 
-/// Tiny HTTP/1.1 server (port 8080) + OSC/UDP listener (port 9000).
+/// Tiny HTTP/1.1 server (port 8080) + OSC/UDP listener (port 8000).
 ///
 /// HTTP:
 ///   GET  /                       web remote (titles, switching, score)
@@ -36,7 +36,7 @@ final class ControlServer: @unchecked Sendable {
     let httpPort: UInt16
     let oscPort: UInt16
 
-    init(httpPort: UInt16 = 8080, oscPort: UInt16 = 9000) { self.httpPort = httpPort; self.oscPort = oscPort }
+    init(httpPort: UInt16 = 8080, oscPort: UInt16 = 8000) { self.httpPort = httpPort; self.oscPort = oscPort }
 
     func start() throws {
         let h = try NWListener(using: .tcp, on: NWEndpoint.Port(rawValue: httpPort)!)

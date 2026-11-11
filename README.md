@@ -6,7 +6,7 @@
 
 | Nhóm | Chức năng |
 |---|---|
-| Nguồn vào | Camera trong máy, camera UVC/HDMI→USB (iPadOS 17+), SRT (caller/listener), RTMP play, file video lặp, **app DTD Cam** trên iPhone (SRT/RTMP, có tally), NDI (khi có SDK) |
+| Nguồn vào | Camera trong máy, camera UVC/HDMI→USB (iPadOS 17+), SRT (caller/listener), RTMP play, **RTSP (IP camera, H.264/H.265 + AAC, tự kết nối lại)**, file video lặp, **app DTD Cam** trên iPhone (SRT/RTMP, có tally), NDI (khi có SDK) |
 | Bàn trộn | PREVIEW/PROGRAM, CUT (Space), AUTO (Return), MIX/WIPE/DIP, FTB, chạm/chạm đúp trên multiview, **tự động chuyển cảnh** (lần lượt / ngẫu nhiên / theo âm thanh) |
 | Xử lý hình từng nguồn | Phơi sáng, tương phản, bão hoà, nhiệt độ màu/tint, **LUT .cube**, **chroma key** (xanh lá/xanh dương, nền thay thế), lật gương, xoay 180°, cắt khung |
 | Đồ hoạ | **Lower third, tên + chức danh, title toàn màn hình, chữ chạy, bảng tỉ số, đồng hồ**; logo; PiP; hiệu ứng hiện/ẩn |
@@ -14,19 +14,20 @@
 | Scopes | **Histogram, Waveform, RGB Parade, Vectorscope** |
 | Âm thanh | **Mixer nhiều kênh**: mic/USB, âm thanh từng nguồn SRT/RTMP, nhạc nền lặp, hiệu ứng âm thanh; gain/mute/**AFV** (âm thanh theo hình), đồng hồ mức tiếng |
 | Replay | **Replay slow-motion** 0.25×–1× từ bộ đệm 15 giây (bộ đệm lưu dạng H.264 nên tốn ít RAM) |
-| Đầu ra | **Push RTMP/RTMPS, SRT, RTSP**, ghi MP4 (phân mảnh, không hỏng file khi mất điện); nhiều đích cùng lúc; tự kết nối lại |
+| Đầu ra | **Push RTMP/RTMPS, SRT, RTSP**, **tạo phiên YouTube/Facebook Live tự động**, H.264 hoặc **HEVC**, **bitrate thích ứng**, ghi MP4 (phân mảnh, không hỏng file khi mất điện); nhiều đích cùng lúc; tự kết nối lại |
 | Màn hình ngoài | HDMI/AirPlay: chiếu Program hoặc Multiview toàn màn hình |
-| Điều khiển từ xa | **Web remote** `http://<IP iPad>:8080` (title, tỉ số, chuyển cảnh); **HTTP API** cho Bitfocus Companion / Stream Deck; **OSC** UDP 9000 |
+| Điều khiển từ xa | **Web remote** `http://<IP iPad>:8080` (title, tỉ số, chuyển cảnh); **HTTP API** cho Bitfocus Companion / Stream Deck; **OSC** UDP 8000 |
 | Tally | Gửi tới DTD Cam, đèn tally camera PTZ (VISCA), NDI tally |
 | PTZ | **VISCA over IP** (UDP 52381) và VISCA TCP (5678): joystick, zoom, preset 1–6 (chạm = gọi, giữ = lưu); NDI PTZ |
 | Thao tác | **Undo/Redo** (⌘Z / ⇧⌘Z) cho title, logo, PiP, xử lý hình; tự hút cạnh và lưới khi đặt PiP/logo |
 | Khung hình | 1920×1080 ngang / 1080×1920 dọc |
+| Show | **Lưu/nạp toàn bộ cấu hình** (nguồn, đầu ra, title, màu/LUT/key, PTZ, encoder) thành file `.dtdshow` trong Files |
 
 ### Đối chiếu với TopDirector
 
 | TopDirector (tính năng công khai) | DTD Studio |
 |---|---|
-| Multicam NDI/SRT/RTSP/UVC | UVC, SRT, RTMP, DTD Cam; NDI qua SDK; RTSP vào: *chưa làm* |
+| Multicam NDI/SRT/RTSP/UVC | UVC, SRT, RTSP, RTMP, DTD Cam; NDI qua SDK |
 | Stream RTMP 3 kênh + ghi file | RTMP/SRT/RTSP không giới hạn số đích + ghi MP4 |
 | NDI/NDI\|HX output | NDI output khi có SDK (NDI\|HX cần license riêng) |
 | TopDirectorCam + slow-motion replay | DTD Cam + replay slow-motion |
@@ -37,7 +38,7 @@
 | AirPlay/Screen mirroring | Có (màn hình ngoài) |
 | PTZ NDI | VISCA over IP + NDI PTZ |
 | Undo không giới hạn, snap | Undo 100 bước, snap |
-| Đăng nhập Facebook/YouTube | *Chưa làm*: dán stream key RTMP |
+| Đăng nhập Facebook/YouTube | Có (cần Client ID / App ID, xem `docs/PLATFORMS.md`) |
 
 ## Kiến trúc
 
@@ -97,13 +98,17 @@ docker run --rm -p 8554:8554 -p 8890:8890/udp bluenviron/mediamtx
 ffplay rtsp://<mac-ip>:8554/test
 ```
 
-## Trạng thái và việc tiếp theo
+## Cổng mạng dùng trên iPad
 
-- Mã **chưa được biên dịch**, vì máy dựng không có Xcode. Lần build đầu sẽ còn lỗi nhỏ về kiểu dữ liệu hoặc concurrency cần sửa.
-- NDI chỉ được biên dịch khi có SDK trong `Vendor/NDI/` (xem `project.yml`). Không lấy thư viện NDI từ bundle của app khác.
-- Việc tiếp theo:
-  - RTSP pull input
-  - Đăng nhập YouTube/Facebook (OAuth) để tự tạo phiên live
-  - HEVC
-  - Bitrate thích ứng theo băng thông
-  - Lưu và nạp "show" (bộ cấu hình title, nguồn, đầu ra)
+| Cổng | Giao thức | Dùng cho |
+|---|---|---|
+| 8080 | TCP/HTTP | Web remote, HTTP API, tally cho DTD Cam |
+| 8000 | UDP | OSC |
+| 9001 | UDP | SRT listener mặc định cho DTD Cam |
+
+## Trạng thái
+
+- Mã **chưa được biên dịch** vì máy dựng không có Xcode. Lần build đầu có thể còn lỗi nhỏ về kiểu dữ liệu hoặc concurrency.
+- Module `RTSPPush` có unit test cho các phần: packetizer và depacketizer H.264/H.265/AAC, parser SDP, demux luồng RTSP, xác thực Digest. Chạy bằng `cd Packages/RTSPPush && swift test`.
+- NDI chỉ được biên dịch khi có SDK trong `Vendor/NDI/`.
+- Kết quả review: xem `docs/REVIEW.md`.

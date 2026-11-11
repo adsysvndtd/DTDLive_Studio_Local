@@ -31,8 +31,6 @@ struct OverlayLayer: Identifiable {
     let id = UUID()
     var image: CIImage?               // logo or rendered lower third
     var pipSourceID: UUID?            // picture-in-picture source (gets its own processing/key)
-    var cornerRadius: CGFloat = 0
-    var borderWidth: CGFloat = 0
     var rect: CGRect                  // normalised 0..1, origin top-left
     var opacity: CGFloat = 1
     var visible = true
@@ -99,6 +97,7 @@ final class Switcher: @unchecked Sendable {
     func auto(_ style: TransitionStyle, duration: CFTimeInterval = 0.8) {
         guard style != .cut else { cut(); return }
         locked {
+            guard previewID != nil, previewID != programID, transition == nil else { return }
             transition = (style, programID, previewID, HostClock.now, duration)
         }
     }

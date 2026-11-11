@@ -13,7 +13,7 @@ final class CameraSource: NSObject, VideoSource {
     let frames = FrameStore()
     private(set) var status: SourceStatus = .idle
 
-    private let deviceID: String
+    let deviceID: String
     private let session = AVCaptureSession()
     private let output = AVCaptureVideoDataOutput()
     private let queue = DispatchQueue(label: "camera.capture", qos: .userInteractive)

@@ -50,8 +50,9 @@ struct OutputConfig: Identifiable, Codable, Equatable {
 
 /// Context a destination needs to start: parameter sets for RTSP SDP / MP4 header.
 struct StreamDescription: Sendable {
-    var sps: [UInt8]
-    var pps: [UInt8]
+    /// H.264: [SPS, PPS]; HEVC: [VPS, SPS, PPS]
+    var parameterSets: [[UInt8]]
+    var isHEVC: Bool
     var videoFormat: CMFormatDescription
     var audioFormat: AVAudioFormat
 }
@@ -64,6 +65,12 @@ protocol OutputTarget: AnyObject, Sendable {
     func isHealthy() async -> Bool
     func send(video: CMSampleBuffer) async
     func send(audio: AVAudioCompressedBuffer, when: AVAudioTime) async
+    /// Bytes accepted but not yet on the wire (for adaptive bitrate). 0 if unknown.
+    func pendingBytes() async -> Int
+}
+
+extension OutputTarget {
+    func pendingBytes() async -> Int { 0 }
 }
 
 // MARK: - RTMP (HaishinKit)
@@ -139,7 +146,9 @@ final class RTSPOutput: OutputTarget, @unchecked Sendable {
         let c = RTSPPushClient(url: url)
         client = c
         let audio = SDPDescription.Audio.aacLC(sampleRate: Int(desc.audioFormat.sampleRate), channels: Int(desc.audioFormat.channelCount))
-        try await c.start(sdp: SDPDescription(video: .init(sps: desc.sps, pps: desc.pps), audio: audio))
+        let ps = desc.parameterSets
+        let video: SDPDescription.Video = desc.isHEVC ? .init(hevc: ps[0], sps: ps[1], pps: ps[2]) : .init(sps: ps[0], pps: ps[1])
+        try await c.start(sdp: SDPDescription(video: video, audio: audio))
     }
 
     func disconnect() async {
@@ -157,9 +166,11 @@ final class RTSPOutput: OutputTarget, @unchecked Sendable {
         var nals = NALUnitSplitter.splitAVCC(video.dataBytes)
         let key = video.isKeyframe
         // Repeat SPS/PPS in-band on IDR so late joiners / server-side recorders can decode.
-        if key, let ps = video.h264ParameterSets { nals.insert(ps.pps[...], at: 0); nals.insert(ps.sps[...], at: 0) }
+        if key, let ps = video.videoParameterSets { nals.insert(contentsOf: ps.map { $0[...] }, at: 0) }
         await client.sendVideo(nalUnits: nals, pts: video.presentationTimeStamp.seconds, isKeyframe: key)
     }
+
+    func pendingBytes() async -> Int { await client?.pendingBytes ?? 0 }
 
     func send(audio: AVAudioCompressedBuffer, when: AVAudioTime) async {
         guard let client, audio.packetCount > 0 else { return }
@@ -192,8 +203,11 @@ final class RecordOutput: OutputTarget, @unchecked Sendable {
         v.expectsMediaDataInRealTime = true
         var asbd = desc.audioFormat.streamDescription.pointee
         var afd: CMAudioFormatDescription?
-        CMAudioFormatDescriptionCreate(allocator: nil, asbd: &asbd, layoutSize: 0, layout: nil, magicCookieSize: 0,
-                                       magicCookie: nil, extensions: nil, formatDescriptionOut: &afd)
+        let asc = SDPDescription.Audio.aacLC(sampleRate: Int(asbd.mSampleRate), channels: Int(asbd.mChannelsPerFrame)).audioSpecificConfig
+        asc.withUnsafeBytes { cookie in
+            _ = CMAudioFormatDescriptionCreate(allocator: nil, asbd: &asbd, layoutSize: 0, layout: nil, magicCookieSize: cookie.count,
+                                               magicCookie: cookie.baseAddress, extensions: nil, formatDescriptionOut: &afd)
+        }
         audioFormat = afd
         let a = AVAssetWriterInput(mediaType: .audio, outputSettings: nil, sourceFormatHint: afd)
         a.expectsMediaDataInRealTime = true

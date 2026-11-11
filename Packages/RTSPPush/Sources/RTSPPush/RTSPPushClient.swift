@@ -23,6 +23,8 @@ public actor RTSPPushClient {
     private var sessionTimeout: Int = 60
 
     private var video = H264RTPPacketizer()
+    private var video265 = H265RTPPacketizer()
+    private var isHEVC = false
     private var audio = AACRTPPacketizer()
     private var audioClockRate: Int = 48000
     private var hasAudio = false
@@ -32,6 +34,7 @@ public actor RTSPPushClient {
     /// Bytes queued but not yet acknowledged by the TCP stack, used to drop frames under congestion.
     private var inFlight = 0
     public var maxInFlightBytes = 4 * 1024 * 1024
+    public var pendingBytes: Int { inFlight }
 
     public init(url: URL) {
         self.url = url
@@ -54,6 +57,7 @@ public actor RTSPPushClient {
         guard let host = url.host else { throw ClientError.badURL }
         state = .connecting
         hasAudio = sdp.audio != nil
+        isHEVC = sdp.video?.codec == .h265
         audioClockRate = sdp.audio?.sampleRate ?? 48000
         let port = NWEndpoint.Port(rawValue: UInt16(url.port ?? 554))!
         let params = NWParameters.tcp
@@ -64,13 +68,13 @@ public actor RTSPPushClient {
         let conn = NWConnection(host: NWEndpoint.Host(host), port: port, using: params)
         connection = conn
         try await withCheckedThrowingContinuation { (cont: CheckedContinuation<Void, Error>) in
-            var resumed = false
+            let once = OnceFlag()
             conn.stateUpdateHandler = { [weak self] st in
                 switch st {
                 case .ready:
-                    if !resumed { resumed = true; cont.resume() }
+                    if once.fire() { cont.resume() }
                 case .failed(let e), .waiting(let e):
-                    if !resumed { resumed = true; cont.resume(throwing: e) }
+                    if once.fire() { cont.resume(throwing: e) }
                     Task { await self?.fail("\(e)") }
                 case .cancelled:
                     Task { await self?.fail("closed") }
@@ -148,7 +152,7 @@ public actor RTSPPushClient {
         let base = videoBaseTime ?? pts
         videoBaseTime = base
         let ts = UInt32(truncatingIfNeeded: Int64((pts - base) * 90000))
-        let packets = video.packetize(nalUnits: nalUnits, timestamp: ts)
+        let packets = isHEVC ? video265.packetize(nalUnits: nalUnits, timestamp: ts) : video.packetize(nalUnits: nalUnits, timestamp: ts)
         var out = [UInt8]()
         for p in packets { out += InterleavedFrame.wrap(channel: 0, p.serialized()) }
         write(out)
@@ -192,6 +196,8 @@ public actor RTSPPushClient {
     }
 
     private func send(_ method: String, uri: String, headers: [(String, String)], body: String?, timeout: Double) async throws -> RTSPResponse {
+        // One request in flight at a time (keep-alive may race with TEARDOWN).
+        while pending != nil { try await Task.sleep(nanoseconds: 10_000_000) }
         cseq += 1
         var h: [(String, String)] = [("CSeq", "\(cseq)"), ("User-Agent", "DTDStudio/1.0")]
         if let session { h.append(("Session", session)) }

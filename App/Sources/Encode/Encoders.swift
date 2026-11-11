@@ -3,10 +3,22 @@ import CoreMedia
 import Foundation
 import VideoToolbox
 
-struct EncoderSettings: Equatable {
+enum VideoCodecChoice: String, Codable, CaseIterable, Identifiable {
+    case h264, hevc
+    var id: String { rawValue }
+    var label: String { self == .h264 ? "H.264" : "HEVC (H.265)" }
+}
+
+struct EncoderSettings: Equatable, Codable {
+    var codec: VideoCodecChoice = .h264
     var bitrate = 6_000_000
+    /// Adaptive bitrate floor (bps) — the encoder never goes below this under congestion.
+    var minBitrate = 1_500_000
+    var adaptive = true
     var keyframeInterval: Double = 2 // seconds; 2s is what YouTube/Facebook require
-    var profile = kVTProfileLevel_H264_High_AutoLevel as String
+    var profile: String {
+        codec == .h264 ? kVTProfileLevel_H264_High_AutoLevel as String : kVTProfileLevel_HEVC_Main_AutoLevel as String
+    }
     var audioBitrate = 128_000
 }
 
@@ -18,11 +30,16 @@ final class VideoEncoder: @unchecked Sendable {
     private var settings: EncoderSettings
     private var size: (Int32, Int32) = (0, 0)
     private var forceKeyframe = false
+    private var liveBitrate: Int
+    /// encode() runs on the switcher's render queue; settings/ABR/keyframe requests come from
+    /// the main thread and output actors. One recursive lock serialises all session access.
+    private let lock = NSRecursiveLock()
     var onEncoded: Handler?
 
-    init(settings: EncoderSettings) { self.settings = settings }
+    init(settings: EncoderSettings) { self.settings = settings; liveBitrate = settings.bitrate }
 
     func encode(_ pb: CVPixelBuffer, pts: CFTimeInterval) {
+        lock.lock(); defer { lock.unlock() }
         let w = Int32(CVPixelBufferGetWidth(pb)), h = Int32(CVPixelBufferGetHeight(pb))
         if session == nil || size != (w, h) { makeSession(w, h) }
         guard let session else { return }
@@ -40,18 +57,29 @@ final class VideoEncoder: @unchecked Sendable {
     }
 
     /// Called when a destination (re)connects so it can start on an IDR.
-    func requestKeyframe() { forceKeyframe = true }
+    func requestKeyframe() { lock.lock(); forceKeyframe = true; lock.unlock() }
 
     func update(_ s: EncoderSettings) {
+        lock.lock(); defer { lock.unlock() }
+        let codecChanged = s.codec != settings.codec
         settings = s
+        if codecChanged { invalidate(); forceKeyframe = true; return } // new session on next frame
+        setBitrate(s.bitrate)
+    }
+
+    /// Live bitrate change (adaptive bitrate); no keyframe, no session restart.
+    func setBitrate(_ bps: Int) {
+        lock.lock(); defer { lock.unlock() }
+        liveBitrate = bps
         if let session {
-            VTSessionSetProperty(session, key: kVTCompressionPropertyKey_AverageBitRate, value: s.bitrate as CFNumber)
+            VTSessionSetProperty(session, key: kVTCompressionPropertyKey_AverageBitRate, value: bps as CFNumber)
             VTSessionSetProperty(session, key: kVTCompressionPropertyKey_DataRateLimits,
-                                 value: [Double(s.bitrate) * 1.5 / 8, 1.0] as CFArray)
+                                 value: [Double(bps) * 1.5 / 8, 1.0] as CFArray)
         }
     }
 
     func invalidate() {
+        lock.lock(); defer { lock.unlock() }
         if let session { VTCompressionSessionCompleteFrames(session, untilPresentationTimeStamp: .invalid); VTCompressionSessionInvalidate(session) }
         session = nil
     }
@@ -61,7 +89,7 @@ final class VideoEncoder: @unchecked Sendable {
         size = (w, h)
         var s: VTCompressionSession?
         let spec = [kVTVideoEncoderSpecification_RequireHardwareAcceleratedVideoEncoder: true] as CFDictionary
-        guard VTCompressionSessionCreate(allocator: nil, width: w, height: h, codecType: kCMVideoCodecType_H264,
+        guard VTCompressionSessionCreate(allocator: nil, width: w, height: h, codecType: settings.codec == .h264 ? kCMVideoCodecType_H264 : kCMVideoCodecType_HEVC,
                                          encoderSpecification: spec, imageBufferAttributes: nil, compressedDataAllocator: nil,
                                          outputCallback: nil, refcon: nil, compressionSessionOut: &s) == noErr, let s else { return }
         let fps = 30.0
@@ -69,14 +97,16 @@ final class VideoEncoder: @unchecked Sendable {
             kVTCompressionPropertyKey_RealTime: true,
             kVTCompressionPropertyKey_ProfileLevel: settings.profile,
             kVTCompressionPropertyKey_AllowFrameReordering: false,
-            kVTCompressionPropertyKey_AverageBitRate: settings.bitrate,
-            kVTCompressionPropertyKey_DataRateLimits: [Double(settings.bitrate) * 1.5 / 8, 1.0],
+            kVTCompressionPropertyKey_AverageBitRate: liveBitrate,
+            kVTCompressionPropertyKey_DataRateLimits: [Double(liveBitrate) * 1.5 / 8, 1.0],
             kVTCompressionPropertyKey_ExpectedFrameRate: fps,
             kVTCompressionPropertyKey_MaxKeyFrameIntervalDuration: settings.keyframeInterval,
             kVTCompressionPropertyKey_MaxKeyFrameInterval: Int(fps * settings.keyframeInterval),
-            kVTCompressionPropertyKey_H264EntropyMode: kVTH264EntropyMode_CABAC
         ]
         VTSessionSetProperties(s, propertyDictionary: p as CFDictionary)
+        if settings.codec == .h264 {
+            VTSessionSetProperty(s, key: kVTCompressionPropertyKey_H264EntropyMode, value: kVTH264EntropyMode_CABAC)
+        }
         VTCompressionSessionPrepareToEncodeFrames(s)
         session = s
     }
@@ -89,18 +119,27 @@ extension CMSampleBuffer {
         return !(first[kCMSampleAttachmentKey_NotSync] as? Bool ?? false)
     }
 
-    /// SPS / PPS from an H.264 format description.
-    var h264ParameterSets: (sps: [UInt8], pps: [UInt8])? {
+    var isHEVC: Bool { formatDescription?.mediaSubType == .hevc }
+
+    /// H.264: [SPS, PPS]; HEVC: [VPS, SPS, PPS] (and any extra SEI-prefix sets).
+    var videoParameterSets: [[UInt8]]? {
         guard let fd = formatDescription else { return nil }
-        func set(_ i: Int) -> [UInt8]? {
+        let hevc = isHEVC
+        func set(_ i: Int, _ count: UnsafeMutablePointer<Int>?) -> [UInt8]? {
             var ptr: UnsafePointer<UInt8>?; var len = 0
-            guard CMVideoFormatDescriptionGetH264ParameterSetAtIndex(fd, parameterSetIndex: i, parameterSetPointerOut: &ptr,
-                                                                     parameterSetSizeOut: &len, parameterSetCountOut: nil,
-                                                                     nalUnitHeaderLengthOut: nil) == noErr, let ptr else { return nil }
+            let st = hevc
+                ? CMVideoFormatDescriptionGetHEVCParameterSetAtIndex(fd, parameterSetIndex: i, parameterSetPointerOut: &ptr,
+                                                                     parameterSetSizeOut: &len, parameterSetCountOut: count, nalUnitHeaderLengthOut: nil)
+                : CMVideoFormatDescriptionGetH264ParameterSetAtIndex(fd, parameterSetIndex: i, parameterSetPointerOut: &ptr,
+                                                                     parameterSetSizeOut: &len, parameterSetCountOut: count, nalUnitHeaderLengthOut: nil)
+            guard st == noErr, let ptr else { return nil }
             return Array(UnsafeBufferPointer(start: ptr, count: len))
         }
-        guard let sps = set(0), let pps = set(1) else { return nil }
-        return (sps, pps)
+        var n = 0
+        guard let first = set(0, &n) else { return nil }
+        var out = [first]
+        for i in 1..<max(n, 1) { if let s = set(i, nil) { out.append(s) } }
+        return out.count >= (hevc ? 3 : 2) ? out : nil
     }
 
     var dataBytes: [UInt8] {

@@ -32,14 +32,35 @@ actor OutputSlot {
     private func runPump(_ stream: AsyncStream<Media>) async {
         for await m in stream {
             switch m {
-            case .video(let sb): await video(sb)
+            case .video(let sb): backlog.add(-1); await video(sb)
             case .audio(let b, let w): await audio(b, w)
             }
         }
     }
 
+    /// Frames queued but not yet handed to the target (lock-free read for ABR).
+    nonisolated let backlog = Counter()
+
     nonisolated func enqueue(_ m: Media) {
-        if case .dropped = queue.yield(m) { Task { await self.resync() } }
+        if case .video = m { backlog.add(1) }
+        if case .dropped = queue.yield(m) {
+            if case .video = m { backlog.add(-1) }
+            Task { await self.resync() }
+        }
+    }
+
+    /// Codec/parameter sets changed: reconnect with the new description.
+    func reconnect(_ d: StreamDescription) async {
+        desc = d
+        guard running else { return }
+        waitingForIDR = true
+        await target.disconnect() // supervisor notices !isHealthy and reconnects with `desc`
+    }
+
+    func congestionSeconds(fps: Double) async -> Double {
+        guard status == .live else { return 0 }
+        let pending = await target.pendingBytes()
+        return Double(backlog.value) / fps + Double(pending) * 8 / 6_000_000
     }
 
     private func resync() { waitingForIDR = true; requestKeyframe() }
@@ -103,6 +124,14 @@ actor OutputSlot {
     }
 }
 
+/// Tiny thread-safe counter.
+final class Counter: @unchecked Sendable {
+    private let lock = NSLock()
+    private var v = 0
+    func add(_ d: Int) { lock.lock(); v += d; lock.unlock() }
+    var value: Int { lock.lock(); defer { lock.unlock() }; return max(0, v) }
+}
+
 /// Encode-once / fan-out hub between encoders and destinations.
 final class OutputManager: @unchecked Sendable {
     private var slots: [UUID: OutputSlot] = [:]
@@ -146,16 +175,27 @@ final class OutputManager: @unchecked Sendable {
         Task { for s in all { await s.stop() } }
     }
 
+    /// Worst congestion across live destinations, in seconds of video queued.
+    func congestion(fps: Double) async -> Double {
+        lock.lock(); let all = Array(slots.values); lock.unlock()
+        var worst = 0.0
+        for s in all { worst = max(worst, await s.congestionSeconds(fps: fps)) }
+        return worst
+    }
+
     // Called on the encoder callback thread.
     func video(_ sb: CMSampleBuffer) {
         lock.lock()
-        if description == nil || sb.isKeyframe, let ps = sb.h264ParameterSets, let fd = sb.formatDescription {
-            let isNew = description == nil
-            description = StreamDescription(sps: ps.sps, pps: ps.pps, videoFormat: fd, audioFormat: audioFormat)
-            if isNew {
-                let d = description!
-                let all = Array(slots.values)
+        if description == nil || sb.isKeyframe, let ps = sb.videoParameterSets, let fd = sb.formatDescription {
+            let old = description
+            let d = StreamDescription(parameterSets: ps, isHEVC: sb.isHEVC, videoFormat: fd, audioFormat: audioFormat)
+            description = d
+            let all = Array(slots.values)
+            if old == nil {
                 Task { for s in all { await s.start(d) } }
+            } else if old!.isHEVC != d.isHEVC || old!.parameterSets != d.parameterSets {
+                // Codec or resolution changed (e.g. switched to HEVC or vertical format).
+                Task { for s in all { await s.reconnect(d) } }
             }
         }
         let all = Array(slots.values)

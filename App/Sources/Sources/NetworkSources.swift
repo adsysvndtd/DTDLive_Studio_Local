@@ -18,7 +18,7 @@ final class FrameSink: StreamOutput, @unchecked Sendable {
 }
 
 /// SRT input. URL examples:
-///   srt://0.0.0.0:9000?mode=listener          (phone/encoder pushes to the iPad)
+///   srt://0.0.0.0:9001?mode=listener          (phone/encoder pushes to the iPad)
 ///   srt://10.0.0.5:9000?mode=caller&streamid=cam1&passphrase=xxxx&latency=120000
 @MainActor
 final class SRTInputSource: VideoSource {
@@ -121,8 +121,11 @@ final class FileSource: VideoSource {
     private let output = AVPlayerItemVideoOutput(pixelBufferAttributes: [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA])
     private var link: CADisplayLink?
 
+    let url: URL
+
     init(name: String, url: URL) {
         self.name = name
+        self.url = url
         let item = AVPlayerItem(url: url)
         player = AVQueuePlayer()
         looper = AVPlayerLooper(player: player, templateItem: item)

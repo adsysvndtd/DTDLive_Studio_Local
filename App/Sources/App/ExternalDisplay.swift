@@ -29,7 +29,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
             c.delegateClass = ExternalDisplaySceneDelegate.self
             return c
         }
-        return UISceneConfiguration(name: "Default", sessionRole: session.role)
+        return session.configuration // let SwiftUI configure its WindowGroup scene
     }
 }
 

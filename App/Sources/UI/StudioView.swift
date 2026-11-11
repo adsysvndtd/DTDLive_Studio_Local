@@ -12,6 +12,7 @@ struct StudioView: View {
     @State private var drawing = false
     @State private var clearDrawing = 0
     @State private var showPanel = true
+    @State private var showShows = false
 
     var body: some View {
         VStack(spacing: 8) {
@@ -41,6 +42,7 @@ struct StudioView: View {
         .preferredColorScheme(.dark)
         .sheet(isPresented: $showAddSource) { AddSourceSheet(engine: engine) }
         .sheet(isPresented: $showOutputs) { OutputsSheet(engine: engine) }
+        .sheet(isPresented: $showShows) { ShowsSheet(engine: engine) }
         .photosPicker(isPresented: $showLogoPicker, selection: $logoItem, matching: .images)
         .onChange(of: logoItem) { _, item in
             Task {
@@ -70,6 +72,7 @@ struct StudioView: View {
                     Text("Màn ngoài: Multiview").tag(StudioEngine.ExternalMode.multiview)
                 }
             }
+            Button { showShows = true } label: { Label("Show", systemImage: "folder") }
             Button { showPanel.toggle() } label: { Image(systemName: "sidebar.right") }
             Button { showLogoPicker = true } label: { Label("Logo", systemImage: "photo") }
             if engine.logo != nil { Button("Bỏ logo") { engine.setLogo(nil) } }
@@ -168,14 +171,19 @@ struct AddSourceSheet: View {
                     ForEach(CameraSource.availableDevices(), id: \.uniqueID) { d in
                         Button(d.localizedName) { engine.add(CameraSource(device: d)); dismiss() }
                     }
-                case .srt, .rtmpPull:
+                case .srt, .rtmpPull, .rtsp:
                     TextField("Tên", text: $name)
-                    TextField(kind == .srt ? "srt://0.0.0.0:9000?mode=listener" : "rtmp://host/live/key", text: $url)
+                    TextField(kind == .srt ? "srt://0.0.0.0:9001?mode=listener"
+                              : kind == .rtsp ? "rtsp://user:pass@192.168.1.64:554/stream1" : "rtmp://host/live/key", text: $url)
                         .textInputAutocapitalization(.never).autocorrectionDisabled()
                     Button("Thêm") {
                         guard let u = URL(string: url) else { return }
                         let n = name.isEmpty ? kind.label : name
-                        engine.add(kind == .srt ? SRTInputSource(name: n, url: u) : RTMPInputSource(name: n, url: u))
+                        switch kind {
+                        case .srt: engine.add(SRTInputSource(name: n, url: u))
+                        case .rtsp: engine.add(RTSPInputSource(name: n, url: u))
+                        default: engine.add(RTMPInputSource(name: n, url: u))
+                        }
                         dismiss()
                     }
                 case .file:
@@ -196,6 +204,10 @@ struct OutputsSheet: View {
     @ObservedObject var engine: StudioEngine
     @Environment(\.dismiss) private var dismiss
     @State private var draft = OutputConfig(name: "", proto: .rtmp, url: "")
+    @StateObject private var platform = PlatformLive()
+    @State private var liveTitle = "DTD Studio Live"
+    @State private var platformBusy = false
+    @State private var platformMessage: String?
 
     var body: some View {
         NavigationStack {
@@ -220,6 +232,16 @@ struct OutputsSheet: View {
                     }
                     .onDelete { engine.outputs.remove(atOffsets: $0) }
                 }
+                Section("Tạo phiên live tự động") {
+                    TextField("Tiêu đề buổi live", text: $liveTitle)
+                    HStack {
+                        Button("YouTube Live") { createLive(.youtube) }
+                        Button("Facebook Live") { createLive(.facebook) }
+                        if platformBusy { ProgressView() }
+                    }
+                    .buttonStyle(.bordered).disabled(platformBusy)
+                    if let platformMessage { Text(platformMessage).font(.caption).textSelection(.enabled) }
+                }
                 Section("Thêm đích") {
                     Picker("Giao thức", selection: $draft.proto) {
                         ForEach(OutputProtocol.allCases) { Text($0.label).tag($0) }
@@ -236,7 +258,19 @@ struct OutputsSheet: View {
                     .disabled(draft.proto != .record && URL(string: draft.url)?.scheme == nil)
                 }
                 Section("Encoder") {
-                    Stepper("Bitrate: \(engine.encoder.bitrate / 1_000_000) Mbps", value: $engine.encoder.bitrate, in: 1_000_000...20_000_000, step: 500_000)
+                    Picker("Codec", selection: $engine.encoder.codec) {
+                        ForEach(VideoCodecChoice.allCases) { Text($0.label).tag($0) }
+                    }
+                    if engine.encoder.codec == .hevc {
+                        Text("HEVC: YouTube/RTMP cần máy chủ hỗ trợ Enhanced RTMP; Facebook chỉ nhận H.264. SRT/RTSP/ghi file dùng được.")
+                            .font(.caption).foregroundStyle(.orange)
+                    }
+                    Stepper(String(format: "Bitrate: %.1f Mbps", Double(engine.encoder.bitrate) / 1e6), value: $engine.encoder.bitrate, in: 1_000_000...20_000_000, step: 500_000)
+                    Toggle("Bitrate thích ứng", isOn: $engine.encoder.adaptive)
+                    if engine.encoder.adaptive {
+                        Stepper(String(format: "Tối thiểu: %.1f Mbps", Double(engine.encoder.minBitrate) / 1e6), value: $engine.encoder.minBitrate, in: 500_000...10_000_000, step: 250_000)
+                        Text(String(format: "Đang dùng: %.1f Mbps", Double(engine.currentBitrate) / 1e6)).font(.caption)
+                    }
                     Picker("Khung hình", selection: Binding(
                         get: { engine.format == .vertical1080 ? 1 : 0 },
                         set: { engine.format = $0 == 1 ? .vertical1080 : ProgramFormat() })) {
@@ -251,6 +285,67 @@ struct OutputsSheet: View {
                     Button("Phát tất cả") { engine.startAll() }
                     Button("Dừng tất cả", role: .destructive) { engine.stopAll() }
                     Button("Đóng") { dismiss() }
+                }
+            }
+        }
+    }
+}
+
+
+extension OutputsSheet {
+    func createLive(_ p: PlatformLive.Platform) {
+        platformBusy = true; platformMessage = nil
+        Task {
+            defer { platformBusy = false }
+            do {
+                let d = p == .youtube
+                    ? try await platform.createYouTube(title: liveTitle, vertical: engine.format == .vertical1080)
+                    : try await platform.createFacebook(title: liveTitle)
+                var cfg = OutputConfig(name: d.name, proto: .rtmp, url: d.url)
+                cfg.enabled = true
+                engine.outputs.append(cfg)
+                platformMessage = "Đã tạo đích \(d.name)" + (d.watchURL.map { ". Xem: \($0)" } ?? "")
+            } catch {
+                platformMessage = error.localizedDescription
+            }
+        }
+    }
+}
+
+struct ShowsSheet: View {
+    @ObservedObject var engine: StudioEngine
+    @Environment(\.dismiss) private var dismiss
+    @State private var name = ""
+    @State private var shows = ShowStore.list()
+    @State private var error: String?
+    @State private var confirmLoad: String?
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Lưu cấu hình hiện tại") {
+                    TextField("Tên show", text: $name)
+                    Button("Lưu") {
+                        do { try engine.saveShow(named: name); shows = ShowStore.list() } catch { self.error = "\(error)" }
+                    }.disabled(name.trimmingCharacters(in: .whitespaces).isEmpty)
+                }
+                Section("Show đã lưu (Files › DTD Studio › Shows)") {
+                    ForEach(shows, id: \.self) { s in
+                        Button(s) { confirmLoad = s }
+                    }
+                    .onDelete { idx in idx.forEach { ShowStore.delete(shows[$0]) }; shows = ShowStore.list() }
+                }
+                if let error { Text(error).foregroundStyle(.red) }
+            }
+            .navigationTitle("Show")
+            .toolbar { Button("Đóng") { dismiss() } }
+            .confirmationDialog("Nạp show sẽ dừng phát và thay toàn bộ nguồn, đầu ra, title.",
+                                isPresented: Binding(get: { confirmLoad != nil }, set: { if !$0 { confirmLoad = nil } }),
+                                titleVisibility: .visible) {
+                Button("Nạp \(confirmLoad ?? "")", role: .destructive) {
+                    if let n = confirmLoad {
+                        do { try engine.loadShow(named: n); dismiss() } catch { self.error = "\(error)" }
+                    }
                 }
             }
         }

@@ -2,13 +2,14 @@ import AVFoundation
 import Foundation
 
 enum SourceKind: String, Codable, CaseIterable, Identifiable {
-    case camera, srt, rtmpPull, file
+    case camera, srt, rtmpPull, rtsp, file
     var id: String { rawValue }
     var label: String {
         switch self {
         case .camera: return "Camera / UVC"
         case .srt: return "SRT"
         case .rtmpPull: return "RTMP (play)"
+        case .rtsp: return "RTSP (IP camera)"
         case .file: return "Video file"
         }
     }
