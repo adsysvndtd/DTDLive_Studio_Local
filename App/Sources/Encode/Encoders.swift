@@ -88,7 +88,11 @@ final class VideoEncoder: @unchecked Sendable {
         invalidate()
         size = (w, h)
         var s: VTCompressionSession?
-        let spec = [kVTVideoEncoderSpecification_RequireHardwareAcceleratedVideoEncoder: true] as CFDictionary
+        // On iOS every H.264/HEVC encoder is hardware; the explicit requirement key only exists from 17.4.
+        var spec: CFDictionary?
+        if #available(iOS 17.4, *) {
+            spec = [kVTVideoEncoderSpecification_RequireHardwareAcceleratedVideoEncoder: true] as CFDictionary
+        }
         guard VTCompressionSessionCreate(allocator: nil, width: w, height: h, codecType: settings.codec == .h264 ? kCMVideoCodecType_H264 : kCMVideoCodecType_HEVC,
                                          encoderSpecification: spec, imageBufferAttributes: nil, compressedDataAllocator: nil,
                                          outputCallback: nil, refcon: nil, compressionSessionOut: &s) == noErr, let s else { return }
