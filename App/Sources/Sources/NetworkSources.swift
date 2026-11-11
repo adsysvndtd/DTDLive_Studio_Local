@@ -135,6 +135,7 @@ final class FileSource: VideoSource {
     func start() async {
         player.items().forEach { $0.add(output) }
         player.play()
+        isPlaying = true
         let l = CADisplayLink(target: self, selector: #selector(tick))
         l.preferredFrameRateRange = CAFrameRateRange(minimum: 24, maximum: 60, preferred: 30)
         l.add(to: .main, forMode: .common)
@@ -149,8 +150,14 @@ final class FileSource: VideoSource {
         }
     }
 
+    private(set) var isPlaying = false
+    func play() { player.play(); isPlaying = true }
+    func pause() { player.pause(); isPlaying = false }
+    func restart() { player.seek(to: .zero); player.play(); isPlaying = true }
+
     func stop() async {
         link?.invalidate(); link = nil
+        isPlaying = false
         player.pause()
         frames.clear()
         status = .idle

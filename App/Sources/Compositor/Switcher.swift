@@ -6,7 +6,7 @@ import Metal
 import os
 
 enum TransitionStyle: String, CaseIterable, Identifiable, Codable {
-    case cut, mix, wipeLeft, dip
+    case cut, mix, wipeLeft, dip, flash, push, zoom, pageCurl, ripple, bars, copyMachine
     var id: String { rawValue }
     var label: String {
         switch self {
@@ -14,6 +14,28 @@ enum TransitionStyle: String, CaseIterable, Identifiable, Codable {
         case .mix: return "MIX"
         case .wipeLeft: return "WIPE"
         case .dip: return "DIP"
+        case .flash: return "FLASH"
+        case .push: return "PUSH"
+        case .zoom: return "ZOOM"
+        case .pageCurl: return "LẬT"
+        case .ripple: return "GỢN"
+        case .bars: return "SỌC"
+        case .copyMachine: return "QUÉT"
+        }
+    }
+    var icon: String {
+        switch self {
+        case .cut: return "scissors"
+        case .mix: return "circle.lefthalf.filled"
+        case .wipeLeft: return "rectangle.lefthalf.inset.filled.arrow.left"
+        case .dip: return "moon.fill"
+        case .flash: return "bolt.fill"
+        case .push: return "arrow.left.square"
+        case .zoom: return "plus.magnifyingglass"
+        case .pageCurl: return "doc.richtext"
+        case .ripple: return "drop.circle"
+        case .bars: return "rectangle.split.3x1"
+        case .copyMachine: return "light.beacon.max"
         }
     }
 }
@@ -215,6 +237,50 @@ final class Switcher: @unchecked Sendable {
             let f = CIFilter.dissolveTransition()
             if p < 0.5 { f.inputImage = a; f.targetImage = black; f.time = Float(p * 2) }
             else { f.inputImage = black; f.targetImage = b; f.time = Float((p - 0.5) * 2) }
+            return f.outputImage?.cropped(to: extent) ?? b
+        case .flash:
+            let f = CIFilter.flashTransition()
+            f.inputImage = a; f.targetImage = b; f.time = Float(p)
+            f.center = CGPoint(x: extent.midX, y: extent.midY); f.extent = extent
+            f.color = CIColor(red: 1, green: 1, blue: 1); f.maxStriationRadius = 2.58
+            f.striationStrength = 0.5; f.striationContrast = 1.375; f.fadeThreshold = 0.85
+            return f.outputImage?.cropped(to: extent) ?? b
+        case .push:
+            let dx = extent.width * p
+            let outA = a.transformed(by: CGAffineTransform(translationX: -dx, y: 0))
+            let inB = b.transformed(by: CGAffineTransform(translationX: extent.width - dx, y: 0))
+            return inB.composited(over: outA).cropped(to: extent)
+        case .zoom:
+            let s = 1 + 0.6 * p
+            let za = a.transformed(by: CGAffineTransform(translationX: -extent.midX, y: -extent.midY)
+                .concatenating(CGAffineTransform(scaleX: s, y: s))
+                .concatenating(CGAffineTransform(translationX: extent.midX, y: extent.midY)))
+            let f = CIFilter.dissolveTransition()
+            f.inputImage = za.cropped(to: extent); f.targetImage = b; f.time = Float(p)
+            return f.outputImage?.cropped(to: extent) ?? b
+        case .pageCurl:
+            let f = CIFilter.pageCurlTransition()
+            f.inputImage = a; f.targetImage = b; f.time = Float(p)
+            f.extent = extent; f.angle = Float.pi * 0.8; f.radius = Float(extent.width / 8)
+            f.backsideImage = a; f.shadingImage = CIImage(color: CIColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 0.5)).cropped(to: extent)
+            return f.outputImage?.cropped(to: extent) ?? b
+        case .ripple:
+            let f = CIFilter.rippleTransition()
+            f.inputImage = a; f.targetImage = b; f.time = Float(p)
+            f.center = CGPoint(x: extent.midX, y: extent.midY); f.extent = extent
+            f.width = Float(extent.width / 20); f.scale = 40
+            f.shadingImage = CIImage(color: CIColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 0.3)).cropped(to: extent)
+            return f.outputImage?.cropped(to: extent) ?? b
+        case .bars:
+            let f = CIFilter.barsSwipeTransition()
+            f.inputImage = a; f.targetImage = b; f.time = Float(p)
+            f.angle = Float.pi; f.width = Float(extent.width / 12); f.barOffset = 10
+            return f.outputImage?.cropped(to: extent) ?? b
+        case .copyMachine:
+            let f = CIFilter.copyMachineTransition()
+            f.inputImage = a; f.targetImage = b; f.time = Float(p)
+            f.extent = extent; f.color = CIColor(red: 0.6, green: 1, blue: 0.8); f.angle = 0
+            f.width = Float(extent.width / 6); f.opacity = 1.3
             return f.outputImage?.cropped(to: extent) ?? b
         }
     }

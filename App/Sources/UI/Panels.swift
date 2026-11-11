@@ -112,6 +112,12 @@ struct TitlesPanel: View {
                     .foregroundStyle(.white)
                 }
                 Spacer()
+                Button { engine.armedTitleID = item.id } label: {
+                    Image(systemName: (engine.armedTitleID ?? engine.titles.first?.id) == item.id ? "key.fill" : "key")
+                        .foregroundStyle((engine.armedTitleID ?? engine.titles.first?.id) == item.id ? DS.accent : DS.text3)
+                }
+                .buttonStyle(.plain)
+                .help("Gán vào phím TITLE")
                 Button { engine.setTitleVisible(item.id, !item.visible) } label: {
                     Text(item.visible ? "TRÊN SÓNG" : "LÊN SÓNG").font(.caption.weight(.heavy))
                         .padding(.horizontal, 10).padding(.vertical, 6)
@@ -227,18 +233,21 @@ struct AudioPanel: View {
 
 struct SourcePanel: View {
     @ObservedObject var engine: StudioEngine
+    var fixedSource: UUID? = nil
     @State private var selected: UUID?
     @State private var importLUT = false
 
     var body: some View {
-        let id = selected ?? engine.previewID
+        let id = fixedSource ?? selected ?? engine.previewID
         VStack(alignment: .leading, spacing: DS.gap) {
+            if fixedSource == nil {
             SectionCard("Nguồn đang chỉnh", systemImage: "camera") {
                 Picker("Nguồn", selection: Binding(get: { id }, set: { selected = $0 })) {
                     ForEach(engine.sources, id: \.id) { Text($0.name).tag(Optional($0.id)) }
                 }
                 .pickerStyle(.menu)
                 .frame(maxWidth: .infinity, alignment: .leading)
+            }
             }
             if let id {
                 let p = engine.processingFor(id)

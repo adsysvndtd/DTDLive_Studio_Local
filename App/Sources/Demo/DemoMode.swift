@@ -54,6 +54,38 @@ enum DemoMode {
             OutputConfig(name: "Ghi file", proto: .record, url: "")
         ]
         engine.scopesEnabled = DemoMode.arg("-panel") == "scopes"
+        engine.favorites = Set(engine.sources.prefix(2).map(\.id))
+        seedLibrary(engine)
+    }
+
+    /// Generates a few sample library files (logo, overlay frame, pictures) so library screens aren't empty.
+    @MainActor
+    private static func seedLibrary(_ engine: StudioEngine) {
+        let lib = engine.library
+        func write(_ img: UIImage, _ k: LibraryKind, _ name: String) {
+            let url = MediaLibrary.directory(k).appendingPathComponent(name)
+            if !FileManager.default.fileExists(atPath: url.path), let d = img.pngData() { try? d.write(to: url) }
+        }
+        let fmt = UIGraphicsImageRendererFormat(); fmt.scale = 1; fmt.opaque = false
+        if let logo = UIImage(named: "Logo") { write(logo, .logo, "DTD Logo.png") }
+        let frame = UIGraphicsImageRenderer(size: CGSize(width: 1920, height: 1080), format: fmt).image { ctx in
+            UIColor(red: 0.98, green: 0.45, blue: 0.13, alpha: 1).setStroke()
+            let p = UIBezierPath(rect: CGRect(x: 20, y: 20, width: 1880, height: 1040)); p.lineWidth = 16; p.stroke()
+            UIColor(white: 0, alpha: 0.6).setFill(); UIBezierPath(rect: CGRect(x: 0, y: 980, width: 1920, height: 100)).fill()
+            NSAttributedString(string: "Nhà tài trợ: DTD Solution", attributes: [.font: UIFont.systemFont(ofSize: 48, weight: .bold),
+                .foregroundColor: UIColor.white]).draw(at: CGPoint(x: 60, y: 1000))
+        }
+        write(frame, .overlay, "Khung nhà tài trợ.png")
+        for (i, c) in [UIColor.systemTeal, .systemIndigo, .systemPink].enumerated() {
+            let img = UIGraphicsImageRenderer(size: CGSize(width: 1280, height: 720), format: fmt).image { _ in
+                c.setFill(); UIBezierPath(rect: CGRect(x: 0, y: 0, width: 1280, height: 720)).fill()
+                NSAttributedString(string: "Slide \(i + 1)", attributes: [.font: UIFont.systemFont(ofSize: 120, weight: .heavy),
+                    .foregroundColor: UIColor.white]).draw(at: CGPoint(x: 80, y: 260))
+            }
+            write(img, .picture, "Slide \(i + 1).png")
+        }
+        lib.refresh()
+        if let l = lib.list(.logo).first { engine.useLogo(l) }
     }
 }
 

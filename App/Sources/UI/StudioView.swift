@@ -7,29 +7,39 @@ struct StudioView: View {
     @StateObject private var engine = StudioEngine()
     @State private var showAddSource = false
     @State private var showOutputs = false
-    @State private var showLogoPicker = false
-    @State private var logoItem: PhotosPickerItem?
     @State private var drawing = false
     @State private var clearDrawing = 0
-    @State private var showPanel = true
     @State private var showShows = false
     @State private var tbarValue = 0.0
-    @State private var showPanelSheet = false
+    @State private var category: ProdCategory = ProdCategory(rawValue: DemoMode.arg("-category") ?? "") ?? .camera
+    @State private var scopesOnPreview = false
     @Environment(\.verticalSizeClass) private var vSize
 
-    /// iPhone (or any height-compact window): icon toolbar, inspector as a sheet, monitors get the space.
+    /// iPhone (or any height-compact window): smaller chrome, same structure.
     private var compact: Bool { vSize == .compact || UIDevice.current.userInterfaceIdiom == .phone }
 
     var body: some View {
-        Group {
-            if compact { compactLayout } else { regularLayout }
+        GeometryReader { geo in
+            VStack(spacing: 0) {
+                topBar
+                monitorStrip
+                    .frame(height: geo.size.height * (compact ? 0.46 : 0.44))
+                Divider().overlay(DS.stroke)
+                HStack(spacing: 0) {
+                    CategoryList(selection: $category, compact: compact)
+                        .frame(width: compact ? 74 : 150)
+                    Divider().overlay(DS.stroke)
+                    CategoryContent(engine: engine, library: engine.library, category: category,
+                                    compact: compact, showAddSource: $showAddSource)
+                    Divider().overlay(DS.stroke)
+                    TransitionColumn(engine: engine, tbarValue: $tbarValue, compact: compact)
+                        .frame(width: compact ? 96 : 150)
+                }
+            }
         }
         .background(DS.bg.ignoresSafeArea())
         .preferredColorScheme(.dark)
         .tint(DS.accent)
-        .sheet(isPresented: $showPanelSheet) {
-            SidePanel(engine: engine).presentationDetents([.medium, .large]).presentationDragIndicator(.visible)
-        }
         .sheet(isPresented: $showAddSource) { AddSourceSheet(engine: engine) }
         .sheet(isPresented: $showOutputs) { OutputsSheet(engine: engine) }
         .sheet(isPresented: $showShows) { ShowsSheet(engine: engine) }
@@ -41,369 +51,170 @@ struct StudioView: View {
             case "outputs": showOutputs = true
             case "shows": showShows = true
             case "addsource": showAddSource = true
-            case "nopanel": showPanel = false
             default: break
             }
         }
-        .photosPicker(isPresented: $showLogoPicker, selection: $logoItem, matching: .images)
-        .onChange(of: logoItem) { _, item in
-            Task {
-                if let data = try? await item?.loadTransferable(type: Data.self) { engine.setLogo(UIImage(data: data)) }
-            }
-        }
     }
 
-    // MARK: Compact (iPhone)
+    // MARK: Top bar (slim)
 
-    private var compactLayout: some View {
-        VStack(spacing: 6) {
-            compactTopBar
-            HStack(spacing: 8) {
-                monitor("PVW", name: name(engine.previewID), store: engine.switcher.previewMonitor, color: DS.pvw)
-                monitor("PGM", name: name(engine.programID), store: engine.switcher.programMonitor, color: DS.pgm)
-                    .overlay { annotationOverlay }
-            }
-            .frame(maxHeight: .infinity)
-            .padding(.horizontal, 8)
-            compactDeck.padding(.horizontal, 8).padding(.bottom, 6)
-        }
-    }
-
-    private var compactTopBar: some View {
+    private var topBar: some View {
         HStack(spacing: 8) {
-            Image("Logo").resizable().scaledToFit().frame(width: 22, height: 22)
-            Text("DTD Studio").font(.subheadline.weight(.bold)).lineLimit(1).fixedSize()
+            Image("Logo").resizable().scaledToFit().frame(width: compact ? 20 : 24, height: compact ? 20 : 24)
+            Text("DTD Studio").font(compact ? .caption.weight(.bold) : .subheadline.weight(.bold)).fixedSize()
+            if !compact {
+                Text("\(engine.format.width)×\(engine.format.height) · \(engine.format.fps)p · \(engine.encoder.codec.label)")
+                    .font(.caption2).foregroundStyle(DS.text3).fixedSize()
+            }
             if engine.isAnyLive { Pill(text: "LIVE", color: DS.pgm, dot: .white) }
             if engine.isRecording { Pill(text: "REC", color: DS.pgm.opacity(0.25), dot: DS.pgm) }
-            LevelMeter(db: engine.audioLevel).frame(width: 60, height: 5)
             Spacer(minLength: 4)
-            iconButton("arrow.uturn.backward") { engine.undo() }.disabled(!engine.canUndo).opacity(engine.canUndo ? 1 : 0.4)
-            iconButton("pencil.tip", active: drawing) { drawing.toggle() }
-            if drawing { iconButton("eraser") { clearDrawing += 1 } }
-            iconButton("slider.horizontal.3") { showPanelSheet = true }
-            Menu {
-                Button { engine.toggleRecording() } label: { Label(engine.isRecording ? "Dừng ghi" : "Ghi file", systemImage: "record.circle") }
-                Button { showShows = true } label: { Label("Show", systemImage: "folder") }
-                Divider()
-                Button { showLogoPicker = true } label: { Label("Chọn logo…", systemImage: "photo") }
-                if engine.logo != nil { Button("Bỏ logo", role: .destructive) { engine.setLogo(nil) } }
-                Menu("PiP") {
-                    Button("Tắt PiP") { engine.setPiP(nil) }
-                    ForEach(engine.sources, id: \.id) { s in Button(s.name) { engine.setPiP(s.id) } }
-                }
-                Button { engine.fadeToBlack.toggle() } label: { Label(engine.fadeToBlack ? "Bỏ FTB" : "Fade to black", systemImage: "moon") }
-            } label: {
-                Image(systemName: "ellipsis").font(.system(size: 15, weight: .bold))
-                    .frame(width: 36, height: 34).background(DS.surface2, in: RoundedRectangle(cornerRadius: 8))
+            if !compact { Pill(text: String(format: "%.1f Mbps", Double(engine.currentBitrate) / 1e6)) }
+            LevelMeter(db: engine.audioLevel).frame(width: compact ? 50 : 90, height: 5)
+            barButton("arrow.uturn.backward", "Hoàn tác") { engine.undo() }.disabled(!engine.canUndo).opacity(engine.canUndo ? 1 : 0.4)
+                .keyboardShortcut("z", modifiers: .command)
+            barButton("arrow.uturn.forward", "Làm lại") { engine.redo() }.disabled(!engine.canRedo).opacity(engine.canRedo ? 1 : 0.4)
+                .keyboardShortcut("z", modifiers: [.command, .shift])
+            barButton(engine.isRecording ? "record.circle.fill" : "record.circle", "Ghi", tint: engine.isRecording ? DS.pgm : .white) { engine.toggleRecording() }
+            barButton("folder", "Show") { showShows = true }
+            if engine.externalDisplayConnected {
+                Menu {
+                    Picker("Màn ngoài", selection: $engine.externalMode) {
+                        Text("Program").tag(StudioEngine.ExternalMode.program)
+                        Text("Multiview").tag(StudioEngine.ExternalMode.multiview)
+                    }
+                } label: { barLabel("tv", "Màn ngoài") }
             }
             Button { showOutputs = true } label: {
-                Label(engine.isAnyLive ? "Đang phát" : "Phát", systemImage: "dot.radiowaves.left.and.right")
+                Label(engine.isAnyLive ? "Đang phát" : (compact ? "Phát" : "Phát trực tiếp"), systemImage: "dot.radiowaves.left.and.right")
                     .font(.caption.weight(.bold)).lineLimit(1).fixedSize()
-                    .padding(.horizontal, 10).frame(height: 34)
+                    .padding(.horizontal, 10).frame(height: compact ? 28 : 32)
                     .foregroundStyle(.white)
-                    .background(engine.isAnyLive ? DS.pgm : DS.accent, in: RoundedRectangle(cornerRadius: 8))
+                    .background(engine.isAnyLive ? DS.pgm : DS.accent, in: RoundedRectangle(cornerRadius: 7))
             }
             .buttonStyle(.plain)
         }
-        .foregroundStyle(.white)
-        .padding(.horizontal, 10).padding(.top, 4)
-    }
-
-    private func iconButton(_ icon: String, active: Bool = false, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Image(systemName: icon).font(.system(size: 15, weight: .semibold))
-                .frame(width: 36, height: 34)
-                .foregroundStyle(active ? .black : .white)
-                .background(active ? DS.accent : DS.surface2, in: RoundedRectangle(cornerRadius: 8))
-        }
-        .buttonStyle(.plain)
-    }
-
-    private var compactDeck: some View {
-        HStack(spacing: 8) {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 6) {
-                    ForEach(Array(engine.sources.enumerated()), id: \.element.id) { i, s in
-                        let pgm = s.id == engine.programID, pvw = s.id == engine.previewID
-                        ZStack(alignment: .bottomLeading) {
-                            MonitorView(store: s.frames, maxFPS: 8).aspectRatio(16 / 9, contentMode: .fit).frame(height: 50)
-                            Text("\(i + 1)").font(.caption2.weight(.heavy)).frame(width: 16, height: 16)
-                                .background(pgm ? DS.pgm : pvw ? DS.pvw : Color.black.opacity(0.6), in: RoundedRectangle(cornerRadius: 3))
-                                .padding(3)
-                        }
-                        .clipShape(RoundedRectangle(cornerRadius: 5))
-                        .overlay(RoundedRectangle(cornerRadius: 5).stroke(pgm ? DS.pgm : pvw ? DS.pvw : DS.stroke, lineWidth: pgm || pvw ? 2.5 : 1))
-                        .onTapGesture(count: 2) { engine.take(s.id) }
-                        .onTapGesture { engine.select(s.id) }
-                        .contextMenu { Button("Xoá nguồn", role: .destructive) { engine.remove(s) } }
-                    }
-                    Button { showAddSource = true } label: {
-                        Image(systemName: "plus").frame(width: 50, height: 50)
-                            .background(DS.surface2, in: RoundedRectangle(cornerRadius: 5))
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-            Menu {
-                Picker("Hiệu ứng", selection: $engine.transition) {
-                    ForEach(TransitionStyle.allCases.filter { $0 != .cut }) { Text($0.label).tag($0) }
-                }
-                Stepper(String(format: "Thời gian %.1fs", engine.transitionDuration), value: $engine.transitionDuration, in: 0.2...3, step: 0.1)
-            } label: {
-                VStack(spacing: 0) {
-                    Text(engine.transition.label).font(.caption.weight(.bold))
-                    Text(String(format: "%.1fs", engine.transitionDuration)).font(.caption2).foregroundStyle(DS.text2)
-                }
-                .frame(width: 52, height: 50).background(DS.surface2, in: RoundedRectangle(cornerRadius: 8))
-                .foregroundStyle(.white)
-            }
-            KeyButton(title: "CUT", width: 54, height: 50) { engine.cut() }
-            KeyButton(title: "AUTO", color: DS.accent, textColor: .black, width: 64, height: 50) { engine.autoTransition() }
-        }
-    }
-
-    @ViewBuilder private var annotationOverlay: some View {
-        if drawing {
-            AnnotationCanvas(layer: engine.annotation,
-                             programSize: CGSize(width: engine.format.width, height: engine.format.height),
-                             clearToken: $clearDrawing)
-        }
-    }
-
-    // MARK: Regular (iPad)
-
-    private var regularLayout: some View {
-        VStack(spacing: 0) {
-            topBar
-            Divider().overlay(DS.stroke)
-            HStack(alignment: .top, spacing: DS.gap) {
-                VStack(spacing: DS.gap) {
-                    monitors
-                    controlDeck
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                if showPanel {
-                    SidePanel(engine: engine)
-                        .frame(width: 330)
-                        .transition(.move(edge: .trailing))
-                }
-            }
-            .padding(DS.gap)
-        }
-    }
-
-    // MARK: Top bar
-
-    private var topBar: some View {
-        HStack(spacing: 10) {
-            Image("Logo").resizable().scaledToFit().frame(width: 30, height: 30)
-            VStack(alignment: .leading, spacing: 0) {
-                Text("DTD Studio").font(.headline)
-                Text("\(engine.format.width)×\(engine.format.height) · \(engine.format.fps)p · \(engine.encoder.codec.label)")
-                    .font(.caption2).foregroundStyle(DS.text3)
-            }
-            Spacer(minLength: 12)
-            HStack(spacing: 6) {
-                if engine.isAnyLive { Pill(text: "LIVE", color: DS.pgm.opacity(0.9), dot: .white) }
-                if engine.isRecording { Pill(text: "REC", color: DS.pgm.opacity(0.25), dot: DS.pgm) }
-                Pill(text: String(format: "%.1f Mbps", Double(engine.currentBitrate) / 1e6))
-                HStack(spacing: 6) {
-                    Image(systemName: "speaker.wave.2.fill").font(.caption).foregroundStyle(DS.text2)
-                    LevelMeter(db: engine.audioLevel).frame(width: 90, height: 6)
-                }
-                .padding(.horizontal, 9).padding(.vertical, 7)
-                .background(DS.surface2, in: Capsule())
-            }
-            Spacer(minLength: 12)
-            HStack(spacing: 6) {
-                ToolButton(title: "Hoàn tác", systemImage: "arrow.uturn.backward") { engine.undo() }
-                    .disabled(!engine.canUndo).opacity(engine.canUndo ? 1 : 0.4)
-                    .keyboardShortcut("z", modifiers: .command)
-                ToolButton(title: "Làm lại", systemImage: "arrow.uturn.forward") { engine.redo() }
-                    .disabled(!engine.canRedo).opacity(engine.canRedo ? 1 : 0.4)
-                    .keyboardShortcut("z", modifiers: [.command, .shift])
-                ToolButton(title: "Vẽ", systemImage: "pencil.tip", active: drawing) { drawing.toggle() }
-                if drawing { ToolButton(title: "Xoá nét", systemImage: "eraser") { clearDrawing += 1 } }
-                Menu {
-                    Button("Chọn ảnh logo…") { showLogoPicker = true }
-                    if engine.logo != nil { Button("Bỏ logo", role: .destructive) { engine.setLogo(nil) } }
-                    Divider()
-                    Button("Tắt PiP") { engine.setPiP(nil) }
-                    ForEach(engine.sources, id: \.id) { s in Button("PiP: \(s.name)") { engine.setPiP(s.id) } }
-                } label: {
-                    ToolButtonLabel(title: "Lớp phủ", systemImage: "square.on.square", active: engine.logo != nil || engine.pip != nil)
-                }
-                ToolButton(title: "Ghi", systemImage: engine.isRecording ? "record.circle.fill" : "record.circle",
-                           tint: engine.isRecording ? DS.pgm : .white) { engine.toggleRecording() }
-                ToolButton(title: "Show", systemImage: "folder") { showShows = true }
-                if engine.externalDisplayConnected {
-                    Menu {
-                        Picker("Màn ngoài", selection: $engine.externalMode) {
-                            Text("Program").tag(StudioEngine.ExternalMode.program)
-                            Text("Multiview").tag(StudioEngine.ExternalMode.multiview)
-                        }
-                    } label: { ToolButtonLabel(title: "Màn ngoài", systemImage: "tv") }
-                }
-                ToolButton(title: "Panel", systemImage: "sidebar.right", active: showPanel) {
-                    withAnimation(.easeInOut(duration: 0.2)) { showPanel.toggle() }
-                }
-                Button { showOutputs = true } label: {
-                    HStack(spacing: 6) {
-                        Image(systemName: "dot.radiowaves.left.and.right")
-                        Text(engine.isAnyLive ? "Đang phát" : "Phát trực tiếp").font(.subheadline.weight(.bold))
-                    }
-                    .padding(.horizontal, 14).frame(height: 40)
-                    .foregroundStyle(.white)
-                    .background(engine.isAnyLive ? DS.pgm : DS.accent, in: RoundedRectangle(cornerRadius: 8))
-                }
-                .buttonStyle(.plain)
-            }
-        }
-        .padding(.horizontal, 14).padding(.vertical, 8)
+        .padding(.horizontal, 10).frame(height: compact ? 36 : 44)
         .background(DS.surface)
     }
 
-    // MARK: Monitors
+    private func barButton(_ icon: String, _ title: String, tint: Color = .white, action: @escaping () -> Void) -> some View {
+        Button(action: action) { barLabel(icon, title, tint: tint) }.buttonStyle(.plain)
+    }
 
-    private var monitors: some View {
-        HStack(spacing: DS.gap) {
-            monitor("PREVIEW", name: name(engine.previewID), store: engine.switcher.previewMonitor, color: DS.pvw)
-            monitor("PROGRAM", name: name(engine.programID), store: engine.switcher.programMonitor, color: DS.pgm)
-                .overlay { annotationOverlay }
+    private func barLabel(_ icon: String, _ title: String, tint: Color = .white) -> some View {
+        HStack(spacing: 4) {
+            Image(systemName: icon).font(.system(size: 13, weight: .semibold))
+            if !compact { Text(title).font(.caption.weight(.semibold)).lineLimit(1).fixedSize() }
         }
-        .frame(maxHeight: .infinity)
+        .foregroundStyle(tint)
+        .padding(.horizontal, compact ? 8 : 10).frame(height: compact ? 28 : 32)
+        .background(DS.surface2, in: RoundedRectangle(cornerRadius: 7))
+    }
+
+    // MARK: Monitors (PVW | info | PGM)
+
+    private var monitorStrip: some View {
+        HStack(spacing: compact ? 6 : 12) {
+            monitorPane(title: "PVW", color: DS.pvw, store: engine.switcher.previewMonitor, isProgram: false)
+            monitorPane(title: "PGM", color: DS.pgm, store: engine.switcher.programMonitor, isProgram: true)
+        }
+        .padding(.horizontal, compact ? 6 : 12).padding(.vertical, compact ? 4 : 8)
+        .background(Color.black)
     }
 
     private func name(_ id: UUID?) -> String { engine.sources.first { $0.id == id }?.name ?? "—" }
 
-    @ViewBuilder
-    private func monitor(_ title: String, name: String, store: FrameStore, color: Color) -> some View {
-        if compact {
-            MonitorView(store: store)
-                .aspectRatio(CGFloat(engine.format.width) / CGFloat(engine.format.height), contentMode: .fit)
-                .clipShape(RoundedRectangle(cornerRadius: 6))
-                .overlay(RoundedRectangle(cornerRadius: 6).stroke(color, lineWidth: 2))
-                .overlay(alignment: .topLeading) {
-                    HStack(spacing: 4) {
-                        Text(title).font(.system(size: 10, weight: .heavy)).padding(.horizontal, 5).padding(.vertical, 2)
-                            .background(color, in: RoundedRectangle(cornerRadius: 3))
-                        Text(name).font(.system(size: 10, weight: .semibold)).lineLimit(1)
-                            .padding(.horizontal, 4).padding(.vertical, 2).background(Color.black.opacity(0.55), in: RoundedRectangle(cornerRadius: 3))
-                    }
-                    .padding(5)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-        } else {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack(spacing: 8) {
-                Text(title).font(.caption.weight(.heavy)).padding(.horizontal, 8).padding(.vertical, 3)
-                    .background(color, in: RoundedRectangle(cornerRadius: 4))
-                Text(name).font(.subheadline.weight(.semibold)).lineLimit(1)
+    private func monitorPane(title: String, color: Color, store: FrameStore, isProgram: Bool) -> some View {
+        VStack(spacing: 4) {
+            HStack(spacing: 6) {
+                Text(title).font(.system(size: compact ? 10 : 12, weight: .heavy))
+                    .padding(.horizontal, 6).padding(.vertical, 2)
+                    .background(color, in: RoundedRectangle(cornerRadius: 3))
+                Text(name(isProgram ? engine.programID : engine.previewID))
+                    .font(.system(size: compact ? 10 : 12, weight: .semibold)).lineLimit(1)
                 Spacer()
-                if title == "PROGRAM", engine.fadeToBlack { Pill(text: "FTB", color: DS.pgm.opacity(0.3)) }
+                if isProgram {
+                    monitorChip(engine.isAnyLive ? "ON AIR" : "OFF AIR", on: engine.isAnyLive, onColor: DS.pgm) { showOutputs = true }
+                    monitorChip("Vẽ", on: drawing) { drawing.toggle() }
+                    if drawing { monitorChip("Xoá nét", on: false) { clearDrawing += 1 } }
+                } else {
+                    monitorChip("Scopes", on: scopesOnPreview) {
+                        scopesOnPreview.toggle(); engine.scopesEnabled = scopesOnPreview
+                    }
+                    monitorChip("Khung an toàn", on: engine.showSafeGuides) { engine.showSafeGuides.toggle() }
+                }
             }
-            MonitorView(store: store)
-                .aspectRatio(CGFloat(engine.format.width) / CGFloat(engine.format.height), contentMode: .fit)
-                .clipShape(RoundedRectangle(cornerRadius: 6))
-                .overlay(RoundedRectangle(cornerRadius: 6).stroke(color, lineWidth: 2))
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        }
-    }
-
-    // MARK: Control deck (bus rows + transition)
-
-    private var controlDeck: some View {
-        HStack(alignment: .top, spacing: DS.gap) {
-            VStack(alignment: .leading, spacing: 8) {
-                busRow(label: "PROGRAM", color: DS.pgm, selected: engine.programID) { engine.take($0) }
-                busRow(label: "PREVIEW", color: DS.pvw, selected: engine.previewID, showAdd: true) { engine.select($0) }
-            }
-            .padding(10)
-            .background(DS.surface, in: RoundedRectangle(cornerRadius: DS.radius))
-            transitionBlock
-        }
-        .fixedSize(horizontal: false, vertical: true)
-    }
-
-    private func busRow(label: String, color: Color, selected: UUID?, showAdd: Bool = false,
-                        action: @escaping (UUID) -> Void) -> some View {
-        HStack(spacing: 8) {
-            Text(label).font(.system(size: 10, weight: .heavy)).foregroundStyle(color)
-                .rotationEffect(.degrees(-90)).fixedSize().frame(width: 14)
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    ForEach(Array(engine.sources.enumerated()), id: \.element.id) { i, s in
-                        let on = s.id == selected
-                        Button { action(s.id) } label: {
-                            ZStack(alignment: .bottomLeading) {
-                                MonitorView(store: s.frames, maxFPS: 10)
-                                    .aspectRatio(16 / 9, contentMode: .fit)
-                                    .frame(height: 62)
-                                    .opacity(on ? 1 : 0.75)
-                                HStack(spacing: 4) {
-                                    Text("\(i + 1)").font(.caption.weight(.heavy))
-                                        .frame(width: 18, height: 18)
-                                        .background(on ? color : Color.black.opacity(0.6), in: RoundedRectangle(cornerRadius: 4))
-                                    Text(s.name).font(.caption2.weight(.semibold)).lineLimit(1)
-                                }
-                                .padding(4)
-                            }
-                            .clipShape(RoundedRectangle(cornerRadius: 6))
-                            .overlay(RoundedRectangle(cornerRadius: 6).stroke(on ? color : DS.stroke, lineWidth: on ? 3 : 1))
+            ZStack {
+                MonitorView(store: store)
+                if engine.showSafeGuides { SafeGuides() }
+                if isProgram {
+                    if engine.showMonitorInfo && !compact { monitorInfo.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading) }
+                    if drawing {
+                        AnnotationCanvas(layer: engine.annotation,
+                                         programSize: CGSize(width: engine.format.width, height: engine.format.height),
+                                         clearToken: $clearDrawing)
+                    }
+                } else if scopesOnPreview {
+                    ScopeView(kind: engine.scopeKind, result: engine.scopeResult)
+                        .frame(width: compact ? 130 : 200, height: compact ? 70 : 110)
+                        .opacity(0.9)
+                        .overlay(alignment: .topTrailing) {
+                            Menu { Picker("", selection: $engine.scopeKind) { ForEach(ScopeKind.allCases) { Text($0.label).tag($0) } } }
+                            label: { Image(systemName: "chevron.down.circle.fill").foregroundStyle(.white) }.padding(3)
                         }
-                        .buttonStyle(.plain)
-                        .keyboardShortcut(i < 9 ? KeyboardShortcut(KeyEquivalent(Character("\(i + 1)")), modifiers: label == "PROGRAM" ? [.shift] : []) : nil)
-                        .contextMenu { Button("Xoá nguồn", role: .destructive) { engine.remove(s) } }
-                    }
-                    if showAdd {
-                        Button { showAddSource = true } label: {
-                            VStack(spacing: 2) {
-                                Image(systemName: "plus").font(.title3.weight(.semibold))
-                                Text("Thêm nguồn").font(.caption2)
-                            }
-                            .frame(width: 110, height: 62)
-                            .foregroundStyle(DS.text2)
-                            .background(DS.surface2, in: RoundedRectangle(cornerRadius: 6))
-                            .overlay(RoundedRectangle(cornerRadius: 6).strokeBorder(style: StrokeStyle(lineWidth: 1, dash: [4])).foregroundStyle(DS.text3))
-                        }
-                        .buttonStyle(.plain)
-                    }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
+                        .padding(6)
                 }
             }
+            .aspectRatio(CGFloat(engine.format.width) / CGFloat(engine.format.height), contentMode: .fit)
+            .clipShape(RoundedRectangle(cornerRadius: 4))
+            .overlay(RoundedRectangle(cornerRadius: 4).stroke(color, lineWidth: 2))
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
 
-    private var transitionBlock: some View {
-        HStack(alignment: .top, spacing: 10) {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("CHUYỂN CẢNH").font(.caption.weight(.bold)).foregroundStyle(DS.text2)
-                Picker("", selection: $engine.transition) {
-                    ForEach(TransitionStyle.allCases.filter { $0 != .cut }) { Text($0.label).tag($0) }
-                }
-                .pickerStyle(.segmented).frame(width: 190)
-                HStack {
-                    Text("Thời gian").font(.caption).foregroundStyle(DS.text2)
-                    Spacer()
-                    Stepper(String(format: "%.1fs", engine.transitionDuration), value: $engine.transitionDuration, in: 0.2...3, step: 0.1)
-                        .font(.caption.monospacedDigit()).fixedSize()
-                }
-                .frame(width: 190)
-                HStack(spacing: 8) {
-                    KeyButton(title: "CUT", width: 56, height: 50) { engine.cut() }
-                        .keyboardShortcut(.space, modifiers: [])
-                    KeyButton(title: "AUTO", color: DS.accent, textColor: .black, width: 72, height: 50) { engine.autoTransition() }
-                        .keyboardShortcut(.return, modifiers: [])
-                    KeyButton(title: "FTB", color: engine.fadeToBlack ? DS.pgm : DS.surface2, width: 50, height: 50) {
-                        engine.fadeToBlack.toggle()
-                    }
-                }
-            }
-            TBar(value: $tbarValue) { engine.tbar($0) }
-                .frame(width: 34, height: 130)
+    private func monitorChip(_ t: String, on: Bool, onColor: Color = DS.accent, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(t).font(.system(size: compact ? 9 : 11, weight: .bold)).lineLimit(1).fixedSize()
+                .padding(.horizontal, 7).padding(.vertical, 3)
+                .foregroundStyle(on ? .white : DS.text2)
+                .background(on ? onColor.opacity(0.85) : DS.surface2, in: Capsule())
         }
-        .padding(10)
-        .background(DS.surface, in: RoundedRectangle(cornerRadius: DS.radius))
+        .buttonStyle(.plain)
+    }
+
+    private var monitorInfo: some View {
+        VStack(alignment: .leading, spacing: 1) {
+            Text("\(engine.format.width)×\(engine.format.height) · \(engine.format.fps) fps · \(engine.encoder.codec.label)")
+            Text(String(format: "%.1f Mbps · Âm thanh %.0f dBFS", Double(engine.currentBitrate) / 1e6, engine.audioLevel))
+        }
+        .font(.system(size: 10, weight: .semibold, design: .monospaced))
+        .padding(5).background(Color.black.opacity(0.55), in: RoundedRectangle(cornerRadius: 4))
+        .padding(6)
+    }
+}
+
+/// Action-safe (93%) and title-safe (90%) guides plus centre marks.
+struct SafeGuides: View {
+    var body: some View {
+        GeometryReader { g in
+            let w = g.size.width, h = g.size.height
+            Path { p in
+                p.addRect(CGRect(x: w * 0.035, y: h * 0.035, width: w * 0.93, height: h * 0.93))
+            }.stroke(Color.red.opacity(0.55), lineWidth: 1)
+            Path { p in
+                p.addRect(CGRect(x: w * 0.05, y: h * 0.05, width: w * 0.90, height: h * 0.90))
+            }.stroke(Color.green.opacity(0.55), lineWidth: 1)
+            Path { p in
+                let c = 8.0
+                p.move(to: CGPoint(x: w / 2, y: h * 0.035)); p.addLine(to: CGPoint(x: w / 2, y: h * 0.035 + c))
+                p.move(to: CGPoint(x: w / 2, y: h * 0.965)); p.addLine(to: CGPoint(x: w / 2, y: h * 0.965 - c))
+                p.move(to: CGPoint(x: w * 0.035, y: h / 2)); p.addLine(to: CGPoint(x: w * 0.035 + c * 2, y: h / 2))
+                p.move(to: CGPoint(x: w * 0.965, y: h / 2)); p.addLine(to: CGPoint(x: w * 0.965 - c * 2, y: h / 2))
+            }.stroke(Color.red.opacity(0.55), lineWidth: 1)
+        }
+        .allowsHitTesting(false)
     }
 }
 

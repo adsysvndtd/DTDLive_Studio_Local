@@ -24,6 +24,65 @@ final class StudioEngine: ObservableObject {
     @Published var format = ProgramFormat() { didSet { switcher.setFormat(format) } }
     @Published var logo: OverlayLayer? { didSet { pushOverlays() } }
     @Published var pip: OverlayLayer? { didSet { pushOverlays() } }
+    /// Full-frame foreground graphic (PNG with alpha: frames, bugs, sponsor bars).
+    @Published var foreground: OverlayLayer? { didSet { pushOverlays() } }
+
+    // MARK: Production state (library / quick keys)
+    let library = MediaLibrary()
+    @Published var favorites: Set<UUID> = []
+    @Published var pipPreset: PiPPreset = .bottomRight { didSet { applyPiPPreset() } }
+    @Published var pipOn = false { didSet { pip?.visible = pipOn; if pipOn { pip?.opacity = 1; pipFade = 1 } } }
+    /// PiP T-bar: 0 = hidden, 1 = fully shown.
+    @Published var pipFade: Double = 1 { didSet { pip?.opacity = CGFloat(pipFade); pip?.visible = pipFade > 0.01 } }
+    @Published var logoCorner: Corner = .topRight { didSet { if let l = logo { logo?.rect = logoCorner.rect(size: l.rect.size) } } }
+    @Published var logoOn = false { didSet { logo?.visible = logoOn } }
+    @Published var foregroundOn = false { didSet { foreground?.visible = foregroundOn } }
+    @Published var armedTitleID: UUID?
+    @Published private(set) var currentLogoURL: URL?
+    @Published private(set) var currentForegroundURL: URL?
+    @Published private(set) var nowPlayingMusic: URL?
+    @Published var showSafeGuides = true
+    @Published var showMonitorInfo = true
+
+    enum PiPPreset: String, CaseIterable, Identifiable {
+        case topLeft, topRight, bottomLeft, bottomRight, large, sideLeft
+        var id: String { rawValue }
+        var label: String {
+            switch self {
+            case .topLeft: return "Trên trái"
+            case .topRight: return "Trên phải"
+            case .bottomLeft: return "Dưới trái"
+            case .bottomRight: return "Dưới phải"
+            case .large: return "Lớn giữa phải"
+            case .sideLeft: return "Nửa trái"
+            }
+        }
+        var rect: CGRect {
+            switch self {
+            case .topLeft: return CGRect(x: 0.04, y: 0.05, width: 0.30, height: 0.30)
+            case .topRight: return CGRect(x: 0.66, y: 0.05, width: 0.30, height: 0.30)
+            case .bottomLeft: return CGRect(x: 0.04, y: 0.63, width: 0.30, height: 0.30)
+            case .bottomRight: return CGRect(x: 0.66, y: 0.63, width: 0.30, height: 0.30)
+            case .large: return CGRect(x: 0.45, y: 0.20, width: 0.52, height: 0.52)
+            case .sideLeft: return CGRect(x: 0.0, y: 0.0, width: 0.5, height: 1.0)
+            }
+        }
+    }
+
+    enum Corner: String, CaseIterable, Identifiable {
+        case topLeft, topRight, bottomLeft, bottomRight
+        var id: String { rawValue }
+        var label: String { ["topLeft": "Trên trái", "topRight": "Trên phải", "bottomLeft": "Dưới trái", "bottomRight": "Dưới phải"][rawValue]! }
+        func rect(size: CGSize) -> CGRect {
+            let m: CGFloat = 0.03
+            switch self {
+            case .topLeft: return CGRect(x: m, y: m, width: size.width, height: size.height)
+            case .topRight: return CGRect(x: 1 - m - size.width, y: m, width: size.width, height: size.height)
+            case .bottomLeft: return CGRect(x: m, y: 1 - m - size.height, width: size.width, height: size.height)
+            case .bottomRight: return CGRect(x: 1 - m - size.width, y: 1 - m - size.height, width: size.width, height: size.height)
+            }
+        }
+    }
     @Published var fadeToBlack = false { didSet { switcher.setFadeToBlack(fadeToBlack) } }
     @Published private(set) var audioLevel: Float = -60
     @Published private(set) var audioChannels: [AudioChannelState] = []
@@ -195,7 +254,62 @@ final class StudioEngine: ObservableObject {
 
     // MARK: Graphics
 
-    private func pushOverlays() { switcher.setOverlays([pip, logo].compactMap { $0 }) }
+    private func pushOverlays() { switcher.setOverlays([pip, foreground, logo].compactMap { $0 }) }
+
+    // MARK: Library actions
+
+    func toggleFavorite(_ id: UUID) { if favorites.contains(id) { favorites.remove(id) } else { favorites.insert(id) } }
+
+    /// Adds (or reuses) a movie as an input and puts it on preview.
+    func cueMovie(_ url: URL) {
+        if let s = sources.first(where: { ($0 as? FileSource)?.url == url }) { select(s.id); (s as? FileSource)?.restart(); return }
+        let s = FileSource(name: url.deletingPathExtension().lastPathComponent, url: url)
+        add(s); select(s.id)
+    }
+
+    func cuePicture(_ url: URL) {
+        if let s = sources.first(where: { ($0 as? ImageSource)?.url == url }) { select(s.id); return }
+        let s = ImageSource(url: url)
+        add(s); select(s.id)
+    }
+
+    func useLogo(_ url: URL) {
+        guard let img = UIImage(contentsOfFile: url.path), let ci = CIImage(image: img) else { return }
+        checkpoint()
+        let aspect = img.size.width / max(img.size.height, 1)
+        let h: CGFloat = 0.12, w = min(0.3, h * aspect * CGFloat(format.height) / CGFloat(format.width))
+        var l = OverlayLayer(image: ci, rect: logoCorner.rect(size: CGSize(width: w, height: h)))
+        l.visible = true
+        logo = l; currentLogoURL = url; logoOn = true
+    }
+
+    func useForeground(_ url: URL) {
+        guard let img = UIImage(contentsOfFile: url.path), let ci = CIImage(image: img) else { return }
+        checkpoint()
+        foreground = OverlayLayer(image: ci, rect: CGRect(x: 0, y: 0, width: 1, height: 1))
+        currentForegroundURL = url; foregroundOn = true
+    }
+
+    func toggleMusic(_ url: URL) {
+        if nowPlayingMusic == url { stopMusic(); nowPlayingMusic = nil } else { playMusic(url); nowPlayingMusic = url }
+    }
+
+    private func applyPiPPreset() { pip?.rect = pipPreset.rect }
+
+    /// Title key: shows/hides the armed title (or the first one).
+    func toggleArmedTitle() {
+        guard let id = armedTitleID ?? titles.first?.id, let t = titles.first(where: { $0.id == id }) else { return }
+        setTitleVisible(id, !t.visible)
+    }
+
+    var armedTitleVisible: Bool { titles.first { $0.id == (armedTitleID ?? titles.first?.id) }?.visible ?? false }
+
+    func flashTransition() {
+        let keep = transition
+        transition = .flash
+        autoTransition()
+        transition = keep
+    }
 
     func setLogo(_ image: UIImage?) {
         checkpoint()
@@ -206,7 +320,8 @@ final class StudioEngine: ObservableObject {
     func setPiP(_ id: UUID?) {
         checkpoint()
         guard let id, sources.contains(where: { $0.id == id }) else { pip = nil; return }
-        pip = OverlayLayer(pipSourceID: id, rect: CGRect(x: 0.66, y: 0.62, width: 0.3, height: 0.3))
+        pip = OverlayLayer(pipSourceID: id, rect: pipPreset.rect)
+        pipOn = true
     }
 
     /// Move/resize PiP or logo; snaps to edges and the safe-area grid (5% margins, thirds).
