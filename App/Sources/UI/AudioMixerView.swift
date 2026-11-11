@@ -55,7 +55,7 @@ struct AudioMixerView: View {
                 modeKey("Gain", on: gainMode) { gainMode.toggle() }
             }
             .padding(3)
-            .background(DS.surface2, in: Capsule())
+            .background(DS.surface2, in: Rectangle())
             if !compact {
                 Text(engine.afvMode == .afv1 ? "AFV1: chỉ nguồn trên PGM" : engine.afvMode == .afv2 ? "AFV2: mọi nguồn hiện trên PGM (cả PiP)" : "AFV tắt")
                     .font(.caption2).foregroundStyle(DS.text3).lineLimit(1)
@@ -67,7 +67,7 @@ struct AudioMixerView: View {
                     Button { engine.playEffect(url) } label: {
                         Image(systemName: "waveform").font(.system(size: 14, weight: .semibold))
                             .frame(width: compact ? 34 : 42, height: compact ? 28 : 32)
-                            .background(DS.surface2, in: Capsule())
+                            .background(DS.surface2, in: Rectangle())
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel(url.deletingPathExtension().lastPathComponent)
@@ -82,7 +82,7 @@ struct AudioMixerView: View {
             Text(t).font(.system(size: compact ? 12 : 14, weight: .bold))
                 .padding(.horizontal, compact ? 10 : 14).frame(height: compact ? 28 : 32)
                 .foregroundStyle(on ? .black : .white)
-                .background(on ? Color.white : Color.clear, in: Capsule())
+                .background(on ? Color.white : Color.clear, in: Rectangle())
         }
         .buttonStyle(.plain)
     }
@@ -106,7 +106,7 @@ struct ChannelStrip: View {
     let onAFV: () -> Void
     let onDelay: (Double) -> Void
 
-    private var height: CGFloat { compact ? 150 : 230 }
+    private var height: CGFloat { compact ? 130 : 230 }
     private var faderMarks: [Double] { gainMode ? [24, 12, 6, 0, -6, -12] : [6, 3, 0, -3, -6, -12, -24, -60] }
     private let meterMarks: [Double] = [0, -12, -24, -36, -48, -60]
 
@@ -133,12 +133,19 @@ struct ChannelStrip: View {
                 nudge("chevron.down") { onNudge(-1) }
                 nudge("chevron.up") { onNudge(1) }
             }
-            if let delayMs {
-                HStack(spacing: 2) {
-                    Text("Delay \(Int(delayMs))ms").font(.system(size: 9)).foregroundStyle(DS.text3).lineLimit(1)
-                    Stepper("", onIncrement: { onDelay(10) }, onDecrement: { onDelay(-10) }).labelsHidden().scaleEffect(0.6).frame(width: 60, height: 20)
+            Group {
+                if let delayMs {
+                    HStack(spacing: 2) {
+                        Button { onDelay(-10) } label: { Image(systemName: "minus").frame(width: 18, height: 18) }
+                        Text("Delay \(Int(delayMs))ms").font(.system(size: 9, weight: .medium).monospacedDigit()).lineLimit(1)
+                        Button { onDelay(10) } label: { Image(systemName: "plus").frame(width: 18, height: 18) }
+                    }
+                    .font(.system(size: 9, weight: .bold)).foregroundStyle(DS.text2).buttonStyle(.plain)
+                } else {
+                    Color.clear
                 }
             }
+            .frame(height: 20)
             Button(action: onMute) {
                 HStack(spacing: 3) {
                     Image(systemName: muted ? "speaker.slash" : "speaker.wave.1").font(.system(size: 11))
@@ -186,7 +193,7 @@ struct ChannelStrip: View {
         GeometryReader { g in
             let h = g.size.height, cap: CGFloat = compact ? 22 : 28
             ZStack(alignment: .top) {
-                Capsule().fill(Color.black).frame(width: 5).padding(.vertical, cap / 2)
+                Rectangle().fill(Color.black).frame(width: 5).padding(.vertical, cap / 2)
                 Rectangle()
                     .fill(LinearGradient(colors: [Color(white: 0.75), Color(white: 0.45), Color(white: 0.7)], startPoint: .top, endPoint: .bottom))
                     .frame(width: compact ? 22 : 26, height: cap)

@@ -87,7 +87,7 @@ struct Pill: View {
             Text(text).font(.caption.weight(.semibold)).monospacedDigit()
         }
         .padding(.horizontal, 9).padding(.vertical, 5)
-        .background(color, in: Capsule())
+        .background(color, in: Rectangle())
     }
 }
 

@@ -157,7 +157,7 @@ struct TitlesPanel: View {
         Button(action: action) {
             Text(t).font(.caption.weight(.bold)).padding(.horizontal, 9).padding(.vertical, 5)
                 .foregroundStyle(on ? .black : DS.text2)
-                .background(on ? Color.white : DS.surface2, in: Capsule())
+                .background(on ? Color.white : DS.surface2, in: Rectangle())
         }
         .buttonStyle(.plain)
     }
@@ -222,7 +222,7 @@ struct AudioPanel: View {
             Text(text).font(.caption2.weight(.heavy))
                 .padding(.horizontal, 8).padding(.vertical, 4)
                 .foregroundStyle(on ? .black : DS.text2)
-                .background(on ? onColor : DS.surface2, in: Capsule())
+                .background(on ? onColor : DS.surface2, in: Rectangle())
         }
         .buttonStyle(.plain)
     }

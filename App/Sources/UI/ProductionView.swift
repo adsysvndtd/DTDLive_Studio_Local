@@ -199,8 +199,15 @@ struct CategoryContent: View {
     }
 
     private func headerButton(_ title: String, _ icon: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) { Label(title, systemImage: icon).font(.caption.weight(.semibold)).lineLimit(1) }
-            .buttonStyle(.bordered)
+        Button(action: action) {
+            Label(title, systemImage: icon)
+                .font(.system(size: compact ? 12 : 14, weight: .semibold)).lineLimit(1)
+                .padding(.horizontal, compact ? 8 : 12).frame(height: compact ? 28 : 34)
+                .foregroundStyle(.white)
+                .background(DS.surface2, in: Rectangle())
+                .overlay(Rectangle().stroke(DS.stroke))
+        }
+        .buttonStyle(.plain)
     }
 
     private func types(_ k: LibraryKind) -> [UTType] {
@@ -327,7 +334,7 @@ struct CategoryContent: View {
                             .font(.caption.weight(.semibold)).lineLimit(1)
                             .padding(.horizontal, 10).padding(.vertical, 6)
                             .foregroundStyle(sel ? .black : .white)
-                            .background(sel ? DS.accent : DS.surface2, in: Capsule())
+                            .background(sel ? DS.accent : DS.surface2, in: Rectangle())
                     }
                     .buttonStyle(.plain)
                 }
@@ -486,12 +493,12 @@ struct SourceCell: View {
                 MonitorView(store: source.frames, maxFPS: 10).aspectRatio(16 / 9, contentMode: .fit)
                 TimelineView(.periodic(from: .now, by: 1)) { _ in
                     if case .error(let e) = source.status {
-                        Text(e).font(.caption2).padding(6).background(.black.opacity(0.7), in: Capsule()).lineLimit(1)
+                        Text(e).font(.caption2).padding(6).background(.black.opacity(0.7), in: Rectangle()).lineLimit(1)
                     } else if source.status == .connecting {
-                        Text("Đang kết nối…").font(.caption2.weight(.semibold)).padding(6).background(.black.opacity(0.7), in: Capsule())
+                        Text("Đang kết nối…").font(.caption2.weight(.semibold)).padding(6).background(.black.opacity(0.7), in: Rectangle())
                     } else if source.frames.latest() == nil {
                         Text("Không có tín hiệu").font(.caption.weight(.bold)).padding(.horizontal, 10).padding(.vertical, 5)
-                            .background(.black.opacity(0.6), in: Capsule())
+                            .background(.black.opacity(0.6), in: Rectangle())
                             .overlay(Capsule().stroke(.white, lineWidth: 1.5))
                     }
                 }
@@ -532,6 +539,17 @@ struct SourceCell: View {
 }
 
 struct LibraryCell: View {
+    /// "Ảnh-20261111-160015.png" → "11/11 16:00:15"; other names without extension.
+    static func displayName(_ url: URL) -> String {
+        let n = url.deletingPathExtension().lastPathComponent
+        let parts = n.split(separator: "-")
+        if parts.count == 3, parts[1].count == 8, parts[2].count == 6, let _ = Int(parts[1]), let _ = Int(parts[2]) {
+            let d = Array(parts[1]), t = Array(parts[2])
+            return "\(String(d[6...7]))/\(String(d[4...5])) \(String(t[0...1])):\(String(t[2...3])):\(String(t[4...5]))"
+        }
+        return n
+    }
+
     let url: URL
     let kind: LibraryKind
     var selected = false
@@ -552,8 +570,9 @@ struct LibraryCell: View {
             .aspectRatio(16 / 9, contentMode: .fit)
             .frame(maxWidth: .infinity)
             .background(Color.black)
-            Text(url.deletingPathExtension().lastPathComponent).font(.caption.weight(.semibold)).lineLimit(1)
-                .padding(.horizontal, 6).frame(maxWidth: .infinity, minHeight: 26).background(DS.surface)
+            Text(Self.displayName(url)).font(.system(size: 11, weight: .medium)).lineLimit(1).truncationMode(.middle)
+                .foregroundStyle(DS.text2)
+                .padding(.horizontal, 6).frame(maxWidth: .infinity, minHeight: 24, alignment: .leading).background(DS.surface)
         }
         .clipShape(Rectangle())
         .overlay(Rectangle().stroke(selected ? DS.accent : DS.stroke, lineWidth: selected ? 3 : 1))
@@ -626,7 +645,7 @@ struct TransitionColumn: View {
                         Button { engine.transitionDuration = min(3, engine.transitionDuration + 0.1) } label: { Image(systemName: "plus").frame(maxWidth: .infinity, minHeight: 28) }
                     }
                     .buttonStyle(.plain)
-                    .background(DS.surface2, in: Capsule())
+                    .background(DS.surface2, in: Rectangle())
                 }
                 key("PiP Trans", enabled: engine.layoutSlots.count > 0) { engine.layoutTransition() }
                 // AUTO key named after the selected transition (Dissolve, Wipe…)
@@ -654,8 +673,8 @@ struct TransitionColumn: View {
     /// Layer keys styled like hardware: "<name> On", lit white while the layer is on air.
     private func onKey(_ t: String, on: Bool, enabled: Bool = true, suffix: Bool = true, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Text(suffix ? "\(t) On" : t).font(.system(size: compact ? 11 : 14, weight: .semibold)).lineLimit(1).minimumScaleFactor(0.7)
-                .frame(maxWidth: .infinity, minHeight: compact ? 32 : 42)
+            Text(suffix ? "\(t) On" : t).font(.system(size: compact ? 13 : 15, weight: .semibold)).lineLimit(1).minimumScaleFactor(0.7)
+                .frame(maxWidth: .infinity, minHeight: compact ? 34 : 44)
                 .foregroundStyle(on ? .black : DS.text2)
                 .background(on ? Color.white : DS.surface2, in: RoundedRectangle(cornerRadius: 4))
                 .overlay(RoundedRectangle(cornerRadius: 4).stroke(Color.white.opacity(on ? 0 : 0.12)))
@@ -665,9 +684,15 @@ struct TransitionColumn: View {
         .disabled(!enabled).opacity(enabled ? 1 : 0.4)
     }
 
+    /// Keys use one case style: "Cut", "Quét", "PiP Trans" (labels like "QUÉT" are normalised).
+    static func keyCase(_ t: String) -> String {
+        guard t == t.uppercased(), t.count > 1 else { return t }
+        return String(t.prefix(1)) + t.dropFirst().lowercased()
+    }
+
     private func key(_ t: String, color: Color = DS.surface2, text: Color = .white, enabled: Bool = true, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Text(t).font(.system(size: compact ? 12 : 14, weight: .heavy))
+            Text(Self.keyCase(t)).font(.system(size: compact ? 13 : 15, weight: .semibold)).lineLimit(1).minimumScaleFactor(0.7)
                 .frame(maxWidth: .infinity, minHeight: compact ? 34 : 44)
                 .foregroundStyle(text)
                 .background(color, in: RoundedRectangle(cornerRadius: 4))
@@ -713,7 +738,7 @@ struct LayoutThumbnail: View {
                             .frame(height: r.height * 0.62)
                         Text(names[safe: i] ?? "").font(.system(size: max(7, r.height * 0.13), weight: .bold)).lineLimit(1)
                             .padding(.horizontal, 4).padding(.vertical, 1)
-                            .background(Color(white: 0.42), in: Capsule())
+                            .background(Color(white: 0.42), in: Rectangle())
                             .padding(.bottom, 2)
                     }
                     .frame(width: r.width, height: r.height)

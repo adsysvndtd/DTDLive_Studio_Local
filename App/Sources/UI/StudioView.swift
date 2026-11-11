@@ -207,10 +207,23 @@ struct StudioView: View {
                 }
     }
 
+    /// Monitor card sized to the largest 16:9 (program aspect) that fits, with its chip row exactly as wide,
+    /// so chips line up with the card edges instead of floating over the black gutter.
     private func monitorPane(title: String, color: Color, store: FrameStore, isProgram: Bool) -> some View {
+        GeometryReader { geo in
+            let ar = CGFloat(engine.format.width) / CGFloat(max(engine.format.height, 1))
+            let chipH: CGFloat = compact ? 24 : 30
+            let w = min(geo.size.width, max(0, geo.size.height - chipH - 4) * ar)
+            monitorCard(title: title, color: color, store: store, isProgram: isProgram, chipH: chipH)
+                .frame(width: w)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+    }
+
+    private func monitorCard(title: String, color: Color, store: FrameStore, isProgram: Bool, chipH: CGFloat) -> some View {
         VStack(spacing: 4) {
             HStack(spacing: 6) {
-                Spacer(minLength: 4)
+                if isProgram { Spacer(minLength: 0) }
                 // chips scroll sideways only when the monitor is too narrow (iPhone landscape)
                 ViewThatFits(in: .horizontal) {
                     HStack(spacing: compact ? 4 : 6) { chips(isProgram: isProgram) }
@@ -219,7 +232,9 @@ struct StudioView: View {
                     }
                     .defaultScrollAnchor(.trailing)
                 }
+                if !isProgram { Spacer(minLength: 0) }
             }
+            .frame(height: chipH)
             ZStack {
                 MonitorView(store: store)
                 if engine.showSafeGuides { SafeGuides() }
@@ -257,7 +272,6 @@ struct StudioView: View {
             }
             .clipShape(Rectangle())
             .overlay(Rectangle().strokeBorder(color, lineWidth: 1.5))
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
 
@@ -266,7 +280,7 @@ struct StudioView: View {
             Text(t).font(.system(size: compact ? 9 : 11, weight: .bold)).lineLimit(1).fixedSize()
                 .padding(.horizontal, 7).padding(.vertical, 3)
                 .foregroundStyle(on ? .white : DS.text2)
-                .background(on ? onColor.opacity(0.85) : DS.surface2, in: Capsule())
+                .background(on ? onColor.opacity(0.85) : DS.surface2, in: Rectangle())
         }
         .buttonStyle(.plain)
     }
@@ -367,7 +381,7 @@ struct TBar: View {
                 Rectangle()
                     .fill(LinearGradient(colors: [Color(white: 0.55), Color(white: 0.85), Color(white: 0.5)], startPoint: .leading, endPoint: .trailing))
                     .frame(width: 22)
-                Capsule().fill(Color.black).frame(width: 4).padding(.vertical, 10)
+                Rectangle().fill(Color.black).frame(width: 4).padding(.vertical, 10)
                 Rectangle()
                     .fill(LinearGradient(colors: [Color(white: 0.95), Color(white: 0.6), Color(white: 0.85)], startPoint: .top, endPoint: .bottom))
                     .frame(height: 16)
@@ -386,7 +400,7 @@ struct TBar: View {
                     withAnimation(.easeOut(duration: 0.15)) { value = 0 }
                 })
         }
-        .overlay(alignment: .bottom) { Text("T").font(.caption2.weight(.heavy)).foregroundStyle(DS.text3).offset(y: 14) }
+
     }
 }
 
@@ -416,8 +430,8 @@ struct LevelMeter: View {
         GeometryReader { g in
             let f = CGFloat(max(0, min(1, (db + 60) / 60)))
             ZStack(alignment: .leading) {
-                Capsule().fill(.gray.opacity(0.3))
-                Capsule().fill(db > -6 ? .red : db > -18 ? .yellow : .green).frame(width: g.size.width * f)
+                Rectangle().fill(.gray.opacity(0.3))
+                Rectangle().fill(db > -6 ? .red : db > -18 ? .yellow : .green).frame(width: g.size.width * f)
             }
         }
     }
