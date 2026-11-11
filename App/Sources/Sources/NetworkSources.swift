@@ -5,13 +5,16 @@ import RTMPHaishinKit
 import SRTHaishinKit
 
 /// Receives decoded frames from a HaishinKit incoming stream into a FrameStore.
-private final class FrameSink: StreamOutput, @unchecked Sendable {
+final class FrameSink: StreamOutput, @unchecked Sendable {
     let store: FrameStore
+    var onAudio: (@Sendable (AVAudioPCMBuffer) -> Void)?
     init(store: FrameStore) { self.store = store }
     func stream(_ stream: some StreamConvertible, didOutput video: CMSampleBuffer) {
         if let pb = video.imageBuffer { store.put(pb) }
     }
-    func stream(_ stream: some StreamConvertible, didOutput audio: AVAudioBuffer, when: AVAudioTime) {}
+    func stream(_ stream: some StreamConvertible, didOutput audio: AVAudioBuffer, when: AVAudioTime) {
+        if let pcm = audio as? AVAudioPCMBuffer { onAudio?(pcm) }
+    }
 }
 
 /// SRT input. URL examples:
@@ -28,7 +31,7 @@ final class SRTInputSource: VideoSource {
     let url: URL
     private var connection: SRTConnection?
     private var stream: SRTStream?
-    private lazy var sink = FrameSink(store: frames)
+    lazy var sink = FrameSink(store: frames)
 
     init(name: String, url: URL) { self.name = name; self.url = url }
 
@@ -67,7 +70,7 @@ final class RTMPInputSource: VideoSource {
     let url: URL
     private var connection: RTMPConnection?
     private var stream: RTMPStream?
-    private lazy var sink = FrameSink(store: frames)
+    lazy var sink = FrameSink(store: frames)
 
     init(name: String, url: URL) { self.name = name; self.url = url }
 

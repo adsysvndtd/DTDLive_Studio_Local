@@ -9,17 +9,32 @@ struct StudioView: View {
     @State private var showOutputs = false
     @State private var showLogoPicker = false
     @State private var logoItem: PhotosPickerItem?
+    @State private var drawing = false
+    @State private var clearDrawing = 0
+    @State private var showPanel = true
 
     var body: some View {
         VStack(spacing: 8) {
             header
-            HStack(spacing: 8) {
-                monitor("PREVIEW", store: engine.switcher.previewMonitor, color: .green)
-                monitor("PROGRAM", store: engine.switcher.programMonitor, color: .red)
+            HStack(alignment: .top, spacing: 8) {
+                VStack(spacing: 8) {
+                    HStack(spacing: 8) {
+                        monitor("PREVIEW", store: engine.switcher.previewMonitor, color: .green)
+                        monitor("PROGRAM", store: engine.switcher.programMonitor, color: .red)
+                            .overlay {
+                                if drawing {
+                                    AnnotationCanvas(layer: engine.annotation,
+                                                     programSize: CGSize(width: engine.format.width, height: engine.format.height),
+                                                     clearToken: $clearDrawing)
+                                }
+                            }
+                    }
+                    .frame(maxHeight: .infinity)
+                    transitionBar
+                    multiview
+                }
+                if showPanel { SidePanel(engine: engine).frame(width: 340) }
             }
-            .frame(maxHeight: .infinity)
-            transitionBar
-            multiview
         }
         .padding(8)
         .background(Color.black)
@@ -39,6 +54,23 @@ struct StudioView: View {
             Text("DTD Studio").font(.headline)
             Spacer()
             LevelMeter(db: engine.audioLevel).frame(width: 120, height: 8)
+            Button { engine.undo() } label: { Image(systemName: "arrow.uturn.backward") }.disabled(!engine.canUndo)
+                .keyboardShortcut("z", modifiers: .command)
+            Button { engine.redo() } label: { Image(systemName: "arrow.uturn.forward") }.disabled(!engine.canRedo)
+                .keyboardShortcut("z", modifiers: [.command, .shift])
+            Toggle(isOn: $drawing) { Image(systemName: "pencil.tip") }.toggleStyle(.button)
+            if drawing { Button("Xoá nét") { clearDrawing += 1 } }
+            Button { engine.toggleRecording() } label: {
+                Label("REC", systemImage: engine.isRecording ? "record.circle.fill" : "record.circle")
+                    .foregroundStyle(engine.isRecording ? .red : .primary)
+            }
+            if engine.externalDisplayConnected {
+                Picker("", selection: $engine.externalMode) {
+                    Text("Màn ngoài: PGM").tag(StudioEngine.ExternalMode.program)
+                    Text("Màn ngoài: Multiview").tag(StudioEngine.ExternalMode.multiview)
+                }
+            }
+            Button { showPanel.toggle() } label: { Image(systemName: "sidebar.right") }
             Button { showLogoPicker = true } label: { Label("Logo", systemImage: "photo") }
             if engine.logo != nil { Button("Bỏ logo") { engine.setLogo(nil) } }
             Menu {

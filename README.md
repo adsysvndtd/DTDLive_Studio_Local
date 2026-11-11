@@ -4,14 +4,40 @@
 
 ## Tính năng
 
-| Nhóm | Có trong bản này |
+| Nhóm | Chức năng |
 |---|---|
-| Nguồn vào | Camera trong máy, camera UVC/HDMI→USB (iPadOS 17+), SRT (caller/listener), RTMP play, file video lặp |
-| Bàn trộn | Hai bus PREVIEW/PROGRAM; CUT (phím Space), AUTO (phím Return); hiệu ứng MIX/WIPE/DIP với thời lượng chỉnh được; FTB; chạm 1 lần chọn preview, chạm 2 lần lên thẳng program |
-| Lớp phủ | Logo PNG, PiP từ bất kỳ nguồn nào |
-| Âm thanh | Mic/USB audio, có đồng hồ mức tiếng |
-| **Đầu ra (mới)** | **Push RTMP/RTMPS, push SRT (caller/listener/rendezvous, passphrase, latency), push RTSP (ANNOUNCE/RECORD)**, ghi MP4. Nhiều đích chạy song song |
-| Khung hình | 1920×1080 ngang hoặc 1080×1920 dọc |
+| Nguồn vào | Camera trong máy, camera UVC/HDMI→USB (iPadOS 17+), SRT (caller/listener), RTMP play, file video lặp, **app DTD Cam** trên iPhone (SRT/RTMP, có tally), NDI (khi có SDK) |
+| Bàn trộn | PREVIEW/PROGRAM, CUT (Space), AUTO (Return), MIX/WIPE/DIP, FTB, chạm/chạm đúp trên multiview, **tự động chuyển cảnh** (lần lượt / ngẫu nhiên / theo âm thanh) |
+| Xử lý hình từng nguồn | Phơi sáng, tương phản, bão hoà, nhiệt độ màu/tint, **LUT .cube**, **chroma key** (xanh lá/xanh dương, nền thay thế), lật gương, xoay 180°, cắt khung |
+| Đồ hoạ | **Lower third, tên + chức danh, title toàn màn hình, chữ chạy, bảng tỉ số, đồng hồ**; logo; PiP; hiệu ứng hiện/ẩn |
+| Vẽ chú thích | **Vẽ bằng Apple Pencil** (hoặc ngón tay) lên Program, nét vẽ có trong luồng phát |
+| Scopes | **Histogram, Waveform, RGB Parade, Vectorscope** |
+| Âm thanh | **Mixer nhiều kênh**: mic/USB, âm thanh từng nguồn SRT/RTMP, nhạc nền lặp, hiệu ứng âm thanh; gain/mute/**AFV** (âm thanh theo hình), đồng hồ mức tiếng |
+| Replay | **Replay slow-motion** 0.25×–1× từ bộ đệm 15 giây (bộ đệm lưu dạng H.264 nên tốn ít RAM) |
+| Đầu ra | **Push RTMP/RTMPS, SRT, RTSP**, ghi MP4 (phân mảnh, không hỏng file khi mất điện); nhiều đích cùng lúc; tự kết nối lại |
+| Màn hình ngoài | HDMI/AirPlay: chiếu Program hoặc Multiview toàn màn hình |
+| Điều khiển từ xa | **Web remote** `http://<IP iPad>:8080` (title, tỉ số, chuyển cảnh); **HTTP API** cho Bitfocus Companion / Stream Deck; **OSC** UDP 9000 |
+| Tally | Gửi tới DTD Cam, đèn tally camera PTZ (VISCA), NDI tally |
+| PTZ | **VISCA over IP** (UDP 52381) và VISCA TCP (5678): joystick, zoom, preset 1–6 (chạm = gọi, giữ = lưu); NDI PTZ |
+| Thao tác | **Undo/Redo** (⌘Z / ⇧⌘Z) cho title, logo, PiP, xử lý hình; tự hút cạnh và lưới khi đặt PiP/logo |
+| Khung hình | 1920×1080 ngang / 1080×1920 dọc |
+
+### Đối chiếu với TopDirector
+
+| TopDirector (tính năng công khai) | DTD Studio |
+|---|---|
+| Multicam NDI/SRT/RTSP/UVC | UVC, SRT, RTMP, DTD Cam; NDI qua SDK; RTSP vào: *chưa làm* |
+| Stream RTMP 3 kênh + ghi file | RTMP/SRT/RTSP không giới hạn số đích + ghi MP4 |
+| NDI/NDI\|HX output | NDI output khi có SDK (NDI\|HX cần license riêng) |
+| TopDirectorCam + slow-motion replay | DTD Cam + replay slow-motion |
+| TopDirectorTitle (title qua LAN) | Web remote, không cần cài app |
+| Apple Pencil annotation | Có |
+| Video scopes, color grading, LUT | Có |
+| Logo, nhạc nền, PiP, watermark | Có |
+| AirPlay/Screen mirroring | Có (màn hình ngoài) |
+| PTZ NDI | VISCA over IP + NDI PTZ |
+| Undo không giới hạn, snap | Undo 100 bước, snap |
+| Đăng nhập Facebook/YouTube | *Chưa làm*: dán stream key RTMP |
 
 ## Kiến trúc
 
@@ -50,6 +76,8 @@ AudioCapture ─▶ AudioEncoder (AAC 1 lần) ──┐    │
 
 Cần macOS có Xcode 16 trở lên.
 
+Có 3 target: **DTDStudio** (iPad/iPhone), **DTDCam** (camera đồng hành), **RTSPPushTests**.
+
 ```bash
 brew install xcodegen
 cd DTDStudio
@@ -71,13 +99,11 @@ ffplay rtsp://<mac-ip>:8554/test
 
 ## Trạng thái và việc tiếp theo
 
-- Mã **chưa được biên dịch**, vì máy dựng không có Xcode. Lần build đầu có thể còn vài lỗi nhỏ về kiểu dữ liệu hoặc concurrency cần sửa. Module `RTSPPush` có test đi kèm.
-- Nên làm tiếp:
-  - RTSP pull input (qua FFmpeg hoặc tự viết client)
-  - NDI vào/ra (cần đăng ký NDI SDK với Vizrt; **không** lấy lại bản NDI có sẵn trong bundle TopDirector)
-  - Trộn nhiều nguồn âm thanh (audio follow video)
-  - Title/lower-third
-  - Tally và điều khiển qua OSC
-  - Bitrate thích ứng theo băng thông thực tế của từng đích
-  - Chuyển sang HEVC cho SRT/RTSP
-  - RTSP server nội bộ để máy khác kéo luồng
+- Mã **chưa được biên dịch**, vì máy dựng không có Xcode. Lần build đầu sẽ còn lỗi nhỏ về kiểu dữ liệu hoặc concurrency cần sửa.
+- NDI chỉ được biên dịch khi có SDK trong `Vendor/NDI/` (xem `project.yml`). Không lấy thư viện NDI từ bundle của app khác.
+- Việc tiếp theo:
+  - RTSP pull input
+  - Đăng nhập YouTube/Facebook (OAuth) để tự tạo phiên live
+  - HEVC
+  - Bitrate thích ứng theo băng thông
+  - Lưu và nạp "show" (bộ cấu hình title, nguồn, đầu ra)

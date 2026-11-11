@@ -30,7 +30,9 @@ struct ProgramFormat: Equatable {
 struct OverlayLayer: Identifiable {
     let id = UUID()
     var image: CIImage?               // logo or rendered lower third
-    var pipSource: FrameStore?        // picture-in-picture source
+    var pipSourceID: UUID?            // picture-in-picture source (gets its own processing/key)
+    var cornerRadius: CGFloat = 0
+    var borderWidth: CGFloat = 0
     var rect: CGRect                  // normalised 0..1, origin top-left
     var opacity: CGFloat = 1
     var visible = true
@@ -53,10 +55,16 @@ final class Switcher: @unchecked Sendable {
     private var previewID: UUID?
     private var transition: (style: TransitionStyle, from: UUID?, to: UUID?, start: CFTimeInterval, duration: CFTimeInterval)?
     private var overlays: [OverlayLayer] = []
+    private var processing: [UUID: SourceProcessing] = [:]
+    private let processor = ProcessingRenderer()
+    /// Called once per program frame with the IDs on air (for tally / audio-follow-video).
+    var onTally: (@Sendable (_ program: Set<UUID>, _ preview: Set<UUID>) -> Void)?
     private var ftb = false // fade to black
 
     /// Encoded-path consumer (encoder) and monitor consumers (UI).
     var onProgramFrame: FrameHandler?
+    /// Per-frame full-canvas graphics (titles, ticker, clock, Pencil annotations), drawn above overlays.
+    var graphicsProvider: (@Sendable (CGSize, CFTimeInterval) -> CIImage?)?
     let programMonitor = FrameStore()
     let previewMonitor = FrameStore()
 
@@ -74,6 +82,7 @@ final class Switcher: @unchecked Sendable {
     func setPreview(_ id: UUID?) { locked { previewID = id } }
     func setOverlays(_ o: [OverlayLayer]) { locked { overlays = o } }
     func setFadeToBlack(_ on: Bool) { locked { ftb = on } }
+    func setProcessing(_ id: UUID, _ p: SourceProcessing?) { locked { processing[id] = (p?.isIdentity ?? true) ? nil : p } }
     var state: (program: UUID?, preview: UUID?) { locked { (programID, previewID) } }
 
     /// CUT: preview goes to program immediately, program goes back to preview.
@@ -114,8 +123,8 @@ final class Switcher: @unchecked Sendable {
 
     private func renderTick() {
         let now = HostClock.now
-        let snap = locked { () -> (FrameStore?, FrameStore?, (TransitionStyle, FrameStore?, CFTimeInterval)?, [OverlayLayer], Bool, ProgramFormat) in
-            var tr: (TransitionStyle, FrameStore?, CFTimeInterval)?
+        let snap = locked { () -> (UUID?, UUID?, (TransitionStyle, UUID?, CFTimeInterval)?, [OverlayLayer], Bool, ProgramFormat) in
+            var tr: (TransitionStyle, UUID?, CFTimeInterval)?
             if let t = transition {
                 let progress = (now - t.start) / t.duration
                 if progress >= 1 {
@@ -123,11 +132,13 @@ final class Switcher: @unchecked Sendable {
                     programID = t.to
                     transition = nil
                 } else {
-                    tr = (t.style, t.to.flatMap { inputs[$0] }, progress)
+                    tr = (t.style, t.to, progress)
                 }
             }
-            return (programID.flatMap { inputs[$0] }, previewID.flatMap { inputs[$0] }, tr, overlays, ftb, format)
+            return (programID, previewID, tr, overlays, ftb, format)
         }
+        let tallyPgm = Set([snap.0, snap.2?.1].compactMap { $0 } + snap.3.compactMap { $0.pipSourceID })
+        onTally?(tallyPgm, Set([snap.1].compactMap { $0 }))
         let extent = CGRect(x: 0, y: 0, width: snap.5.width, height: snap.5.height)
 
         var program = image(from: snap.0, fitting: extent)
@@ -138,6 +149,7 @@ final class Switcher: @unchecked Sendable {
         for o in snap.3 where o.visible {
             program = composite(o, over: program, extent: extent)
         }
+        if let g = graphicsProvider?(extent.size, now) { program = g.composited(over: program).cropped(to: extent) }
         if snap.4 { program = CIImage(color: .black).cropped(to: extent) }
 
         guard let out = render(program, extent: extent) else { return }
@@ -152,9 +164,15 @@ final class Switcher: @unchecked Sendable {
 
     // MARK: Image ops
 
-    private func image(from store: FrameStore?, fitting extent: CGRect) -> CIImage {
+    private func image(from id: UUID?, fitting extent: CGRect) -> CIImage {
+        let (store, proc) = locked { (id.flatMap { inputs[$0] }, id.flatMap { processing[$0] }) }
         guard let pb = store?.latest() else { return Self.slate(extent) }
-        let img = CIImage(cvPixelBuffer: pb)
+        var img = CIImage(cvPixelBuffer: pb)
+        if let proc {
+            let bg = proc.keyBackgroundID.flatMap { bid in locked { inputs[bid] } }?.latest().map { CIImage(cvPixelBuffer: $0) }
+                .map { b in b.transformed(by: CGAffineTransform(scaleX: img.extent.width / b.extent.width, y: img.extent.height / b.extent.height)) }
+            img = processor.apply(proc, to: img, background: bg)
+        }
         let scale = min(extent.width / img.extent.width, extent.height / img.extent.height)
         let scaled = img.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
         let dx = (extent.width - scaled.extent.width) / 2 - scaled.extent.minX
@@ -193,7 +211,7 @@ final class Switcher: @unchecked Sendable {
                        width: o.rect.width * extent.width,
                        height: o.rect.height * extent.height)
         var src: CIImage?
-        if let pip = o.pipSource { src = pip.latest().map { CIImage(cvPixelBuffer: $0) } }
+        if let pipID = o.pipSourceID { src = pipImage(pipID) }
         else { src = o.image }
         guard var img = src else { return base }
         let s = min(r.width / img.extent.width, r.height / img.extent.height)
@@ -203,6 +221,13 @@ final class Switcher: @unchecked Sendable {
             img = img.applyingFilter("CIColorMatrix", parameters: ["inputAVector": CIVector(x: 0, y: 0, z: 0, w: o.opacity)])
         }
         return img.composited(over: base).cropped(to: extent)
+    }
+
+    private func pipImage(_ id: UUID) -> CIImage? {
+        let (store, proc) = locked { (inputs[id], processing[id]) }
+        guard let pb = store?.latest() else { return nil }
+        let img = CIImage(cvPixelBuffer: pb)
+        return proc.map { processor.apply($0, to: img, background: nil) } ?? img
     }
 
     private static func slate(_ extent: CGRect) -> CIImage {
