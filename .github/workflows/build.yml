@@ -1,0 +1,93 @@
+name: Build
+
+# Chạy khi push lên main, khi mở PR, hoặc bấm tay ở tab Actions → Build → Run workflow.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rtsp-tests:
+    name: RTSPPush unit tests
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: swift test
+        working-directory: Packages/RTSPPush
+        run: swift test 2>&1 | tee ../../rtsp-tests.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rtsp-tests-log
+          path: rtsp-tests.log
+
+  build:
+    name: Build ${{ matrix.scheme }}
+    runs-on: macos-15
+    strategy:
+      fail-fast: false
+      matrix:
+        scheme: [DTDStudio, DTDCam]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Xcode version
+        run: xcodebuild -version
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate project
+        run: xcodegen generate
+
+      - name: Cache SwiftPM
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Caches/org.swift.swiftpm
+            build/SourcePackages
+          key: spm-${{ runner.os }}-${{ hashFiles('project.yml') }}
+
+      - name: Build (iOS device, unsigned)
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project DTDStudio.xcodeproj \
+            -scheme "${{ matrix.scheme }}" \
+            -configuration Debug \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            -clonedSourcePackagesDirPath build/SourcePackages \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO \
+            build 2>&1 | tee build-${{ matrix.scheme }}.log
+
+      - name: Error summary
+        if: failure()
+        run: |
+          echo "### Lỗi biên dịch ${{ matrix.scheme }}" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          grep -E "error:|fatal error" build-${{ matrix.scheme }}.log | sort -u | head -100 >> "$GITHUB_STEP_SUMMARY" || true
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: build-log-${{ matrix.scheme }}
+          path: build-${{ matrix.scheme }}.log
+
+      - name: Package unsigned .app
+        if: success()
+        run: |
+          APP=$(find build/Build/Products -maxdepth 2 -name "*.app" | head -1)
+          ditto -c -k --keepParent "$APP" "${{ matrix.scheme }}-unsigned.zip"
+
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: ${{ matrix.scheme }}-unsigned-app
+          path: ${{ matrix.scheme }}-unsigned.zip

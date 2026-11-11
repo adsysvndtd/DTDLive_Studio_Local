@@ -112,3 +112,12 @@ ffplay rtsp://<mac-ip>:8554/test
 - Module `RTSPPush` có unit test cho các phần: packetizer và depacketizer H.264/H.265/AAC, parser SDP, demux luồng RTSP, xác thực Digest. Chạy bằng `cd Packages/RTSPPush && swift test`.
 - NDI chỉ được biên dịch khi có SDK trong `Vendor/NDI/`.
 - Kết quả review: xem `docs/REVIEW.md`.
+
+## Build trên GitHub (CI)
+
+Workflow `.github/workflows/build.yml` chạy trên máy `macos-15` của GitHub. Nó tự chạy mỗi lần push lên `main` hoặc mở PR. Muốn chạy tay thì vào tab **Actions → Build → Run workflow**. Workflow làm 3 việc:
+- chạy `swift test` cho `Packages/RTSPPush`
+- chạy `xcodegen generate`, rồi build **DTDStudio** và **DTDCam** cho iOS ở dạng không ký (unsigned)
+- đưa log build và file `.app` chưa ký vào mục Artifacts; khi build lỗi, danh sách `error:` hiện ở phần Summary của lần chạy
+
+Muốn cài lên iPad thì vẫn phải ký bằng tài khoản Apple Developer trong Xcode. CI chỉ dùng để kiểm tra mã biên dịch được.

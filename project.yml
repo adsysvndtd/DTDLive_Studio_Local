@@ -15,6 +15,7 @@ targets:
     type: application
     platform: iOS
     sources: [App/Sources]
+    scheme: {}
     dependencies:
       - package: HaishinKit
         product: HaishinKit
@@ -64,6 +65,7 @@ targets:
     type: application
     platform: iOS
     sources: [CamApp/Sources]
+    scheme: {}
     dependencies:
       - package: HaishinKit
         product: HaishinKit
