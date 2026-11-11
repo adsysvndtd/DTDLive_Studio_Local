@@ -17,6 +17,12 @@ jobs:
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
+      - name: Select newest Xcode
+        run: |
+          ls -d /Applications/Xcode*.app
+          X=$(ls -d /Applications/Xcode_*.app | sed -E 's/.*Xcode_([0-9.]+)\.app/\1 &/' | sort -V | tail -1 | cut -d' ' -f2)
+          echo "Using $X"
+          sudo xcode-select -s "$X/Contents/Developer"
       - name: swift test
         working-directory: Packages/RTSPPush
         run: swift test 2>&1 | tee ../../rtsp-tests.log
@@ -35,6 +41,13 @@ jobs:
         scheme: [DTDStudio, DTDCam]
     steps:
       - uses: actions/checkout@v4
+
+      - name: Select newest Xcode
+        run: |
+          ls -d /Applications/Xcode*.app
+          X=$(ls -d /Applications/Xcode_*.app | sed -E 's/.*Xcode_([0-9.]+)\.app/\1 &/' | sort -V | tail -1 | cut -d' ' -f2)
+          echo "Using $X"
+          sudo xcode-select -s "$X/Contents/Developer"
 
       - name: Xcode version
         run: xcodebuild -version
