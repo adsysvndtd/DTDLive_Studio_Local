@@ -1,7 +1,7 @@
 # Generate the Xcode project:  brew install xcodegen && xcodegen generate
 name: DTDStudio
 options:
-  bundleIdPrefix: vn.vnpt.dtd
+  bundleIdPrefix: vn.com.dtdsolution
   deploymentTarget:
     iOS: "17.0"
 packages:
@@ -27,6 +27,7 @@ targets:
       - package: RTSPPush
     settings:
       base:
+        PRODUCT_BUNDLE_IDENTIFIER: vn.com.dtdsolution.DTDStudio
         SWIFT_VERSION: "5.0"
         TARGETED_DEVICE_FAMILY: "1,2"
         SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: YES

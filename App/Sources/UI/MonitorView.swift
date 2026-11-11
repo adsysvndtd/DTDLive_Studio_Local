@@ -34,7 +34,17 @@ final class MonitorMTKView: MTKView {
         colorPixelFormat = .bgra8Unorm
         clearColor = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 1)
         autoResizeDrawable = true
+        if DemoMode.isUITest {
+            // Screenshot runs: redraw twice a second instead of every display frame, so the
+            // main run loop goes idle (XCUITest waits for that) and the Simulator stays responsive.
+            isPaused = true
+            enableSetNeedsDisplay = true
+            slowTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in self?.setNeedsDisplay() }
+        }
     }
+
+    private var slowTimer: Timer?
+    deinit { slowTimer?.invalidate() }
 
     required init(coder: NSCoder) { fatalError() }
 

@@ -4,7 +4,7 @@ Hai nút **YouTube Live** và **Facebook Live** trong màn *Đầu ra* sẽ tự
 
 ## YouTube
 1. Vào Google Cloud Console, tạo project và bật **YouTube Data API v3**.
-2. Tạo OAuth client loại **iOS**, Bundle ID là `vn.vnpt.dtd.DTDStudio`.
+2. Tạo OAuth client loại **iOS**, Bundle ID là `vn.com.dtdsolution.DTDStudio`.
 3. Ghi Client ID vào `DTDGoogleClientID`, ví dụ `1234-abc.apps.googleusercontent.com`.
 4. Kênh YouTube phải được bật tính năng live trước đó (lần đầu bật mất khoảng 24 giờ).
 

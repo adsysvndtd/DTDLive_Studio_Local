@@ -16,7 +16,7 @@ Mỗi lần push, GitHub Actions tạo ra các file sau trong mục **Artifacts*
 
 ## Cách 2: CI tự ký bản Ad Hoc (cần tài khoản Apple Developer 99 USD/năm)
 1. Trên developer.apple.com:
-   - tạo App ID `vn.vnpt.dtd.DTDStudio`
+   - tạo App ID `vn.com.dtdsolution.DTDStudio`
    - đăng ký UDID của các iPad
    - tạo chứng chỉ **Apple Distribution** và xuất ra file `.p12`
    - tạo provisioning profile loại **Ad Hoc** cho App ID đó

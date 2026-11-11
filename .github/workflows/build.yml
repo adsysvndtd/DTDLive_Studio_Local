@@ -183,7 +183,7 @@ jobs:
             <key>method</key><string>release-testing</string>
             <key>teamID</key><string>$TEAM_ID</string>
             <key>signingStyle</key><string>manual</string>
-            <key>provisioningProfiles</key><dict><key>vn.vnpt.dtd.DTDStudio</key><string>$PROFILE_NAME</string></dict>
+            <key>provisioningProfiles</key><dict><key>vn.com.dtdsolution.DTDStudio</key><string>$PROFILE_NAME</string></dict>
           </dict></plist>
           PLIST
           xcodebuild -exportArchive -archivePath build/DTDStudio.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath export

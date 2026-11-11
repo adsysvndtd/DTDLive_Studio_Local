@@ -26,10 +26,13 @@ final class ScreenshotTests: XCTestCase {
         if let dir { try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true) }
         for s in screens {
             let app = XCUIApplication()
-            app.launchArguments = ["-demo"] + s.args
+            app.launchArguments = ["-demo", "-uitest"] + s.args
             app.launch()
             XCUIDevice.shared.orientation = .landscapeLeft
-            sleep(6) // demo sources animate, sheets open after 1.5 s
+            // The studio UI is up once the CUT button exists; fail loudly (with the UI tree) if it never appears.
+            let up = app.buttons["CUT"].waitForExistence(timeout: 45)
+            XCTAssertTrue(up, "\(s.name): studio UI did not appear. state=\(app.state.rawValue)\n\(app.debugDescription.prefix(3000))")
+            sleep(4) // sheets open 1.5 s after launch; demo frames refresh every 0.5 s
             let shot = XCUIScreen.main.screenshot()
             let a = XCTAttachment(screenshot: shot)
             a.name = s.name

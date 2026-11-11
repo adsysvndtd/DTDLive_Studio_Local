@@ -5,11 +5,14 @@ import Foundation
 import UIKit
 
 /// Demo / screenshot mode. Enabled by launch argument `-demo`, e.g.
-///   xcrun simctl launch booted vn.vnpt.dtd.DTDStudio -demo -screen outputs -panel audio
+///   xcrun simctl launch booted vn.com.dtdsolution.DTDStudio -demo -screen outputs -panel audio
 /// Adds animated test-pattern sources (no camera or network needed), sample titles,
 /// a PiP and a few outputs, so every screen can be reviewed in the Simulator or on CI.
 enum DemoMode {
     static var isOn: Bool { ProcessInfo.processInfo.arguments.contains("-demo") }
+    /// UI-test / screenshot run: monitors redraw on a slow timer instead of every display frame,
+    /// so XCUITest sees the app idle and the Simulator's main thread isn't saturated.
+    static var isUITest: Bool { ProcessInfo.processInfo.arguments.contains("-uitest") }
 
     /// Value after a launch argument, e.g. `-screen outputs` -> "outputs".
     static func arg(_ name: String) -> String? {
@@ -65,9 +68,9 @@ final class DemoSource: VideoSource {
 
     private let index: Int
     private let top: CIColor, bottom: CIColor
-    private var timer: Timer?
+    private var timer: DispatchSourceTimer?
     private let renderer = DemoRenderer()
-    private let start = Date()
+    private let queue = DispatchQueue(label: "demo.source", qos: .utility)
 
     init(name: String, index: Int, top: CIColor, bottom: CIColor) {
         self.name = name; self.index = index; self.top = top; self.bottom = bottom
@@ -75,24 +78,23 @@ final class DemoSource: VideoSource {
 
     func start() async {
         status = .live
-        tick()
-        timer = Timer.scheduledTimer(withTimeInterval: 1.0 / 15, repeats: true) { [weak self] _ in
-            Task { @MainActor in self?.tick() }
+        let r = renderer, store = frames, idx = index, nm = name, tp = top, bt = bottom, t0 = Date()
+        let t = DispatchSource.makeTimerSource(queue: queue)
+        t.schedule(deadline: .now(), repeating: DemoMode.isUITest ? 0.5 : 1.0 / 15)
+        t.setEventHandler {
+            if let pb = r.frame(index: idx, name: nm, top: tp, bottom: bt, t: Date().timeIntervalSince(t0)) { store.put(pb) }
         }
+        t.resume()
+        timer = t
     }
 
-    func stop() async { timer?.invalidate(); timer = nil; frames.clear(); status = .idle }
-
-    private func tick() {
-        let t = Date().timeIntervalSince(start)
-        if let pb = renderer.frame(index: index, name: name, top: top, bottom: bottom, t: t) { frames.put(pb) }
-    }
+    func stop() async { timer?.cancel(); timer = nil; frames.clear(); status = .idle }
 }
 
 final class DemoRenderer: @unchecked Sendable {
     private let ci = CIContext(options: [.cacheIntermediates: false])
     private var pool: CVPixelBufferPool?
-    private var label: (String, CIImage)?
+    private var cache: [String: CIImage] = [:]
     private let size = CGSize(width: 1280, height: 720)
 
     func frame(index: Int, name: String, top: CIColor, bottom: CIColor, t: Double) -> CVPixelBuffer? {
@@ -127,10 +129,15 @@ final class DemoRenderer: @unchecked Sendable {
     }
 
     private func text(_ s: String, size: CGFloat, weight: UIFont.Weight, mono: Bool = false) -> CIImage {
+        let key = "\(s)|\(size)"
+        if let c = cache[key] { return c }
+        defer { if cache.count > 200 { cache.removeAll() } }
         let font = mono ? UIFont.monospacedDigitSystemFont(ofSize: size, weight: weight) : UIFont.systemFont(ofSize: size, weight: weight)
         let a = NSAttributedString(string: s, attributes: [.font: font, .foregroundColor: UIColor.white])
         let fmt = UIGraphicsImageRendererFormat(); fmt.scale = 1; fmt.opaque = false
         let img = UIGraphicsImageRenderer(size: a.size(), format: fmt).image { _ in a.draw(at: .zero) }
-        return img.cgImage.map { CIImage(cgImage: $0) } ?? CIImage.empty()
+        let ci = img.cgImage.map { CIImage(cgImage: $0) } ?? CIImage.empty()
+        cache[key] = ci
+        return ci
     }
 }
