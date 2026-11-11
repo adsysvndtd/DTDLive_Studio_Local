@@ -6,7 +6,7 @@ import Metal
 import os
 
 enum TransitionStyle: String, CaseIterable, Identifiable, Codable {
-    case cut, mix, wipeLeft, dip, flash, push, zoom, pageCurl, ripple, bars, copyMachine
+    case cut, mix, wipeLeft, dip, flash, push, zoom, pageCurl, ripple, bars, copyMachine, mod, fold
     var id: String { rawValue }
     var label: String {
         switch self {
@@ -21,6 +21,8 @@ enum TransitionStyle: String, CaseIterable, Identifiable, Codable {
         case .ripple: return "GỢN"
         case .bars: return "SỌC"
         case .copyMachine: return "QUÉT"
+        case .mod: return "MOD"
+        case .fold: return "GẤP"
         }
     }
     var icon: String {
@@ -36,6 +38,8 @@ enum TransitionStyle: String, CaseIterable, Identifiable, Codable {
         case .ripple: return "drop.circle"
         case .bars: return "rectangle.split.3x1"
         case .copyMachine: return "light.beacon.max"
+        case .mod: return "circle.hexagongrid"
+        case .fold: return "rectangle.split.3x1.fill"
         }
     }
 }
@@ -195,7 +199,7 @@ final class Switcher: @unchecked Sendable {
         var program = image(from: snap.0, fitting: extent)
         if let (style, target, progress) = snap.2 {
             let b = image(from: target, fitting: extent)
-            program = blend(program, b, style: style, progress: CGFloat(progress), extent: extent)
+            program = Self.blend(program, b, style: style, progress: CGFloat(progress), extent: extent)
         }
         for o in snap.3 where o.visible {
             program = composite(o, over: program, extent: extent)
@@ -233,7 +237,7 @@ final class Switcher: @unchecked Sendable {
             .cropped(to: extent)
     }
 
-    private func blend(_ a: CIImage, _ b: CIImage, style: TransitionStyle, progress p: CGFloat, extent: CGRect) -> CIImage {
+    static func blend(_ a: CIImage, _ b: CIImage, style: TransitionStyle, progress p: CGFloat, extent: CGRect) -> CIImage {
         switch style {
         case .cut:
             return b
@@ -295,6 +299,16 @@ final class Switcher: @unchecked Sendable {
             f.inputImage = a; f.targetImage = b; f.time = Float(p)
             f.extent = extent; f.color = CIColor(red: 0.6, green: 1, blue: 0.8); f.angle = 0
             f.width = Float(extent.width / 6); f.opacity = 1.3
+            return f.outputImage?.cropped(to: extent) ?? b
+        case .mod:
+            let f = CIFilter.modTransition()
+            f.inputImage = a; f.targetImage = b; f.time = Float(p)
+            f.center = CGPoint(x: extent.midX, y: extent.midY); f.angle = 2; f.radius = Float(extent.width / 12); f.compression = 300
+            return f.outputImage?.cropped(to: extent) ?? b
+        case .fold:
+            let f = CIFilter.accordionFoldTransition()
+            f.inputImage = a; f.targetImage = b; f.time = Float(p)
+            f.bottomHeight = 0; f.numberOfFolds = 3; f.foldShadowAmount = 0.1
             return f.outputImage?.cropped(to: extent) ?? b
         }
     }

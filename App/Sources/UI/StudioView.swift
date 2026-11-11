@@ -1,6 +1,7 @@
 import AVFoundation
 import PhotosUI
 import SwiftUI
+import UIKit
 import UniformTypeIdentifiers
 
 struct StudioView: View {
@@ -152,6 +153,9 @@ struct StudioView: View {
                     monitorChip(engine.isAnyLive ? "ON AIR" : "OFF AIR", on: engine.isAnyLive, onColor: DS.pgm) { showOutputs = true }
                     if !compact { monitorChip("Thông số", on: engine.showMonitorInfo) { engine.showMonitorInfo.toggle() } }
                     if engine.pip != nil || engine.logo != nil { monitorChip("Sắp xếp", on: arranging) { arranging.toggle(); if arranging { drawing = false } } }
+                    monitorChip("Giờ", on: engine.clockOn) { engine.toggleClock() }
+                    if let m = engine.programMovie { monitorChip("Lặp", on: m.loops) { engine.toggleProgramLoop() } }
+                    monitorChip("Reset", on: false) { engine.resetProgramLayers(); clearDrawing += 1 }
                     monitorChip("Vẽ", on: drawing) { drawing.toggle(); if drawing { arranging = false } }
                     if drawing { monitorChip("Xoá nét", on: false) { clearDrawing += 1 } }
                 } else {
@@ -164,6 +168,9 @@ struct StudioView: View {
             ZStack {
                 MonitorView(store: store)
                 if engine.showSafeGuides { SafeGuides() }
+                if !isProgram && engine.swipeToTake && !scopesOnPreview {
+                    SwipeTakeOverlay(onCut: { engine.cut() }, onAuto: { engine.autoTransition() })
+                }
                 if isProgram {
                     if engine.showMonitorInfo && !compact { monitorInfo.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top) }
                     if arranging { ArrangeOverlay(engine: engine) }
@@ -209,6 +216,40 @@ struct StudioView: View {
         .font(.system(size: 10, weight: .semibold, design: .monospaced))
         .padding(5).background(Color.black.opacity(0.55), in: RoundedRectangle(cornerRadius: 4))
         .padding(6)
+    }
+}
+
+/// Transparent pan catcher on PVW: swipe right (toward PGM) with 1 finger = CUT, 2 fingers = AUTO.
+struct SwipeTakeOverlay: UIViewRepresentable {
+    var onCut: () -> Void
+    var onAuto: () -> Void
+
+    func makeCoordinator() -> Coordinator { Coordinator() }
+
+    func makeUIView(context: Context) -> UIView {
+        let v = UIView(); v.backgroundColor = .clear
+        for n in 1...2 {
+            let pan = UIPanGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.pan(_:)))
+            pan.minimumNumberOfTouches = n; pan.maximumNumberOfTouches = n
+            v.addGestureRecognizer(pan)
+        }
+        return v
+    }
+
+    func updateUIView(_ v: UIView, context: Context) {
+        context.coordinator.onCut = onCut; context.coordinator.onAuto = onAuto
+    }
+
+    final class Coordinator: NSObject {
+        var onCut: () -> Void = {}
+        var onAuto: () -> Void = {}
+        @objc func pan(_ g: UIPanGestureRecognizer) {
+            guard g.state == .ended, let v = g.view else { return }
+            let t = g.translation(in: v), vel = g.velocity(in: v)
+            guard t.x > max(50, v.bounds.width * 0.2), abs(t.x) > abs(t.y) * 1.5 || vel.x > 600 else { return }
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+            if g.maximumNumberOfTouches == 2 { onAuto() } else { onCut() }
+        }
     }
 }
 

@@ -168,6 +168,28 @@ final class FileSource: VideoSource {
 
     private(set) var isPlaying = false
     private var boundary: Any?
+    private var endObserver: NSObjectProtocol?
+
+    /// Loop at end of file (default) or hold the last frame.
+    var loops = true {
+        didSet {
+            guard loops != oldValue else { return }
+            if loops {
+                if let o = endObserver { NotificationCenter.default.removeObserver(o); endObserver = nil }
+                if looper == nil || looper?.status == .cancelled, let item = player.currentItem {
+                    looper = AVPlayerLooper(player: player, templateItem: AVPlayerItem(asset: item.asset))
+                }
+            } else {
+                looper?.disableLooping()
+                endObserver = NotificationCenter.default.addObserver(forName: AVPlayerItem.didPlayToEndTimeNotification, object: nil, queue: .main) { [weak self] n in
+                    MainActor.assumeIsolated {
+                        guard let self, let item = n.object as? AVPlayerItem, self.player.items().contains(item) else { return }
+                        self.player.pause(); self.isPlaying = false
+                    }
+                }
+            }
+        }
+    }
 
     /// Plays [inT, outT] (seconds in the file) at `rate`; loops or pauses at the out point.
     func playRange(in inT: Double, out outT: Double, rate: Float, loop: Bool) {

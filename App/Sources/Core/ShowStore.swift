@@ -61,7 +61,7 @@ enum ShowStore {
 extension StudioEngine {
     func makeShow(named name: String) -> ShowFile {
         let src: [ShowFile.SourceConfig] = sources.compactMap { s in
-            guard s.id != replay.id else { return nil }
+            guard s.id != replay.id, s.id != layoutSource.id else { return nil }
             var c: ShowFile.SourceConfig
             switch s {
             case let x as CameraSource: c = .init(kind: .camera, name: x.name, deviceID: x.deviceID)

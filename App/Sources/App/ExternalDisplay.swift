@@ -45,6 +45,8 @@ struct ExternalProgramView: View {
             switch engine.externalMode {
             case .program:
                 MonitorView(store: engine.switcher.programMonitor, maxFPS: 60)
+                    .aspectRatio(CGFloat(engine.format.width) / CGFloat(engine.format.height), contentMode: .fit)
+                    .overlay { if engine.externalSafeGuides { SafeGuides() } }
             case .multiview:
                 MultiviewGrid(engine: engine)
             }

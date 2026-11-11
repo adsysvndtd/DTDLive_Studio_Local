@@ -1,10 +1,11 @@
+import CoreVideo
 import PhotosUI
 import SwiftUI
 import UniformTypeIdentifiers
 
 /// Bottom half of the studio: category list · content · transition column.
 enum ProdCategory: String, CaseIterable, Identifiable {
-    case favorite, camera, pip, movie, picture, transition, overlay, title, logo, audio, adjust, auto, replay
+    case favorite, camera, pip, movie, picture, transition, overlay, title, logo, audio, adjust, auto, replay, settings
     var id: String { rawValue }
     var label: String {
         switch self {
@@ -21,6 +22,7 @@ enum ProdCategory: String, CaseIterable, Identifiable {
         case .adjust: return "Màu & PTZ"
         case .auto: return "Tự động"
         case .replay: return "Replay"
+        case .settings: return "Cài đặt"
         }
     }
     var icon: String {
@@ -38,6 +40,7 @@ enum ProdCategory: String, CaseIterable, Identifiable {
         case .adjust: return "slider.horizontal.3"
         case .auto: return "arrow.triangle.2.circlepath"
         case .replay: return "gobackward"
+        case .settings: return "gearshape.fill"
         }
     }
 }
@@ -93,14 +96,34 @@ struct CategoryContent: View {
     @State private var photoKind: LibraryKind?
     @State private var photoItems: [PhotosPickerItem] = []
     @State private var adjustingSource: UUID?
+    @State private var ptzSource: UUID?
+    @State private var infoSource: UUID?
+    @State private var showOutputs = false
 
     var body: some View {
         VStack(spacing: 0) {
             header
             Divider().overlay(DS.stroke)
-            ScrollView {
-                content.padding(compact ? 8 : 12)
+            if category == .settings {
+                SettingsForm(engine: engine, onOpenOutputs: { showOutputs = true })
+            } else {
+                ScrollView {
+                    content.padding(compact ? 8 : 12)
+                }
             }
+        }
+        .sheet(isPresented: $showOutputs) { OutputsSheet(engine: engine) }
+        .sheet(item: Binding(get: { ptzSource.map(IDBox.init) }, set: { ptzSource = $0?.id })) { box in
+            NavigationStack {
+                ScrollView { PTZPanel(engine: engine, sourceID: box.id).padding() }
+                    .background(DS.bg)
+                    .navigationTitle("PTZ · " + (engine.sources.first { $0.id == box.id }?.name ?? ""))
+                    .toolbar { Button("Xong") { ptzSource = nil } }
+            }
+            .presentationDetents([.medium, .large])
+        }
+        .sheet(item: Binding(get: { infoSource.map(IDBox.init) }, set: { infoSource = $0?.id })) { box in
+            SourceInfoView(engine: engine, sourceID: box.id).presentationDetents([.medium])
         }
         .background(DS.bg)
         .fileImporter(isPresented: Binding(get: { importing != nil }, set: { if !$0 { importing = nil } }),
@@ -134,6 +157,11 @@ struct CategoryContent: View {
             Spacer()
             switch category {
             case .camera, .favorite:
+                if category == .camera, let pv = engine.previewID {
+                    iconButton("info.circle", "Thông tin nguồn PVW") { infoSource = pv }
+                    iconButton("arrow.up.and.down.and.arrow.left.and.right", "PTZ nguồn PVW") { ptzSource = pv }
+                    iconButton("paintpalette", "Màu nguồn PVW") { adjustingSource = pv }
+                }
                 headerButton("Thêm nguồn", "plus") { showAddSource = true }
             case .movie:
                 headerButton("Nhập video", "square.and.arrow.down") { importing = .movie }
@@ -156,6 +184,12 @@ struct CategoryContent: View {
         }
         .padding(.horizontal, compact ? 10 : 14).frame(height: compact ? 38 : 48)
         .background(DS.surface)
+    }
+
+    private func iconButton(_ icon: String, _ label: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) { Image(systemName: icon).font(.system(size: compact ? 15 : 18)).frame(width: 30, height: 30) }
+            .buttonStyle(.plain).foregroundStyle(DS.text2)
+            .accessibilityLabel(label)
     }
 
     private func headerButton(_ title: String, _ icon: String, action: @escaping () -> Void) -> some View {
@@ -191,6 +225,8 @@ struct CategoryContent: View {
             if net.isEmpty { emptyHint("Chưa có camera mạng") }
             sourceGrid(net)
             PairedDevicesSection(pairing: engine.pairing, port: engine.controlPort).padding(.top, 8)
+        case .settings:
+            EmptyView()
         case .pip:
             pipContent
         case .movie:
@@ -219,8 +255,8 @@ struct CategoryContent: View {
             }
             libraryGrid(.logo, selected: engine.currentLogoURL) { engine.useLogo($0) }
         case .audio:
+            AudioMixerView(engine: engine, compact: compact)
             musicList
-            AudioPanel(engine: engine)
         case .adjust:
             SourcePanel(engine: engine)
         case .auto:
@@ -253,15 +289,63 @@ struct CategoryContent: View {
     // MARK: PiP
 
     @ViewBuilder private var pipContent: some View {
+        sectionHeader("Mẫu bố cục nhiều nguồn — chọn mẫu để đưa lên Preview, rồi CUT/AUTO hoặc phím PiP TRANS")
+        LazyVGrid(columns: [GridItem(.adaptive(minimum: compact ? 150 : 220), spacing: compact ? 6 : 10)], spacing: compact ? 6 : 10) {
+            ForEach(LayoutTemplate.all) { t in
+                Button { engine.chooseLayout(t.id) } label: {
+                    VStack(spacing: 0) {
+                        LayoutThumbnail(template: t, names: slotNames(for: t))
+                            .aspectRatio(16 / 9, contentMode: .fit)
+                        Text("\(t.id). \(t.name)").font(.caption.weight(.semibold)).lineLimit(1)
+                            .frame(maxWidth: .infinity, minHeight: 26).background(DS.surface)
+                    }
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(engine.layoutTemplateID == t.id ? DS.accent : DS.stroke,
+                                                                     lineWidth: engine.layoutTemplateID == t.id ? 3 : 1))
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        if !engine.layoutSlots.isEmpty {
+            sectionHeader("Gán nguồn cho từng khung (chọn khung → bấm nguồn)")
+            HStack(spacing: 6) {
+                ForEach(engine.layoutSlots.indices, id: \.self) { i in
+                    let sel = engine.layoutSelectedSlot == i
+                    Button { engine.layoutSelectedSlot = i } label: {
+                        Text("Khung \(i + 1): \(engine.sources.first { $0.id == engine.layoutSlots[i] }?.name ?? "trống")")
+                            .font(.caption.weight(.semibold)).lineLimit(1)
+                            .padding(.horizontal, 10).padding(.vertical, 6)
+                            .foregroundStyle(sel ? .black : .white)
+                            .background(sel ? DS.accent : DS.surface2, in: Capsule())
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            LazyVGrid(columns: columns, spacing: compact ? 6 : 10) {
+                ForEach(engine.sources.filter { $0.id != engine.layoutSource.id }, id: \.id) { s in
+                    Button { engine.assignLayoutSlot(engine.layoutSelectedSlot, source: s.id) } label: {
+                        ZStack(alignment: .bottomLeading) {
+                            MonitorView(store: s.frames, maxFPS: 8).aspectRatio(16 / 9, contentMode: .fit)
+                            Text(s.name).font(.caption2.weight(.semibold)).lineLimit(1).padding(4)
+                                .frame(maxWidth: .infinity, alignment: .leading).background(Color.black.opacity(0.55))
+                        }
+                        .clipShape(RoundedRectangle(cornerRadius: 6))
+                        .overlay(RoundedRectangle(cornerRadius: 6).stroke(engine.layoutSlots.contains(s.id) ? DS.accent2 : DS.stroke,
+                                                                         lineWidth: engine.layoutSlots.contains(s.id) ? 2 : 1))
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+        sectionHeader("Khung PiP đơn đè lên Program")
         HStack(spacing: 12) {
             Toggle("PiP trên Program", isOn: $engine.pipOn).disabled(engine.pip == nil).fixedSize()
             Spacer()
             Picker("Vị trí", selection: $engine.pipPreset) { ForEach(StudioEngine.PiPPreset.allCases) { Text($0.label).tag($0) } }
                 .pickerStyle(.menu)
         }
-        sectionHeader("Chọn nguồn cho khung PiP")
         LazyVGrid(columns: columns, spacing: compact ? 6 : 10) {
-            ForEach(engine.sources, id: \.id) { s in
+            ForEach(engine.sources.filter { $0.id != engine.layoutSource.id }, id: \.id) { s in
                 let on = engine.pip?.pipSourceID == s.id
                 Button { engine.setPiP(on ? nil : s.id) } label: {
                     ZStack(alignment: .bottomLeading) {
@@ -277,20 +361,31 @@ struct CategoryContent: View {
         }
     }
 
+    private func slotNames(for t: LayoutTemplate) -> [String] {
+        (0..<t.slots.count).map { i in
+            if t.id == engine.layoutTemplateID, i < engine.layoutSlots.count,
+               let n = engine.sources.first(where: { $0.id == engine.layoutSlots[i] })?.name { return n }
+            return i == 0 ? "Chính" : "Cam \(i + 1)"
+        }
+    }
+
     // MARK: Transitions
 
     @ViewBuilder private var transitionContent: some View {
         LabeledSlider(title: "Thời gian chuyển cảnh", value: $engine.transitionDuration, range: 0.2...3) { String(format: "%.1f s", $0) }
-        LazyVGrid(columns: [GridItem(.adaptive(minimum: compact ? 80 : 110), spacing: 8)], spacing: 8) {
-            ForEach(TransitionStyle.allCases.filter { $0 != .cut }) { t in
+        LazyVGrid(columns: [GridItem(.adaptive(minimum: compact ? 130 : 200), spacing: compact ? 6 : 10)], spacing: compact ? 6 : 10) {
+            ForEach(Array(TransitionStyle.allCases.filter { $0 != .cut }.enumerated()), id: \.element) { i, t in
                 Button { engine.transition = t } label: {
-                    VStack(spacing: 6) {
-                        Image(systemName: t.icon).font(.title2)
-                        Text(t.label).font(.caption.weight(.bold))
+                    VStack(spacing: 0) {
+                        TransitionPreviewView(style: t, animate: engine.transition == t)
+                            .aspectRatio(16 / 9, contentMode: .fit)
+                        Text("\(i + 1): \(t.label)").font(.caption.weight(.bold))
+                            .frame(maxWidth: .infinity, minHeight: 26)
+                            .foregroundStyle(engine.transition == t ? Color.black : .white)
+                            .background(engine.transition == t ? DS.accent : DS.surface)
                     }
-                    .frame(maxWidth: .infinity, minHeight: compact ? 60 : 78)
-                    .foregroundStyle(engine.transition == t ? Color.black : .white)
-                    .background(engine.transition == t ? DS.accent : DS.surface2, in: RoundedRectangle(cornerRadius: 10))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(engine.transition == t ? DS.accent : DS.stroke, lineWidth: engine.transition == t ? 3 : 1))
                 }
                 .buttonStyle(.plain)
             }
@@ -477,6 +572,7 @@ struct TransitionColumn: View {
                     .background(DS.surface2, in: Capsule())
                 }
                 Text(engine.transition.label).font(.caption.weight(.heavy)).foregroundStyle(DS.accent)
+                key("PiP TRANS") { engine.layoutTransition() }
                 key("FLASH") { engine.flashTransition() }
                 key("CUT") { engine.cut() }.keyboardShortcut(.space, modifiers: [])
                 key("AUTO", color: DS.accent, text: .black) { engine.autoTransition() }.keyboardShortcut(.return, modifiers: [])
@@ -484,6 +580,7 @@ struct TransitionColumn: View {
                     .frame(width: compact ? 30 : 40, height: compact ? 90 : 130)
                     .padding(.vertical, 4)
                 toggleKey("TITLE", on: engine.armedTitleVisible) { engine.toggleArmedTitle() }
+                toggleKey("TITLE 2", on: engine.secondTitle?.visible ?? false, enabled: engine.secondTitle != nil) { engine.toggleSecondTitle() }
                 toggleKey("LOGO", on: engine.logoOn, enabled: engine.logo != nil) { engine.logoOn.toggle() }
                 toggleKey("LỚP PHỦ", on: engine.foregroundOn, enabled: engine.foreground != nil) { engine.foregroundOn.toggle() }
                 toggleKey("PiP", on: engine.pipOn, enabled: engine.pip != nil) { engine.pipOn.toggle() }
@@ -524,5 +621,129 @@ struct TransitionColumn: View {
         }
         .buttonStyle(.plain)
         .disabled(!enabled).opacity(enabled ? 1 : 0.4)
+    }
+}
+
+
+/// Template preview: transparent-checker canvas with silhouette windows (drawn, no images).
+struct LayoutThumbnail: View {
+    let template: LayoutTemplate
+    let names: [String]
+
+    var body: some View {
+        GeometryReader { g in
+            ZStack(alignment: .topLeading) {
+                CheckerBackground()
+                ForEach(Array(template.slots.enumerated()), id: \.offset) { i, slot in
+                    let r = CGRect(x: slot.rect.minX * g.size.width, y: slot.rect.minY * g.size.height,
+                                   width: slot.rect.width * g.size.width, height: slot.rect.height * g.size.height)
+                    ZStack(alignment: .bottom) {
+                        Color.black
+                        Image(systemName: "person.fill").resizable().scaledToFit()
+                            .foregroundStyle(Color(white: 0.42))
+                            .frame(height: r.height * 0.62)
+                        Text(names[safe: i] ?? "").font(.system(size: max(7, r.height * 0.13), weight: .bold)).lineLimit(1)
+                            .padding(.horizontal, 4).padding(.vertical, 1)
+                            .background(Color(white: 0.42), in: Capsule())
+                            .padding(.bottom, 2)
+                    }
+                    .frame(width: r.width, height: r.height)
+                    .clipped()
+                    .overlay(Rectangle().stroke(DS.accent.opacity(0.85), lineWidth: 1))
+                    .rotation3DEffect(.degrees(slot.perspective ? 18 : 0), axis: (x: 0, y: 1, z: 0))
+                    .offset(x: r.minX, y: r.minY)
+                }
+            }
+        }
+    }
+}
+
+extension Array {
+    subscript(safe i: Int) -> Element? { indices.contains(i) ? self[i] : nil }
+}
+
+
+/// Shows what a transition looks like on two sample frames ("A" → "B"); the selected one animates.
+struct TransitionPreviewView: View {
+    let style: TransitionStyle
+    var animate: Bool
+
+    var body: some View {
+        if animate {
+            TimelineView(.periodic(from: .now, by: 1.0 / 12)) { ctx in
+                let t = ctx.date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: 2.4) / 2.0
+                image(min(1, t))
+            }
+        } else {
+            image(0.45)
+        }
+    }
+
+    private func image(_ p: Double) -> some View {
+        Group {
+            if let img = TransitionPreviewRenderer.shared.frame(style, progress: p) { Image(uiImage: img).resizable() }
+            else { Color.black }
+        }
+    }
+}
+
+final class TransitionPreviewRenderer: @unchecked Sendable {
+    static let shared = TransitionPreviewRenderer()
+    private let ci = CIContext(options: [.cacheIntermediates: false])
+    private let size = CGSize(width: 320, height: 180)
+    private var cache: [String: UIImage] = [:]
+    private let lock = NSLock()
+    private lazy var a = sample("A", bg: UIColor(white: 0.93, alpha: 1), fg: UIColor(white: 0.08, alpha: 1))
+    private lazy var b = sample("B", bg: UIColor(white: 0.10, alpha: 1), fg: UIColor(white: 0.95, alpha: 1))
+
+    func frame(_ style: TransitionStyle, progress: Double) -> UIImage? {
+        let key = "\(style.rawValue)-\(Int(progress * 24))"
+        lock.lock(); if let c = cache[key] { lock.unlock(); return c }; lock.unlock()
+        let extent = CGRect(origin: .zero, size: size)
+        let out = Switcher.blend(a, b, style: style, progress: CGFloat(progress), extent: extent)
+        guard let cg = ci.createCGImage(out, from: extent) else { return nil }
+        let img = UIImage(cgImage: cg)
+        lock.lock(); cache[key] = img; lock.unlock()
+        return img
+    }
+
+    private func sample(_ letter: String, bg: UIColor, fg: UIColor) -> CIImage {
+        let fmt = UIGraphicsImageRendererFormat(); fmt.scale = 1
+        let img = UIGraphicsImageRenderer(size: size, format: fmt).image { _ in
+            bg.setFill(); UIBezierPath(rect: CGRect(origin: .zero, size: size)).fill()
+            let a = NSAttributedString(string: letter, attributes: [.font: UIFont.systemFont(ofSize: 130, weight: .black), .foregroundColor: fg])
+            a.draw(at: CGPoint(x: (size.width - a.size().width) / 2, y: (size.height - a.size().height) / 2))
+        }
+        return CIImage(cgImage: img.cgImage!)
+    }
+}
+
+
+/// Read-only details for a source (kind, status, resolution, address).
+struct SourceInfoView: View {
+    @ObservedObject var engine: StudioEngine
+    let sourceID: UUID
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                if let s = engine.sources.first(where: { $0.id == sourceID }) {
+                    LabeledContent("Tên", value: s.name)
+                    LabeledContent("Loại", value: s.kind.rawValue.uppercased())
+                    LabeledContent("Trạng thái", value: String(describing: s.status))
+                    if let pb = s.frames.latest() {
+                        LabeledContent("Độ phân giải", value: "\(CVPixelBufferGetWidth(pb))×\(CVPixelBufferGetHeight(pb))")
+                    } else {
+                        LabeledContent("Độ phân giải", value: "Không có tín hiệu")
+                    }
+                    if let f = s as? FileSource { LabeledContent("Tệp", value: f.url.lastPathComponent) }
+                    LabeledContent("Trên PGM", value: engine.programID == s.id ? "Có" : "Không")
+                    LabeledContent("Yêu thích", value: engine.favorites.contains(s.id) ? "Có" : "Không")
+                }
+            }
+            .navigationTitle("Thông tin nguồn")
+            .toolbar { Button("Xong") { dismiss() } }
+        }
     }
 }

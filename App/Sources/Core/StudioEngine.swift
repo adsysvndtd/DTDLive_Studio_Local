@@ -37,6 +37,12 @@ final class StudioEngine: ObservableObject {
     let library = MediaLibrary()
     let replayEditor = ReplayEditor()
     let pairing = PairingManager()
+
+    // MARK: Multi-source layouts (PiP templates)
+    private(set) lazy var layoutSource = LayoutSource()
+    @Published var layoutTemplateID = 2
+    @Published var layoutSlots: [UUID?] = []
+    @Published var layoutSelectedSlot = 0
     var controlPort: UInt16 { control.httpPort }
     /// Lets any view jump the studio to a category (e.g. "open in Replay" from the Video library).
     @Published var requestedCategory: ProdCategory?
@@ -54,6 +60,11 @@ final class StudioEngine: ObservableObject {
     @Published private(set) var nowPlayingMusic: URL?
     @Published var showSafeGuides = true
     @Published var showMonitorInfo = false
+    /// Swipe on PVW toward PGM: 1 finger = CUT, 2 fingers = AUTO.
+    @Published var swipeToTake = UserDefaults.standard.object(forKey: "swipeToTake") as? Bool ?? true {
+        didSet { UserDefaults.standard.set(swipeToTake, forKey: "swipeToTake") }
+    }
+    @Published var externalSafeGuides = false
 
     enum PiPPreset: String, CaseIterable, Identifiable {
         case topLeft, topRight, bottomLeft, bottomRight, large, sideLeft
@@ -316,7 +327,55 @@ final class StudioEngine: ObservableObject {
         setTitleVisible(id, !t.visible)
     }
 
+    /// Second title key: the first title other than the armed one (e.g. a ticker under a lower third).
+    var secondTitle: TitleItem? {
+        let armed = armedTitleID ?? titles.first?.id
+        return titles.first { $0.id != armed && $0.style != .clock }
+    }
+    func toggleSecondTitle() { if let t = secondTitle { setTitleVisible(t.id, !t.visible) } }
     var armedTitleVisible: Bool { titles.first { $0.id == (armedTitleID ?? titles.first?.id) }?.visible ?? false }
+
+    var layoutTemplate: LayoutTemplate { LayoutTemplate.all.first { $0.id == layoutTemplateID } ?? LayoutTemplate.all[1] }
+
+    /// Picks a template; empty slots are filled with the first inputs (program first).
+    func chooseLayout(_ id: Int) {
+        layoutTemplateID = id
+        let n = layoutTemplate.slots.count
+        var slots = Array(layoutSlots.prefix(n))
+        let pool = ([programID, previewID] + sources.map(\.id)).compactMap { $0 }.filter { $0 != layoutSource.id && $0 != replay.id }
+        var unique: [UUID] = []
+        for p in pool where !unique.contains(p) { unique.append(p) }
+        while slots.count < n { slots.append(unique.first { !slots.contains($0) }) }
+        layoutSlots = slots
+        layoutSelectedSlot = 0
+        refreshLayout()
+        if !sources.contains(where: { $0.id == layoutSource.id }) {
+            sources.append(layoutSource)
+            switcher.register(layoutSource.id, store: layoutSource.frames)
+            Task { await layoutSource.start() }
+        }
+        select(layoutSource.id)
+    }
+
+    func assignLayoutSlot(_ slot: Int, source: UUID) {
+        guard slot < layoutSlots.count else { return }
+        layoutSlots[slot] = source
+        layoutSelectedSlot = min(slot + 1, layoutSlots.count - 1)
+        refreshLayout()
+    }
+
+    func refreshLayout() {
+        let stores = layoutSlots.map { id in id.flatMap { i in sources.first { $0.id == i }?.frames } }
+        layoutSource.configure(template: layoutTemplate, inputs: stores,
+                               size: CGSize(width: format.width, height: format.height), background: nil)
+    }
+
+    /// "PiP TRANS": transition program into the current layout.
+    func layoutTransition() {
+        if !sources.contains(where: { $0.id == layoutSource.id }) { chooseLayout(layoutTemplateID) }
+        select(layoutSource.id)
+        autoTransition()
+    }
 
     func flashTransition() {
         let keep = transition
@@ -453,9 +512,62 @@ final class StudioEngine: ObservableObject {
     // MARK: Audio
 
     func updateAudioChannel(_ c: AudioChannelState) { audio.update(c) }
+
+    func injectDemoAudio() {
+        var list = [AudioChannelState(id: AudioCapture.micID, name: "Mic"),
+                    AudioChannelState(id: AudioCapture.musicID, name: "Nhạc", gain: 0.6)]
+        for (i, s) in sources.prefix(4).enumerated() {
+            list.append(AudioChannelState(id: s.id, name: "Cam \(i + 1)", followVideo: true))
+        }
+        list.append(AudioChannelState(id: UUID(), name: "Video", muted: true))
+        audio.injectDemo(list)
+        let start = Date()
+        timers.append(Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
+            Task { @MainActor in self?.audio.demoTick(Date().timeIntervalSince(start)) }
+        })
+    }
     var audioInputs: [AudioCapture.Input] { audio.inputs }
     var audioInputID: String? { audio.currentInputID }
     func setAudioInput(_ id: String?) { audio.setInput(id); objectWillChange.send() }
+    var micDelayMs: Double {
+        get { audio.micDelayMs }
+        set { audio.micDelayMs = newValue; objectWillChange.send() }
+    }
+    var masterGain: Float {
+        get { audio.masterGain }
+        set { audio.masterGain = newValue; objectWillChange.send() }
+    }
+    /// Turn AFV on/off for every source channel at once (mic & music stay manual).
+    // MARK: Monitor quick keys (Time / Reset / Loop)
+
+    var clockOn: Bool { titles.contains { $0.style == .clock && $0.visible } }
+    /// Show/hide an on-air clock; creates one in the top-right corner the first time.
+    func toggleClock() {
+        if let t = titles.first(where: { $0.style == .clock }) {
+            setTitleVisible(t.id, !t.visible)
+        } else {
+            var t = TitleItem(style: .clock, line1: "")
+            t.position = CGPoint(x: 0.82, y: 0.05)
+            titles.append(t)
+            setTitleVisible(t.id, true)
+        }
+    }
+    /// Clears every keyed layer off program: PiP, logo, foreground, titles, drawing, FTB.
+    func resetProgramLayers() {
+        pipOn = false; logoOn = false; foregroundOn = false; fadeToBlack = false
+        setTitleVisible(nil, false)
+        annotation.clear()
+        objectWillChange.send()
+    }
+    /// The movie currently on program (if any) and its loop state.
+    var programMovie: FileSource? { sources.first { $0.id == programID } as? FileSource }
+    func toggleProgramLoop() { programMovie?.loops.toggle(); objectWillChange.send() }
+
+    func setAFVAll(_ on: Bool) {
+        for var c in audioChannels where c.id != AudioCapture.micID && c.id != AudioCapture.musicID {
+            c.followVideo = on; audio.update(c)
+        }
+    }
     var monitorProgram: Bool {
         get { audio.monitorProgram }
         set { audio.monitorProgram = newValue; objectWillChange.send() }

@@ -9,6 +9,7 @@ struct AudioChannelState: Identifiable, Equatable {
     var gain: Float = 1          // linear 0...2
     var muted = false
     var followVideo = false      // AFV: only audible while its source is on program
+    var solo = false             // when any channel is soloed, only soloed channels are heard
     var level: Float = -60       // dBFS peak (read-only for UI)
 }
 
@@ -30,6 +31,16 @@ final class AudioCapture: @unchecked Sendable {
     private var programIDs: Set<UUID> = []
     private var lock = os_unfair_lock()
     private var musicFile: AVAudioFile?
+    private let micDelay = AVAudioUnitDelay()
+
+    /// Mic/line delay in milliseconds (0–500) to match camera/network video latency.
+    var micDelayMs: Double = 0 {
+        didSet {
+            micDelay.delayTime = micDelayMs / 1000
+            micDelay.bypass = micDelayMs <= 0
+        }
+    }
+
 
     var onBuffer: Handler?
     var masterGain: Float = 1 { didSet { bus.outputVolume = masterGain } }
@@ -46,9 +57,13 @@ final class AudioCapture: @unchecked Sendable {
         engine.connect(bus, to: engine.mainMixerNode, format: format)
         engine.mainMixerNode.outputVolume = 0 // monitor muted: avoids feedback into the mic
 
-        // Microphone channel
+        // Microphone channel (through a delay line to line mic/line audio up with late video)
         let mic = makeChannel(Self.micID, name: "Mic")
-        engine.connect(engine.inputNode, to: mic, format: engine.inputNode.outputFormat(forBus: 0))
+        engine.attach(micDelay)
+        micDelay.wetDryMix = 100; micDelay.feedback = 0; micDelay.lowPassCutoff = 20000; micDelay.delayTime = 0
+        let inFmt = engine.inputNode.outputFormat(forBus: 0)
+        engine.connect(engine.inputNode, to: micDelay, format: inFmt)
+        engine.connect(micDelay, to: mic, format: inFmt)
 
         // Music channel
         let music = makeChannel(Self.musicID, name: "Nhạc nền")
@@ -147,6 +162,21 @@ final class AudioCapture: @unchecked Sendable {
         }
     }
 
+    /// Screenshot/demo mode: fill the mixer with channels and moving fake levels (engine not running).
+    func injectDemo(_ list: [AudioChannelState]) {
+        os_unfair_lock_lock(&lock); for c in list { states[c.id] = c }; os_unfair_lock_unlock(&lock)
+    }
+    func demoTick(_ t: Double) {
+        os_unfair_lock_lock(&lock)
+        for (i, k) in states.keys.sorted(by: { $0.uuidString < $1.uuidString }).enumerated() {
+            let s = states[k]!
+            let base: Float = s.muted ? -60 : -30 + 20 * Float(s.gain) / 2
+            states[k]?.level = min(0, base + 8 * Float(sin(t * (1.3 + Double(i) * 0.4))))
+        }
+        peakDB = -14 + 4 * Float(sin(t * 1.7))
+        os_unfair_lock_unlock(&lock)
+    }
+
     func update(_ s: AudioChannelState) {
         os_unfair_lock_lock(&lock); let level = states[s.id]?.level ?? -60; states[s.id] = s; states[s.id]?.level = level; os_unfair_lock_unlock(&lock)
         applyGains()
@@ -160,8 +190,9 @@ final class AudioCapture: @unchecked Sendable {
 
     private func applyGains() {
         os_unfair_lock_lock(&lock); let st = states; let pgm = programIDs; os_unfair_lock_unlock(&lock)
+        let anySolo = st.values.contains { $0.solo }
         for (id, s) in st {
-            let audible = !s.muted && (!s.followVideo || pgm.contains(id))
+            let audible = !s.muted && (!s.followVideo || pgm.contains(id)) && (!anySolo || s.solo)
             channelMixers[id]?.outputVolume = audible ? s.gain : 0
         }
     }

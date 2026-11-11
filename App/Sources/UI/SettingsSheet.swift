@@ -6,7 +6,31 @@ struct SettingsSheet: View {
 
     var body: some View {
         NavigationStack {
+            SettingsForm(engine: engine)
+            .navigationTitle("Cài đặt")
+            .toolbar { Button("Xong") { dismiss() } }
+        }
+    }
+}
+
+/// Settings content, shown both as a sheet and inline in the "Cài đặt" sidebar category.
+struct SettingsForm: View {
+    @ObservedObject var engine: StudioEngine
+    var onOpenOutputs: (() -> Void)? = nil
+
+    var body: some View {
             Form {
+                Section("Phát trực tiếp") {
+                    if engine.outputs.isEmpty {
+                        Text("Chưa có đích phát").foregroundStyle(.secondary)
+                    }
+                    ForEach(engine.outputs) { o in
+                        LabeledContent(o.name.isEmpty ? o.proto.label : o.name, value: o.proto.label)
+                    }
+                    if let onOpenOutputs {
+                        Button { onOpenOutputs() } label: { Label("Quản lý đích phát (RTMP · SRT · RTSP · YouTube · Facebook)", systemImage: "dot.radiowaves.left.and.right") }
+                    }
+                }
                 Section("Chương trình (Program)") {
                     Picker("Độ phân giải", selection: Binding(
                         get: { engine.format.resolutionID },
@@ -31,10 +55,20 @@ struct SettingsSheet: View {
                         ForEach(engine.audioInputs) { Text($0.name).tag($0.id) }
                     }
                     Toggle("Nghe Program (tai nghe)", isOn: Binding(get: { engine.monitorProgram }, set: { engine.monitorProgram = $0 }))
+                    VStack(alignment: .leading) {
+                        Text("Trễ âm thanh Mic/Line: \(Int(engine.micDelayMs)) ms")
+                        Slider(value: Binding(get: { engine.micDelayMs }, set: { engine.micDelayMs = $0 }), in: 0...500, step: 10)
+                        Text("Kéo cho tiếng khớp với hình khi camera mạng bị trễ.").font(.caption).foregroundStyle(.secondary)
+                    }
                     Text("Chỉ bật khi dùng tai nghe — loa ngoài sẽ hú vào micro.").font(.caption).foregroundStyle(.secondary)
+                }
+                Section("Thao tác") {
+                    Toggle("Vuốt PVW → PGM để chuyển", isOn: $engine.swipeToTake)
+                    Text("Vuốt 1 ngón trên PVW về phía PGM = CUT · 2 ngón = AUTO").font(.caption).foregroundStyle(.secondary)
                 }
                 Section("Màn hình") {
                     Toggle("Khung an toàn trên PVW/PGM", isOn: $engine.showSafeGuides)
+                    Toggle("Khung an toàn trên màn hình ngoài", isOn: $engine.externalSafeGuides)
                     Toggle("Thông số trên PGM", isOn: $engine.showMonitorInfo)
                     if engine.externalDisplayConnected {
                         Picker("Màn hình ngoài", selection: $engine.externalMode) {
@@ -58,8 +92,7 @@ struct SettingsSheet: View {
                     LabeledContent("NDI", value: NDIAvailability.isAvailable ? "Có" : "Chưa tích hợp SDK")
                 }
             }
-            .navigationTitle("Cài đặt")
-            .toolbar { Button("Xong") { dismiss() } }
-        }
+            .scrollContentBackground(.hidden)
+            .background(DS.bg)
     }
 }

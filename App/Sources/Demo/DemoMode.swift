@@ -33,6 +33,7 @@ enum DemoMode {
         for (i, p) in palette.enumerated() {
             engine.add(DemoSource(name: p.0, index: i + 1, top: p.1, bottom: p.2))
         }
+        engine.injectDemoAudio()
         if engine.sources.count > 2 {
             engine.take(engine.sources[0].id)
             engine.select(engine.sources[1].id)

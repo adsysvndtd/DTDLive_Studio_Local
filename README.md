@@ -7,17 +7,19 @@
 | Nhóm | Chức năng |
 |---|---|
 | Nguồn vào | Camera trong máy, camera UVC/HDMI→USB (iPadOS 17+), SRT (caller/listener), RTMP play, **RTSP (IP camera, H.264/H.265 + AAC, tự kết nối lại)**, file video lặp, app camera DTDLive (SRT/RTMP, có tally qua HTTP API), NDI (khi có SDK) |
-| Bàn trộn | PREVIEW/PROGRAM, CUT (Space), AUTO (Return), MIX/WIPE/DIP, FTB, chạm/chạm đúp trên multiview, **tự động chuyển cảnh** (lần lượt / ngẫu nhiên / theo âm thanh) |
+| Bàn trộn | PREVIEW/PROGRAM, CUT (Space), AUTO (Return), **13 kiểu chuyển cảnh có ảnh xem trước** (Mix, Wipe, Dip, Flash, Push, Zoom, Page curl, Ripple, Bars, Copy machine, Mod, Fold), **vuốt PVW→PGM (1 ngón = CUT, 2 ngón = AUTO)**, FTB, chạm/chạm đúp trên multiview, **tự động chuyển cảnh** (lần lượt / ngẫu nhiên / theo âm thanh) |
 | Điều khiển camera | Zoom, lấy nét tự động/tay, bù phơi sáng, khoá cân bằng trắng, chống rung, đèn |
 | Ghép nối Wi-Fi | Camera (DTDLive…) tự tìm Studio, xác nhận bằng **ID 6 số trên cả hai màn hình**, SRT mã hoá riêng từng thiết bị, thiết bị tin cậy tự kết nối lại |
 | Xử lý hình từng nguồn | Phơi sáng, tương phản, bão hoà, nhiệt độ màu/tint, **LUT .cube**, **chroma key** (xanh lá/xanh dương, nền thay thế), lật gương, xoay 180°, cắt khung |
+| PiP | **10 mẫu bố cục nhiều nguồn** (2 cạnh nhau, 1+2, 1+3, lưới 2×2, phối cảnh…), gán nguồn từng ô, phím PiP TRANS |
 | Đồ hoạ | **Lower third, tên + chức danh, title toàn màn hình, chữ chạy, bảng tỉ số, đồng hồ, đếm ngược**; thư viện logo (4 góc); lớp phủ PNG toàn khung; PiP 6 vị trí + PiP T-bar; **kéo thả PiP/logo trực tiếp trên PGM** |
 | Vẽ chú thích | **Vẽ bằng Apple Pencil** (hoặc ngón tay) lên Program, nét vẽ có trong luồng phát |
 | Scopes | **Histogram, Waveform, RGB Parade, Vectorscope** |
-| Âm thanh | Chọn đầu vào (mic/USB/tai nghe), nghe Program qua tai nghe, **tiếng của video vào mixer**; **Mixer nhiều kênh**: mic/USB, âm thanh từng nguồn SRT/RTMP, nhạc nền lặp, hiệu ứng âm thanh; gain/mute/**AFV** (âm thanh theo hình), đồng hồ mức tiếng |
+| Âm thanh | Chọn đầu vào (mic/USB/tai nghe), nghe Program qua tai nghe, **tiếng của video vào mixer**; **Mixer nhiều kênh**: mic/USB, âm thanh từng nguồn SRT/RTMP, nhạc nền lặp, hiệu ứng âm thanh; **fader dọc có thang dB**, đồng hồ mức từng kênh + PGM, mute, **giữ để SOLO**, **AFV** từng kênh hoặc toàn bộ, **trễ Mic/Line 0–500 ms** |
 | Replay | **Bộ chỉnh clip**: xem từng frame, dải ảnh để tua, MARK IN/OUT (phím I/O), slow-motion 0.25×–1×, lặp, lưu clip, xuất MP4; dùng cho bộ đệm 60 s và video đã ghi |
 | Đầu ra | **Push RTMP/RTMPS, SRT, RTSP**, **tạo phiên YouTube/Facebook Live tự động**, H.264 hoặc **HEVC**, **bitrate thích ứng**, ghi MP4 (phân mảnh, không hỏng file khi mất điện); nhiều đích cùng lúc; tự kết nối lại |
-| Màn hình ngoài | HDMI/AirPlay: chiếu Program hoặc Multiview toàn màn hình |
+| Màn hình ngoài | HDMI/AirPlay: chiếu Program hoặc Multiview toàn màn hình, khung an toàn riêng |
+| Phím nhanh trên màn hình | Scopes, khung an toàn, ON AIR, Giờ (đồng hồ lên PGM), Lặp video, Reset (tắt mọi lớp phủ), Vẽ, Sắp xếp; phím TITLE / TITLE 2 / LOGO / LỚP PHỦ / PiP |
 | Điều khiển từ xa | **Web remote** `http://<IP iPad>:8080` (title, tỉ số, chuyển cảnh); **HTTP API** cho Bitfocus Companion / Stream Deck; **OSC** UDP 8000 |
 | Tally | Gửi tới app camera DTDLive (HTTP API), đèn tally camera PTZ (VISCA), NDI tally |
 | PTZ | **VISCA over IP** (UDP 52381) và VISCA TCP (5678): joystick, zoom, preset 1–6 (chạm = gọi, giữ = lưu); NDI PTZ |
