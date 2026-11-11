@@ -391,7 +391,7 @@ enum MainActorBox {
     static func titles(_ owner: AnyObject?) -> [TitleItem] { lock.lock(); defer { lock.unlock() }; return items }
 }
 
-// MARK: - Remote control (web remote, Companion/Stream Deck, OSC, DTD Cam tally)
+// MARK: - Remote control (web remote, Companion/Stream Deck, OSC, DTDLive camera tally)
 
 extension StudioEngine: ControlTarget {
     func handle(_ cmd: ControlCommand) async {
@@ -427,7 +427,7 @@ extension StudioEngine: ControlTarget {
         return (try? JSONSerialization.data(withJSONObject: obj)) ?? Data("{}".utf8)
     }
 
-    /// Tally by source name (DTD Cam sends its camera name as SRT streamid / RTMP key / source name).
+    /// Tally by source name (the DTDLive camera app sends its camera name as SRT streamid / RTMP key / source name).
     func tallyJSON(for name: String) async -> Data {
         let ids = sources.filter { $0.name == name || $0.name.hasSuffix(name) || (($0 as? SRTInputSource)?.url.absoluteString.contains(name) ?? false) }.map(\.id)
         let pgm = ids.contains { tally.program.contains($0) }, pvw = ids.contains { tally.preview.contains($0) }

@@ -4,7 +4,7 @@ Mỗi lần push, GitHub Actions tạo ra các file sau trong mục **Artifacts*
 
 | Artifact | Nội dung | Cách cài |
 |---|---|---|
-| `DTDStudio-unsigned-ipa`, `DTDCam-unsigned-ipa` | Bản `.ipa` **chưa ký** | Ký bằng Apple ID cá nhân qua **Sideloadly** hoặc **AltStore** (cài trên Mac/Windows, nhẹ hơn Xcode rất nhiều) |
+| `DTDStudio-unsigned-ipa` | Bản `.ipa` **chưa ký** | Ký bằng Apple ID cá nhân qua **Sideloadly** hoặc **AltStore** (cài trên Mac/Windows, nhẹ hơn Xcode rất nhiều) |
 | `DTDStudio-signed-ipa` | Bản `.ipa` **đã ký Ad Hoc** (chỉ có khi đã cấu hình secrets bên dưới) | Cài thẳng qua Apple Configurator, Finder (kéo `.ipa` vào iPad), hoặc Diawi/link OTA |
 | `ui-screenshots` | Ảnh chụp 10 màn hình chính ở chế độ demo trên iPad Simulator | Mở xem trực tiếp |
 

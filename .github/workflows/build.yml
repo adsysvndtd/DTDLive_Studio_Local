@@ -39,7 +39,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        scheme: [DTDStudio, DTDCam]
+        scheme: [DTDStudio]
     steps:
       - uses: actions/checkout@v4
       - name: Select newest Xcode

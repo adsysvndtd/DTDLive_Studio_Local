@@ -6,7 +6,7 @@
 
 | Nhóm | Chức năng |
 |---|---|
-| Nguồn vào | Camera trong máy, camera UVC/HDMI→USB (iPadOS 17+), SRT (caller/listener), RTMP play, **RTSP (IP camera, H.264/H.265 + AAC, tự kết nối lại)**, file video lặp, **app DTD Cam** trên iPhone (SRT/RTMP, có tally), NDI (khi có SDK) |
+| Nguồn vào | Camera trong máy, camera UVC/HDMI→USB (iPadOS 17+), SRT (caller/listener), RTMP play, **RTSP (IP camera, H.264/H.265 + AAC, tự kết nối lại)**, file video lặp, app camera DTDLive (SRT/RTMP, có tally qua HTTP API), NDI (khi có SDK) |
 | Bàn trộn | PREVIEW/PROGRAM, CUT (Space), AUTO (Return), MIX/WIPE/DIP, FTB, chạm/chạm đúp trên multiview, **tự động chuyển cảnh** (lần lượt / ngẫu nhiên / theo âm thanh) |
 | Xử lý hình từng nguồn | Phơi sáng, tương phản, bão hoà, nhiệt độ màu/tint, **LUT .cube**, **chroma key** (xanh lá/xanh dương, nền thay thế), lật gương, xoay 180°, cắt khung |
 | Đồ hoạ | **Lower third, tên + chức danh, title toàn màn hình, chữ chạy, bảng tỉ số, đồng hồ**; logo; PiP; hiệu ứng hiện/ẩn |
@@ -17,7 +17,7 @@
 | Đầu ra | **Push RTMP/RTMPS, SRT, RTSP**, **tạo phiên YouTube/Facebook Live tự động**, H.264 hoặc **HEVC**, **bitrate thích ứng**, ghi MP4 (phân mảnh, không hỏng file khi mất điện); nhiều đích cùng lúc; tự kết nối lại |
 | Màn hình ngoài | HDMI/AirPlay: chiếu Program hoặc Multiview toàn màn hình |
 | Điều khiển từ xa | **Web remote** `http://<IP iPad>:8080` (title, tỉ số, chuyển cảnh); **HTTP API** cho Bitfocus Companion / Stream Deck; **OSC** UDP 8000 |
-| Tally | Gửi tới DTD Cam, đèn tally camera PTZ (VISCA), NDI tally |
+| Tally | Gửi tới app camera DTDLive (HTTP API), đèn tally camera PTZ (VISCA), NDI tally |
 | PTZ | **VISCA over IP** (UDP 52381) và VISCA TCP (5678): joystick, zoom, preset 1–6 (chạm = gọi, giữ = lưu); NDI PTZ |
 | Thao tác | **Undo/Redo** (⌘Z / ⇧⌘Z) cho title, logo, PiP, xử lý hình; tự hút cạnh và lưới khi đặt PiP/logo |
 | Khung hình | 1920×1080 ngang / 1080×1920 dọc |
@@ -27,10 +27,10 @@
 
 | TopDirector (tính năng công khai) | DTD Studio |
 |---|---|
-| Multicam NDI/SRT/RTSP/UVC | UVC, SRT, RTSP, RTMP, DTD Cam; NDI qua SDK |
+| Multicam NDI/SRT/RTSP/UVC | UVC, SRT, RTSP, RTMP, DTDLive; NDI qua SDK |
 | Stream RTMP 3 kênh + ghi file | RTMP/SRT/RTSP không giới hạn số đích + ghi MP4 |
 | NDI/NDI\|HX output | NDI output khi có SDK (NDI\|HX cần license riêng) |
-| TopDirectorCam + slow-motion replay | DTD Cam + replay slow-motion |
+| TopDirectorCam + slow-motion replay | App camera DTDLive (dự án riêng) + replay slow-motion |
 | TopDirectorTitle (title qua LAN) | Web remote, không cần cài app |
 | Apple Pencil annotation | Có |
 | Video scopes, color grading, LUT | Có |
@@ -77,7 +77,7 @@ AudioCapture ─▶ AudioEncoder (AAC 1 lần) ──┐    │
 
 Cần macOS có Xcode 16 trở lên.
 
-Có 3 target: **DTDStudio** (iPad/iPhone), **DTDCam** (camera đồng hành), **RTSPPushTests**.
+Có 3 target: **DTDStudio** (iPad/iPhone), **DTDStudioUITests** (chụp màn hình), **RTSPPushTests**.
 
 ```bash
 brew install xcodegen
@@ -102,9 +102,9 @@ ffplay rtsp://<mac-ip>:8554/test
 
 | Cổng | Giao thức | Dùng cho |
 |---|---|---|
-| 8080 | TCP/HTTP | Web remote, HTTP API, tally cho DTD Cam |
+| 8080 | TCP/HTTP | Web remote, HTTP API, tally cho camera DTDLive |
 | 8000 | UDP | OSC |
-| 9001 | UDP | SRT listener mặc định cho DTD Cam |
+| 9001 | UDP | SRT listener gợi ý cho camera DTDLive |
 
 ## Trạng thái
 
@@ -117,7 +117,7 @@ ffplay rtsp://<mac-ip>:8554/test
 
 Workflow `.github/workflows/build.yml` chạy trên máy `macos-15` của GitHub. Nó tự chạy mỗi lần push lên `main` hoặc mở PR. Muốn chạy tay thì vào tab **Actions → Build → Run workflow**. Workflow làm 3 việc:
 - chạy `swift test` cho `Packages/RTSPPush`
-- chạy `xcodegen generate`, rồi build **DTDStudio** và **DTDCam** cho iOS ở dạng không ký (unsigned)
+- chạy `xcodegen generate`, rồi build **DTDStudio** cho iOS ở dạng không ký (unsigned)
 - đưa log build và file `.app` chưa ký vào mục Artifacts; khi build lỗi, danh sách `error:` hiện ở phần Summary của lần chạy
 
 Mỗi lần chạy còn tạo:
@@ -131,3 +131,11 @@ Hướng dẫn chi tiết ở `docs/SIGNING.md`.
 Mở app với tham số `-demo` để tự thêm 5 nguồn hình mẫu có chuyển động, kèm title, PiP và danh sách đầu ra, không cần camera hay mạng. Có thể thêm:
 - `-panel titles|audio|source|scopes|auto|replay` để mở sẵn tab tương ứng ở panel bên phải;
 - `-screen outputs|addsource|shows|nopanel` để mở sẵn màn hình tương ứng.
+
+## Tích hợp với app camera DTDLive
+
+DTD Studio không kèm app camera riêng. App camera dùng **DTDLive** (dự án riêng), nối theo các bước:
+1. Trong DTD Studio, thêm nguồn **SRT** `srt://0.0.0.0:9001?mode=listener`.
+2. Trong DTDLive, phát SRT về `srt://<IP iPad>:9001?mode=caller&streamid=<tên camera>`, hoặc phát RTMP tới một máy chủ trung gian.
+3. **Tally:** DTDLive gọi `GET http://<IP iPad>:8080/api/tally?name=<tên camera>` mỗi 300 ms. Kết quả trả về dạng `{"program":bool,"preview":bool}`: `program` là true thì hiện viền đỏ ON AIR, `preview` là true thì hiện viền xanh.
+4. **Tự tìm DTD Studio trong mạng LAN:** duyệt Bonjour `_http._tcp`, lấy dịch vụ có tên bắt đầu bằng `DTD Studio`.

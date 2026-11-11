@@ -24,7 +24,7 @@ enum DemoMode {
             ("CAM 1 · Sân khấu", CIColor(red: 0.10, green: 0.30, blue: 0.65), CIColor(red: 0.05, green: 0.10, blue: 0.25)),
             ("CAM 2 · MC", CIColor(red: 0.65, green: 0.25, blue: 0.10), CIColor(red: 0.25, green: 0.08, blue: 0.05)),
             ("CAM 3 · Khán giả", CIColor(red: 0.10, green: 0.55, blue: 0.30), CIColor(red: 0.03, green: 0.20, blue: 0.10)),
-            ("SRT · DTD Cam", CIColor(red: 0.50, green: 0.20, blue: 0.60), CIColor(red: 0.15, green: 0.05, blue: 0.20)),
+            ("SRT · DTDLive", CIColor(red: 0.50, green: 0.20, blue: 0.60), CIColor(red: 0.15, green: 0.05, blue: 0.20)),
             ("RTSP · IP Cam", CIColor(red: 0.55, green: 0.55, blue: 0.10), CIColor(red: 0.20, green: 0.20, blue: 0.03))
         ]
         for (i, p) in palette.enumerated() {

@@ -62,34 +62,6 @@ targets:
     #     LIBRARY_SEARCH_PATHS: $(SRCROOT)/Vendor/NDI
     #     OTHER_LDFLAGS: "-lndi_ios -lc++"
 
-  DTDCam:
-    type: application
-    platform: iOS
-    sources: [CamApp/Sources]
-    scheme: {}
-    dependencies:
-      - package: HaishinKit
-        product: HaishinKit
-      - package: HaishinKit
-        product: RTMPHaishinKit
-      - package: HaishinKit
-        product: SRTHaishinKit
-    settings:
-      base:
-        SWIFT_VERSION: "5.0"
-        PRODUCT_BUNDLE_IDENTIFIER: vn.vnpt.dtd.cam
-        TARGETED_DEVICE_FAMILY: "1,2"
-    info:
-      path: CamApp/Info.plist
-      properties:
-        CFBundleDisplayName: DTD Cam
-        UILaunchScreen: {}
-        UIBackgroundModes: [audio]
-        NSCameraUsageDescription: Dùng camera để phát hình về DTD Studio.
-        NSMicrophoneUsageDescription: Thu âm thanh gửi về DTD Studio.
-        NSLocalNetworkUsageDescription: Tìm và kết nối DTD Studio trong mạng nội bộ.
-        NSBonjourServices: [_http._tcp]
-
   DTDStudioUITests:
     type: bundle.ui-testing
     platform: iOS

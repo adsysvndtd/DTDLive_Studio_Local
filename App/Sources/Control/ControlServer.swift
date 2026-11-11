@@ -1,7 +1,7 @@
 import Foundation
 import Network
 
-/// Commands accepted from the LAN (web remote, Bitfocus Companion / Stream Deck, OSC, DTD Cam tally).
+/// Commands accepted from the LAN (web remote, Bitfocus Companion / Stream Deck, OSC, DTDLive camera tally).
 enum ControlCommand {
     case cut, auto, take(Int), preview(Int), ftb(Bool)
     case titleShow(UUID?, Bool), titleUpdate(TitleItem), scoreA(Int), scoreB(Int)
@@ -26,7 +26,7 @@ protocol ControlTarget: AnyObject, Sendable {
 ///   POST /api/title  (JSON TitleItem)  | POST /api/title/show?id=UUID&on=1
 ///   POST /api/score?a=N&b=N | /api/stream/start | /api/stream/stop | /api/record | /api/replay
 ///   POST /api/ptz?input=N&pan=-1..1&tilt=-1..1&zoom=-1..1 | /api/ptz/preset?input=N&preset=K[&store=1]
-///   GET  /api/tally?name=<source name>   -> {"program":bool,"preview":bool}  (DTD Cam polls this)
+///   GET  /api/tally?name=<source name>   -> {"program":bool,"preview":bool}  (camera app DTDLive polls this)
 /// OSC (same verbs): /dtd/cut, /dtd/auto, /dtd/take i, /dtd/preview i, /dtd/ftb i, /dtd/score ii, /dtd/replay
 final class ControlServer: @unchecked Sendable {
     private var http: NWListener?
