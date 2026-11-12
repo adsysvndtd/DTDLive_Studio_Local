@@ -2,6 +2,7 @@
 name: DTDStudio
 options:
   bundleIdPrefix: vn.com.dtdsolution
+  developmentLanguage: vi
   deploymentTarget:
     iOS: "17.0"
 packages:
@@ -51,6 +52,8 @@ targets:
       path: App/Info.plist
       properties:
         CFBundleDisplayName: DTD Studio
+        CFBundleDevelopmentRegion: vi
+        CFBundleLocalizations: [vi, en]
         UISupportedInterfaceOrientations: [UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
         UISupportedInterfaceOrientations~ipad: [UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
         UIRequiresFullScreen: true

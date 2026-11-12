@@ -173,7 +173,10 @@ final class StudioEngine: ObservableObject {
         #else
         let encodeOn = true
         #endif
-        switcher.onProgramFrame = { pb, t in if encodeOn { ve.encode(pb, pts: t) } }
+        // Battery: the hardware encoder only runs while something consumes it (an output, a recording,
+        // or the replay buffer when armed).
+        let gate = encodeGate
+        switcher.onProgramFrame = { pb, t in if encodeOn && gate.value > 0 { ve.encode(pb, pts: t) } }
         ve.onEncoded = { sb in om.video(sb); rb.append(sb) }
         audio.onBuffer = { pcm, when in ae.append(pcm, when: when) }
         ae.onEncoded = { buf, when in om.audio(buf, when: when) }
@@ -233,7 +236,13 @@ final class StudioEngine: ObservableObject {
             Task { @MainActor in self?.updateScopes() }
         })
         timers.append(Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
-            Task { @MainActor in await self?.adaptBitrate() }
+            Task { @MainActor in
+                guard let self else { return }
+                await self.adaptBitrate()
+                self.updateOutputRates()
+                self.updateEncodeGate()
+                self.applyThermalState()
+            }
         })
         if let saved = Self.load(EncoderSettings.self, key: "dtd.encoder.v1") { encoder = saved }
         if let fg = Self.load(SuperFGConfig.self, key: "dtd.superfg.v1") { superFG = fg }
@@ -679,6 +688,53 @@ final class StudioEngine: ObservableObject {
 
     func updateAudioChannel(_ c: AudioChannelState) { audio.update(c) }
 
+    // MARK: Power: encode gating, thermal throttling, per-output send rates
+
+    /// > 0 while the encoder must run.
+    private let encodeGate = Counter()
+    /// Replay needs the encoder running all the time; off by default to save battery.
+    @Published var replayArmed = UserDefaults.standard.bool(forKey: "dtd.replayArmed") {
+        didSet { UserDefaults.standard.set(replayArmed, forKey: "dtd.replayArmed"); updateEncodeGate() }
+    }
+    private func updateEncodeGate() {
+        let active = replayArmed || outputStatus.values.contains { s in
+            if case .idle = s { return false }; if case .error = s { return false }; return true
+        }
+        let want = active ? 1 : 0
+        let cur = encodeGate.value
+        if want != cur {
+            encodeGate.add(want - cur)
+            if active { videoEncoder.requestKeyframe() }
+        }
+    }
+
+    /// "V 30/s · A 47/s" per destination — tells "no video" from "no audio" when a platform stays offline.
+    @Published private(set) var outputRates: [UUID: String] = [:]
+    private var lastCounts: [UUID: (Int, Int)] = [:]
+    private func updateOutputRates() {
+        let now = outputManager.sentCounts()
+        var r: [UUID: String] = [:]
+        for (id, c) in now {
+            let p = lastCounts[id] ?? (0, 0)
+            r[id] = "Hình \(max(0, c.0 - p.0))/s · Tiếng \(max(0, c.1 - p.1))/s"
+        }
+        lastCounts = now
+        if r != outputRates { outputRates = r }
+    }
+
+    /// Heat: lower the program frame rate when iOS reports the device getting hot, restore when it cools.
+    @Published private(set) var thermalThrottled = false
+    private func applyThermalState() {
+        let hot = ProcessInfo.processInfo.thermalState.rawValue >= ProcessInfo.ThermalState.serious.rawValue
+        guard hot != thermalThrottled else { return }
+        thermalThrottled = hot
+        let fps = hot ? min(format.fps, 25) : format.fps
+        var f = format; f.fps = fps
+        switcher.setFormat(f)
+        videoEncoder.fps = Double(fps)
+        if hot { message = "Máy đang nóng — tạm giảm còn \(fps) hình/giây để hạ nhiệt" }
+    }
+
     private var silenceTimer: DispatchSourceTimer?
     private func startSilentAudio(_ ae: AudioEncoder) {
         let fmt = AVAudioFormat(standardFormatWithSampleRate: 48000, channels: 2)!
@@ -890,7 +946,7 @@ final class StudioEngine: ObservableObject {
 
     // MARK: Outputs
 
-    func startOutput(_ c: OutputConfig) { outputManager.start(c); outputStatus[c.id] = .connecting }
+    func startOutput(_ c: OutputConfig) { outputManager.start(c); outputStatus[c.id] = .connecting; updateEncodeGate() }
     func stopOutput(_ c: OutputConfig) { outputManager.stop(c.id); outputStatus[c.id] = .idle }
     func startAll() { outputs.filter { $0.enabled && $0.proto != .record }.forEach(startOutput) }
     func stopAll() { outputs.filter { $0.proto != .record }.forEach(stopOutput) }

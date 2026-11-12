@@ -40,6 +40,9 @@ actor OutputSlot {
 
     /// Frames queued but not yet handed to the target (lock-free read for ABR).
     nonisolated let backlog = Counter()
+    /// Totals actually handed to the target — shown per destination to tell "no video" from "no audio".
+    nonisolated let videoSent = Counter()
+    nonisolated let audioSent = Counter()
 
     nonisolated func enqueue(_ m: Media) {
         if case .video = m { backlog.add(1) }
@@ -111,11 +114,13 @@ actor OutputSlot {
         guard status == .live else { return }
         if waitingForIDR { guard sb.isKeyframe else { return }; waitingForIDR = false }
         await target.send(video: sb)
+        videoSent.add(1)
     }
 
     func audio(_ b: AVAudioCompressedBuffer, _ when: AVAudioTime) async {
         guard status == .live, !waitingForIDR else { return }
         await target.send(audio: b, when: when)
+        audioSent.add(1)
     }
 
     private func set(_ s: OutputStatus) {
@@ -144,6 +149,12 @@ final class OutputManager: @unchecked Sendable {
     init(audioFormat: AVAudioFormat, requestKeyframe: @escaping @Sendable () -> Void) {
         self.audioFormat = audioFormat
         self.requestKeyframe = requestKeyframe
+    }
+
+    /// (video frames, audio packets) sent so far, per destination.
+    func sentCounts() -> [UUID: (Int, Int)] {
+        lock.lock(); let all = slots; lock.unlock()
+        return all.mapValues { ($0.videoSent.value, $0.audioSent.value) }
     }
 
     func makeTarget(_ c: OutputConfig) -> any OutputTarget {

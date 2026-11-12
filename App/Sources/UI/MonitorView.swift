@@ -82,12 +82,21 @@ final class MonitorMTKView: MTKView {
 
     required init(coder: NSCoder) { fatalError() }
 
+    private weak var lastBuffer: CVPixelBuffer?
+    private var lastSize: CGSize = .zero
+    private var lastWasEmpty = false
+
     override func draw(_ rect: CGRect) {
+        // Battery: skip the GPU work when nothing changed (same frame, same size).
+        let pb = store.latest()
+        if let pb, pb === lastBuffer, drawableSize == lastSize { return }
+        if pb == nil, lastWasEmpty, drawableSize == lastSize { return }
+        lastBuffer = pb; lastSize = drawableSize; lastWasEmpty = pb == nil
         guard let drawable = currentDrawable, let cb = queue.makeCommandBuffer() else { return }
         let size = drawableSize
         let bounds = CGRect(origin: .zero, size: size)
         var img = CIImage(color: .black).cropped(to: bounds)
-        if let pb = store.latest() {
+        if let pb {
             let src = CIImage(cvPixelBuffer: pb)
             let s = min(size.width / src.extent.width, size.height / src.extent.height)
             let scaled = src.transformed(by: .init(scaleX: s, y: s))

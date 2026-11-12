@@ -60,13 +60,13 @@ struct CategoryList: View {
                             if compact {
                                 VStack(spacing: 2) {
                                     Image(systemName: c.icon).font(.system(size: 14, weight: .semibold))
-                                    Text(c.label).font(.system(size: 9, weight: .semibold)).lineLimit(1).minimumScaleFactor(0.7)
+                                    Text(LocalizedStringKey(c.label)).font(.system(size: 9, weight: .semibold)).lineLimit(1).minimumScaleFactor(0.7)
                                 }
                                 .frame(maxWidth: .infinity, minHeight: 40)
                             } else {
                                 HStack(spacing: 8) {
                                     Image(systemName: c.icon).font(.system(size: 14, weight: .semibold)).frame(width: 18)
-                                    Text(c.label).font(.subheadline.weight(.semibold)).lineLimit(1).minimumScaleFactor(0.75)
+                                    Text(LocalizedStringKey(c.label)).font(.subheadline.weight(.semibold)).lineLimit(1).minimumScaleFactor(0.75)
                                     Spacer(minLength: 0)
                                 }
                                 .padding(.horizontal, 10).frame(height: 38)
@@ -158,7 +158,7 @@ struct CategoryContent: View {
 
     private var header: some View {
         HStack(spacing: 10) {
-            Text(category.label).font(compact ? .subheadline.weight(.bold) : .headline)
+            Text(LocalizedStringKey(category.label)).font(compact ? .subheadline.weight(.bold) : .headline)
             Spacer()
             switch category {
             case .camera, .favorite:
@@ -203,7 +203,7 @@ struct CategoryContent: View {
 
     private func headerButton(_ title: String, _ icon: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Label(title, systemImage: icon)
+            Label(LocalizedStringKey(title), systemImage: icon)
                 .font(.system(size: compact ? 12 : 14, weight: .semibold)).lineLimit(1)
                 .padding(.horizontal, compact ? 8 : 12).frame(height: compact ? 28 : 34)
                 .foregroundStyle(.white)
@@ -294,7 +294,7 @@ struct CategoryContent: View {
     }
 
     private func emptyHint(_ t: String) -> some View {
-        Text(t).font(.caption).foregroundStyle(DS.text3).frame(maxWidth: .infinity, alignment: .leading).padding(.vertical, 6)
+        Text(LocalizedStringKey(t)).font(.caption).foregroundStyle(DS.text3).frame(maxWidth: .infinity, alignment: .leading).padding(.vertical, 6)
     }
 
     // MARK: Sources
@@ -718,7 +718,7 @@ struct TransitionColumn: View {
     /// Layer keys styled like hardware: "<name> On", lit white while the layer is on air.
     private func onKey(_ t: String, on: Bool, enabled: Bool = true, suffix: Bool = true, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Text(suffix ? "\(t) On" : t).font(.system(size: compact ? 13 : 15, weight: .semibold)).lineLimit(1).minimumScaleFactor(0.7)
+            Text(LocalizedStringKey(suffix ? "\(t) On" : t)).font(.system(size: compact ? 13 : 15, weight: .semibold)).lineLimit(1).minimumScaleFactor(0.7)
                 .frame(maxWidth: .infinity, minHeight: compact ? 34 : 44)
                 .foregroundStyle(on ? .black : DS.text2)
                 .background(on ? Color.white : DS.surface2, in: RoundedRectangle(cornerRadius: 4))
@@ -737,7 +737,7 @@ struct TransitionColumn: View {
 
     private func key(_ t: String, color: Color = DS.surface2, text: Color = .white, enabled: Bool = true, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Text(Self.keyCase(t)).font(.system(size: compact ? 13 : 15, weight: .semibold)).lineLimit(1).minimumScaleFactor(0.7)
+            Text(LocalizedStringKey(Self.keyCase(t))).font(.system(size: compact ? 13 : 15, weight: .semibold)).lineLimit(1).minimumScaleFactor(0.7)
                 .frame(maxWidth: .infinity, minHeight: compact ? 34 : 44)
                 .foregroundStyle(text)
                 .background(color, in: RoundedRectangle(cornerRadius: 4))
@@ -751,7 +751,7 @@ struct TransitionColumn: View {
         Button(action: action) {
             HStack(spacing: 4) {
                 Circle().fill(on ? onColor : DS.text3).frame(width: 7, height: 7)
-                Text(t).font(.system(size: compact ? 10 : 12, weight: .bold)).lineLimit(1).minimumScaleFactor(0.7)
+                Text(LocalizedStringKey(t)).font(.system(size: compact ? 10 : 12, weight: .bold)).lineLimit(1).minimumScaleFactor(0.7)
             }
             .frame(maxWidth: .infinity, minHeight: compact ? 30 : 36)
             .foregroundStyle(on ? .white : DS.text2)

@@ -31,7 +31,7 @@ struct SectionCard<Content: View>: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 6) {
                 if let systemImage { Image(systemName: systemImage).foregroundStyle(DS.accent) }
-                Text(title.uppercased()).font(.caption.weight(.bold)).foregroundStyle(DS.text2).tracking(0.6)
+                Text(LocalizedStringKey(title)).textCase(.uppercase).font(.caption.weight(.bold)).foregroundStyle(DS.text2).tracking(0.6)
                 Spacer()
                 trailing
             }
@@ -53,7 +53,7 @@ struct LabeledSlider: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
             HStack {
-                Text(title).font(.caption).foregroundStyle(DS.text2)
+                Text(LocalizedStringKey(title)).font(.caption).foregroundStyle(DS.text2)
                 Spacer()
                 Text(format(value)).font(.caption.monospacedDigit()).foregroundStyle(DS.text3)
             }
@@ -68,7 +68,7 @@ struct CaptionField: View {
     @Binding var text: String
     var body: some View {
         VStack(alignment: .leading, spacing: 3) {
-            Text(title).font(.caption2).foregroundStyle(DS.text3)
+            Text(LocalizedStringKey(title)).font(.caption2).foregroundStyle(DS.text3)
             TextField(title, text: $text)
                 .padding(.horizontal, 10).padding(.vertical, 7)
                 .background(DS.surface2, in: Rectangle())
@@ -102,7 +102,7 @@ struct ToolButton: View {
         Button(action: action) {
             VStack(spacing: 2) {
                 Image(systemName: systemImage).font(.system(size: 16, weight: .semibold))
-                Text(title).font(.system(size: 10, weight: .medium)).lineLimit(1).minimumScaleFactor(0.7)
+                Text(LocalizedStringKey(title)).font(.system(size: 10, weight: .medium)).lineLimit(1).minimumScaleFactor(0.7)
             }
             .frame(width: 58, height: 40)
             .foregroundStyle(active ? .black : tint)
@@ -122,7 +122,7 @@ struct KeyButton: View {
     let action: () -> Void
     var body: some View {
         Button(action: action) {
-            Text(title).font(.system(size: 15, weight: .heavy))
+            Text(LocalizedStringKey(title)).font(.system(size: 15, weight: .heavy))
                 .frame(width: width, height: height)
                 .foregroundStyle(textColor)
                 .background(color, in: Rectangle())

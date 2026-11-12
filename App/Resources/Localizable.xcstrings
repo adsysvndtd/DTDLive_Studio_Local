@@ -1,0 +1,2376 @@
+{
+  "sourceLanguage": "vi",
+  "strings": {
+    "AFV": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AFV"
+          }
+        }
+      }
+    },
+    "AFV1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AFV1"
+          }
+        }
+      }
+    },
+    "AFV2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AFV2"
+          }
+        }
+      }
+    },
+    "Bitrate thích ứng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adaptive bitrate"
+          }
+        }
+      }
+    },
+    "Bảng tỉ số": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scoreboard"
+          }
+        }
+      }
+    },
+    "Bấm ♡ trên một nguồn để thêm vào Yêu thích": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap ♡ on a source to add it to Favorites"
+          }
+        }
+      }
+    },
+    "Bật scopes (Program)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show scopes (Program)"
+          }
+        }
+      }
+    },
+    "Bật để xoá phông xanh lá / xanh dương": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Turn on to remove a green / blue screen"
+          }
+        }
+      }
+    },
+    "Bắt đầu đếm khi bấm LÊN SÓNG": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Starts counting when taken on air"
+          }
+        }
+      }
+    },
+    "Bỏ SuperFG": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear SuperFG"
+          }
+        }
+      }
+    },
+    "Bỏ logo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear logo"
+          }
+        }
+      }
+    },
+    "Bỏ ảnh nền": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear background"
+          }
+        }
+      }
+    },
+    "Bố cục": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Layout"
+          }
+        }
+      }
+    },
+    "Bộ đệm replay (Program)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Replay buffer (Program)"
+          }
+        }
+      }
+    },
+    "Camera": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Camera"
+          }
+        }
+      }
+    },
+    "Camera mạng (SRT · RTSP · RTMP · DTDLive)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Network cameras (SRT · RTSP · RTMP · DTDLive)"
+          }
+        }
+      }
+    },
+    "Camera trong máy & USB": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Built-in & USB cameras"
+          }
+        }
+      }
+    },
+    "Cho phép DTDLive tìm và ghép nối": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Let DTDLive find and pair"
+          }
+        }
+      }
+    },
+    "Chuyển cảnh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transitions"
+          }
+        }
+      }
+    },
+    "Chưa có camera mạng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No network cameras yet"
+          }
+        }
+      }
+    },
+    "Chưa có camera — bấm Thêm nguồn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No cameras — tap Add source"
+          }
+        }
+      }
+    },
+    "Chưa có kênh nào": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No channels yet"
+          }
+        }
+      }
+    },
+    "Chưa có thiết bị nào được ghép nối": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No paired devices yet"
+          }
+        }
+      }
+    },
+    "Chưa có đích phát": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No destinations yet"
+          }
+        }
+      }
+    },
+    "Chưa có ảnh — nhập ảnh nền ở mục Ảnh (Thư viện ảnh / Tệp)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No pictures — import one in Pictures (Photos / Files)"
+          }
+        }
+      }
+    },
+    "Chương trình (Program)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Program"
+          }
+        }
+      }
+    },
+    "Chạm một mẫu để nạp (đang trên sóng thì thay ngay); bật/tắt bằng SuperFG On ở cột phải. Sửa chữ, màu cập nhật ngay.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap a template to load it (replaces it live if on air); turn it on/off with SuperFG On. Text and colour update instantly."
+          }
+        }
+      }
+    },
+    "Chạm để nạp, bật/tắt bằng phím ở cột phải": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap to load; turn on/off with the keys on the right"
+          }
+        }
+      }
+    },
+    "Chạm để đưa lên PVW, rồi Cut / chuyển cảnh ở cột phải": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap to send to PVW, then Cut / transition on the right"
+          }
+        }
+      }
+    },
+    "Chấp nhận": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Accept"
+          }
+        }
+      }
+    },
+    "Chế độ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mode"
+          }
+        }
+      }
+    },
+    "Chỉ bật khi dùng tai nghe — loa ngoài sẽ hú vào micro.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Headphones only — the speaker would feed back into the mic."
+          }
+        }
+      }
+    },
+    "Chỉ chấp nhận nếu ID này trùng với ID trên màn hình thiết bị": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Accept only if this ID matches the one on the device"
+          }
+        }
+      }
+    },
+    "Chọn một nguồn ở hàng PREVIEW để chỉnh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pick a source on PREVIEW to adjust"
+          }
+        }
+      }
+    },
+    "Chọn video…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose video…"
+          }
+        }
+      }
+    },
+    "Chống rung": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stabilization"
+          }
+        }
+      }
+    },
+    "Chủ repo (owner)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Repo owner"
+          }
+        }
+      }
+    },
+    "Clip đã lưu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saved clips"
+          }
+        }
+      }
+    },
+    "Cài đặt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Settings"
+          }
+        }
+      }
+    },
+    "Cập nhật từ Git": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Update from Git"
+          }
+        }
+      }
+    },
+    "Dung lượng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Size"
+          }
+        }
+      }
+    },
+    "Dòng 1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Line 1"
+          }
+        }
+      }
+    },
+    "Dòng 2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Line 2"
+          }
+        }
+      }
+    },
+    "Dòng phụ (tuỳ chọn)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sub line (optional)"
+          }
+        }
+      }
+    },
+    "Dùng làm PiP": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use as PiP"
+          }
+        }
+      }
+    },
+    "Dải ngang": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wide strip"
+          }
+        }
+      }
+    },
+    "Dừng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stop"
+          }
+        }
+      }
+    },
+    "Dừng tất cả": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stop all"
+          }
+        }
+      }
+    },
+    "Ghép nối camera": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Camera pairing"
+          }
+        }
+      }
+    },
+    "Ghép nối qua Wi-Fi": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wi-Fi pairing"
+          }
+        }
+      }
+    },
+    "Giao thức": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Protocol"
+          }
+        }
+      }
+    },
+    "Giới thiệu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "About"
+          }
+        }
+      }
+    },
+    "Giờ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clock"
+          }
+        }
+      }
+    },
+    "Gán nguồn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Assign sources"
+          }
+        }
+      }
+    },
+    "Gán title vào phím Title / Title 2, rồi bấm “Title On” ở cột phải để lên sóng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Assign a title to the Title / Title 2 key, then press “Title On” to go on air"
+          }
+        }
+      }
+    },
+    "GẤP": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "FOLD"
+          }
+        }
+      }
+    },
+    "Gấp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fold"
+          }
+        }
+      }
+    },
+    "Gọn ở góc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Corner"
+          }
+        }
+      }
+    },
+    "Gỡ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove"
+          }
+        }
+      }
+    },
+    "GỢN": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RIPPLE"
+          }
+        }
+      }
+    },
+    "Gợn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ripple"
+          }
+        }
+      }
+    },
+    "HEVC: YouTube/RTMP cần máy chủ hỗ trợ Enhanced RTMP; Facebook chỉ nhận H.264. SRT/RTSP/ghi file dùng được.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "HEVC: YouTube/RTMP needs an Enhanced-RTMP server; Facebook takes H.264 only. SRT/RTSP/recording are fine."
+          }
+        }
+      }
+    },
+    "Hiệp (vd H1, Q2)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Period (e.g. H1, Q2)"
+          }
+        }
+      }
+    },
+    "Hiệu ứng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Effects"
+          }
+        }
+      }
+    },
+    "Hiệu ứng âm thanh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sound effects"
+          }
+        }
+      }
+    },
+    "Hoà trộn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dissolve"
+          }
+        }
+      }
+    },
+    "Hình học": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geometry"
+          }
+        }
+      }
+    },
+    "ID xác nhận": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Confirmation ID"
+          }
+        }
+      }
+    },
+    "Khoá cân bằng trắng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lock white balance"
+          }
+        }
+      }
+    },
+    "Khung PiP đơn đè lên Program": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Single PiP window over Program"
+          }
+        }
+      }
+    },
+    "Khung an toàn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Safe area"
+          }
+        }
+      }
+    },
+    "Khung an toàn trên PVW/PGM": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Safe area on PVW/PGM"
+          }
+        }
+      }
+    },
+    "Khung an toàn trên màn hình ngoài": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Safe area on external display"
+          }
+        }
+      }
+    },
+    "Không": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No"
+          }
+        }
+      }
+    },
+    "Không có tín hiệu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No signal"
+          }
+        }
+      }
+    },
+    "Không muốn đăng ký app: dùng Đầu ra › Thêm đích › YouTube/Facebook (stream key).": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No app registration: use Outputs › Add destination › YouTube/Facebook (stream key)."
+          }
+        }
+      }
+    },
+    "Kiểu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Style"
+          }
+        }
+      }
+    },
+    "Kéo cho tiếng khớp với hình khi camera mạng bị trễ.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delays the sound to match late network-camera video."
+          }
+        }
+      }
+    },
+    "Kéo để di chuyển · kéo góc để đổi cỡ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drag to move · drag a corner to resize"
+          }
+        }
+      }
+    },
+    "Kênh âm thanh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Audio channels"
+          }
+        }
+      }
+    },
+    "Kết nối": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connection"
+          }
+        }
+      }
+    },
+    "Logo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logo"
+          }
+        }
+      }
+    },
+    "Loại": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Type"
+          }
+        }
+      }
+    },
+    "Lên Preview": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "To Preview"
+          }
+        }
+      }
+    },
+    "Lên sóng ngay": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Take now"
+          }
+        }
+      }
+    },
+    "Lưu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save"
+          }
+        }
+      }
+    },
+    "Lưu clip": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save clip"
+          }
+        }
+      }
+    },
+    "Lưu cấu hình hiện tại": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save current setup"
+          }
+        }
+      }
+    },
+    "Lấy mới": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Refresh"
+          }
+        }
+      }
+    },
+    "Lấy nét tự động": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Autofocus"
+          }
+        }
+      }
+    },
+    "LẬT": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CURL"
+          }
+        }
+      }
+    },
+    "Lật": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Curl"
+          }
+        }
+      }
+    },
+    "Lật gương": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mirror"
+          }
+        }
+      }
+    },
+    "Lặp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loop"
+          }
+        }
+      }
+    },
+    "Màn hình": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Display"
+          }
+        }
+      }
+    },
+    "Màn hình ngoài": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "External display"
+          }
+        }
+      }
+    },
+    "Màn ngoài": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "External"
+          }
+        }
+      }
+    },
+    "Màu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Colour"
+          }
+        }
+      }
+    },
+    "Màu & PTZ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Colour & PTZ"
+          }
+        }
+      }
+    },
+    "Màu nhấn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Accent"
+          }
+        }
+      }
+    },
+    "Màu nền": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Background colour"
+          }
+        }
+      }
+    },
+    "Màu sắc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Colour"
+          }
+        }
+      }
+    },
+    "Màu, key, PTZ…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Colour, key, PTZ…"
+          }
+        }
+      }
+    },
+    "Mẫu bố cục": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Layouts"
+          }
+        }
+      }
+    },
+    "Mật khẩu SRT (để trống = không mã hoá, 10–79 ký tự)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SRT passphrase (empty = unencrypted, 10–79 characters)"
+          }
+        }
+      }
+    },
+    "Mặc định": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Default"
+          }
+        }
+      }
+    },
+    "Mỗi giao thức dùng chung một cổng; mỗi camera đặt một stream key riêng (cam1, cam2…) và tự hiện thành một nguồn.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "One port per protocol; each camera uses its own stream key (cam1, cam2…) and appears as a source."
+          }
+        }
+      }
+    },
+    "Mở DTDLive (hoặc app hỗ trợ DTD pairing) trên cùng mạng Wi-Fi → chọn DTD Studio → so ID xác nhận → Chấp nhận. Không cần nhập mã.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open DTDLive on the same Wi-Fi → pick DTD Studio → compare the confirmation ID → Accept. No code to type."
+          }
+        }
+      }
+    },
+    "Mở trong Replay (mark in/out)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open in Replay (mark in/out)"
+          }
+        }
+      }
+    },
+    "Nghe Program (tai nghe)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Listen to Program (headphones)"
+          }
+        }
+      }
+    },
+    "Nghe nhạc, hiệu ứng, video trên loa máy": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Play music, effects and video on the device speaker"
+          }
+        }
+      }
+    },
+    "Nguồn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Source"
+          }
+        }
+      }
+    },
+    "Nguồn tham gia": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sources"
+          }
+        }
+      }
+    },
+    "Nguồn đang chỉnh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adjusting"
+          }
+        }
+      }
+    },
+    "Ngôn ngữ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Language"
+          }
+        }
+      }
+    },
+    "Ngắt PTZ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Disconnect PTZ"
+          }
+        }
+      }
+    },
+    "Nhánh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Branch"
+          }
+        }
+      }
+    },
+    "Nhạc nền": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Music"
+          }
+        }
+      }
+    },
+    "Nhạc nền & hiệu ứng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Music & effects"
+          }
+        }
+      }
+    },
+    "Nhận camera (đẩy về DTD Studio)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Camera ingest (push to DTD Studio)"
+          }
+        }
+      }
+    },
+    "Nhận camera: SRT · RTMP · RTSP · DTDLive": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Camera ingest: SRT · RTMP · RTSP · DTDLive"
+          }
+        }
+      }
+    },
+    "Nhập SuperFG": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import SuperFG"
+          }
+        }
+      }
+    },
+    "Nhập hiệu ứng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import effects"
+          }
+        }
+      }
+    },
+    "Nhập logo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import logo"
+          }
+        }
+      }
+    },
+    "Nhập nhạc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import music"
+          }
+        }
+      }
+    },
+    "Nhập video": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import video"
+          }
+        }
+      }
+    },
+    "Nhập ảnh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import pictures"
+          }
+        }
+      }
+    },
+    "Nạp .cube": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Load .cube"
+          }
+        }
+      }
+    },
+    "Nền": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Background"
+          }
+        }
+      }
+    },
+    "Nền bố cục": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Layout background"
+          }
+        }
+      }
+    },
+    "Nền thay thế": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Replacement background"
+          }
+        }
+      }
+    },
+    "PHÁT REPLAY": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PLAY REPLAY"
+          }
+        }
+      }
+    },
+    "Phiên bản": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version"
+          }
+        }
+      }
+    },
+    "Phát": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Go live"
+          }
+        }
+      }
+    },
+    "Phát lại từ đầu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restart"
+          }
+        }
+      }
+    },
+    "Phát trực tiếp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Streaming"
+          }
+        }
+      }
+    },
+    "Phát tất cả": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start all"
+          }
+        }
+      }
+    },
+    "PiP trên Program": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PiP on Program"
+          }
+        }
+      }
+    },
+    "Preset: chạm = gọi, giữ = lưu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presets: tap = recall, hold = store"
+          }
+        }
+      }
+    },
+    "QUÉT": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "WIPE"
+          }
+        }
+      }
+    },
+    "Quét": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wipe"
+          }
+        }
+      }
+    },
+    "Quên mọi DTDLive đã ghép": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Forget all paired DTDLive"
+          }
+        }
+      }
+    },
+    "Quản lý đích phát (RTMP · SRT · RTSP · YouTube · Facebook)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Manage destinations (RTMP · SRT · RTSP · YouTube · Facebook)"
+          }
+        }
+      }
+    },
+    "RTMP (một cổng, nhiều stream key)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RTMP (one port, many stream keys)"
+          }
+        }
+      }
+    },
+    "RTSP (ANNOUNCE/RECORD, nhiều đường dẫn)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RTSP (ANNOUNCE/RECORD, many paths)"
+          }
+        }
+      }
+    },
+    "Replay": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Replay"
+          }
+        }
+      }
+    },
+    "SRT (một cổng, nhiều streamid)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SRT (one port, many streamids)"
+          }
+        }
+      }
+    },
+    "Show đã lưu (Files › DTD Studio › Shows)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saved shows (Files › DTD Studio › Shows)"
+          }
+        }
+      }
+    },
+    "SuperFG của bạn (PNG trong suốt · video có kênh alpha .mov)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your SuperFG (transparent PNG · alpha video .mov)"
+          }
+        }
+      }
+    },
+    "Sắp xếp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arrange"
+          }
+        }
+      }
+    },
+    "SỌC": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BARS"
+          }
+        }
+      }
+    },
+    "Sọc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bars"
+          }
+        }
+      }
+    },
+    "Sửa bảng tỉ số": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edit scoreboard"
+          }
+        }
+      }
+    },
+    "Sửa tên, logo, màu…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edit names, logos, colours…"
+          }
+        }
+      }
+    },
+    "TRÊN SÓNG": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ON AIR"
+          }
+        }
+      }
+    },
+    "Thao tác": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gestures"
+          }
+        }
+      }
+    },
+    "Thiết bị muốn kết nối": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Device wants to connect"
+          }
+        }
+      }
+    },
+    "Thêm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add"
+          }
+        }
+      }
+    },
+    "Thêm bảng tỉ số": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add scoreboard"
+          }
+        }
+      }
+    },
+    "Thêm nguồn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add source"
+          }
+        }
+      }
+    },
+    "Thêm title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add title"
+          }
+        }
+      }
+    },
+    "Thêm đích": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add destination"
+          }
+        }
+      }
+    },
+    "Thông số": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Info"
+          }
+        }
+      }
+    },
+    "Thông số trên PGM": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Info on PGM"
+          }
+        }
+      }
+    },
+    "Thông tin nguồn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Source info"
+          }
+        }
+      }
+    },
+    "Thư mục đồ hoạ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Graphics folder"
+          }
+        }
+      }
+    },
+    "Thư viện ảnh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Photos"
+          }
+        }
+      }
+    },
+    "Thời gian": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Duration"
+          }
+        }
+      }
+    },
+    "Tiêu đề buổi live": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Live title"
+          }
+        }
+      }
+    },
+    "Token (chỉ cần cho repo private)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Token (private repos only)"
+          }
+        }
+      }
+    },
+    "Trong suốt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transparent"
+          }
+        }
+      }
+    },
+    "Trên PGM": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "On PGM"
+          }
+        }
+      }
+    },
+    "Trạng thái": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Status"
+          }
+        }
+      }
+    },
+    "Tên": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Name"
+          }
+        }
+      }
+    },
+    "Tên show": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show name"
+          }
+        }
+      }
+    },
+    "Tên đội": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Team name"
+          }
+        }
+      }
+    },
+    "Tạo phiên live YouTube / Facebook": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Create YouTube / Facebook live"
+          }
+        }
+      }
+    },
+    "Tạo phiên live tự động": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Create live event"
+          }
+        }
+      }
+    },
+    "Tệp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Files"
+          }
+        }
+      }
+    },
+    "Tốc độ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Speed"
+          }
+        }
+      }
+    },
+    "Tốc độ khung": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Frame rate"
+          }
+        }
+      }
+    },
+    "Từ chối": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reject"
+          }
+        }
+      }
+    },
+    "Tự kết nối thiết bị tin cậy": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auto-connect trusted devices"
+          }
+        }
+      }
+    },
+    "Tự động": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auto"
+          }
+        }
+      }
+    },
+    "Tự động chuyển cảnh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auto switching"
+          }
+        }
+      }
+    },
+    "Video": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video"
+          }
+        }
+      }
+    },
+    "Video đang dùng làm nguồn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Videos in use"
+          }
+        }
+      }
+    },
+    "Video đã ghi / thư viện": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recorded / library videos"
+          }
+        }
+      }
+    },
+    "Vuốt 1 ngón trên PVW về phía PGM = CUT · 2 ngón = AUTO": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Swipe PVW toward PGM: 1 finger = CUT · 2 fingers = AUTO"
+          }
+        }
+      }
+    },
+    "Vuốt PVW → PGM để chuyển": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Swipe PVW → PGM to switch"
+          }
+        }
+      }
+    },
+    "Vẽ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Draw"
+          }
+        }
+      }
+    },
+    "Vị trí": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Position"
+          }
+        }
+      }
+    },
+    "Xanh dương": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blue"
+          }
+        }
+      }
+    },
+    "Xanh lá": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Green"
+          }
+        }
+      }
+    },
+    "Xoay 180°": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rotate 180°"
+          }
+        }
+      }
+    },
+    "Xong": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Done"
+          }
+        }
+      }
+    },
+    "Xoá": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete"
+          }
+        }
+      }
+    },
+    "Xoá bảng tỉ số": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete scoreboard"
+          }
+        }
+      }
+    },
+    "Xoá khỏi thư viện": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove from library"
+          }
+        }
+      }
+    },
+    "Xoá nguồn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove source"
+          }
+        }
+      }
+    },
+    "Xoá nét": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear drawing"
+          }
+        }
+      }
+    },
+    "Xuất MP4 vào thư viện": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Export MP4 to library"
+          }
+        }
+      }
+    },
+    "Yêu thích": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Favorites"
+          }
+        }
+      }
+    },
+    "lỗi cổng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "port error"
+          }
+        }
+      }
+    },
+    "Áp dụng (khởi động lại máy chủ nhận)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apply (restarts the ingest servers)"
+          }
+        }
+      }
+    },
+    "Âm thanh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Audio"
+          }
+        }
+      }
+    },
+    "Đang kết nối…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connecting…"
+          }
+        }
+      }
+    },
+    "Đang tải…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loading…"
+          }
+        }
+      }
+    },
+    "Điều khiển PTZ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PTZ control"
+          }
+        }
+      }
+    },
+    "Điều khiển camera": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Camera control"
+          }
+        }
+      }
+    },
+    "Điều khiển title từ điện thoại/laptop: http://<IP máy>:8080": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Control titles from a phone/laptop: http://<device IP>:8080"
+          }
+        }
+      }
+    },
+    "Điều khiển tỉ số, đồng hồ, logo, màu ở thẻ Bảng tỉ số phía trên": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Score, clock, logos and colours are in the Scoreboard card above"
+          }
+        }
+      }
+    },
+    "Điều khiển từ xa & ghép nối": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remote control & pairing"
+          }
+        }
+      }
+    },
+    "Đèn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Torch"
+          }
+        }
+      }
+    },
+    "Đích phát (chạy song song, encode 1 lần)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Destinations (in parallel, encoded once)"
+          }
+        }
+      }
+    },
+    "Đóng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close"
+          }
+        }
+      }
+    },
+    "Đưa lên Preview": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Send to Preview"
+          }
+        }
+      }
+    },
+    "Đầu ra": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Outputs"
+          }
+        }
+      }
+    },
+    "Đầu vào": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inputs"
+          }
+        }
+      }
+    },
+    "Đặt MARK IN / MARK OUT rồi bấm Lưu clip": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set MARK IN / MARK OUT, then Save clip"
+          }
+        }
+      }
+    },
+    "Đặt lại": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset"
+          }
+        }
+      }
+    },
+    "Đặt lại tỉ số 0 - 0": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset score to 0 - 0"
+          }
+        }
+      }
+    },
+    "Đặt lại đồng hồ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset clock"
+          }
+        }
+      }
+    },
+    "Đếm ngược": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Count down"
+          }
+        }
+      }
+    },
+    "Đồ hoạ HTML5": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "HTML5 graphics"
+          }
+        }
+      }
+    },
+    "Đồ hoạ HTML5 (tải từ Git)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "HTML5 graphics (from Git)"
+          }
+        }
+      }
+    },
+    "Đồng hồ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clock"
+          }
+        }
+      }
+    },
+    "Đổi bên (tên, tỉ số, logo)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Swap sides (names, scores, logos)"
+          }
+        }
+      }
+    },
+    "Đổi độ phân giải/fps khi đang phát: các đích tự kết nối lại với thông số mới.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Changing resolution/fps while live reconnects every destination with the new settings."
+          }
+        }
+      }
+    },
+    "Độ phân giải": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resolution"
+          }
+        }
+      }
+    },
+    "Ảnh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pictures"
+          }
+        }
+      }
+    },
+    "Ẩn tất cả": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hide all"
+          }
+        }
+      }
+    },
+    "Ứng dụng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "App"
+          }
+        }
+      }
+    },
+    "→ Title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "→ Title"
+          }
+        }
+      }
+    },
+    "→ Title 2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "→ Title 2"
+          }
+        }
+      }
+    },
+    "Bật bộ đệm replay (60 giây gần nhất)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Replay buffer on (last 60 seconds)"
+          }
+        }
+      }
+    },
+    "Tắt khi không dùng replay để đỡ nóng máy và tiết kiệm pin.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Turn off when not using replay to keep the device cool and save battery."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

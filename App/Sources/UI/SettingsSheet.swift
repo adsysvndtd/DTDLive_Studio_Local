@@ -86,6 +86,9 @@ struct SettingsForm: View {
                     }
                 }
                 .textSelection(.enabled)
+                Section("Ngôn ngữ") {
+                    LanguagePicker()
+                }
                 Section("Tạo phiên live YouTube / Facebook") {
                     PlatformKeyField(title: "Google OAuth Client ID (loại iOS)", key: PlatformLive.googleKey,
                                      hint: "xxxx.apps.googleusercontent.com — Google Cloud › Credentials, bật YouTube Data API v3")
@@ -133,6 +136,28 @@ struct PlatformKeyField: View {
                     UserDefaults.standard.set(v.trimmingCharacters(in: .whitespacesAndNewlines), forKey: key)
                 }
             Text(hint).font(.caption2).foregroundStyle(.secondary)
+        }
+    }
+}
+
+
+/// In-app language (Tiếng Việt / English / follow iOS). Takes effect on next launch.
+struct LanguagePicker: View {
+    @AppStorage("dtd.language") private var lang = "system"
+    @State private var changed = false
+    var body: some View {
+        Picker("Ngôn ngữ", selection: $lang) {
+            Text(verbatim: "Theo iOS / System").tag("system")
+            Text(verbatim: "Tiếng Việt").tag("vi")
+            Text(verbatim: "English").tag("en")
+        }
+        .onChange(of: lang) { _, v in
+            if v == "system" { UserDefaults.standard.removeObject(forKey: "AppleLanguages") }
+            else { UserDefaults.standard.set([v], forKey: "AppleLanguages") }
+            changed = true
+        }
+        if changed {
+            Text(verbatim: "Mở lại app để đổi ngôn ngữ · Relaunch the app to apply").font(.caption).foregroundStyle(.secondary)
         }
     }
 }

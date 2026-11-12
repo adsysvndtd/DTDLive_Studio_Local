@@ -155,7 +155,7 @@ struct TitlesPanel: View {
 
     private func assignChip(_ t: String, on: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Text(t).font(.caption.weight(.bold)).padding(.horizontal, 9).padding(.vertical, 5)
+            Text(LocalizedStringKey(t)).font(.caption.weight(.bold)).padding(.horizontal, 9).padding(.vertical, 5)
                 .foregroundStyle(on ? .black : DS.text2)
                 .background(on ? Color.white : DS.surface2, in: Rectangle())
         }
@@ -219,7 +219,7 @@ struct AudioPanel: View {
 
     private func chip(_ text: String, on: Bool, onColor: Color = DS.accent, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Text(text).font(.caption2.weight(.heavy))
+            Text(LocalizedStringKey(text)).font(.caption2.weight(.heavy))
                 .padding(.horizontal, 8).padding(.vertical, 4)
                 .foregroundStyle(on ? .black : DS.text2)
                 .background(on ? onColor : DS.surface2, in: Rectangle())
@@ -431,7 +431,14 @@ struct AutoPanel: View {
 
 struct ReplayPanel: View {
     @ObservedObject var engine: StudioEngine
-    var body: some View { ReplayEditorView(engine: engine, editor: engine.replayEditor) }
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Toggle("Bật bộ đệm replay (60 giây gần nhất)", isOn: $engine.replayArmed)
+                .font(.subheadline.weight(.semibold))
+            Text("Tắt khi không dùng replay để đỡ nóng máy và tiết kiệm pin.").font(.caption).foregroundStyle(DS.text3)
+            ReplayEditorView(engine: engine, editor: engine.replayEditor)
+        }
+    }
 }
 
 /// Clip editor: frame preview, thumbnail strip with playhead + in/out, frame stepping,
@@ -555,7 +562,7 @@ struct ReplayEditorView: View {
     private func markKey(_ title: String, value: Double?, color: Color, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             VStack(spacing: 0) {
-                Text(title).font(.system(size: 11, weight: .heavy))
+                Text(LocalizedStringKey(title)).font(.system(size: 11, weight: .heavy))
                 Text(value.map(timeLabel) ?? "--:--:--").font(.system(size: 10, design: .monospaced))
             }
             .frame(width: 86, height: 38)

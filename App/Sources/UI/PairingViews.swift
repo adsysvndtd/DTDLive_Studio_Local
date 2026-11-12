@@ -150,7 +150,7 @@ struct IngestSettingsRows: View {
 
     private func portRow(_ title: String, _ v: Binding<Int>) -> some View {
         HStack {
-            Text(title)
+            Text(LocalizedStringKey(title))
             Spacer()
             TextField("", value: v, format: .number.grouping(.never))
                 .keyboardType(.numberPad).multilineTextAlignment(.trailing).frame(width: 90)

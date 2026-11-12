@@ -146,7 +146,7 @@ struct StudioView: View {
     private func barLabel(_ icon: String, _ title: String, tint: Color = .white) -> some View {
         HStack(spacing: 4) {
             Image(systemName: icon).font(.system(size: 13, weight: .semibold))
-            if !compact { Text(title).font(.caption.weight(.semibold)).lineLimit(1).fixedSize() }
+            if !compact { Text(LocalizedStringKey(title)).font(.caption.weight(.semibold)).lineLimit(1).fixedSize() }
         }
         .foregroundStyle(tint)
         .padding(.horizontal, compact ? 8 : 10).frame(height: compact ? 28 : 32)
@@ -503,6 +503,9 @@ struct OutputsSheet: View {
                                 Text(o.name.isEmpty ? o.proto.label : o.name).bold()
                                 Text(o.proto == .record ? o.proto.label : o.url).font(.caption).foregroundStyle(.secondary).lineLimit(1)
                                 Text(st.text).font(.caption2).foregroundStyle(st == .live ? .red : .secondary)
+                                if st == .live, let r = engine.outputRates[o.id] {
+                                    Text(verbatim: r).font(.caption2.monospacedDigit()).foregroundStyle(.secondary)
+                                }
                             }
                             Spacer()
                             Toggle("", isOn: $o.enabled).labelsHidden()
