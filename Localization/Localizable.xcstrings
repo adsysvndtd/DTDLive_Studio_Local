@@ -421,6 +421,16 @@
         }
       }
     },
+    "Chỉnh khung": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edit windows"
+          }
+        }
+      }
+    },
     "Chọn một nguồn ở hàng PREVIEW để chỉnh": {
       "localizations": {
         "en": {
@@ -907,6 +917,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Window frame"
+          }
+        }
+      }
+    },
+    "Khôi phục mẫu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset template"
           }
         }
       }
@@ -1921,6 +1941,16 @@
         }
       }
     },
+    "Thêm khung": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add window"
+          }
+        }
+      }
+    },
     "Thêm nguồn": {
       "localizations": {
         "en": {
@@ -2427,6 +2457,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Delete scoreboard"
+          }
+        }
+      }
+    },
+    "Xoá khung %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove window %lld"
           }
         }
       }

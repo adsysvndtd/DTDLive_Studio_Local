@@ -34,6 +34,7 @@ final class PlatformLive: NSObject, ObservableObject, ASWebAuthenticationPresent
 
     static let googleKey = "DTDGoogleClientID"
     static let facebookKey = "DTDFacebookAppID"
+    static let facebookConfigKey = "DTDFacebookConfigID"
     /// IDs entered in Settings win over the Info.plist values, so no rebuild is needed to configure them.
     static func configured(_ key: String) -> String? {
         let s = (UserDefaults.standard.string(forKey: key) ?? (Bundle.main.object(forInfoDictionaryKey: key) as? String) ?? "")
@@ -185,16 +186,18 @@ final class PlatformLive: NSObject, ObservableObject, ASWebAuthenticationPresent
     private func facebookAccessToken() async throws -> String {
         if let facebookToken, facebookExpiry > Date().addingTimeInterval(60) { return facebookToken }
         guard let appID = Self.configured(Self.facebookKey) else { throw LiveError.notConfigured(Self.facebookKey) }
-        guard #available(iOS 17.4, *) else { throw LiveError.unsupportedOS }
-        // Manual login flow with the standard desktop redirect, intercepted by ASWebAuthenticationSession.
-        let redirect = "https://www.facebook.com/connect/login_success.html"
+        // Native-app redirect fb{appID}://authorize (needs the bundle ID under the app's iOS platform);
+        // Facebook Login for Business uses a configuration (config_id) instead of a scope list.
+        let scheme = "fb\(appID)"
+        let redirect = "\(scheme)://authorize/"
         var c = URLComponents(string: "https://www.facebook.com/v19.0/dialog/oauth")!
-        c.queryItems = [.init(name: "client_id", value: appID), .init(name: "redirect_uri", value: redirect),
-                        .init(name: "response_type", value: "token"), .init(name: "scope", value: "publish_video"),
-                        .init(name: "display", value: "touch")]
+        var items: [URLQueryItem] = [.init(name: "client_id", value: appID), .init(name: "redirect_uri", value: redirect),
+                                     .init(name: "response_type", value: "token"), .init(name: "display", value: "touch")]
+        if let cfg = Self.configured(Self.facebookConfigKey) { items.append(.init(name: "config_id", value: cfg)) }
+        else { items.append(.init(name: "scope", value: "publish_video")) }
+        c.queryItems = items
         let callback = try await authenticate(url: c.url!) { done in
-            ASWebAuthenticationSession(url: c.url!, callback: .https(host: "www.facebook.com", path: "/connect/login_success.html"),
-                                       completionHandler: done)
+            ASWebAuthenticationSession(url: c.url!, callbackURLScheme: scheme, completionHandler: done)
         }
         // Token comes back in the URL fragment.
         let fragment = URLComponents(string: "x://y?" + (callback.fragment ?? ""))

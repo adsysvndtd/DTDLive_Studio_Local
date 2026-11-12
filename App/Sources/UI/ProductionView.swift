@@ -205,6 +205,10 @@ struct CategoryContent: View {
         }
     }
 
+    private func toolbarButton(_ title: String, _ icon: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) { toolbarLabel(title, icon) }.buttonStyle(.plain)
+    }
+
     private func toolbarLabel(_ title: String, _ icon: String) -> some View {
         Label(LocalizedStringKey(title), systemImage: icon)
             .font(.system(size: compact ? 12 : 14, weight: .semibold)).lineLimit(1)
@@ -453,7 +457,19 @@ struct CategoryContent: View {
                 .buttonStyle(.plain)
             }
         }
-        if engine.layoutTemplate.slots.count == 1 {
+        sectionHeader("Chỉnh khung")
+        HStack(spacing: 6) {
+            toolbarButton("Thêm khung", "plus.rectangle") { engine.insertLayoutWindow() }
+            toolbarButton("Xoá khung \(engine.layoutSelectedSlot + 1)", "minus.rectangle") { engine.removeLayoutWindow(engine.layoutSelectedSlot) }
+                .disabled(engine.layoutTemplate.slots.count < 2)
+            if engine.layoutEdited {
+                toolbarButton("Khôi phục mẫu", "arrow.uturn.backward") { engine.resetLayoutEdits() }
+            }
+            Spacer(minLength: 0)
+        }
+        LayoutEditor(engine: engine)
+            .frame(maxWidth: 640)
+        if engine.layoutTemplate.slots.count == 1 && !engine.layoutEdited && !engine.layoutTemplate.slots[0].perspective {
             LabeledSlider(title: "Cỡ khung", value: $engine.layoutSingleScale, range: 0.2...1) { "\(Int($0 * 100))%" }
                 .frame(maxWidth: 420)
         }
@@ -983,5 +999,73 @@ struct SourceInfoView: View {
             .navigationTitle("Thông tin nguồn")
             .toolbar { Button("Xong") { dismiss() } }
         }
+    }
+}
+
+
+/// Direct-manipulation editor for the PiP layout: drag a window to move it, drag its corner to resize.
+/// Windows are always kept fully inside the frame (StudioEngine.clampWindow).
+struct LayoutEditor: View {
+    @ObservedObject var engine: StudioEngine
+    @State private var startRect: CGRect?
+
+    var body: some View {
+        GeometryReader { g in
+            let W = g.size.width, H = g.size.height
+            ZStack(alignment: .topLeading) {
+                MonitorView(store: engine.layoutSource.frames, maxFPS: 15)
+                ForEach(Array(engine.layoutTemplate.slots.enumerated()), id: \.offset) { i, slot in
+                    window(i, slot.rect, W: W, H: H)
+                }
+            }
+            .clipped()
+        }
+        .aspectRatio(16 / 9, contentMode: .fit)
+        .overlay(Rectangle().stroke(DS.stroke))
+    }
+
+    @ViewBuilder
+    private func window(_ i: Int, _ r: CGRect, W: CGFloat, H: CGFloat) -> some View {
+        let sel = engine.layoutSelectedSlot == i
+        let name = engine.layoutSlots.indices.contains(i)
+            ? (engine.sources.first { $0.id == engine.layoutSlots[i] }?.name ?? "—") : "—"
+        Rectangle()
+            .fill(Color.white.opacity(sel ? 0.10 : 0.02))
+            .overlay(Rectangle().stroke(sel ? DS.accent : Color.white.opacity(0.75), lineWidth: sel ? 2 : 1))
+            .overlay(alignment: .topLeading) {
+                Text(verbatim: "\(i + 1) · \(name)").font(.system(size: 10, weight: .bold)).lineLimit(1)
+                    .padding(.horizontal, 4).padding(.vertical, 2)
+                    .foregroundStyle(sel ? .black : .white)
+                    .background(sel ? DS.accent : Color.black.opacity(0.6))
+            }
+            .overlay(alignment: .bottomTrailing) {
+                // resize handle
+                Rectangle().fill(sel ? DS.accent : Color.white)
+                    .frame(width: 18, height: 18)
+                    .overlay(Image(systemName: "arrow.up.left.and.arrow.down.right").font(.system(size: 9, weight: .bold)).foregroundStyle(.black))
+                    .highPriorityGesture(DragGesture(minimumDistance: 1)
+                        .onChanged { d in
+                            engine.layoutSelectedSlot = i
+                            let s = startRect ?? r
+                            if startRect == nil { startRect = r }
+                            let nr = CGRect(x: s.minX, y: s.minY,
+                                            width: min(s.width + d.translation.width / W, 1 - s.minX),
+                                            height: min(s.height + d.translation.height / H, 1 - s.minY))
+                            engine.setLayoutWindow(i, nr)
+                        }
+                        .onEnded { _ in startRect = nil })
+            }
+            .frame(width: r.width * W, height: r.height * H)
+            .contentShape(Rectangle())
+            .offset(x: r.minX * W, y: r.minY * H)
+            .gesture(DragGesture(minimumDistance: 1)
+                .onChanged { d in
+                    engine.layoutSelectedSlot = i
+                    let s = startRect ?? r
+                    if startRect == nil { startRect = r }
+                    engine.setLayoutWindow(i, s.offsetBy(dx: d.translation.width / W, dy: d.translation.height / H))
+                }
+                .onEnded { _ in startRect = nil })
+            .onTapGesture { engine.layoutSelectedSlot = i }
     }
 }

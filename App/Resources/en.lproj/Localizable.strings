@@ -40,6 +40,7 @@
 "Chế độ" = "Mode";
 "Chỉ bật khi dùng tai nghe — loa ngoài sẽ hú vào micro." = "Headphones only — the speaker would feed back into the mic.";
 "Chỉ chấp nhận nếu ID này trùng với ID trên màn hình thiết bị" = "Accept only if this ID matches the one on the device";
+"Chỉnh khung" = "Edit windows";
 "Chọn một nguồn ở hàng PREVIEW để chỉnh" = "Pick a source on PREVIEW to adjust";
 "Chọn video…" = "Choose video…";
 "Chống rung" = "Stabilization";
@@ -89,6 +90,7 @@
 "Khung an toàn trên PVW/PGM" = "Safe area on PVW/PGM";
 "Khung an toàn trên màn hình ngoài" = "Safe area on external display";
 "Khung viền" = "Window frame";
+"Khôi phục mẫu" = "Reset template";
 "Không" = "No";
 "Không có tín hiệu" = "No signal";
 "Không muốn đăng ký app: dùng Đầu ra › Thêm đích › YouTube/Facebook (stream key)." = "No app registration: use Outputs › Add destination › YouTube/Facebook (stream key).";
@@ -190,6 +192,7 @@
 "Thiết bị muốn kết nối" = "Device wants to connect";
 "Thêm" = "Add";
 "Thêm bảng tỉ số" = "Add scoreboard";
+"Thêm khung" = "Add window";
 "Thêm nguồn" = "Add source";
 "Thêm title" = "Add title";
 "Thêm đích" = "Add destination";
@@ -241,6 +244,7 @@
 "Xong" = "Done";
 "Xoá" = "Delete";
 "Xoá bảng tỉ số" = "Delete scoreboard";
+"Xoá khung %lld" = "Remove window %lld";
 "Xoá khỏi thư viện" = "Remove from library";
 "Xoá nguồn" = "Remove source";
 "Xoá nét" = "Clear drawing";

@@ -467,7 +467,65 @@ final class StudioEngine: ObservableObject {
     func toggleSecondTitle() { if let t = secondTitle { setTitleVisible(t.id, !t.visible) } }
     var armedTitleVisible: Bool { titles.first { $0.id == (armedTitleID ?? titles.first?.id) }?.visible ?? false }
 
-    var layoutTemplate: LayoutTemplate { LayoutTemplate.all.first { $0.id == layoutTemplateID } ?? LayoutTemplate.all[1] }
+    /// Built-in template for the current id (before user edits).
+    var baseLayoutTemplate: LayoutTemplate { LayoutTemplate.all.first { $0.id == layoutTemplateID } ?? LayoutTemplate.all[1] }
+    /// Current template with the operator's edits (moved/resized/inserted windows) applied.
+    var layoutTemplate: LayoutTemplate {
+        let b = baseLayoutTemplate
+        guard let rects = layoutEdits[b.id], !rects.isEmpty else { return b }
+        return LayoutTemplate(id: b.id, name: b.name, slots: rects.map { LayoutTemplate.Slot(rect: $0) }, background: b.background)
+    }
+    var layoutEdited: Bool { layoutEdits[layoutTemplateID] != nil }
+
+    /// Per-template window rects edited in the PiP editor (normalised, top-left origin).
+    @Published var layoutEdits: [Int: [CGRect]] = StudioEngine.load([Int: [CGRect]].self, key: "dtd.layoutedits.v1") ?? [:] {
+        didSet { UserDefaults.standard.set(try? JSONEncoder().encode(layoutEdits), forKey: "dtd.layoutedits.v1") }
+    }
+
+    /// Keeps a window fully inside the frame, at least 6% in size.
+    static func clampWindow(_ r: CGRect) -> CGRect {
+        let minS: CGFloat = 0.06
+        let w = min(max(r.width, minS), 1), h = min(max(r.height, minS), 1)
+        let x = min(max(r.minX, 0), 1 - w), y = min(max(r.minY, 0), 1 - h)
+        return CGRect(x: x, y: y, width: w, height: h)
+    }
+
+    private var editableRects: [CGRect] { layoutTemplate.slots.map(\.rect) }
+
+    func setLayoutWindow(_ i: Int, _ r: CGRect) {
+        var rects = editableRects
+        guard rects.indices.contains(i) else { return }
+        rects[i] = Self.clampWindow(r)
+        layoutEdits[layoutTemplateID] = rects
+        refreshLayout()
+    }
+
+    /// Inserts a new window (centre, 32%) and fills it with the next unused input.
+    func insertLayoutWindow() {
+        var rects = editableRects
+        let off = CGFloat(rects.count % 5) * 0.04
+        rects.append(Self.clampWindow(CGRect(x: 0.34 + off, y: 0.34 + off, width: 0.32, height: 0.32)))
+        layoutEdits[layoutTemplateID] = rects
+        let pool = ([programID, previewID] + sources.map(\.id)).compactMap { $0 }.filter { $0 != layoutSource.id && $0 != replay.id }
+        layoutSlots.append(pool.first { !layoutSlots.contains($0) } ?? pool.first)
+        layoutSelectedSlot = layoutSlots.count - 1
+        refreshLayout()
+    }
+
+    func removeLayoutWindow(_ i: Int) {
+        var rects = editableRects
+        guard rects.count > 1, rects.indices.contains(i) else { return }
+        rects.remove(at: i)
+        layoutEdits[layoutTemplateID] = rects
+        if layoutSlots.indices.contains(i) { layoutSlots.remove(at: i) }
+        layoutSelectedSlot = min(layoutSelectedSlot, layoutSlots.count - 1)
+        refreshLayout()
+    }
+
+    func resetLayoutEdits() {
+        layoutEdits[layoutTemplateID] = nil
+        chooseLayout(layoutTemplateID)
+    }
 
     /// Picks a template; empty slots are filled with the first inputs (program first).
     func chooseLayout(_ id: Int) {
@@ -507,7 +565,7 @@ final class StudioEngine: ObservableObject {
         case .source(let id): live = sources.first { $0.id == id }?.frames
         }
         var tpl = layoutTemplate
-        if tpl.slots.count == 1 {
+        if tpl.slots.count == 1 && !layoutEdited && !tpl.slots[0].perspective {
             // one-window layout: shrink around the centre so the background shows around it
             let k = CGFloat(min(max(layoutSingleScale, 0.2), 1))
             var slot = tpl.slots[0]

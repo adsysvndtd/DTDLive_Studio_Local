@@ -40,6 +40,7 @@
 "Chế độ" = "Chế độ";
 "Chỉ bật khi dùng tai nghe — loa ngoài sẽ hú vào micro." = "Chỉ bật khi dùng tai nghe — loa ngoài sẽ hú vào micro.";
 "Chỉ chấp nhận nếu ID này trùng với ID trên màn hình thiết bị" = "Chỉ chấp nhận nếu ID này trùng với ID trên màn hình thiết bị";
+"Chỉnh khung" = "Chỉnh khung";
 "Chọn một nguồn ở hàng PREVIEW để chỉnh" = "Chọn một nguồn ở hàng PREVIEW để chỉnh";
 "Chọn video…" = "Chọn video…";
 "Chống rung" = "Chống rung";
@@ -89,6 +90,7 @@
 "Khung an toàn trên PVW/PGM" = "Khung an toàn trên PVW/PGM";
 "Khung an toàn trên màn hình ngoài" = "Khung an toàn trên màn hình ngoài";
 "Khung viền" = "Khung viền";
+"Khôi phục mẫu" = "Khôi phục mẫu";
 "Không" = "Không";
 "Không có tín hiệu" = "Không có tín hiệu";
 "Không muốn đăng ký app: dùng Đầu ra › Thêm đích › YouTube/Facebook (stream key)." = "Không muốn đăng ký app: dùng Đầu ra › Thêm đích › YouTube/Facebook (stream key).";
@@ -190,6 +192,7 @@
 "Thiết bị muốn kết nối" = "Thiết bị muốn kết nối";
 "Thêm" = "Thêm";
 "Thêm bảng tỉ số" = "Thêm bảng tỉ số";
+"Thêm khung" = "Thêm khung";
 "Thêm nguồn" = "Thêm nguồn";
 "Thêm title" = "Thêm title";
 "Thêm đích" = "Thêm đích";
@@ -241,6 +244,7 @@
 "Xong" = "Xong";
 "Xoá" = "Xoá";
 "Xoá bảng tỉ số" = "Xoá bảng tỉ số";
+"Xoá khung %lld" = "Xoá khung %lld";
 "Xoá khỏi thư viện" = "Xoá khỏi thư viện";
 "Xoá nguồn" = "Xoá nguồn";
 "Xoá nét" = "Xoá nét";
