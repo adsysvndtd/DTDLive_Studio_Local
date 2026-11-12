@@ -260,6 +260,7 @@ struct CategoryContent: View {
             sectionHeader("SuperFG của bạn (PNG trong suốt · video có kênh alpha .mov)")
             libraryGrid(.overlay, selected: engine.currentForegroundURL) { engine.useForeground($0) }
         case .title:
+            HTMLGraphicsPanel(html: engine.html, repo: engine.graphicsRepo, compact: compact).padding(.bottom, 4)
             ScoreboardControl(engine: engine, compact: compact).padding(.bottom, 4)
             TitlesPanel(engine: engine)
         case .logo:
@@ -699,6 +700,7 @@ struct TransitionColumn: View {
                 .padding(.vertical, 4)
                 onKey("SuperFG", on: engine.foregroundOn, enabled: engine.foreground != nil) { engine.foregroundOn.toggle() }
                 onKey("Title", on: engine.armedTitleVisible, enabled: !engine.titles.isEmpty) { engine.toggleArmedTitle() }
+                onKey("HTML", on: engine.html.onAir, enabled: engine.html.loadedID != nil) { engine.html.toggle() }
                 onKey("Title 2", on: engine.secondTitle?.visible ?? false, enabled: engine.secondTitle != nil) { engine.toggleSecondTitle() }
                 onKey("Logo", on: engine.logoOn, enabled: engine.logo != nil) { engine.logoOn.toggle() }
                 onKey("PiP", on: engine.pipOn, enabled: engine.pip != nil) { engine.pipOn.toggle() }

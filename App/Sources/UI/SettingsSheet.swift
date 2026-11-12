@@ -86,6 +86,9 @@ struct SettingsForm: View {
                     }
                 }
                 .textSelection(.enabled)
+                Section("Đồ hoạ HTML5 (tải từ Git)") {
+                    GraphicsRepoRows(repo: engine.graphicsRepo)
+                }
                 Section("Điều khiển từ xa & ghép nối") {
                     let ip = NetworkInfo.wifiIPv4() ?? "—"
                     LabeledContent("Web remote", value: "http://\(ip):\(engine.controlPort)")

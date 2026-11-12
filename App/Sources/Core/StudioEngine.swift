@@ -39,6 +39,10 @@ final class StudioEngine: ObservableObject {
     let pairing = PairingManager()
     /// Push ingest (SRT / RTMP / RTSP, one port each, many stream keys) + DTDLive pairing.
     let ingest = IngestHub()
+    /// HTML5 graphics (lower thirds, tickers) synced from Git.
+    let html = HTMLGraphics()
+    let graphicsRepo = GraphicsRepo()
+    private var htmlChange: AnyCancellable?
 
     // MARK: Multi-source layouts (PiP templates)
     private(set) lazy var layoutSource = LayoutSource()
@@ -179,6 +183,11 @@ final class StudioEngine: ObservableObject {
         switcher.graphicsProvider = { [weak self] size, now in
             let items = MainActorBox.titles(self)
             var img = titlesR.render(items, canvas: size, now: now)
+            if let h = HTMLFrameBox.shared.image, h.extent.width > 0 {
+                let k = size.width / h.extent.width
+                let hs = h.transformed(by: CGAffineTransform(scaleX: k, y: k))
+                img = img.map { hs.composited(over: $0) } ?? hs
+            }
             if let a = ann.current { img = img.map { a.composited(over: $0) } ?? a }
             return img
         }
@@ -202,6 +211,10 @@ final class StudioEngine: ObservableObject {
         replay.onFinished = { [weak self] in self?.replayFinished() }
         pairing.engine = self
         ingest.engine = self
+        let h = html
+        graphicsRepo.onUpdated = { h.reload() }
+        // key column / remote follow the HTML graphics state
+        htmlChange = html.objectWillChange.sink { [weak self] _ in self?.objectWillChange.send() }
         if !DemoMode.isOn { ingest.start() }
         timers.append(Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
             Task { @MainActor in

@@ -1,0 +1,29 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=1920,height=1080">
+<style>
+  html,body{margin:0;width:1920px;height:1080px;background:transparent;overflow:hidden;font-family:-apple-system,"Helvetica Neue",sans-serif}
+  :root{--accent:#F26B1D}
+  .wrap{position:absolute;left:120px;bottom:150px;display:flex;align-items:stretch;opacity:0}
+  .bar{width:14px;background:var(--accent);transform:scaleY(0);transform-origin:bottom}
+  .box{overflow:hidden}
+  .name{background:rgba(255,255,255,.96);color:#111;font-weight:800;font-size:54px;padding:14px 34px;white-space:nowrap;transform:translateX(-105%)}
+  .title{background:rgba(12,14,18,.9);color:#fff;font-weight:500;font-size:34px;padding:10px 34px;white-space:nowrap;transform:translateX(-105%)}
+  .on .wrap{opacity:1}
+  .on .bar{animation:grow .35s cubic-bezier(.2,.8,.2,1) forwards}
+  .on .name{animation:slide .55s .15s cubic-bezier(.2,.8,.2,1) forwards}
+  .on .title{animation:slide .55s .28s cubic-bezier(.2,.8,.2,1) forwards}
+  .off .wrap{opacity:1;animation:fade .45s ease forwards}
+  .off .bar{transform:scaleY(1)} .off .name,.off .title{transform:none}
+  @keyframes grow{to{transform:scaleY(1)}} @keyframes slide{to{transform:none}} @keyframes fade{to{opacity:0;transform:translateX(-40px)}}
+</style></head>
+<body><div id="root"><div class="wrap"><div class="bar"></div><div class="box"><div class="name" id="f0"></div><div class="title" id="f1"></div></div></div></div>
+<script>
+  // DTD Studio HTML graphics API (CasparCG-style): update(json) / play() / stop() / next()
+  const root=document.getElementById('root');
+  function update(d){ if(typeof d==='string') d=JSON.parse(d);
+    for(const k in d){ const el=document.getElementById(k); if(el) el.textContent=d[k]; }
+    if(d.accent) document.documentElement.style.setProperty('--accent',d.accent); }
+  function play(){ root.className=''; void root.offsetWidth; root.className='on'; }
+  function stop(){ root.className='off'; }
+  function next(){}
+</script></body></html>

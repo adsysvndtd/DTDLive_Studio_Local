@@ -59,6 +59,16 @@ DTD Studio nói đúng giao thức ghép đôi của DTDLive (`_dtd-pair._tcp`, 
 
 Cổng, mật khẩu SRT và bật/tắt từng giao thức: **Cài đặt › Nhận camera**. CI build SRTKit (`Vendor/srtkit/scripts/build-ios.sh`, `SRTKIT_LINK_LIBSRT=0` để dùng chung libsrt 1.5.7 của HaishinKit).
 
+## Đồ hoạ HTML5 (lower third, chữ chạy) cập nhật từ Git
+
+Template là trang HTML nền trong suốt trong thư mục `Graphics/` (xem `Graphics/README.md`: `manifest.json` + hàm `update/play/stop/next`).
+App kèm sẵn 3 mẫu (lower third trượt, lower third kính mờ, chữ chạy tin tức) và tải bản mới từ GitHub:
+**Cài đặt › Đồ hoạ HTML5** (mặc định `adsysvndtd/DTDLive_Studio_Local`, nhánh `main`, thư mục `Graphics`; repo private thì nhập token — lưu trong Keychain),
+hoặc nút **Cập nhật từ Git** ở mục Title. Chỉ tải lại khi commit trên nhánh thay đổi.
+
+Mục Title › Đồ hoạ HTML5: chọn mẫu để nạp, sửa chữ/màu (cập nhật ngay cả khi đang trên sóng); phím **HTML On** ở cột phải chạy hiệu ứng vào/ra.
+Trang được render bằng WKWebView 960×540 (khoảng 25 hình/giây) rồi phóng lên khung Program.
+
 ## Kiến trúc
 
 ```

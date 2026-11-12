@@ -1,0 +1,29 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=1920,height=1080">
+<style>
+  html,body{margin:0;width:1920px;height:1080px;background:transparent;overflow:hidden;font-family:-apple-system,"Helvetica Neue",sans-serif}
+  :root{--accent:#E30613}
+  .bar{position:absolute;left:0;right:0;bottom:40px;height:76px;display:flex;background:rgba(10,12,16,.92);transform:translateY(140px)}
+  .tag{background:var(--accent);color:#fff;font-weight:900;font-size:34px;padding:0 34px;display:flex;align-items:center;z-index:2;white-space:nowrap}
+  .lane{flex:1;overflow:hidden;position:relative}
+  .text{position:absolute;top:0;height:76px;display:flex;align-items:center;white-space:nowrap;color:#fff;font-size:36px;font-weight:600}
+  .text span{padding:0 60px} .text span:after{content:"◆";color:var(--accent);margin-left:120px;font-size:22px}
+  .on .bar{animation:up .5s cubic-bezier(.2,.8,.2,1) forwards}
+  .off .bar{transform:none;animation:down .4s ease-in forwards}
+  @keyframes up{to{transform:none}} @keyframes down{to{transform:translateY(140px)}}
+</style></head>
+<body><div id="root"><div class="bar"><div class="tag" id="f0"></div><div class="lane"><div class="text" id="run"></div></div></div></div>
+<script>
+  const root=document.getElementById('root'), run=document.getElementById('run');
+  let items=[], x=0, last=0, raf=0;
+  function render(){ run.innerHTML=''; for(const t of items.concat(items)){ const s=document.createElement('span'); s.textContent=t; run.appendChild(s);} }
+  function loop(ts){ const dt=last?(ts-last)/1000:0; last=ts; x-=140*dt; const half=run.scrollWidth/2; if(half>0 && -x>=half) x+=half;
+    run.style.transform='translateX('+x+'px)'; raf=requestAnimationFrame(loop); }
+  function update(d){ if(typeof d==='string') d=JSON.parse(d);
+    if(d.f0!==undefined) document.getElementById('f0').textContent=d.f0;
+    if(d.f1!==undefined){ items=String(d.f1).split('|').map(s=>s.trim()).filter(Boolean); render(); }
+    if(d.accent) document.documentElement.style.setProperty('--accent',d.accent); }
+  function play(){ root.className=''; void root.offsetWidth; root.className='on'; cancelAnimationFrame(raf); last=0; raf=requestAnimationFrame(loop); }
+  function stop(){ root.className='off'; setTimeout(()=>cancelAnimationFrame(raf),500); }
+  function next(){}
+</script></body></html>

@@ -14,7 +14,12 @@ targets:
   DTDStudio:
     type: application
     platform: iOS
-    sources: [App/Sources, App/Resources]
+    sources:
+      - App/Sources
+      - App/Resources
+      - path: Graphics
+        type: folder
+        buildPhase: resources
     scheme:
       testTargets: [DTDStudioUITests]
     dependencies:
