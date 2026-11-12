@@ -47,6 +47,10 @@ final class StudioEngine: ObservableObject {
     // MARK: Multi-source layouts (PiP templates)
     private(set) lazy var layoutSource = LayoutSource()
     @Published var layoutTemplateID = 2
+    /// Size of the window in the one-window layouts (1 = full frame), centred on the background.
+    @Published var layoutSingleScale: Double = UserDefaults.standard.object(forKey: "dtd.layout.single") as? Double ?? 0.7 {
+        didSet { UserDefaults.standard.set(layoutSingleScale, forKey: "dtd.layout.single"); refreshLayout() }
+    }
     @Published var layoutSlots: [UUID?] = []
     @Published var layoutSelectedSlot = 0
     var controlPort: UInt16 { control.httpPort }
@@ -466,7 +470,15 @@ final class StudioEngine: ObservableObject {
             if let img = UIImage(contentsOfFile: url.path)?.normalized() { still = CIImage(image: img) }
         case .source(let id): live = sources.first { $0.id == id }?.frames
         }
-        layoutSource.configure(template: layoutTemplate, inputs: stores,
+        var tpl = layoutTemplate
+        if tpl.slots.count == 1 {
+            // one-window layout: shrink around the centre so the background shows around it
+            let k = CGFloat(min(max(layoutSingleScale, 0.2), 1))
+            var slot = tpl.slots[0]
+            slot.rect = CGRect(x: (1 - k) / 2, y: (1 - k) / 2, width: k, height: k)
+            tpl = LayoutTemplate(id: tpl.id, name: tpl.name, slots: [slot], background: tpl.background)
+        }
+        layoutSource.configure(template: tpl, inputs: stores,
                                size: CGSize(width: format.width, height: format.height), background: live,
                                still: still, color: color)
     }

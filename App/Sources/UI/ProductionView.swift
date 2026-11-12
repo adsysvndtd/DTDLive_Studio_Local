@@ -385,7 +385,7 @@ struct CategoryContent: View {
         LazyVGrid(columns: [GridItem(.adaptive(minimum: compact ? 150 : 220), spacing: compact ? 6 : 10)], spacing: compact ? 6 : 10) {
             ForEach(LayoutTemplate.all) { t in
                 Button { engine.chooseLayout(t.id) } label: {
-                    LayoutThumbnail(template: t, names: [])
+                    LayoutThumbnail(template: t, names: [], singleScale: engine.layoutSingleScale)
                         .aspectRatio(16 / 9, contentMode: .fit)
                         .accessibilityLabel(t.name)
                         .clipShape(Rectangle())
@@ -394,6 +394,10 @@ struct CategoryContent: View {
                 }
                 .buttonStyle(.plain)
             }
+        }
+        if engine.layoutTemplate.slots.count == 1 {
+            LabeledSlider(title: "Cỡ khung", value: $engine.layoutSingleScale, range: 0.2...1) { "\(Int($0 * 100))%" }
+                .frame(maxWidth: 420)
         }
         layoutBackgroundPicker
         if !engine.layoutSlots.isEmpty {
@@ -794,12 +798,20 @@ struct TransitionColumn: View {
 struct LayoutThumbnail: View {
     let template: LayoutTemplate
     let names: [String]
+    var singleScale: Double? = nil
+
+    private var slots: [LayoutTemplate.Slot] {
+        guard template.slots.count == 1, let k = singleScale.map({ CGFloat($0) }) else { return template.slots }
+        var s = template.slots[0]
+        s.rect = CGRect(x: (1 - k) / 2, y: (1 - k) / 2, width: k, height: k)
+        return [s]
+    }
 
     var body: some View {
         GeometryReader { g in
             ZStack(alignment: .topLeading) {
                 CheckerBackground()
-                ForEach(Array(template.slots.enumerated()), id: \.offset) { i, slot in
+                ForEach(Array(slots.enumerated()), id: \.offset) { i, slot in
                     let r = CGRect(x: slot.rect.minX * g.size.width, y: slot.rect.minY * g.size.height,
                                    width: slot.rect.width * g.size.width, height: slot.rect.height * g.size.height)
                     ZStack(alignment: .bottom) {

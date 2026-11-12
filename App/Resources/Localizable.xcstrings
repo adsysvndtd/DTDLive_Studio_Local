@@ -521,6 +521,16 @@
         }
       }
     },
+    "Cỡ khung": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Window size"
+          }
+        }
+      }
+    },
     "Dung lượng": {
       "localizations": {
         "en": {
