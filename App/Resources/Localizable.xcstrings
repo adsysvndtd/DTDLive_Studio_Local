@@ -1,6 +1,56 @@
 {
   "sourceLanguage": "vi",
   "strings": {
+    "(lưu vào Files › DTDStudio)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "(saved to Files › DTDStudio)"
+          }
+        }
+      }
+    },
+    "0.25×": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "0.25×"
+          }
+        }
+      }
+    },
+    "0.5×": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "0.5×"
+          }
+        }
+      }
+    },
+    "0.75×": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "0.75×"
+          }
+        }
+      }
+    },
+    "1×": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1×"
+          }
+        }
+      }
+    },
     "AFV": {
       "localizations": {
         "en": {
@@ -37,6 +87,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Adaptive bitrate"
+          }
+        }
+      }
+    },
+    "Bù phơi sáng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exposure compensation"
           }
         }
       }
@@ -137,6 +197,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Layout"
+          }
+        }
+      }
+    },
+    "Bộ đệm replay": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Replay buffer"
           }
         }
       }
@@ -391,6 +461,16 @@
         }
       }
     },
+    "Chữ chạy": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ticker"
+          }
+        }
+      }
+    },
     "Clip đã lưu": {
       "localizations": {
         "en": {
@@ -407,6 +487,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Settings"
+          }
+        }
+      }
+    },
+    "Cần iPadOS/iOS 17.4 trở lên cho đăng nhập Facebook": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Facebook sign-in needs iPadOS/iOS 17.4 or later"
           }
         }
       }
@@ -477,6 +567,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Use as PiP"
+          }
+        }
+      }
+    },
+    "Dưới phải": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bottom right"
+          }
+        }
+      }
+    },
+    "Dưới trái": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bottom left"
           }
         }
       }
@@ -931,6 +1041,16 @@
         }
       }
     },
+    "Lấy nét (gần → xa)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Focus (near → far)"
+          }
+        }
+      }
+    },
     "Lấy nét tự động": {
       "localizations": {
         "en": {
@@ -977,6 +1097,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Loop"
+          }
+        }
+      }
+    },
+    "Lớn giữa phải": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Large centre-right"
+          }
+        }
+      }
+    },
+    "Lớp phủ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Overlay"
           }
         }
       }
@@ -1231,6 +1371,16 @@
         }
       }
     },
+    "Nhạc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Music"
+          }
+        }
+      }
+    },
     "Nhạc nền": {
       "localizations": {
         "en": {
@@ -1381,6 +1531,16 @@
         }
       }
     },
+    "Nửa trái": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Left half"
+          }
+        }
+      }
+    },
     "PHÁT REPLAY": {
       "localizations": {
         "en": {
@@ -1437,6 +1597,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Start all"
+          }
+        }
+      }
+    },
+    "Phản hồi không hợp lệ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invalid response"
           }
         }
       }
@@ -1751,6 +1921,16 @@
         }
       }
     },
+    "Thời gian chuyển cảnh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transition duration"
+          }
+        }
+      }
+    },
     "Title": {
       "localizations": {
         "en": {
@@ -1781,6 +1961,16 @@
         }
       }
     },
+    "Toàn màn hình": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Full screen"
+          }
+        }
+      }
+    },
     "Trong suốt": {
       "localizations": {
         "en": {
@@ -1801,6 +1991,26 @@
         }
       }
     },
+    "Trên phải": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Top right"
+          }
+        }
+      }
+    },
+    "Trên trái": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Top left"
+          }
+        }
+      }
+    },
     "Trạng thái": {
       "localizations": {
         "en": {
@@ -1817,6 +2027,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Name"
+          }
+        }
+      }
+    },
+    "Tên + chức danh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Name + title"
           }
         }
       }
@@ -1877,6 +2097,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Files"
+          }
+        }
+      }
+    },
+    "Tỉ số": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Score"
           }
         }
       }
@@ -2151,6 +2381,16 @@
         }
       }
     },
+    "chọn nguồn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "select source"
+          }
+        }
+      }
+    },
     "lỗi cổng": {
       "localizations": {
         "en": {
@@ -2171,12 +2411,32 @@
         }
       }
     },
+    "Âm lượng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Volume"
+          }
+        }
+      }
+    },
     "Âm thanh": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Audio"
+          }
+        }
+      }
+    },
+    "Đang kết nối": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connecting"
           }
         }
       }
@@ -2247,6 +2507,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Remote control & pairing"
+          }
+        }
+      }
+    },
+    "Đã huỷ đăng nhập": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign-in cancelled"
           }
         }
       }

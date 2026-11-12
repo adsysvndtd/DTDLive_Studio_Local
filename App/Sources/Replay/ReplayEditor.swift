@@ -27,7 +27,7 @@ final class ReplayEditor: ObservableObject {
         case file(URL)
         var label: String {
             switch self {
-            case .buffer: return "Bộ đệm replay"
+            case .buffer: return L("Bộ đệm replay")
             case .file(let u): return u.deletingPathExtension().lastPathComponent
             }
         }

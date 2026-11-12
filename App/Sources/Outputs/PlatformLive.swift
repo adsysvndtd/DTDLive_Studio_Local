@@ -21,10 +21,10 @@ final class PlatformLive: NSObject, ObservableObject, ASWebAuthenticationPresent
                 return k == PlatformLive.googleKey
                     ? "Chưa nhập Google OAuth Client ID (iOS) — vào Cài đặt › Phát trực tiếp, hoặc dùng 'Thêm đích' với stream key YouTube"
                     : "Chưa nhập Facebook App ID — vào Cài đặt › Phát trực tiếp, hoặc dùng 'Thêm đích' với stream key Facebook"
-            case .cancelled: return "Đã huỷ đăng nhập"
+            case .cancelled: return L("Đã huỷ đăng nhập")
             case .http(let c, let m): return "HTTP \(c): \(m)"
-            case .badResponse: return "Phản hồi không hợp lệ"
-            case .unsupportedOS: return "Cần iPadOS/iOS 17.4 trở lên cho đăng nhập Facebook"
+            case .badResponse: return L("Phản hồi không hợp lệ")
+            case .unsupportedOS: return L("Cần iPadOS/iOS 17.4 trở lên cho đăng nhập Facebook")
             }
         }
     }

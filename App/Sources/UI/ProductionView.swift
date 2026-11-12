@@ -9,20 +9,20 @@ enum ProdCategory: String, CaseIterable, Identifiable {
     var id: String { rawValue }
     var label: String {
         switch self {
-        case .favorite: return "Yêu thích"
+        case .favorite: return L("Yêu thích")
         case .camera: return "Camera"
         case .pip: return "PiP"
         case .movie: return "Video"
-        case .picture: return "Ảnh"
-        case .transition: return "Chuyển cảnh"
+        case .picture: return L("Ảnh")
+        case .transition: return L("Chuyển cảnh")
         case .overlay: return "SuperFG"
         case .title: return "Title"
         case .logo: return "Logo"
-        case .audio: return "Âm thanh"
-        case .adjust: return "Màu & PTZ"
-        case .auto: return "Tự động"
+        case .audio: return L("Âm thanh")
+        case .adjust: return L("Màu & PTZ")
+        case .auto: return L("Tự động")
         case .replay: return "Replay"
-        case .settings: return "Cài đặt"
+        case .settings: return L("Cài đặt")
         }
     }
     var icon: String {
@@ -369,7 +369,7 @@ struct CategoryContent: View {
             Menu {
                 ForEach(live, id: \.id) { s in Button(s.name) { engine.layoutBackground = .source(s.id) } }
             } label: {
-                let cur: String = { if case .source(let id) = bg { return engine.sources.first { $0.id == id }?.name ?? "—" }; return "chọn nguồn" }()
+                let cur: String = { if case .source(let id) = bg { return engine.sources.first { $0.id == id }?.name ?? "—" }; return L("chọn nguồn") }()
                 Label("Nền là nguồn video (làm mờ): \(cur)", systemImage: "camera.filters").font(.caption.weight(.semibold))
             }
         }

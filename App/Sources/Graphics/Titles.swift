@@ -8,12 +8,12 @@ enum TitleStyle: String, Codable, CaseIterable, Identifiable {
     var label: String {
         switch self {
         case .lowerThird: return "Lower third"
-        case .nameStrap: return "Tên + chức danh"
-        case .fullScreen: return "Toàn màn hình"
-        case .ticker: return "Chữ chạy"
-        case .scoreBug: return "Tỉ số"
-        case .clock: return "Đồng hồ"
-        case .countdown: return "Đếm ngược"
+        case .nameStrap: return L("Tên + chức danh")
+        case .fullScreen: return L("Toàn màn hình")
+        case .ticker: return L("Chữ chạy")
+        case .scoreBug: return L("Tỉ số")
+        case .clock: return L("Đồng hồ")
+        case .countdown: return L("Đếm ngược")
         }
     }
 }

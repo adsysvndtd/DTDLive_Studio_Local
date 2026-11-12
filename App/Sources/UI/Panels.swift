@@ -8,10 +8,10 @@ enum PanelTab: String, CaseIterable, Identifiable {
     var label: String {
         switch self {
         case .titles: return "Title"
-        case .audio: return "Âm thanh"
-        case .source: return "Nguồn"
+        case .audio: return L("Âm thanh")
+        case .source: return L("Nguồn")
         case .scopes: return "Scopes"
-        case .auto: return "Tự động"
+        case .auto: return L("Tự động")
         case .replay: return "Replay"
         }
     }

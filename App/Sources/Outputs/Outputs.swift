@@ -22,7 +22,7 @@ enum OutputProtocol: String, Codable, CaseIterable, Identifiable {
         case .rtmp: return "rtmp://a.rtmp.youtube.com/live2/xxxx-xxxx"
         case .srt: return "srt://host:9000?mode=caller&streamid=publish:live/stream&latency=200000"
         case .rtsp: return "rtsp://user:pass@host:8554/live/stream"
-        case .record: return "(lưu vào Files › DTDStudio)"
+        case .record: return L("(lưu vào Files › DTDStudio)")
         }
     }
 }
@@ -31,8 +31,8 @@ enum OutputStatus: Equatable {
     case idle, connecting, live, reconnecting(Int), error(String)
     var text: String {
         switch self {
-        case .idle: return "Dừng"
-        case .connecting: return "Đang kết nối"
+        case .idle: return L("Dừng")
+        case .connecting: return L("Đang kết nối")
         case .live: return "LIVE"
         case .reconnecting(let n): return "Kết nối lại (\(n))"
         case .error(let e): return "Lỗi: \(e)"

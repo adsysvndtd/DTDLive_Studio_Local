@@ -17,12 +17,12 @@ enum TransitionStyle: String, CaseIterable, Identifiable, Codable {
         case .flash: return "FLASH"
         case .push: return "PUSH"
         case .zoom: return "ZOOM"
-        case .pageCurl: return "LẬT"
-        case .ripple: return "GỢN"
-        case .bars: return "SỌC"
-        case .copyMachine: return "QUÉT"
+        case .pageCurl: return L("LẬT")
+        case .ripple: return L("GỢN")
+        case .bars: return L("SỌC")
+        case .copyMachine: return L("QUÉT")
         case .mod: return "MOD"
-        case .fold: return "GẤP"
+        case .fold: return L("GẤP")
         }
     }
     var icon: String {

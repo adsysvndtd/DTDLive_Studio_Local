@@ -1,6 +1,9 @@
 import SwiftUI
 
 /// Design tokens + small reusable controls so every screen looks consistent.
+/// Localised lookup for display strings returned as plain String (enum labels, messages).
+@inline(__always) func L(_ key: String) -> String { NSLocalizedString(key, comment: "") }
+
 enum DS {
     /// One text size for every row and header in Cài đặt.
     static let settingsFont = Font.system(size: 15)

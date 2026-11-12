@@ -81,12 +81,12 @@ final class StudioEngine: ObservableObject {
         var id: String { rawValue }
         var label: String {
             switch self {
-            case .topLeft: return "Trên trái"
-            case .topRight: return "Trên phải"
-            case .bottomLeft: return "Dưới trái"
-            case .bottomRight: return "Dưới phải"
-            case .large: return "Lớn giữa phải"
-            case .sideLeft: return "Nửa trái"
+            case .topLeft: return L("Trên trái")
+            case .topRight: return L("Trên phải")
+            case .bottomLeft: return L("Dưới trái")
+            case .bottomRight: return L("Dưới phải")
+            case .large: return L("Lớn giữa phải")
+            case .sideLeft: return L("Nửa trái")
             }
         }
         var rect: CGRect {
