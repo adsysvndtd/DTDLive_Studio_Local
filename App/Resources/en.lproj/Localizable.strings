@@ -54,6 +54,7 @@
 "Chữ chạy" = "Ticker";
 "Clip đã lưu" = "Saved clips";
 "Copy link" = "Copy link";
+"Copy nhật ký" = "Copy log";
 "Cài đặt" = "Settings";
 "Công khai" = "Public";
 "Cần iPadOS/iOS 17.4 trở lên cho đăng nhập Facebook" = "Facebook sign-in needs iPadOS/iOS 17.4 or later";
@@ -210,6 +211,7 @@
 "Tech" = "Tech";
 "Thao tác" = "Gestures";
 "Thiết bị muốn kết nối" = "Device wants to connect";
+"Thu gọn" = "Collapse";
 "Thêm" = "Add";
 "Thêm %@" = "Add %@";
 "Thêm bảng tỉ số" = "Add scoreboard";
@@ -264,6 +266,7 @@
 "Vị trí & cỡ" = "Position & size";
 "Xanh dương" = "Blue";
 "Xanh lá" = "Green";
+"Xem nhật ký" = "Show log";
 "Xoay 180°" = "Rotate 180°";
 "Xong" = "Done";
 "Xoá" = "Delete";

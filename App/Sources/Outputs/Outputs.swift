@@ -49,6 +49,23 @@ struct OutputConfig: Identifiable, Codable, Equatable {
 }
 
 /// Context a destination needs to start: parameter sets for RTSP SDP / MP4 header.
+/// Per-destination diagnostic log (last 40 lines), shown under each output in Đầu ra.
+final class OutputLog: @unchecked Sendable {
+    static let shared = OutputLog()
+    private let lock = NSLock()
+    private var lines: [UUID: [String]] = [:]
+    private let df: DateFormatter = { let f = DateFormatter(); f.dateFormat = "HH:mm:ss"; return f }()
+    func add(_ id: UUID, _ text: String) {
+        lock.lock(); defer { lock.unlock() }
+        var l = lines[id] ?? []
+        l.append("\(df.string(from: Date()))  \(text)")
+        if l.count > 40 { l.removeFirst(l.count - 40) }
+        lines[id] = l
+    }
+    func get(_ id: UUID) -> [String] { lock.lock(); defer { lock.unlock() }; return lines[id] ?? [] }
+    func clear(_ id: UUID) { lock.lock(); lines[id] = nil; lock.unlock() }
+}
+
 /// Values the RTMP metadata needs from the engine (written on the main thread, read when connecting).
 enum StreamStats {
     static var bitrateKbps = 6000
@@ -87,17 +104,33 @@ final class RTMPOutput: OutputTarget, @unchecked Sendable {
     let config: OutputConfig
     private var connection: RTMPConnection?
     private var stream: RTMPStream?
+    private var watchers: [Task<Void, Never>] = []
+    private var sentVideo = 0, sentAudio = 0
 
     init(config: OutputConfig) { self.config = config }
+    private func log(_ t: String) { OutputLog.shared.add(config.id, t) }
 
     func connect(_ desc: StreamDescription) async throws {
         guard let url = URL(string: config.url) else { throw URLError(.badURL) }
         let (app, key) = RTMPURL.split(url)
+        let masked = key.count > 6 ? String(key.prefix(4)) + "…" + String(key.suffix(2)) : "…"
+        log("Kết nối \(app)  key \(masked)")
         let c = RTMPConnection()
         let s = RTMPStream(connection: c)
-        connection = c; stream = s
-        _ = try await c.connect(app)
-        _ = try await s.publish(key)
+        connection = c; stream = s; sentVideo = 0; sentAudio = 0
+        // server status messages (rejections, disconnect reasons) into the log
+        watchers = [
+            Task { [weak self] in for await st in await c.status { self?.log("Conn: \(st.code) \(st.description)") } },
+            Task { [weak self] in for await st in await s.status { self?.log("Stream: \(st.code) \(st.description)") } },
+        ]
+        do {
+            let r = try await c.connect(app)
+            log("connect → \(r.status?.code ?? "ok")")
+        } catch { log("connect lỗi: \(error)"); throw error }
+        do {
+            let r = try await s.publish(key)
+            log("publish → \(r.status?.code ?? "ok")")
+        } catch { log("publish lỗi: \(error)"); throw error }
         // HaishinKit builds onMetaData from its own capture/encoder; with pre-encoded passthrough it would
         // send an empty one, and strict ingests (Facebook) then never see a video track. Send a full one.
         let dims = CMVideoFormatDescriptionGetDimensions(desc.videoFormat)
@@ -117,17 +150,29 @@ final class RTMPOutput: OutputTarget, @unchecked Sendable {
             meta["stereo"] = desc.audioFormat.channelCount > 1
         }
         try? await s.send("@setDataFrame", arguments: "onMetaData", meta, isResetTimestamp: true)
+        let flags = desc.audioFormat.streamDescription.pointee.mFormatFlags
+        log("metadata \(dims.width)×\(dims.height) \(desc.isHEVC ? "HEVC" : "H.264") · AAC \(Int(desc.audioFormat.sampleRate)) Hz (type \(flags))")
     }
 
     func disconnect() async {
+        if stream != nil { log("Ngắt kết nối (video \(sentVideo), audio \(sentAudio) gói)") }
+        watchers.forEach { $0.cancel() }; watchers = []
         _ = try? await stream?.close()
         try? await connection?.close()
         stream = nil; connection = nil
     }
 
     func isHealthy() async -> Bool { await connection?.connected ?? false }
-    func send(video: CMSampleBuffer) async { await stream?.append(video) }
-    func send(audio: AVAudioCompressedBuffer, when: AVAudioTime) async { await stream?.append(audio, when: when) }
+    func send(video: CMSampleBuffer) async {
+        if sentVideo == 0 { log("Gửi khung hình đầu (keyframe: \(video.isKeyframe))") }
+        sentVideo += 1
+        await stream?.append(video)
+    }
+    func send(audio: AVAudioCompressedBuffer, when: AVAudioTime) async {
+        if sentAudio == 0 { log("Gửi gói âm thanh đầu (\(audio.byteLength) byte)") }
+        sentAudio += 1
+        await stream?.append(audio, when: when)
+    }
 }
 
 // MARK: - SRT (HaishinKit, MPEG-TS over SRT)

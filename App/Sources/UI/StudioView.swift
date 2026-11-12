@@ -522,6 +522,7 @@ struct OutputsSheet: View {
                                 if st == .live, let r = engine.outputRates[o.id] {
                                     Text(verbatim: r).font(.caption2.monospacedDigit()).foregroundStyle(.secondary)
                                 }
+                                if o.proto == .rtmp { OutputLogView(id: o.id) }
                             }
                             Spacer()
                             Toggle("", isOn: $o.enabled).labelsHidden()
@@ -750,5 +751,29 @@ struct StreamPreset: Identifiable, Equatable {
         var s = server.trimmingCharacters(in: .whitespacesAndNewlines)
         while s.hasSuffix("/") { s.removeLast() }
         return s + "/" + k
+    }
+}
+
+
+/// Last lines of a destination's diagnostic log; tap to see all and copy.
+struct OutputLogView: View {
+    let id: UUID
+    @State private var expanded = false
+    var body: some View {
+        TimelineView(.periodic(from: .now, by: 1)) { _ in
+            let lines = OutputLog.shared.get(id)
+            if !lines.isEmpty {
+                VStack(alignment: .leading, spacing: 1) {
+                    ForEach(Array((expanded ? lines : Array(lines.suffix(3))).enumerated()), id: \.offset) { _, l in
+                        Text(verbatim: l).font(.system(size: 10, design: .monospaced)).foregroundStyle(.secondary).lineLimit(expanded ? nil : 1)
+                    }
+                    HStack(spacing: 12) {
+                        Button(expanded ? "Thu gọn" : "Xem nhật ký") { expanded.toggle() }
+                        Button("Copy nhật ký") { UIPasteboard.general.string = lines.joined(separator: "\n") }
+                    }
+                    .font(.caption2).buttonStyle(.borderless)
+                }
+            }
+        }
     }
 }

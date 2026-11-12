@@ -561,6 +561,16 @@
         }
       }
     },
+    "Copy nhật ký": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copy log"
+          }
+        }
+      }
+    },
     "Cài đặt": {
       "localizations": {
         "en": {
@@ -2121,6 +2131,16 @@
         }
       }
     },
+    "Thu gọn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Collapse"
+          }
+        }
+      }
+    },
     "Thêm": {
       "localizations": {
         "en": {
@@ -2657,6 +2677,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Green"
+          }
+        }
+      }
+    },
+    "Xem nhật ký": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show log"
           }
         }
       }
