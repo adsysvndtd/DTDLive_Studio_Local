@@ -1,0 +1,22 @@
+name: Runner probe
+
+# Kiểm tra tài khoản có được cấp máy chạy GitHub hay không (mỗi job chỉ vài giây).
+# Nếu cả ubuntu cũng "not acquired" thì Actions của tài khoản đang bị chặn, không phải lỗi code.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  probe:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-14, macos-15]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 5
+    steps:
+      - run: |
+          echo "Runner OK: ${{ matrix.os }}"
+          uname -a
+          if [ "$RUNNER_OS" = "macOS" ]; then ls -d /Applications/Xcode_*.app | tail -3; fi
