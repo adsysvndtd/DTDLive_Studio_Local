@@ -370,14 +370,20 @@ struct ToolButtonLabel: View {
     }
 }
 
-/// Vertical T-bar: drag down to transition; snaps back to the top when released.
+/// Vertical T-bar that behaves like a hardware lever: the handle stays where the operator leaves it
+/// and the transition stays at that point (no auto-complete, no spring back). Pushing all the way to the
+/// far end completes the take; that end becomes the new rest position, so the next take is the opposite
+/// stroke. Moving back toward the rest end reverses the mix; reaching it cancels.
+/// `onChange` receives the stroke progress 0…1 measured from the rest end.
 struct TBar: View {
-    @Binding var value: Double
+    @Binding var value: Double           // handle position, 0 = top, 1 = bottom
     var onChange: (Double) -> Void
+    @State private var rest: Double = 0  // end the current stroke starts from (0 or 1)
+    @State private var grab: Double?     // finger offset from the handle when the drag began
 
     var body: some View {
         GeometryReader { g in
-            let h = g.size.height
+            let h = g.size.height, travel = max(h - 16, 1)
             ZStack(alignment: .top) {
                 Rectangle()
                     .fill(LinearGradient(colors: [Color(white: 0.55), Color(white: 0.85), Color(white: 0.5)], startPoint: .leading, endPoint: .trailing))
@@ -388,20 +394,25 @@ struct TBar: View {
                     .frame(height: 16)
                     .overlay(Rectangle().fill(Color.black.opacity(0.7)).frame(width: 3))
                     .shadow(color: .black.opacity(0.5), radius: 3, y: 2)
-                    .offset(y: (h - 16) * value)
+                    .offset(y: travel * value)
             }
             .contentShape(Rectangle())
             .gesture(DragGesture(minimumDistance: 0)
-                .onChanged { g in
-                    value = min(1, max(0, g.location.y / h))
-                    onChange(value)
+                .onChanged { d in
+                    // relative drag: touching the bar never makes the handle jump to the finger
+                    if grab == nil { grab = d.startLocation.y / travel - value }
+                    let v = min(1, max(0, d.location.y / travel - (grab ?? 0)))
+                    value = v
+                    let p = abs(v - rest)
+                    if p >= 0.999 {
+                        onChange(1)                    // take completes at the far end
+                        rest = v > 0.5 ? 1 : 0         // …which is the new rest position
+                    } else {
+                        onChange(p)                    // held / reversible mix
+                    }
                 }
-                .onEnded { _ in
-                    onChange(value >= 0.95 ? 1 : 0)
-                    withAnimation(.easeOut(duration: 0.15)) { value = 0 }
-                })
+                .onEnded { _ in grab = nil })          // stays where it was left
         }
-
     }
 }
 
