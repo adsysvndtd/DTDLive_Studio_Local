@@ -102,13 +102,15 @@ struct CategoryContent: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            header
-            Divider().overlay(DS.stroke)
             if category == .settings {
                 SettingsForm(engine: engine, onOpenOutputs: { showOutputs = true })
             } else {
                 ScrollView {
-                    content.padding(compact ? 8 : 12)
+                    VStack(alignment: .leading, spacing: compact ? 8 : 12) {
+                        if hasToolbar { header }
+                        content
+                    }
+                    .padding(compact ? 8 : 12)
                 }
             }
         }
@@ -156,10 +158,17 @@ struct CategoryContent: View {
         }
     }
 
+    private var hasToolbar: Bool {
+        switch category {
+        case .camera, .favorite, .movie, .picture, .overlay, .logo, .audio, .title: return true
+        default: return false
+        }
+    }
+
+    /// Panel actions, pinned to the top-right corner of the panel (no category title).
     private var header: some View {
-        HStack(spacing: 10) {
-            Text(LocalizedStringKey(category.label)).font(compact ? .subheadline.weight(.bold) : .headline)
-            Spacer()
+        HStack(spacing: 8) {
+            Spacer(minLength: 0)
             switch category {
             case .camera, .favorite:
                 if category == .camera, let pv = engine.previewID {
@@ -183,14 +192,21 @@ struct CategoryContent: View {
                     ForEach(TitleStyle.allCases) { s in
                         Button(s.label) { engine.upsertTitle(TitleItem(style: s, line1: s == .clock ? "" : s.label)) }
                     }
-                } label: { Label("Thêm title", systemImage: "plus").font(.caption.weight(.semibold)) }
-                .buttonStyle(.bordered)
+                } label: { toolbarLabel("Thêm title", "plus") }
+                headerButton("Ẩn tất cả", "eye.slash") { engine.setTitleVisible(nil, false) }
             default:
                 EmptyView()
             }
         }
-        .padding(.horizontal, compact ? 10 : 14).frame(height: compact ? 38 : 48)
-        .background(DS.surface)
+    }
+
+    private func toolbarLabel(_ title: String, _ icon: String) -> some View {
+        Label(LocalizedStringKey(title), systemImage: icon)
+            .font(.system(size: compact ? 12 : 14, weight: .semibold)).lineLimit(1)
+            .padding(.horizontal, compact ? 8 : 12).frame(height: compact ? 28 : 34)
+            .foregroundStyle(.white)
+            .background(DS.surface2, in: Rectangle())
+            .overlay(Rectangle().stroke(DS.stroke))
     }
 
     private func iconButton(_ icon: String, _ label: String, action: @escaping () -> Void) -> some View {
@@ -204,14 +220,7 @@ struct CategoryContent: View {
         Menu {
             Button { photoKind = k } label: { Label("Thư viện ảnh", systemImage: "photo.on.rectangle") }
             Button { importing = k } label: { Label("Tệp", systemImage: "folder") }
-        } label: {
-            Label("Nhập ảnh", systemImage: "square.and.arrow.down")
-                .font(.system(size: compact ? 12 : 14, weight: .semibold)).lineLimit(1)
-                .padding(.horizontal, compact ? 8 : 12).frame(height: compact ? 28 : 34)
-                .foregroundStyle(.white)
-                .background(DS.surface2, in: Rectangle())
-                .overlay(Rectangle().stroke(DS.stroke))
-        }
+        } label: { toolbarLabel("Nhập ảnh", "square.and.arrow.down") }
         .id(k)
     }
 

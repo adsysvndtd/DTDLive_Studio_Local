@@ -79,14 +79,6 @@ struct TitlesPanel: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            HStack {
-                Text("Title").textCase(.uppercase).font(.caption2.weight(.bold)).foregroundStyle(DS.text3).tracking(0.6)
-                Spacer()
-                Button { engine.setTitleVisible(nil, false) } label: {
-                    Text("Ẩn tất cả").font(.caption2.weight(.semibold)).padding(.horizontal, 8).frame(height: 24)
-                        .foregroundStyle(DS.text2).background(DS.surface2, in: Rectangle())
-                }.buttonStyle(.plain)
-            }
             ForEach(engine.titles.enumerated().filter { $0.offset != engine.scoreboardIndex }.map(\.element)) { item in
                 titleRow(item)
             }
