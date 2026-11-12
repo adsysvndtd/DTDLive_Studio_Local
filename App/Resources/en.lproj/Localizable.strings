@@ -56,6 +56,7 @@
 "Cổ điển" = "Classic";
 "Cỡ chữ" = "Text size";
 "Cỡ khung" = "Window size";
+"Cỡ logo" = "Logo size";
 "Dung lượng" = "Size";
 "Dòng 1" = "Line 1";
 "Dòng 2" = "Line 2";
@@ -307,6 +308,7 @@
 "Đổi độ phân giải/fps khi đang phát: các đích tự kết nối lại với thông số mới." = "Changing resolution/fps while live reconnects every destination with the new settings.";
 "Độ dày" = "Thickness";
 "Độ phân giải" = "Resolution";
+"Độ trong" = "Opacity";
 "Ảnh" = "Pictures";
 "Ảnh PNG" = "PNG image";
 "Ảnh nền từ Thư viện" = "Background from Photos";

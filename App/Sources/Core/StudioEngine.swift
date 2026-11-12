@@ -67,6 +67,14 @@ final class StudioEngine: ObservableObject {
     /// PiP T-bar: 0 = hidden, 1 = fully shown.
     @Published var pipFade: Double = 1 { didSet { pip?.opacity = CGFloat(pipFade); pip?.visible = pipFade > 0.01 } }
     @Published var logoCorner: Corner = .topRight { didSet { if let l = logo { logo?.rect = logoCorner.rect(size: l.rect.size) } } }
+    /// Logo height as a fraction of the frame (width follows the image aspect).
+    @Published var logoSize: Double = UserDefaults.standard.object(forKey: "dtd.logo.size") as? Double ?? 0.12 {
+        didSet { UserDefaults.standard.set(logoSize, forKey: "dtd.logo.size"); resizeLogo() }
+    }
+    @Published var logoOpacity: Double = UserDefaults.standard.object(forKey: "dtd.logo.opacity") as? Double ?? 1 {
+        didSet { UserDefaults.standard.set(logoOpacity, forKey: "dtd.logo.opacity"); logo?.opacity = CGFloat(logoOpacity) }
+    }
+    private var logoAspect: CGFloat = 1
     @Published var logoOn = false { didSet { logo?.visible = logoOn } }
     @Published var foregroundOn = false { didSet { foreground?.visible = foregroundOn } }
     @Published var armedTitleID: UUID?
@@ -354,14 +362,33 @@ final class StudioEngine: ObservableObject {
             message = L("Không đọc được logo") + " \(url.lastPathComponent)"; return
         }
         checkpoint()
-        // height 12% of the frame, width from the image aspect (max 30%)
-        let aspect = px.width / max(px.height, 1)
-        let h: CGFloat = 0.12, w = min(0.3, h * aspect * CGFloat(format.height) / CGFloat(max(format.width, 1)))
-        var l = OverlayLayer(image: ci, rect: logoCorner.rect(size: CGSize(width: w, height: h)))
+        logoAspect = px.width / max(px.height, 1)
+        var l = OverlayLayer(image: ci, rect: logoCorner.rect(size: logoFrameSize()))
         l.visible = logoOn                      // armed; goes on air with the Logo key (live swap if already on)
+        l.opacity = CGFloat(logoOpacity)
         logo = l; currentLogoURL = url
         UserDefaults.standard.set(url.lastPathComponent, forKey: "dtd.logo.file")
         message = logoOn ? L("Đã đổi logo trên PGM") : L("Đã nạp logo — bấm Logo ở cột phải để lên PGM")
+    }
+
+    /// Normalised logo box for the current size setting (width from the image aspect, ≤ 60 %).
+    private func logoFrameSize() -> CGSize {
+        let k = logoAspect * CGFloat(format.height) / CGFloat(max(format.width, 1))   // width per unit height
+        var h = CGFloat(min(max(logoSize, 0.03), 0.6)), w = h * k
+        if w > 0.6 { w = 0.6; h = w / max(k, 0.01) }
+        return CGSize(width: w, height: h)
+    }
+
+
+    /// Applies the size slider, keeping the logo pinned to the corner it sits nearest to
+    /// (so a logo dragged with "Sắp xếp" stays where it was put).
+    private func resizeLogo() {
+        guard let cur = logo?.rect else { return }
+        let sz = logoFrameSize()
+        let right = cur.midX > 0.5, bottom = cur.midY > 0.5
+        let x = right ? cur.maxX - sz.width : cur.minX
+        let y = bottom ? cur.maxY - sz.height : cur.minY
+        logo?.rect = CGRect(x: min(max(x, 0), 1 - sz.width), y: min(max(y, 0), 1 - sz.height), width: sz.width, height: sz.height)
     }
 
     /// Reads a still (PNG/JPEG/HEIC) with its EXIF orientation applied and alpha kept,
@@ -382,12 +409,13 @@ final class StudioEngine: ObservableObject {
         guard logo == nil, let name = UserDefaults.standard.string(forKey: "dtd.logo.file") else { return }
         let url = MediaLibrary.directory(.logo).appendingPathComponent(name)
         guard FileManager.default.fileExists(atPath: url.path), let (ci, px) = Self.loadOverlayImage(url) else { return }
-        let aspect = px.width / max(px.height, 1)
-        let h: CGFloat = 0.12, w = min(0.3, h * aspect * CGFloat(format.height) / CGFloat(max(format.width, 1)))
-        var l = OverlayLayer(image: ci, rect: logoCorner.rect(size: CGSize(width: w, height: h)))
+        logoAspect = px.width / max(px.height, 1)
+        var l = OverlayLayer(image: ci, rect: logoCorner.rect(size: logoFrameSize()))
         l.visible = false
+        l.opacity = CGFloat(logoOpacity)
         logo = l; currentLogoURL = url
     }
+
 
     /// SuperFG from the library: PNG with alpha, or a video with alpha (HEVC .mov) that loops.
     func useForeground(_ url: URL) {

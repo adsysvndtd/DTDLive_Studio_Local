@@ -307,6 +307,12 @@ struct CategoryContent: View {
                 Picker("Vị trí", selection: $engine.logoCorner) { ForEach(StudioEngine.Corner.allCases) { Text($0.label).tag($0) } }
                     .pickerStyle(.segmented).frame(maxWidth: 380)
             }
+            HStack(spacing: 16) {
+                LabeledSlider(title: "Cỡ logo", value: $engine.logoSize, range: 0.03...0.4) { "\(Int($0 * 100))%" }
+                LabeledSlider(title: "Độ trong", value: $engine.logoOpacity, range: 0.1...1) { "\(Int($0 * 100))%" }
+            }
+            .frame(maxWidth: 560)
+            .disabled(engine.logo == nil)
             libraryGrid(.logo, selected: engine.currentLogoURL) { engine.useLogo($0) }
         case .audio:
             AudioMixerView(engine: engine, library: library, compact: compact)

@@ -581,6 +581,16 @@
         }
       }
     },
+    "Cỡ logo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logo size"
+          }
+        }
+      }
+    },
     "Dung lượng": {
       "localizations": {
         "en": {
@@ -3087,6 +3097,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Resolution"
+          }
+        }
+      }
+    },
+    "Độ trong": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Opacity"
           }
         }
       }
