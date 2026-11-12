@@ -271,6 +271,16 @@
         }
       }
     },
+    "Chuyển sang 1080×1920": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Switch to 1080×1920"
+          }
+        }
+      }
+    },
     "Chưa có camera mạng": {
       "localizations": {
         "en": {
@@ -661,6 +671,16 @@
         }
       }
     },
+    "Facebook › Video trực tiếp › Phần mềm phát trực tiếp › Khoá luồng.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Facebook › Live video › Streaming software › Stream key."
+          }
+        }
+      }
+    },
     "Ghép nối camera": {
       "localizations": {
         "en": {
@@ -851,6 +871,16 @@
         }
       }
     },
+    "Huỷ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel"
+          }
+        }
+      }
+    },
     "Hình học": {
       "localizations": {
         "en": {
@@ -977,6 +1007,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Could not read logo"
+          }
+        }
+      }
+    },
+    "Kick › Dashboard › Settings › Stream key: dán Stream URL (rtmps://…) và Stream key.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kick › Dashboard › Settings › Stream key: paste Stream URL (rtmps://…) and Stream key."
           }
         }
       }
@@ -1621,6 +1661,16 @@
         }
       }
     },
+    "Nền tảng này hiển thị dọc 9:16": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This platform shows vertical 9:16"
+          }
+        }
+      }
+    },
     "Nội dung chữ chạy": {
       "localizations": {
         "en": {
@@ -1821,6 +1871,16 @@
         }
       }
     },
+    "Server URL (rtmp:// hoặc rtmps://)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Server URL (rtmp:// or rtmps://)"
+          }
+        }
+      }
+    },
     "Show đã lưu (Files › DTD Studio › Shows)": {
       "localizations": {
         "en": {
@@ -1937,6 +1997,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Add"
+          }
+        }
+      }
+    },
+    "Thêm %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add %@"
           }
         }
       }
@@ -2061,6 +2131,16 @@
         }
       }
     },
+    "TikTok LIVE Center / LIVE Studio › Khoá luồng: dán Server URL và Stream key (mỗi phiên một server; tài khoản cần được TikTok cấp quyền phát bằng khoá).": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "TikTok LIVE Center / LIVE Studio › Stream key: paste Server URL and Stream key (a new server each session; the account needs TikTok's stream-key permission)."
+          }
+        }
+      }
+    },
     "Title": {
       "localizations": {
         "en": {
@@ -2147,6 +2227,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Status"
+          }
+        }
+      }
+    },
+    "Twitch › Creator Dashboard › Settings › Stream › Primary Stream key.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Twitch › Creator Dashboard › Settings › Stream › Primary Stream key."
           }
         }
       }
@@ -2531,6 +2621,16 @@
         }
       }
     },
+    "YouTube Studio › Phát trực tiếp › Khoá luồng.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube Studio › Go live › Stream key."
+          }
+        }
+      }
+    },
     "Yêu thích": {
       "localizations": {
         "en": {
@@ -2547,6 +2647,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "select source"
+          }
+        }
+      }
+    },
+    "instagram.com (trình duyệt máy tính) › Tạo › Video trực tiếp › copy URL luồng + Khoá luồng (mỗi phiên khác nhau, dùng rtmps).": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "instagram.com (desktop browser) › Create › Live video › copy Stream URL + Stream key (new each session, rtmps)."
           }
         }
       }

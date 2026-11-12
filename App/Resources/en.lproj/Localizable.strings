@@ -25,6 +25,7 @@
 "Camera trong máy & USB" = "Built-in & USB cameras";
 "Cho phép DTDLive tìm và ghép nối" = "Let DTDLive find and pair";
 "Chuyển cảnh" = "Transitions";
+"Chuyển sang 1080×1920" = "Switch to 1080×1920";
 "Chưa có camera mạng" = "No network cameras yet";
 "Chưa có camera — bấm Thêm nguồn" = "No cameras — tap Add source";
 "Chưa có kênh nào" = "No channels yet";
@@ -64,6 +65,7 @@
 "Dọc" = "Vertical";
 "Dừng" = "Stop";
 "Dừng tất cả" = "Stop all";
+"Facebook › Video trực tiếp › Phần mềm phát trực tiếp › Khoá luồng." = "Facebook › Live video › Streaming software › Stream key.";
 "Ghép nối camera" = "Camera pairing";
 "Ghép nối qua Wi-Fi" = "Wi-Fi pairing";
 "Giao thức" = "Protocol";
@@ -83,6 +85,7 @@
 "Hiệu ứng" = "Effects";
 "Hiệu ứng âm thanh" = "Sound effects";
 "Hoà trộn" = "Dissolve";
+"Huỷ" = "Cancel";
 "Hình học" = "Geometry";
 "ID xác nhận" = "Confirmation ID";
 "Khoá cân bằng trắng" = "Lock white balance";
@@ -96,6 +99,7 @@
 "Không có tín hiệu" = "No signal";
 "Không muốn đăng ký app: dùng Đầu ra › Thêm đích › YouTube/Facebook (stream key)." = "No app registration: use Outputs › Add destination › YouTube/Facebook (stream key).";
 "Không đọc được logo" = "Could not read logo";
+"Kick › Dashboard › Settings › Stream key: dán Stream URL (rtmps://…) và Stream key." = "Kick › Dashboard › Settings › Stream key: paste Stream URL (rtmps://…) and Stream key.";
 "Kiểu" = "Style";
 "Kéo cho tiếng khớp với hình khi camera mạng bị trễ." = "Delays the sound to match late network-camera video.";
 "Kéo để di chuyển · kéo góc để đổi cỡ" = "Drag to move · drag a corner to resize";
@@ -160,6 +164,7 @@
 "Nền" = "Background";
 "Nền bố cục" = "Layout background";
 "Nền thay thế" = "Replacement background";
+"Nền tảng này hiển thị dọc 9:16" = "This platform shows vertical 9:16";
 "Nội dung chữ chạy" = "Ticker text";
 "Nửa trái" = "Left half";
 "PHÁT REPLAY" = "PLAY REPLAY";
@@ -180,6 +185,7 @@
 "RTSP (ANNOUNCE/RECORD, nhiều đường dẫn)" = "RTSP (ANNOUNCE/RECORD, many paths)";
 "Replay" = "Replay";
 "SRT (một cổng, nhiều streamid)" = "SRT (one port, many streamids)";
+"Server URL (rtmp:// hoặc rtmps://)" = "Server URL (rtmp:// or rtmps://)";
 "Show đã lưu (Files › DTD Studio › Shows)" = "Saved shows (Files › DTD Studio › Shows)";
 "SuperFG của bạn (PNG trong suốt · video có kênh alpha .mov)" = "Your SuperFG (transparent PNG · alpha video .mov)";
 "Sắp xếp" = "Arrange";
@@ -192,6 +198,7 @@
 "Thao tác" = "Gestures";
 "Thiết bị muốn kết nối" = "Device wants to connect";
 "Thêm" = "Add";
+"Thêm %@" = "Add %@";
 "Thêm bảng tỉ số" = "Add scoreboard";
 "Thêm khung" = "Add window";
 "Thêm nguồn" = "Add source";
@@ -204,6 +211,7 @@
 "Thư viện ảnh" = "Photos";
 "Thời gian" = "Duration";
 "Thời gian chuyển cảnh" = "Transition duration";
+"TikTok LIVE Center / LIVE Studio › Khoá luồng: dán Server URL và Stream key (mỗi phiên một server; tài khoản cần được TikTok cấp quyền phát bằng khoá)." = "TikTok LIVE Center / LIVE Studio › Stream key: paste Server URL and Stream key (a new server each session; the account needs TikTok's stream-key permission).";
 "Title" = "Title";
 "Tiêu đề buổi live" = "Live title";
 "Token (chỉ cần cho repo private)" = "Token (private repos only)";
@@ -213,6 +221,7 @@
 "Trên phải" = "Top right";
 "Trên trái" = "Top left";
 "Trạng thái" = "Status";
+"Twitch › Creator Dashboard › Settings › Stream › Primary Stream key." = "Twitch › Creator Dashboard › Settings › Stream › Primary Stream key.";
 "Tài khoản phát trực tiếp" = "Streaming accounts";
 "Tên" = "Name";
 "Tên + chức danh" = "Name + title";
@@ -251,8 +260,10 @@
 "Xoá nét" = "Clear drawing";
 "Xoá title" = "Delete title";
 "Xuất MP4 vào thư viện" = "Export MP4 to library";
+"YouTube Studio › Phát trực tiếp › Khoá luồng." = "YouTube Studio › Go live › Stream key.";
 "Yêu thích" = "Favorites";
 "chọn nguồn" = "select source";
+"instagram.com (trình duyệt máy tính) › Tạo › Video trực tiếp › copy URL luồng + Khoá luồng (mỗi phiên khác nhau, dùng rtmps)." = "instagram.com (desktop browser) › Create › Live video › copy Stream URL + Stream key (new each session, rtmps).";
 "lỗi cổng" = "port error";
 "Áp dụng (khởi động lại máy chủ nhận)" = "Apply (restarts the ingest servers)";
 "Âm lượng" = "Volume";

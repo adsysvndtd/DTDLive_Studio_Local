@@ -25,6 +25,7 @@
 "Camera trong máy & USB" = "Camera trong máy & USB";
 "Cho phép DTDLive tìm và ghép nối" = "Cho phép DTDLive tìm và ghép nối";
 "Chuyển cảnh" = "Chuyển cảnh";
+"Chuyển sang 1080×1920" = "Chuyển sang 1080×1920";
 "Chưa có camera mạng" = "Chưa có camera mạng";
 "Chưa có camera — bấm Thêm nguồn" = "Chưa có camera — bấm Thêm nguồn";
 "Chưa có kênh nào" = "Chưa có kênh nào";
@@ -64,6 +65,7 @@
 "Dọc" = "Dọc";
 "Dừng" = "Dừng";
 "Dừng tất cả" = "Dừng tất cả";
+"Facebook › Video trực tiếp › Phần mềm phát trực tiếp › Khoá luồng." = "Facebook › Video trực tiếp › Phần mềm phát trực tiếp › Khoá luồng.";
 "Ghép nối camera" = "Ghép nối camera";
 "Ghép nối qua Wi-Fi" = "Ghép nối qua Wi-Fi";
 "Giao thức" = "Giao thức";
@@ -83,6 +85,7 @@
 "Hiệu ứng" = "Hiệu ứng";
 "Hiệu ứng âm thanh" = "Hiệu ứng âm thanh";
 "Hoà trộn" = "Hoà trộn";
+"Huỷ" = "Huỷ";
 "Hình học" = "Hình học";
 "ID xác nhận" = "ID xác nhận";
 "Khoá cân bằng trắng" = "Khoá cân bằng trắng";
@@ -96,6 +99,7 @@
 "Không có tín hiệu" = "Không có tín hiệu";
 "Không muốn đăng ký app: dùng Đầu ra › Thêm đích › YouTube/Facebook (stream key)." = "Không muốn đăng ký app: dùng Đầu ra › Thêm đích › YouTube/Facebook (stream key).";
 "Không đọc được logo" = "Không đọc được logo";
+"Kick › Dashboard › Settings › Stream key: dán Stream URL (rtmps://…) và Stream key." = "Kick › Dashboard › Settings › Stream key: dán Stream URL (rtmps://…) và Stream key.";
 "Kiểu" = "Kiểu";
 "Kéo cho tiếng khớp với hình khi camera mạng bị trễ." = "Kéo cho tiếng khớp với hình khi camera mạng bị trễ.";
 "Kéo để di chuyển · kéo góc để đổi cỡ" = "Kéo để di chuyển · kéo góc để đổi cỡ";
@@ -160,6 +164,7 @@
 "Nền" = "Nền";
 "Nền bố cục" = "Nền bố cục";
 "Nền thay thế" = "Nền thay thế";
+"Nền tảng này hiển thị dọc 9:16" = "Nền tảng này hiển thị dọc 9:16";
 "Nội dung chữ chạy" = "Nội dung chữ chạy";
 "Nửa trái" = "Nửa trái";
 "PHÁT REPLAY" = "PHÁT REPLAY";
@@ -180,6 +185,7 @@
 "RTSP (ANNOUNCE/RECORD, nhiều đường dẫn)" = "RTSP (ANNOUNCE/RECORD, nhiều đường dẫn)";
 "Replay" = "Replay";
 "SRT (một cổng, nhiều streamid)" = "SRT (một cổng, nhiều streamid)";
+"Server URL (rtmp:// hoặc rtmps://)" = "Server URL (rtmp:// hoặc rtmps://)";
 "Show đã lưu (Files › DTD Studio › Shows)" = "Show đã lưu (Files › DTD Studio › Shows)";
 "SuperFG của bạn (PNG trong suốt · video có kênh alpha .mov)" = "SuperFG của bạn (PNG trong suốt · video có kênh alpha .mov)";
 "Sắp xếp" = "Sắp xếp";
@@ -192,6 +198,7 @@
 "Thao tác" = "Thao tác";
 "Thiết bị muốn kết nối" = "Thiết bị muốn kết nối";
 "Thêm" = "Thêm";
+"Thêm %@" = "Thêm %@";
 "Thêm bảng tỉ số" = "Thêm bảng tỉ số";
 "Thêm khung" = "Thêm khung";
 "Thêm nguồn" = "Thêm nguồn";
@@ -204,6 +211,7 @@
 "Thư viện ảnh" = "Thư viện ảnh";
 "Thời gian" = "Thời gian";
 "Thời gian chuyển cảnh" = "Thời gian chuyển cảnh";
+"TikTok LIVE Center / LIVE Studio › Khoá luồng: dán Server URL và Stream key (mỗi phiên một server; tài khoản cần được TikTok cấp quyền phát bằng khoá)." = "TikTok LIVE Center / LIVE Studio › Khoá luồng: dán Server URL và Stream key (mỗi phiên một server; tài khoản cần được TikTok cấp quyền phát bằng khoá).";
 "Title" = "Title";
 "Tiêu đề buổi live" = "Tiêu đề buổi live";
 "Token (chỉ cần cho repo private)" = "Token (chỉ cần cho repo private)";
@@ -213,6 +221,7 @@
 "Trên phải" = "Trên phải";
 "Trên trái" = "Trên trái";
 "Trạng thái" = "Trạng thái";
+"Twitch › Creator Dashboard › Settings › Stream › Primary Stream key." = "Twitch › Creator Dashboard › Settings › Stream › Primary Stream key.";
 "Tài khoản phát trực tiếp" = "Tài khoản phát trực tiếp";
 "Tên" = "Tên";
 "Tên + chức danh" = "Tên + chức danh";
@@ -251,8 +260,10 @@
 "Xoá nét" = "Xoá nét";
 "Xoá title" = "Xoá title";
 "Xuất MP4 vào thư viện" = "Xuất MP4 vào thư viện";
+"YouTube Studio › Phát trực tiếp › Khoá luồng." = "YouTube Studio › Phát trực tiếp › Khoá luồng.";
 "Yêu thích" = "Yêu thích";
 "chọn nguồn" = "chọn nguồn";
+"instagram.com (trình duyệt máy tính) › Tạo › Video trực tiếp › copy URL luồng + Khoá luồng (mỗi phiên khác nhau, dùng rtmps)." = "instagram.com (trình duyệt máy tính) › Tạo › Video trực tiếp › copy URL luồng + Khoá luồng (mỗi phiên khác nhau, dùng rtmps).";
 "lỗi cổng" = "lỗi cổng";
 "Áp dụng (khởi động lại máy chủ nhận)" = "Áp dụng (khởi động lại máy chủ nhận)";
 "Âm lượng" = "Âm lượng";

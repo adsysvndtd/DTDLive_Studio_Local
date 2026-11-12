@@ -499,6 +499,8 @@ struct OutputsSheet: View {
     @ObservedObject var engine: StudioEngine
     @Environment(\.dismiss) private var dismiss
     @State private var draft = OutputConfig(name: "", proto: .rtmp, url: "")
+    @State private var draftKey = ""
+    @State private var preset: StreamPreset?
     @ObservedObject private var platform = PlatformLive.shared
     @State private var liveTitle = "DTD Studio Live"
     @State private var platformBusy = false
@@ -541,29 +543,62 @@ struct OutputsSheet: View {
                     if let platformMessage { Text(platformMessage).font(.caption).textSelection(.enabled) }
                 }
                 Section("Thêm đích") {
-                    // Stream-key presets: no app registration needed (copy the key from YouTube Studio / Facebook Live Producer)
-                    HStack {
-                        Button("YouTube (stream key)") {
-                            draft = OutputConfig(name: "YouTube", proto: .rtmp, url: "rtmp://a.rtmp.youtube.com/live2/")
-                        }
-                        Button("Facebook (stream key)") {
-                            draft = OutputConfig(name: "Facebook", proto: .rtmp, url: "rtmps://live-api-s.facebook.com:443/rtmp/")
+                    // Platform presets: paste Server URL + Stream key from the platform's live page
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 6) {
+                            ForEach(StreamPreset.all) { p in
+                                Button {
+                                    preset = p; draftKey = ""
+                                    draft = OutputConfig(name: p.name, proto: .rtmp, url: p.server)
+                                } label: {
+                                    Label(p.name, systemImage: p.icon)
+                                }
+                                .buttonStyle(.bordered).tint(preset?.id == p.id ? .orange : nil)
+                            }
                         }
                     }
-                    .buttonStyle(.bordered)
-                    Picker("Giao thức", selection: $draft.proto) {
-                        ForEach(OutputProtocol.allCases) { Text($0.label).tag($0) }
-                    }
-                    TextField("Tên", text: $draft.name)
-                    if draft.proto != .record {
-                        TextField(draft.proto.placeholder, text: $draft.url)
+                    if let p = preset {
+                        Text(LocalizedStringKey(p.hint)).font(.caption).foregroundStyle(.secondary)
+                        if p.vertical && !engine.format.isVertical {
+                            HStack {
+                                Text("Nền tảng này hiển thị dọc 9:16").font(.caption).foregroundStyle(.orange)
+                                Spacer()
+                                Button("Chuyển sang 1080×1920") { engine.format.width = 1080; engine.format.height = 1920 }
+                                    .font(.caption).buttonStyle(.bordered)
+                            }
+                        }
+                        TextField("Tên", text: $draft.name)
+                        TextField("Server URL (rtmp:// hoặc rtmps://)", text: $draft.url)
                             .textInputAutocapitalization(.never).autocorrectionDisabled()
+                        SecureField("Stream key", text: $draftKey)
+                            .textInputAutocapitalization(.never).autocorrectionDisabled()
+                        HStack {
+                            Button("Thêm \(p.name)") {
+                                var c = draft
+                                c.url = StreamPreset.join(server: draft.url, key: draftKey)
+                                engine.outputs.append(c)
+                                preset = nil; draftKey = ""
+                                draft = OutputConfig(name: "", proto: .rtmp, url: "")
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .disabled(URL(string: draft.url)?.scheme == nil || draftKey.trimmingCharacters(in: .whitespaces).isEmpty)
+                            Button("Huỷ") { preset = nil; draftKey = ""; draft = OutputConfig(name: "", proto: .rtmp, url: "") }
+                        }
+                    } else {
+                        Picker("Giao thức", selection: $draft.proto) {
+                            ForEach(OutputProtocol.allCases) { Text($0.label).tag($0) }
+                        }
+                        TextField("Tên", text: $draft.name)
+                        if draft.proto != .record {
+                            TextField(draft.proto.placeholder, text: $draft.url)
+                                .textInputAutocapitalization(.never).autocorrectionDisabled()
+                        }
+                        Button("Thêm") {
+                            engine.outputs.append(draft)
+                            draft = OutputConfig(name: "", proto: draft.proto, url: "")
+                        }
+                        .disabled(draft.proto != .record && URL(string: draft.url)?.scheme == nil)
                     }
-                    Button("Thêm") {
-                        engine.outputs.append(draft)
-                        draft = OutputConfig(name: "", proto: draft.proto, url: "")
-                    }
-                    .disabled(draft.proto != .record && URL(string: draft.url)?.scheme == nil)
                 }
                 Section("Encoder") {
                     Picker("Codec", selection: $engine.encoder.codec) {
@@ -659,5 +694,42 @@ struct ShowsSheet: View {
                 }
             }
         }
+    }
+}
+
+
+/// RTMP(S) destinations that take a server URL + stream key copied from the platform.
+struct StreamPreset: Identifiable, Equatable {
+    let id: String
+    let name: String
+    let icon: String
+    let server: String          // fixed ingest server, or "" when the platform gives one per session
+    let hint: String
+    var vertical = false
+
+    static let all: [StreamPreset] = [
+        StreamPreset(id: "youtube", name: "YouTube", icon: "play.rectangle.fill", server: "rtmp://a.rtmp.youtube.com/live2",
+                     hint: "YouTube Studio › Phát trực tiếp › Khoá luồng."),
+        StreamPreset(id: "facebook", name: "Facebook", icon: "f.square.fill", server: "rtmps://live-api-s.facebook.com:443/rtmp",
+                     hint: "Facebook › Video trực tiếp › Phần mềm phát trực tiếp › Khoá luồng."),
+        StreamPreset(id: "tiktok", name: "TikTok", icon: "music.note", server: "",
+                     hint: "TikTok LIVE Center / LIVE Studio › Khoá luồng: dán Server URL và Stream key (mỗi phiên một server; tài khoản cần được TikTok cấp quyền phát bằng khoá).",
+                     vertical: true),
+        StreamPreset(id: "instagram", name: "Instagram", icon: "camera.circle.fill", server: "",
+                     hint: "instagram.com (trình duyệt máy tính) › Tạo › Video trực tiếp › copy URL luồng + Khoá luồng (mỗi phiên khác nhau, dùng rtmps).",
+                     vertical: true),
+        StreamPreset(id: "twitch", name: "Twitch", icon: "gamecontroller.fill", server: "rtmp://live.twitch.tv/app",
+                     hint: "Twitch › Creator Dashboard › Settings › Stream › Primary Stream key."),
+        StreamPreset(id: "kick", name: "Kick", icon: "bolt.fill", server: "",
+                     hint: "Kick › Dashboard › Settings › Stream key: dán Stream URL (rtmps://…) và Stream key."),
+    ]
+
+    /// server + "/" + key (tolerates a trailing slash, or a full URL pasted into the key field).
+    static func join(server: String, key: String) -> String {
+        let k = key.trimmingCharacters(in: .whitespacesAndNewlines)
+        if k.hasPrefix("rtmp://") || k.hasPrefix("rtmps://") { return k }
+        var s = server.trimmingCharacters(in: .whitespacesAndNewlines)
+        while s.hasSuffix("/") { s.removeLast() }
+        return s + "/" + k
     }
 }
