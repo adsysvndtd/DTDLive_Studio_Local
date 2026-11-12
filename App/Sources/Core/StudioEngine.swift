@@ -2,6 +2,7 @@
 import Combine
 import CoreImage
 import Foundation
+import ImageIO
 import SwiftUI
 
 /// Wires sources -> switcher -> encoders -> outputs, plus graphics, audio mixer,
@@ -108,7 +109,7 @@ final class StudioEngine: ObservableObject {
     enum Corner: String, CaseIterable, Identifiable {
         case topLeft, topRight, bottomLeft, bottomRight
         var id: String { rawValue }
-        var label: String { ["topLeft": "Trên trái", "topRight": "Trên phải", "bottomLeft": "Dưới trái", "bottomRight": "Dưới phải"][rawValue]! }
+        var label: String { L(["topLeft": "Trên trái", "topRight": "Trên phải", "bottomLeft": "Dưới trái", "bottomRight": "Dưới phải"][rawValue]!) }
         func rect(size: CGSize) -> CGRect {
             let m: CGFloat = 0.03
             switch self {
@@ -204,6 +205,7 @@ final class StudioEngine: ObservableObject {
 
         outputs = Self.load([OutputConfig].self, key: "dtd.outputs.v1") ?? []
         if let bg = Self.load(LayoutBackground.self, key: "dtd.layoutbg.v1") { layoutBackground = bg }
+        restoreLogo()
         titles = Self.load([TitleItem].self, key: "dtd.titles.v1") ?? Self.defaultTitles
         titlesSnapshot = titles
         MainActorBox.setTitles(titles)
@@ -344,12 +346,42 @@ final class StudioEngine: ObservableObject {
     }
 
     func useLogo(_ url: URL) {
-        guard let img = UIImage(contentsOfFile: url.path), let ci = CIImage(image: img) else { return }
+        guard let (ci, px) = Self.loadOverlayImage(url) else {
+            message = L("Không đọc được logo") + " \(url.lastPathComponent)"; return
+        }
         checkpoint()
-        let aspect = img.size.width / max(img.size.height, 1)
-        let h: CGFloat = 0.12, w = min(0.3, h * aspect * CGFloat(format.height) / CGFloat(format.width))
+        // height 12% of the frame, width from the image aspect (max 30%)
+        let aspect = px.width / max(px.height, 1)
+        let h: CGFloat = 0.12, w = min(0.3, h * aspect * CGFloat(format.height) / CGFloat(max(format.width, 1)))
         var l = OverlayLayer(image: ci, rect: logoCorner.rect(size: CGSize(width: w, height: h)))
-        l.visible = logoOn                      // armed; goes on air with the Logo On key (live swap if already on)
+        l.visible = logoOn                      // armed; goes on air with the Logo key (live swap if already on)
+        logo = l; currentLogoURL = url
+        UserDefaults.standard.set(url.lastPathComponent, forKey: "dtd.logo.file")
+        message = logoOn ? L("Đã đổi logo trên PGM") : L("Đã nạp logo — bấm Logo ở cột phải để lên PGM")
+    }
+
+    /// Reads a still (PNG/JPEG/HEIC) with its EXIF orientation applied and alpha kept,
+    /// pinned at origin so the compositor can scale/place it. Returns the image and its pixel size.
+    nonisolated static func loadOverlayImage(_ url: URL) -> (CIImage, CGSize)? {
+        guard let src = CGImageSourceCreateWithURL(url as CFURL, nil),
+              let cg = CGImageSourceCreateImageAtIndex(src, 0, nil) else { return nil }
+        let props = CGImageSourceCopyPropertiesAtIndex(src, 0, nil) as? [CFString: Any]
+        let orient = (props?[kCGImagePropertyOrientation] as? UInt32).flatMap(CGImagePropertyOrientation.init(rawValue:)) ?? .up
+        var img = CIImage(cgImage: cg).oriented(orient)
+        img = img.transformed(by: CGAffineTransform(translationX: -img.extent.minX, y: -img.extent.minY))
+        guard img.extent.width > 0, img.extent.height > 0 else { return nil }
+        return (img, img.extent.size)
+    }
+
+    /// Re-loads the last logo at launch (armed, not on air).
+    private func restoreLogo() {
+        guard logo == nil, let name = UserDefaults.standard.string(forKey: "dtd.logo.file") else { return }
+        let url = MediaLibrary.directory(.logo).appendingPathComponent(name)
+        guard FileManager.default.fileExists(atPath: url.path), let (ci, px) = Self.loadOverlayImage(url) else { return }
+        let aspect = px.width / max(px.height, 1)
+        let h: CGFloat = 0.12, w = min(0.3, h * aspect * CGFloat(format.height) / CGFloat(max(format.width, 1)))
+        var l = OverlayLayer(image: ci, rect: logoCorner.rect(size: CGSize(width: w, height: h)))
+        l.visible = false
         logo = l; currentLogoURL = url
     }
 

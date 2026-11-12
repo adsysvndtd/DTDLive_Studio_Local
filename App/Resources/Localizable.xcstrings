@@ -921,6 +921,16 @@
         }
       }
     },
+    "Không đọc được logo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not read logo"
+          }
+        }
+      }
+    },
     "Kiểu": {
       "localizations": {
         "en": {
@@ -2527,6 +2537,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sign-in cancelled"
+          }
+        }
+      }
+    },
+    "Đã nạp logo — bấm Logo ở cột phải để lên PGM": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logo loaded — press Logo in the right column to put it on PGM"
+          }
+        }
+      }
+    },
+    "Đã đổi logo trên PGM": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logo swapped on PGM"
           }
         }
       }
