@@ -7,3 +7,4 @@ DerivedData/
 Vendor/NDI/
 Vendor/srtkit/SRTKit.xcframework/
 Vendor/srtkit/build-ios/
+build/
