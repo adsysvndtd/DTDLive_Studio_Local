@@ -67,7 +67,7 @@ targets:
         NSPhotoLibraryUsageDescription: Chọn logo để chèn lên hình.
         NSBonjourServices: [_dtdstudio._tcp, _dtd-pair._tcp, _http._tcp, _ndi._tcp]
         # Optional: enable "YouTube Live" / "Facebook Live" buttons (see docs/PLATFORMS.md)
-        DTDGoogleClientID: ""
+        DTDGoogleClientID: "1007472905780-3b4d6gl65igcggb8su86kr4g6p2o8bib.apps.googleusercontent.com"
         DTDFacebookAppID: "4456468081286454"
         DTDFacebookConfigID: "1596868605545622"
         UIApplicationSceneManifest:
