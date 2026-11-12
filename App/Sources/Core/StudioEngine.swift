@@ -187,6 +187,7 @@ final class StudioEngine: ObservableObject {
         }
 
         outputs = Self.load([OutputConfig].self, key: "dtd.outputs.v1") ?? []
+        if let bg = Self.load(LayoutBackground.self, key: "dtd.layoutbg.v1") { layoutBackground = bg }
         titles = Self.load([TitleItem].self, key: "dtd.titles.v1") ?? Self.defaultTitles
         titlesSnapshot = titles
         MainActorBox.setTitles(titles)
@@ -432,8 +433,30 @@ final class StudioEngine: ObservableObject {
 
     func refreshLayout() {
         let stores = layoutSlots.map { id in id.flatMap { i in sources.first { $0.id == i }?.frames } }
+        var still: CIImage?, color: CIColor?, live: FrameStore?
+        switch layoutBackground {
+        case .color(let hex): color = CIColor(color: UIColor(hex: hex))
+        case .picture(let name):
+            let url = MediaLibrary.directory(.picture).appendingPathComponent(name)
+            if let img = UIImage(contentsOfFile: url.path)?.normalized() { still = CIImage(image: img) }
+        case .source(let id): live = sources.first { $0.id == id }?.frames
+        }
         layoutSource.configure(template: layoutTemplate, inputs: stores,
-                               size: CGSize(width: format.width, height: format.height), background: nil)
+                               size: CGSize(width: format.width, height: format.height), background: live,
+                               still: still, color: color)
+    }
+
+    /// What fills the frame behind the PiP layout windows when the cameras don't cover it.
+    enum LayoutBackground: Codable, Equatable {
+        case color(String)       // hex
+        case picture(String)     // file name in Library/Ảnh
+        case source(UUID)        // a live input, blurred
+    }
+    @Published var layoutBackground: LayoutBackground = .color("#0A0D12") {
+        didSet {
+            UserDefaults.standard.set(try? JSONEncoder().encode(layoutBackground), forKey: "dtd.layoutbg.v1")
+            refreshLayout()
+        }
     }
 
     /// "PiP TRANS": transition program into the current layout.

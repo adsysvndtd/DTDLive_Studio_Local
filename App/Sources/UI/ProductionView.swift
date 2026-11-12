@@ -306,6 +306,50 @@ struct CategoryContent: View {
 
     // MARK: PiP
 
+    /// Background behind the layout windows: colour, a picture from the library, or a blurred live input.
+    @ViewBuilder private var layoutBackgroundPicker: some View {
+        sectionHeader("Nền bố cục — phủ phần khung hình mà các camera không che kín")
+        let bg = engine.layoutBackground
+        let isColor: Bool = { if case .color = bg { return true }; return false }()
+        HStack(spacing: 10) {
+            ColorPicker("Màu nền", selection: Binding(
+                get: { if case .color(let h) = bg { return Color(UIColor(hex: h)) } else { return Color(white: 0.05) } },
+                set: { engine.layoutBackground = .color(UIColor($0).hexString) }), supportsOpacity: false)
+                .font(.caption.weight(.semibold)).fixedSize()
+            if !isColor {
+                Button("Bỏ ảnh nền") { engine.layoutBackground = .color("#0A0D12") }
+                    .font(.caption.weight(.semibold)).buttonStyle(.bordered)
+            }
+            Spacer()
+        }
+        let pics = library.list(.picture)
+        if pics.isEmpty {
+            emptyHint("Chưa có ảnh — nhập ảnh nền ở mục Ảnh (Thư viện ảnh / Tệp)")
+        } else {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 6) {
+                    ForEach(pics, id: \.self) { url in
+                        let on = bg == .picture(url.lastPathComponent)
+                        Button { engine.layoutBackground = .picture(url.lastPathComponent) } label: {
+                            LibraryCell(url: url, kind: .picture, selected: on)
+                                .frame(width: compact ? 120 : 160)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
+        }
+        let live = engine.sources.filter { $0.id != engine.layoutSource.id }
+        if !live.isEmpty {
+            Menu {
+                ForEach(live, id: \.id) { s in Button(s.name) { engine.layoutBackground = .source(s.id) } }
+            } label: {
+                let cur: String = { if case .source(let id) = bg { return engine.sources.first { $0.id == id }?.name ?? "—" }; return "chọn nguồn" }()
+                Label("Nền là nguồn video (làm mờ): \(cur)", systemImage: "camera.filters").font(.caption.weight(.semibold))
+            }
+        }
+    }
+
     @ViewBuilder private var pipContent: some View {
         sectionHeader("Mẫu bố cục nhiều nguồn — chọn mẫu để đưa lên Preview, rồi CUT/AUTO hoặc phím PiP TRANS")
         LazyVGrid(columns: [GridItem(.adaptive(minimum: compact ? 150 : 220), spacing: compact ? 6 : 10)], spacing: compact ? 6 : 10) {
@@ -324,6 +368,7 @@ struct CategoryContent: View {
                 .buttonStyle(.plain)
             }
         }
+        layoutBackgroundPicker
         if !engine.layoutSlots.isEmpty {
             sectionHeader("Gán nguồn cho từng khung (chọn khung → bấm nguồn)")
             HStack(spacing: 6) {

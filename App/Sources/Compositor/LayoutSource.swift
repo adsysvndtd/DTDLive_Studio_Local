@@ -47,8 +47,9 @@ final class LayoutSource: VideoSource {
     private var timer: DispatchSourceTimer?
     private let queue = DispatchQueue(label: "layout.render", qos: .userInteractive)
 
-    func configure(template: LayoutTemplate, inputs: [FrameStore?], size: CGSize, background: FrameStore?) {
-        renderer.update(template: template, inputs: inputs, size: size, background: background)
+    func configure(template: LayoutTemplate, inputs: [FrameStore?], size: CGSize, background: FrameStore?,
+                   still: CIImage? = nil, color: CIColor? = nil) {
+        renderer.update(template: template, inputs: inputs, size: size, background: background, still: still, color: color)
         name = "BỐ CỤC \(template.id)"
     }
 
@@ -70,20 +71,24 @@ final class LayoutRenderer: @unchecked Sendable {
     private var template = LayoutTemplate.all[1]
     private var inputs: [FrameStore?] = []
     private var background: FrameStore?
+    private var still: CIImage?          // background picture behind the windows
+    private var color: CIColor?          // background colour (overrides the template's)
     private var size = CGSize(width: 1920, height: 1080)
     private var pool: CVPixelBufferPool?
     private let ci = CIContext(options: [.cacheIntermediates: false])
 
-    func update(template: LayoutTemplate, inputs: [FrameStore?], size: CGSize, background: FrameStore?) {
+    func update(template: LayoutTemplate, inputs: [FrameStore?], size: CGSize, background: FrameStore?,
+                still: CIImage? = nil, color: CIColor? = nil) {
         os_unfair_lock_lock(&lock)
         if size != self.size { pool = nil }
         self.template = template; self.inputs = inputs; self.size = size; self.background = background
+        self.still = still; self.color = color
         os_unfair_lock_unlock(&lock)
     }
 
     func render() -> CVPixelBuffer? {
         os_unfair_lock_lock(&lock)
-        let t = template, ins = inputs, bg = background, sz = size
+        let t = template, ins = inputs, bg = background, sz = size, stillImg = still, bgColor = color
         if pool == nil {
             let attrs: [String: Any] = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA,
                                         kCVPixelBufferWidthKey as String: Int(sz.width), kCVPixelBufferHeightKey as String: Int(sz.height),
@@ -99,12 +104,20 @@ final class LayoutRenderer: @unchecked Sendable {
 
         let extent = CGRect(origin: .zero, size: sz)
         var out: CIImage
-        if let b = bg?.latest() {
+        if let img = stillImg {
+            // picture fills the frame (aspect fill, centred), so uncovered areas never show bare colour
+            let k = max(sz.width / img.extent.width, sz.height / img.extent.height)
+            let scaled = img.transformed(by: CGAffineTransform(translationX: -img.extent.minX, y: -img.extent.minY))
+                .transformed(by: CGAffineTransform(scaleX: k, y: k))
+            out = scaled.transformed(by: CGAffineTransform(translationX: (sz.width - scaled.extent.width) / 2,
+                                                            y: (sz.height - scaled.extent.height) / 2))
+                .cropped(to: extent)
+        } else if let b = bg?.latest() {
             let img = CIImage(cvPixelBuffer: b)
             out = img.transformed(by: CGAffineTransform(scaleX: sz.width / img.extent.width, y: sz.height / img.extent.height))
                 .applyingGaussianBlur(sigma: 12).cropped(to: extent)
         } else {
-            out = CIImage(color: t.background).cropped(to: extent)
+            out = CIImage(color: bgColor ?? t.background).cropped(to: extent)
         }
         for (i, slot) in t.slots.enumerated() {
             let r = CGRect(x: slot.rect.minX * sz.width, y: (1 - slot.rect.maxY) * sz.height,
