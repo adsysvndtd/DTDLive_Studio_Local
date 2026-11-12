@@ -479,7 +479,6 @@ struct CategoryContent: View {
     @ViewBuilder private var effectsPads: some View {
         SectionCard("Hiệu ứng âm thanh", systemImage: "sparkles") {
             let items = library.list(.sound)
-            if items.isEmpty { Text("Chưa có hiệu ứng — bấm Nhập hiệu ứng (vỗ tay, chuông, còi…)").font(.caption).foregroundStyle(DS.text3) }
             LazyVGrid(columns: [GridItem(.adaptive(minimum: compact ? 90 : 120), spacing: 8)], spacing: 8) {
                 ForEach(items, id: \.self) { url in
                     Button { engine.playEffect(url) } label: {
@@ -502,7 +501,6 @@ struct CategoryContent: View {
     @ViewBuilder private var musicList: some View {
         SectionCard("Nhạc nền", systemImage: "music.note.list") {
             let items = library.list(.music)
-            if items.isEmpty { Text("Chưa có nhạc — bấm Nhập nhạc").font(.caption).foregroundStyle(DS.text3) }
             ForEach(items, id: \.self) { url in
                 HStack {
                     Image(systemName: engine.nowPlayingMusic == url ? "speaker.wave.2.fill" : "music.note")

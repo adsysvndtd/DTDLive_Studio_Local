@@ -39,9 +39,6 @@ struct AudioMixerView: View {
                 }
                 .padding(.vertical, 4)
             }
-            Text(gainMode ? "Gain: chỉnh độ lợi đầu vào từng nguồn (−12…+24 dB) · ▲▼ = 1 dB"
-                          : "Kéo fader hoặc ▲▼ (1 dB) · chạm đúp fader = 0 dB · chạm tên = tắt tiếng · giữ = SOLO")
-                .font(.caption2).foregroundStyle(DS.text3)
         }
     }
 
@@ -56,10 +53,6 @@ struct AudioMixerView: View {
             }
             .padding(3)
             .background(DS.surface2, in: Rectangle())
-            if !compact {
-                Text(engine.afvMode == .afv1 ? "AFV1: chỉ nguồn trên PGM" : engine.afvMode == .afv2 ? "AFV2: mọi nguồn hiện trên PGM (cả PiP)" : "AFV tắt")
-                    .font(.caption2).foregroundStyle(DS.text3).lineLimit(1)
-            }
             Spacer()
             // first four sound effects as quick pads
             HStack(spacing: 4) {
