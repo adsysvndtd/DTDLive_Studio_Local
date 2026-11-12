@@ -308,7 +308,7 @@ struct CategoryContent: View {
 
     /// Background behind the layout windows: colour, a picture from the library, or a blurred live input.
     @ViewBuilder private var layoutBackgroundPicker: some View {
-        sectionHeader("Nền bố cục — phủ phần khung hình mà các camera không che kín")
+        sectionHeader("Nền bố cục")
         let bg = engine.layoutBackground
         let isColor: Bool = { if case .color = bg { return true }; return false }()
         HStack(spacing: 10) {
@@ -351,17 +351,14 @@ struct CategoryContent: View {
     }
 
     @ViewBuilder private var pipContent: some View {
-        sectionHeader("Mẫu bố cục nhiều nguồn — chọn mẫu để đưa lên Preview, rồi CUT/AUTO hoặc phím PiP TRANS")
+        sectionHeader("Mẫu bố cục")
         LazyVGrid(columns: [GridItem(.adaptive(minimum: compact ? 150 : 220), spacing: compact ? 6 : 10)], spacing: compact ? 6 : 10) {
             ForEach(LayoutTemplate.all) { t in
                 Button { engine.chooseLayout(t.id) } label: {
-                    VStack(spacing: 0) {
-                        LayoutThumbnail(template: t, names: slotNames(for: t))
-                            .aspectRatio(16 / 9, contentMode: .fit)
-                        Text("\(t.id). \(t.name)").font(.caption.weight(.semibold)).lineLimit(1)
-                            .frame(maxWidth: .infinity, minHeight: 26).background(DS.surface)
-                    }
-                    .clipShape(Rectangle())
+                    LayoutThumbnail(template: t, names: [])
+                        .aspectRatio(16 / 9, contentMode: .fit)
+                        .accessibilityLabel(t.name)
+                        .clipShape(Rectangle())
                     .overlay(Rectangle().stroke(engine.layoutTemplateID == t.id ? DS.accent : DS.stroke,
                                                                      lineWidth: engine.layoutTemplateID == t.id ? 3 : 1))
                 }
@@ -370,7 +367,7 @@ struct CategoryContent: View {
         }
         layoutBackgroundPicker
         if !engine.layoutSlots.isEmpty {
-            sectionHeader("Gán nguồn cho từng khung (chọn khung → bấm nguồn)")
+            sectionHeader("Gán nguồn")
             HStack(spacing: 6) {
                 ForEach(engine.layoutSlots.indices, id: \.self) { i in
                     let sel = engine.layoutSelectedSlot == i
@@ -781,10 +778,12 @@ struct LayoutThumbnail: View {
                         Image(systemName: "person.fill").resizable().scaledToFit()
                             .foregroundStyle(Color(white: 0.42))
                             .frame(height: r.height * 0.62)
-                        Text(names[safe: i] ?? "").font(.system(size: max(7, r.height * 0.13), weight: .bold)).lineLimit(1)
-                            .padding(.horizontal, 4).padding(.vertical, 1)
-                            .background(Color(white: 0.42), in: Rectangle())
-                            .padding(.bottom, 2)
+                        if let n = names[safe: i], !n.isEmpty {
+                            Text(n).font(.system(size: max(7, r.height * 0.13), weight: .bold)).lineLimit(1)
+                                .padding(.horizontal, 4).padding(.vertical, 1)
+                                .background(Color(white: 0.42), in: Rectangle())
+                                .padding(.bottom, 2)
+                        }
                     }
                     .frame(width: r.width, height: r.height)
                     .clipped()
