@@ -168,7 +168,11 @@ final class AudioEncoder: @unchecked Sendable {
     private var samplesOut: Int64 = 0
 
     init(input: AVAudioFormat, bitrate: Int) {
-        var asbd = AudioStreamBasicDescription(mSampleRate: input.sampleRate, mFormatID: kAudioFormatMPEG4AAC, mFormatFlags: 0,
+        // mFormatFlags must carry the MPEG-4 object type (AAC-LC = 2): RTMP muxers build the AAC
+        // sequence header (AudioSpecificConfig) from it. With 0 no header is sent and YouTube/Facebook
+        // can't decode the audio — the stream stays "waiting" and the server drops the connection.
+        var asbd = AudioStreamBasicDescription(mSampleRate: input.sampleRate, mFormatID: kAudioFormatMPEG4AAC,
+                                               mFormatFlags: UInt32(MPEG4ObjectID.AAC_LC.rawValue),
                                                mBytesPerPacket: 0, mFramesPerPacket: 1024, mBytesPerFrame: 0,
                                                mChannelsPerFrame: input.channelCount, mBitsPerChannel: 0, mReserved: 0)
         outputFormat = AVAudioFormat(streamDescription: &asbd)!
