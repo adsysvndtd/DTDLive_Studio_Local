@@ -505,6 +505,8 @@ struct OutputsSheet: View {
     @State private var liveTitle = "DTD Studio Live"
     @State private var platformBusy = false
     @State private var platformMessage: String?
+    @State private var watchURL: URL?
+    @AppStorage("dtd.live.privacy") private var livePrivacy = "public"
 
     var body: some View {
         NavigationStack {
@@ -534,6 +536,11 @@ struct OutputsSheet: View {
                 }
                 Section("Tạo phiên live tự động") {
                     TextField("Tiêu đề buổi live", text: $liveTitle)
+                    Picker("Ai được xem", selection: $livePrivacy) {
+                        Text("Công khai").tag("public")
+                        Text("Không công khai (có link)").tag("unlisted")
+                        Text("Chỉ mình tôi").tag("private")
+                    }
                     HStack {
                         Button("YouTube Live") { createLive(.youtube) }
                         Button("Facebook Live") { createLive(.facebook) }
@@ -541,6 +548,15 @@ struct OutputsSheet: View {
                     }
                     .buttonStyle(.bordered).disabled(platformBusy)
                     if let platformMessage { Text(platformMessage).font(.caption).textSelection(.enabled) }
+                    if let watchURL {
+                        HStack {
+                            Link(destination: watchURL) { Label("Mở trang xem live", systemImage: "play.tv") }
+                            Spacer()
+                            Button { UIPasteboard.general.url = watchURL } label: { Label("Copy link", systemImage: "doc.on.doc") }
+                                .buttonStyle(.borderless)
+                        }
+                        Text("Bấm Phát ở đích vừa tạo; sau 10–20 giây trang xem mới có hình.").font(.caption).foregroundStyle(.secondary)
+                    }
                 }
                 Section("Thêm đích") {
                     // Platform presets: paste Server URL + Stream key from the platform's live page
@@ -639,17 +655,20 @@ struct OutputsSheet: View {
 
 extension OutputsSheet {
     func createLive(_ p: PlatformLive.Platform) {
-        platformBusy = true; platformMessage = nil
+        platformBusy = true; platformMessage = nil; watchURL = nil
         Task {
             defer { platformBusy = false }
             do {
                 let d = p == .youtube
-                    ? try await platform.createYouTube(title: liveTitle, vertical: engine.format.isVertical)
-                    : try await platform.createFacebook(title: liveTitle)
+                    ? try await platform.createYouTube(title: liveTitle, privacy: livePrivacy, vertical: engine.format.isVertical)
+                    : try await platform.createFacebook(title: liveTitle,
+                                                        privacy: livePrivacy == "public" ? "EVERYONE" : livePrivacy == "unlisted" ? "ALL_FRIENDS" : "SELF")
                 var cfg = OutputConfig(name: d.name, proto: .rtmp, url: d.url)
                 cfg.enabled = true
                 engine.outputs.append(cfg)
-                platformMessage = "Đã tạo đích \(d.name)" + (d.watchURL.map { ". Xem: \($0)" } ?? "")
+                engine.startOutput(cfg)          // push right away: the platform shows the live as soon as video arrives
+                watchURL = d.watchURL.flatMap(URL.init(string:))
+                platformMessage = L("Đã tạo và đang phát tới") + " \(d.name)"
             } catch {
                 platformMessage = error.localizedDescription
             }

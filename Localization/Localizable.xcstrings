@@ -81,6 +81,16 @@
         }
       }
     },
+    "Ai được xem": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Who can watch"
+          }
+        }
+      }
+    },
     "Bitrate thích ứng": {
       "localizations": {
         "en": {
@@ -107,6 +117,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Scoreboard"
+          }
+        }
+      }
+    },
+    "Bấm Phát ở đích vừa tạo; sau 10–20 giây trang xem mới có hình.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The picture appears on the live page 10–20 s after streaming starts."
           }
         }
       }
@@ -451,6 +471,16 @@
         }
       }
     },
+    "Chỉ mình tôi": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Only me"
+          }
+        }
+      }
+    },
     "Chỉnh khung": {
       "localizations": {
         "en": {
@@ -521,12 +551,32 @@
         }
       }
     },
+    "Copy link": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copy link"
+          }
+        }
+      }
+    },
     "Cài đặt": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Settings"
+          }
+        }
+      }
+    },
+    "Công khai": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Public"
           }
         }
       }
@@ -1031,6 +1081,16 @@
         }
       }
     },
+    "Không công khai (có link)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlisted (link only)"
+          }
+        }
+      }
+    },
     "Không muốn đăng ký app: dùng Đầu ra › Thêm đích › YouTube/Facebook (stream key).": {
       "localizations": {
         "en": {
@@ -1447,6 +1507,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Open DTDLive on the same Wi-Fi → pick DTD Studio → compare the confirmation ID → Accept. No code to type."
+          }
+        }
+      }
+    },
+    "Mở trang xem live": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open live page"
           }
         }
       }
@@ -2867,6 +2937,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Logo loaded — press Logo in the right column to put it on PGM"
+          }
+        }
+      }
+    },
+    "Đã tạo và đang phát tới": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Created and streaming to"
           }
         }
       }

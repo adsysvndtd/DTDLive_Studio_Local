@@ -171,17 +171,30 @@ final class PlatformLive: NSObject, ObservableObject, ASWebAuthenticationPresent
     // MARK: Facebook
 
     /// Creates a live video on the user's timeline (or a Page if `pageID` + page token flow is added later).
-    func createFacebook(title: String) async throws -> Destination {
+    /// privacy: "EVERYONE" (public), "ALL_FRIENDS", "SELF".
+    func createFacebook(title: String, privacy: String = "EVERYONE") async throws -> Destination {
         let token = try await facebookAccessToken()
         var c = URLComponents(string: "https://graph.facebook.com/v19.0/me/live_videos")!
         c.queryItems = [.init(name: "status", value: "LIVE_NOW"), .init(name: "title", value: title),
+                        .init(name: "description", value: title),
+                        .init(name: "privacy", value: "{\"value\":\"\(privacy)\"}"),
                         .init(name: "access_token", value: token)]
         var req = URLRequest(url: c.url!)
         req.httpMethod = "POST"
         let json = try await send(req)
         guard let url = (json["secure_stream_url"] as? String) ?? (json["stream_url"] as? String) else { throw LiveError.badResponse }
-        return Destination(name: "Facebook: \(title)", url: url, watchURL: (json["id"] as? String).map { "https://www.facebook.com/\($0)" })
+        // the viewer link is the live video's permalink (the live_video id itself is not a public URL)
+        var watch: String?
+        if let id = json["id"] as? String {
+            var g = URLComponents(string: "https://graph.facebook.com/v19.0/\(id)")!
+            g.queryItems = [.init(name: "fields", value: "permalink_url"), .init(name: "access_token", value: token)]
+            if let j = try? await send(URLRequest(url: g.url!)), let p = j["permalink_url"] as? String {
+                watch = p.hasPrefix("http") ? p : "https://www.facebook.com" + p
+            }
+        }
+        return Destination(name: "Facebook: \(title)", url: url, watchURL: watch)
     }
+
 
     private func facebookAccessToken() async throws -> String {
         if let facebookToken, facebookExpiry > Date().addingTimeInterval(60) { return facebookToken }

@@ -6,9 +6,11 @@
 "AFV" = "AFV";
 "AFV1" = "AFV1";
 "AFV2" = "AFV2";
+"Ai được xem" = "Ai được xem";
 "Bitrate thích ứng" = "Bitrate thích ứng";
 "Bù phơi sáng" = "Bù phơi sáng";
 "Bảng tỉ số" = "Bảng tỉ số";
+"Bấm Phát ở đích vừa tạo; sau 10–20 giây trang xem mới có hình." = "Bấm Phát ở đích vừa tạo; sau 10–20 giây trang xem mới có hình.";
 "Bấm ♡ trên một nguồn để thêm vào Yêu thích" = "Bấm ♡ trên một nguồn để thêm vào Yêu thích";
 "Bật bộ đệm replay (60 giây gần nhất)" = "Bật bộ đệm replay (60 giây gần nhất)";
 "Bật scopes (Program)" = "Bật scopes (Program)";
@@ -43,6 +45,7 @@
 "Chế độ" = "Chế độ";
 "Chỉ bật khi dùng tai nghe — loa ngoài sẽ hú vào micro." = "Chỉ bật khi dùng tai nghe — loa ngoài sẽ hú vào micro.";
 "Chỉ chấp nhận nếu ID này trùng với ID trên màn hình thiết bị" = "Chỉ chấp nhận nếu ID này trùng với ID trên màn hình thiết bị";
+"Chỉ mình tôi" = "Chỉ mình tôi";
 "Chỉnh khung" = "Chỉnh khung";
 "Chọn một nguồn ở hàng PREVIEW để chỉnh" = "Chọn một nguồn ở hàng PREVIEW để chỉnh";
 "Chọn video…" = "Chọn video…";
@@ -50,7 +53,9 @@
 "Chủ repo (owner)" = "Chủ repo (owner)";
 "Chữ chạy" = "Chữ chạy";
 "Clip đã lưu" = "Clip đã lưu";
+"Copy link" = "Copy link";
 "Cài đặt" = "Cài đặt";
+"Công khai" = "Công khai";
 "Cần iPadOS/iOS 17.4 trở lên cho đăng nhập Facebook" = "Cần iPadOS/iOS 17.4 trở lên cho đăng nhập Facebook";
 "Cập nhật từ Git" = "Cập nhật từ Git";
 "Cổ điển" = "Cổ điển";
@@ -101,6 +106,7 @@
 "Khôi phục mẫu" = "Khôi phục mẫu";
 "Không" = "Không";
 "Không có tín hiệu" = "Không có tín hiệu";
+"Không công khai (có link)" = "Không công khai (có link)";
 "Không muốn đăng ký app: dùng Đầu ra › Thêm đích › YouTube/Facebook (stream key)." = "Không muốn đăng ký app: dùng Đầu ra › Thêm đích › YouTube/Facebook (stream key).";
 "Không đọc được logo" = "Không đọc được logo";
 "Kick › Dashboard › Settings › Stream key: dán Stream URL (rtmps://…) và Stream key." = "Kick › Dashboard › Settings › Stream key: dán Stream URL (rtmps://…) và Stream key.";
@@ -143,6 +149,7 @@
 "Mặc định" = "Mặc định";
 "Mỗi giao thức dùng chung một cổng; mỗi camera đặt một stream key riêng (cam1, cam2…) và tự hiện thành một nguồn." = "Mỗi giao thức dùng chung một cổng; mỗi camera đặt một stream key riêng (cam1, cam2…) và tự hiện thành một nguồn.";
 "Mở DTDLive (hoặc app hỗ trợ DTD pairing) trên cùng mạng Wi-Fi → chọn DTD Studio → so ID xác nhận → Chấp nhận. Không cần nhập mã." = "Mở DTDLive (hoặc app hỗ trợ DTD pairing) trên cùng mạng Wi-Fi → chọn DTD Studio → so ID xác nhận → Chấp nhận. Không cần nhập mã.";
+"Mở trang xem live" = "Mở trang xem live";
 "Mở trong Replay (mark in/out)" = "Mở trong Replay (mark in/out)";
 "Ngang" = "Ngang";
 "Nghe Program (tai nghe)" = "Nghe Program (tai nghe)";
@@ -285,6 +292,7 @@
 "Điều khiển từ xa & ghép nối" = "Điều khiển từ xa & ghép nối";
 "Đã huỷ đăng nhập" = "Đã huỷ đăng nhập";
 "Đã nạp logo — bấm Logo ở cột phải để lên PGM" = "Đã nạp logo — bấm Logo ở cột phải để lên PGM";
+"Đã tạo và đang phát tới" = "Đã tạo và đang phát tới";
 "Đã đổi logo trên PGM" = "Đã đổi logo trên PGM";
 "Đèn" = "Đèn";
 "Đích phát (chạy song song, encode 1 lần)" = "Đích phát (chạy song song, encode 1 lần)";
