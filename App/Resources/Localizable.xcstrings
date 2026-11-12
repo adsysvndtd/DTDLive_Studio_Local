@@ -261,6 +261,16 @@
         }
       }
     },
+    "Chưa có ảnh — nhập ở mục Ảnh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No pictures — import in Pictures"
+          }
+        }
+      }
+    },
     "Chương trình (Program)": {
       "localizations": {
         "en": {

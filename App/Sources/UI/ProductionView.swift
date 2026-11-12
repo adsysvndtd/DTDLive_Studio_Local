@@ -174,9 +174,7 @@ struct CategoryContent: View {
             case .movie:
                 headerButton("Nhập video", "square.and.arrow.down") { importing = .movie }
             case .picture, .overlay, .logo:
-                let k: LibraryKind = category == .picture ? .picture : category == .overlay ? .overlay : .logo
-                headerButton("Thư viện ảnh", "photo.on.rectangle") { photoKind = k }
-                headerButton("Tệp", "folder") { importing = k }
+                importImageMenu(category == .picture ? .picture : category == .overlay ? .overlay : .logo)
             case .audio:
                 headerButton("Nhập nhạc", "square.and.arrow.down") { importing = .music }
                 headerButton("Nhập hiệu ứng", "sparkles") { importing = .sound }
@@ -199,6 +197,22 @@ struct CategoryContent: View {
         Button(action: action) { Image(systemName: icon).font(.system(size: compact ? 15 : 18)).frame(width: 30, height: 30) }
             .buttonStyle(.plain).foregroundStyle(DS.text2)
             .accessibilityLabel(label)
+    }
+
+    /// One "Nhập ảnh" button; the source (Photos or Files) is chosen from its menu.
+    private func importImageMenu(_ k: LibraryKind) -> some View {
+        Menu {
+            Button { photoKind = k } label: { Label("Thư viện ảnh", systemImage: "photo.on.rectangle") }
+            Button { importing = k } label: { Label("Tệp", systemImage: "folder") }
+        } label: {
+            Label("Nhập ảnh", systemImage: "square.and.arrow.down")
+                .font(.system(size: compact ? 12 : 14, weight: .semibold)).lineLimit(1)
+                .padding(.horizontal, compact ? 8 : 12).frame(height: compact ? 28 : 34)
+                .foregroundStyle(.white)
+                .background(DS.surface2, in: Rectangle())
+                .overlay(Rectangle().stroke(DS.stroke))
+        }
+        .id(k)
     }
 
     private func headerButton(_ title: String, _ icon: String, action: @escaping () -> Void) -> some View {
@@ -326,7 +340,7 @@ struct CategoryContent: View {
         }
         let pics = library.list(.picture)
         if pics.isEmpty {
-            emptyHint("Chưa có ảnh — nhập ảnh nền ở mục Ảnh (Thư viện ảnh / Tệp)")
+            emptyHint("Chưa có ảnh — nhập ở mục Ảnh")
         } else {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 6) {
