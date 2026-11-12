@@ -99,6 +99,9 @@ struct CategoryContent: View {
     /// (which clears photoKind / importing) never sends a Logo into Ảnh or vice versa.
     @State private var photoTarget: LibraryKind = .picture
     @State private var fileTarget: LibraryKind = .picture
+    /// Background picture for PiP layouts, picked straight from Photos / Files and applied at once.
+    @State private var bgPhoto: PhotosPickerItem?
+    @State private var bgFile = false
     @State private var adjustingSource: UUID?
     @State private var ptzSource: UUID?
     @State private var infoSource: UUID?
@@ -355,11 +358,32 @@ struct CategoryContent: View {
                     .font(.caption.weight(.semibold)).buttonStyle(.bordered)
             }
             Spacer()
-            importImageMenu(.picture)
+            PhotosPicker(selection: $bgPhoto, matching: .images) { toolbarLabel("Ảnh nền từ Thư viện", "photo.on.rectangle") }
+                .buttonStyle(.plain)
+            toolbarButton("Tệp", "folder") { bgFile = true }
+        }
+        .onChange(of: bgPhoto) { _, item in
+            guard let item else { return }
+            Task {
+                if let d = try? await item.loadTransferable(type: Data.self),
+                   let url = library.importImage(d, into: .picture, name: "Nen") {
+                    engine.layoutBackground = .picture(url.lastPathComponent)
+                }
+                bgPhoto = nil
+            }
+        }
+        .fileImporter(isPresented: $bgFile, allowedContentTypes: [.image]) { r in
+            if case .success(let u) = r {
+                let scoped = u.startAccessingSecurityScopedResource()
+                defer { if scoped { u.stopAccessingSecurityScopedResource() } }
+                if let d = try? Data(contentsOf: u), let url = library.importImage(d, into: .picture, name: "Nen") {
+                    engine.layoutBackground = .picture(url.lastPathComponent)
+                }
+            }
         }
         let pics = library.list(.picture)
         if pics.isEmpty {
-            emptyHint("Chưa có ảnh — nhập ở mục Ảnh")
+            emptyHint("Chưa có ảnh nền — bấm Ảnh nền từ Thư viện hoặc Tệp")
         } else {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 6) {

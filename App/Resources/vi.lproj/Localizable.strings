@@ -30,6 +30,7 @@
 "Chưa có kênh nào" = "Chưa có kênh nào";
 "Chưa có thiết bị nào được ghép nối" = "Chưa có thiết bị nào được ghép nối";
 "Chưa có đích phát" = "Chưa có đích phát";
+"Chưa có ảnh nền — bấm Ảnh nền từ Thư viện hoặc Tệp" = "Chưa có ảnh nền — bấm Ảnh nền từ Thư viện hoặc Tệp";
 "Chưa có ảnh — nhập ảnh nền ở mục Ảnh (Thư viện ảnh / Tệp)" = "Chưa có ảnh — nhập ảnh nền ở mục Ảnh (Thư viện ảnh / Tệp)";
 "Chưa có ảnh — nhập ở mục Ảnh" = "Chưa có ảnh — nhập ở mục Ảnh";
 "Chương trình (Program)" = "Chương trình (Program)";
@@ -291,6 +292,7 @@
 "Độ phân giải" = "Độ phân giải";
 "Ảnh" = "Ảnh";
 "Ảnh PNG" = "Ảnh PNG";
+"Ảnh nền từ Thư viện" = "Ảnh nền từ Thư viện";
 "Ẩn tất cả" = "Ẩn tất cả";
 "Ứng dụng" = "Ứng dụng";
 "→ Title" = "→ Title";

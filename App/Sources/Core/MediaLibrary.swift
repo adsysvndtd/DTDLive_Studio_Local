@@ -75,11 +75,13 @@ final class MediaLibrary: ObservableObject {
         return failed.isEmpty ? nil : "Không nhập được: " + failed.joined(separator: ", ")
     }
 
-    func importImage(_ data: Data, into k: LibraryKind, name: String = "Ảnh") {
+    @discardableResult
+    func importImage(_ data: Data, into k: LibraryKind, name: String = "Ảnh") -> URL? {
         let df = DateFormatter(); df.dateFormat = "yyyyMMdd-HHmmss"
         let url = Self.directory(k).appendingPathComponent("\(name)-\(df.string(from: Date())).png")
-        if let img = UIImage(data: data), let png = img.normalized().pngData() { try? png.write(to: url) }
+        guard let img = UIImage(data: data), let png = img.normalized().pngData(), (try? png.write(to: url)) != nil else { return nil }
         refresh()
+        return url
     }
 
     func delete(_ url: URL) { try? FileManager.default.removeItem(at: url); refresh() }

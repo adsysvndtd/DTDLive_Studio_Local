@@ -321,6 +321,16 @@
         }
       }
     },
+    "Chưa có ảnh nền — bấm Ảnh nền từ Thư viện hoặc Tệp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No background picture — tap Background from Photos or Files"
+          }
+        }
+      }
+    },
     "Chưa có ảnh — nhập ảnh nền ở mục Ảnh (Thư viện ảnh / Tệp)": {
       "localizations": {
         "en": {
@@ -2927,6 +2937,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "PNG image"
+          }
+        }
+      }
+    },
+    "Ảnh nền từ Thư viện": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Background from Photos"
           }
         }
       }
