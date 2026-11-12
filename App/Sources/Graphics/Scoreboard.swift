@@ -21,6 +21,8 @@ struct ScoreboardData: Codable, Equatable {
     var clockBase: Double = 0     // seconds run before the last start
     var clockStart: Date? = nil   // non-nil: running
     var compact = false           // two-row corner layout instead of the wide strip
+    var style = ScoreboardStyle.classic.rawValue   // look of the wide strip
+    var banner = "LIVE MATCH DAY"                   // ribbon under the centre (broadcast styles)
 
     init() {}
     init(from d: Decoder) throws {
@@ -34,11 +36,13 @@ struct ScoreboardData: Codable, Equatable {
         showClock = v(.showClock, z.showClock); countDown = v(.countDown, z.countDown)
         clockLimitSec = v(.clockLimitSec, z.clockLimitSec); clockBase = v(.clockBase, z.clockBase); clockStart = v(.clockStart, z.clockStart)
         compact = v(.compact, z.compact)
+        style = v(.style, z.style); banner = v(.banner, z.banner)
     }
     enum CodingKeys: String, CodingKey {
         case homeSub, awaySub, homeLogo, awayLogo, homeColor, awayColor, centerColor, nameBg, nameText
-        case showClock, countDown, clockLimitSec, clockBase, clockStart, compact
+        case showClock, countDown, clockLimitSec, clockBase, clockStart, compact, style, banner
     }
+    var look: ScoreboardStyle { ScoreboardStyle(rawValue: style) ?? .classic }
 
     var running: Bool { clockStart != nil }
     func elapsed(_ now: Date = Date()) -> Double { clockBase + (clockStart.map { now.timeIntervalSince($0) } ?? 0) }
@@ -51,6 +55,32 @@ struct ScoreboardData: Codable, Equatable {
         if let st = clockStart { clockBase += Date().timeIntervalSince(st); clockStart = nil } else { clockStart = Date() }
     }
     mutating func resetClock() { clockBase = 0; clockStart = nil }
+}
+
+/// Wide-strip looks. `classic` is the DTDLive design; the others are broadcast bars
+/// (chrome rim, centre glass with the clock, ribbon underneath) — original vector designs.
+enum ScoreboardStyle: String, CaseIterable, Identifiable, Codable {
+    case classic, chrome, flame, angular, arena
+    var id: String { rawValue }
+    var label: String {
+        switch self {
+        case .classic: return L("Cổ điển")
+        case .chrome: return L("Chrome xanh")
+        case .flame: return L("Lửa đỏ")
+        case .angular: return L("Vát góc")
+        case .arena: return L("Sân vận động")
+        }
+    }
+    /// Default colours applied when the style is picked: home, away, centre/ribbon.
+    var palette: (String, String, String) {
+        switch self {
+        case .classic: return ("#E8641E", "#E8641E", "#D21E2B")
+        case .chrome: return ("#1E4E9C", "#1E4E9C", "#123A7A")
+        case .flame: return ("#D8331A", "#D8331A", "#F01E1E")
+        case .angular: return ("#9C2A6E", "#9C2A6E", "#1F4FA8")
+        case .arena: return ("#1B4F86", "#1B4F86", "#1A5A9E")
+        }
+    }
 }
 
 extension TitleItem {
@@ -102,17 +132,32 @@ enum ScoreboardRenderer {
     static let compactSize = CGSize(width: 640, height: 232)
     static func size(compact: Bool) -> CGSize { compact ? compactSize : wideSize }
 
+    /// Small sample picture of a style for the style picker (cached).
+    private static var previews: [ScoreboardStyle: UIImage] = [:]
+    static func preview(_ st: ScoreboardStyle) -> UIImage {
+        if let p = previews[st] { return p }
+        var t = TitleItem(style: .scoreBug, line1: "HOME", line2: "AWAY", scoreA: 2, scoreB: 1, period: "H2")
+        var b = ScoreboardData(); b.style = st.rawValue
+        (b.homeColor, b.awayColor, b.centerColor) = st.palette
+        b.clockBase = 23 * 60 + 45
+        t.board = b
+        let img = render(t)
+        previews[st] = img
+        return img
+    }
+
     /// Changes whenever the drawn picture would change (scores, names, clock seconds, colours…).
     static func signature(_ t: TitleItem, now: Date = Date()) -> String {
         let b = t.sb
         return [t.line1, t.line2, b.homeSub, b.awaySub, "\(t.scoreA)", "\(t.scoreB)", b.homeLogo ?? "", b.awayLogo ?? "",
                 b.homeColor, b.awayColor, b.centerColor, b.nameBg, b.nameText, t.period, b.showClock ? b.clockText(now) : "",
-                b.compact ? "c" : "w"].joined(separator: "|")
+                b.compact ? "c" : "w", b.style, b.banner].joined(separator: "|")
     }
 
     static func render(_ t: TitleItem, now: Date = Date()) -> UIImage {
         let b = t.sb
         if b.compact { return renderCompact(t, b, now: now) }
+        if b.look != .classic { return renderBroadcast(t, b, now: now) }
         let size = wideSize
         let fmt = UIGraphicsImageRendererFormat()
         fmt.scale = 1
@@ -271,6 +316,197 @@ enum ScoreboardRenderer {
                                         withAttributes: [.font: f, .foregroundColor: UIColor.white, .paragraphStyle: cp])
             }
         }
+    }
+
+    /// Broadcast bars: [team | score] [centre glass + clock] [score | team], chrome rim, ribbon below.
+    private static func renderBroadcast(_ t: TitleItem, _ b: ScoreboardData, now: Date) -> UIImage {
+        let S = wideSize
+        let fmt = UIGraphicsImageRendererFormat(); fmt.scale = 1; fmt.opaque = false
+        let look = b.look
+        return UIGraphicsImageRenderer(size: S, format: fmt).image { ctx in
+            let g = ctx.cgContext
+            let W = S.width, cx = W / 2
+            let top: CGFloat = 46, h: CGFloat = 104, rim: CGFloat = 10
+            let x0: CGFloat = 40, x1 = W - 40
+            let glassW: CGFloat = 300, glassTop: CGFloat = 26, glassH: CGFloat = 136
+            let scoreW: CGFloat = 120
+            let home = UIColor(hex: b.homeColor), away = UIColor(hex: b.awayColor), accent = UIColor(hex: b.centerColor)
+            let shadow = UIColor.black.withAlphaComponent(0.45).cgColor
+            let center = NSMutableParagraphStyle(); center.alignment = .center
+
+            // 1) outer body (chrome rim) by style
+            let outer = CGRect(x: x0, y: top, width: x1 - x0, height: h)
+            let body: UIBezierPath
+            switch look {
+            case .arena: body = UIBezierPath(roundedRect: outer, cornerRadius: h / 2)
+            case .angular: body = parallelogramBar(outer, cut: 46)
+            case .flame: body = UIBezierPath(rect: outer)
+            default: body = chamferBar(outer, cut: 40)
+            }
+            g.setShadow(offset: CGSize(width: 0, height: 8), blur: 18, color: shadow)
+            metalFill(g, body)
+            g.setShadow(offset: .zero, blur: 0, color: nil)
+
+            // 2) inner team panels in team colours (glossy)
+            let inner = outer.insetBy(dx: rim + 18, dy: rim)
+            let leftR = CGRect(x: inner.minX, y: inner.minY, width: cx - glassW / 2 - inner.minX - 6, height: inner.height)
+            let rightR = CGRect(x: cx + glassW / 2 + 6, y: inner.minY, width: inner.maxX - cx - glassW / 2 - 6, height: inner.height)
+            func panelPath(_ r: CGRect, right: Bool) -> UIBezierPath {
+                switch look {
+                case .arena: return UIBezierPath(roundedRect: r, byRoundingCorners: right ? [.topRight, .bottomRight] : [.topLeft, .bottomLeft],
+                                                 cornerRadii: CGSize(width: r.height / 2, height: r.height / 2))
+                case .angular: return parallelogram(x: r.minX, y: r.minY, w: r.width, h: r.height, slant: right ? -30 : 30)
+                default: return UIBezierPath(rect: r)
+                }
+            }
+            for (r, c, right) in [(leftR, home, false), (rightR, away, true)] {
+                let p = panelPath(r, right: right)
+                glossFill(g, p, c)
+            }
+
+            // 3) score boxes: inner (next to the glass) or outer (at the ends) by style
+            let outerScores = look == .flame || look == .angular
+            let sA: CGRect, sB: CGRect
+            if outerScores {
+                sA = CGRect(x: leftR.minX, y: leftR.minY, width: scoreW, height: leftR.height)
+                sB = CGRect(x: rightR.maxX - scoreW, y: rightR.minY, width: scoreW, height: rightR.height)
+            } else {
+                sA = CGRect(x: leftR.maxX - scoreW, y: leftR.minY - 8, width: scoreW, height: leftR.height + 16)
+                sB = CGRect(x: rightR.minX, y: rightR.minY - 8, width: scoreW, height: rightR.height + 16)
+            }
+            let scoreFont = UIFont.monospacedDigitSystemFont(ofSize: 80, weight: .heavy)
+            for (r, v, c) in [(sA, t.scoreA, home), (sB, t.scoreB, away)] {
+                let light = look == .angular
+                let p: UIBezierPath = look == .arena ? UIBezierPath(roundedRect: r, cornerRadius: 18)
+                    : look == .angular ? parallelogram(x: r.minX, y: r.minY, w: r.width, h: r.height, slant: r.minX < cx ? 24 : -24)
+                    : UIBezierPath(rect: r)
+                if light { gradientFill(g, p, UIColor(white: 0.97, alpha: 1), UIColor(white: 0.78, alpha: 1)) }
+                else if look == .flame { gradientFill(g, p, c.darker(0.25), c.darker(0.55)) }
+                else { gradientFill(g, p, UIColor(white: 0.96, alpha: 1), UIColor(white: 0.70, alpha: 1)) }
+                let fg: UIColor = look == .flame ? .white : UIColor(white: 0.06, alpha: 1)
+                ("\(v)" as NSString).draw(in: CGRect(x: r.minX, y: r.midY - scoreFont.lineHeight / 2, width: r.width, height: scoreFont.lineHeight),
+                                          withAttributes: [.font: scoreFont, .foregroundColor: fg, .paragraphStyle: center])
+            }
+
+            // 4) team names (+ logos) between score box and the ends
+            let nameFont = UIFont.systemFont(ofSize: 46, weight: .heavy)
+            let nameShadow = NSShadow(); nameShadow.shadowColor = UIColor.black.withAlphaComponent(0.5); nameShadow.shadowOffset = CGSize(width: 0, height: 2); nameShadow.shadowBlurRadius = 3
+            func team(_ name: String, _ sub: String, _ logo: UIImage?, in area: CGRect) {
+                var a = area.insetBy(dx: 20, dy: 0)
+                if let logo {
+                    let lr = CGRect(x: a.minX, y: area.midY - 40, width: 80, height: 80)
+                    logo.draw(in: AVMakeRect(aspectRatio: logo.size, insideRect: lr))
+                    a = CGRect(x: lr.maxX + 12, y: a.minY, width: a.maxX - lr.maxX - 12, height: a.height)
+                }
+                let p = NSMutableParagraphStyle(); p.alignment = .center; p.lineBreakMode = .byTruncatingTail
+                let y = sub.isEmpty ? area.midY - nameFont.lineHeight / 2 : area.midY - nameFont.lineHeight / 2 - 12
+                (name.uppercased() as NSString).draw(in: CGRect(x: a.minX, y: y, width: a.width, height: nameFont.lineHeight),
+                    withAttributes: [.font: nameFont, .foregroundColor: UIColor.white, .paragraphStyle: p, .shadow: nameShadow])
+                if !sub.isEmpty {
+                    let sf = UIFont.systemFont(ofSize: 22, weight: .semibold)
+                    (sub.uppercased() as NSString).draw(in: CGRect(x: a.minX, y: y + nameFont.lineHeight - 4, width: a.width, height: sf.lineHeight),
+                        withAttributes: [.font: sf, .foregroundColor: UIColor.white.withAlphaComponent(0.85), .paragraphStyle: p])
+                }
+            }
+            let nameA = outerScores ? CGRect(x: sA.maxX, y: leftR.minY, width: leftR.maxX - sA.maxX, height: leftR.height)
+                                    : CGRect(x: leftR.minX, y: leftR.minY, width: sA.minX - leftR.minX, height: leftR.height)
+            let nameB = outerScores ? CGRect(x: rightR.minX, y: rightR.minY, width: sB.minX - rightR.minX, height: rightR.height)
+                                    : CGRect(x: sB.maxX, y: rightR.minY, width: rightR.maxX - sB.maxX, height: rightR.height)
+            team(t.line1, b.homeSub, ScoreboardLogos.image(b.homeLogo), in: nameA)
+            team(t.line2, b.awaySub, ScoreboardLogos.image(b.awayLogo), in: nameB)
+
+            // 5) ribbon under the centre
+            if !b.banner.isEmpty {
+                let rw: CGFloat = 620, rh: CGFloat = 44
+                let rr = CGRect(x: cx - rw / 2, y: top + h - 4, width: rw, height: rh)
+                let rp = UIBezierPath(roundedRect: rr, byRoundingCorners: [.bottomLeft, .bottomRight], cornerRadii: CGSize(width: 16, height: 16))
+                g.setShadow(offset: CGSize(width: 0, height: 4), blur: 8, color: shadow)
+                gradientFill(g, rp, accent.lighter(0.12), accent.darker(0.25))
+                g.setShadow(offset: .zero, blur: 0, color: nil)
+                UIColor.white.withAlphaComponent(0.5).setStroke(); rp.lineWidth = 2; rp.stroke()
+                let bf = UIFont.systemFont(ofSize: 24, weight: .bold)
+                (b.banner.uppercased() as NSString).draw(in: CGRect(x: rr.minX, y: rr.minY + (rh - bf.lineHeight) / 2 + 2, width: rw, height: bf.lineHeight),
+                    withAttributes: [.font: bf, .foregroundColor: UIColor.white, .paragraphStyle: center, .kern: 1.5])
+            }
+
+            // 6) centre glass: clock + period
+            let gr = CGRect(x: cx - glassW / 2, y: glassTop, width: glassW, height: glassH)
+            let gp: UIBezierPath
+            switch look {
+            case .flame, .angular:
+                gp = UIBezierPath()
+                gp.move(to: CGPoint(x: gr.minX, y: gr.minY)); gp.addLine(to: CGPoint(x: gr.maxX, y: gr.minY))
+                gp.addLine(to: CGPoint(x: gr.maxX - 34, y: gr.maxY)); gp.addLine(to: CGPoint(x: gr.minX + 34, y: gr.maxY)); gp.close()
+            default:
+                gp = UIBezierPath(roundedRect: gr, byRoundingCorners: [.bottomLeft, .bottomRight], cornerRadii: CGSize(width: 26, height: 26))
+            }
+            g.setShadow(offset: CGSize(width: 0, height: 6), blur: 14, color: shadow)
+            metalFill(g, gp)
+            g.setShadow(offset: .zero, blur: 0, color: nil)
+            let glass = gr.insetBy(dx: 12, dy: 10)
+            let glp: UIBezierPath = (look == .flame || look == .angular)
+                ? { let p = UIBezierPath()
+                    p.move(to: CGPoint(x: glass.minX + 4, y: glass.minY)); p.addLine(to: CGPoint(x: glass.maxX - 4, y: glass.minY))
+                    p.addLine(to: CGPoint(x: glass.maxX - 30, y: glass.maxY)); p.addLine(to: CGPoint(x: glass.minX + 30, y: glass.maxY)); p.close(); return p }()
+                : UIBezierPath(roundedRect: glass, byRoundingCorners: [.bottomLeft, .bottomRight], cornerRadii: CGSize(width: 18, height: 18))
+            let gc: UIColor = look == .flame ? UIColor(white: 0.85, alpha: 1) : accent
+            glossFill(g, glp, gc)
+            let darkText = look == .flame
+            if b.showClock {
+                let cf = UIFont.monospacedDigitSystemFont(ofSize: 62, weight: .heavy)
+                (b.clockText(now) as NSString).draw(in: CGRect(x: glass.minX, y: glass.midY - cf.lineHeight / 2 - (t.period.isEmpty ? 0 : 12),
+                                                               width: glass.width, height: cf.lineHeight),
+                    withAttributes: [.font: cf, .foregroundColor: darkText ? UIColor(white: 0.08, alpha: 1) : UIColor.white, .paragraphStyle: center])
+            }
+            if !t.period.isEmpty {
+                let pf = UIFont.systemFont(ofSize: 24, weight: .bold)
+                let y = b.showClock ? glass.maxY - pf.lineHeight - 6 : glass.midY - pf.lineHeight / 2
+                (t.period.uppercased() as NSString).draw(in: CGRect(x: glass.minX, y: y, width: glass.width, height: pf.lineHeight),
+                    withAttributes: [.font: pf, .foregroundColor: darkText ? UIColor(white: 0.15, alpha: 1) : UIColor.white.withAlphaComponent(0.9), .paragraphStyle: center])
+            }
+        }
+    }
+
+    /// Bar with 45° cut corners.
+    private static func chamferBar(_ r: CGRect, cut c: CGFloat) -> UIBezierPath {
+        let p = UIBezierPath()
+        p.move(to: CGPoint(x: r.minX + c, y: r.minY)); p.addLine(to: CGPoint(x: r.maxX - c, y: r.minY))
+        p.addLine(to: CGPoint(x: r.maxX, y: r.minY + c)); p.addLine(to: CGPoint(x: r.maxX, y: r.maxY))
+        p.addLine(to: CGPoint(x: r.minX, y: r.maxY)); p.addLine(to: CGPoint(x: r.minX, y: r.minY + c)); p.close()
+        return p
+    }
+
+    /// Bar whose ends slant outwards at the top.
+    private static func parallelogramBar(_ r: CGRect, cut c: CGFloat) -> UIBezierPath {
+        let p = UIBezierPath()
+        p.move(to: CGPoint(x: r.minX, y: r.minY)); p.addLine(to: CGPoint(x: r.maxX, y: r.minY))
+        p.addLine(to: CGPoint(x: r.maxX - c, y: r.maxY)); p.addLine(to: CGPoint(x: r.minX + c, y: r.maxY)); p.close()
+        return p
+    }
+
+    /// Brushed-chrome fill (vertical multi-stop gradient) with a light edge.
+    private static func metalFill(_ g: CGContext, _ path: UIBezierPath) {
+        g.saveGState()
+        UIColor(white: 0.8, alpha: 1).setFill(); path.fill()
+        path.addClip()
+        let b = path.bounds
+        let cols = [UIColor(white: 0.98, alpha: 1), UIColor(white: 0.72, alpha: 1), UIColor(white: 0.90, alpha: 1), UIColor(white: 0.55, alpha: 1)]
+        if let gr = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(), colors: cols.map(\.cgColor) as CFArray, locations: [0, 0.45, 0.55, 1]) {
+            g.drawLinearGradient(gr, start: CGPoint(x: b.midX, y: b.minY), end: CGPoint(x: b.midX, y: b.maxY), options: [])
+        }
+        g.restoreGState()
+        UIColor.white.withAlphaComponent(0.7).setStroke(); path.lineWidth = 2; path.stroke()
+    }
+
+    /// Team-colour fill with a glossy highlight on the upper half.
+    private static func glossFill(_ g: CGContext, _ path: UIBezierPath, _ c: UIColor) {
+        gradientFill(g, path, c.lighter(0.22), c.darker(0.35))
+        g.saveGState()
+        path.addClip()
+        let b = path.bounds
+        UIColor.white.withAlphaComponent(0.16).setFill()
+        UIRectFill(CGRect(x: b.minX, y: b.minY, width: b.width, height: b.height * 0.42))
+        g.restoreGState()
     }
 
     private static func parallelogram(x: CGFloat, y: CGFloat, w: CGFloat, h: CGFloat, slant: CGFloat) -> UIBezierPath {

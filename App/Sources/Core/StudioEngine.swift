@@ -718,6 +718,17 @@ final class StudioEngine: ObservableObject {
         placeScoreboard(x: c ? 0 : 0.5, top: true)
     }
 
+    /// Picks a wide-strip look and applies its default colours.
+    func setScoreboardStyle(_ st: ScoreboardStyle) {
+        updateScoreboard { t in
+            var b = t.sb; b.style = st.rawValue
+            (b.homeColor, b.awayColor, b.centerColor) = st.palette
+            t.sb = b
+        }
+        if scoreboardIndex.map({ titles[$0].sb.compact }) == true { setScoreboardCompact(false) }
+    }
+    func setScoreboardBanner(_ text: String) { updateScoreboard { var b = $0.sb; b.banner = text; $0.sb = b } }
+
     func scoreboardClockToggle() { updateScoreboard { var b = $0.sb; b.toggleClock(); $0.sb = b } }
     func scoreboardClockReset() { updateScoreboard { var b = $0.sb; b.resetClock(); $0.sb = b } }
 

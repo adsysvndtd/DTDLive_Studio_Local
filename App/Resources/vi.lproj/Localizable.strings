@@ -24,6 +24,7 @@
 "Camera mạng (SRT · RTSP · RTMP · DTDLive)" = "Camera mạng (SRT · RTSP · RTMP · DTDLive)";
 "Camera trong máy & USB" = "Camera trong máy & USB";
 "Cho phép DTDLive tìm và ghép nối" = "Cho phép DTDLive tìm và ghép nối";
+"Chrome xanh" = "Chrome xanh";
 "Chuyển cảnh" = "Chuyển cảnh";
 "Chuyển sang 1080×1920" = "Chuyển sang 1080×1920";
 "Chưa có camera mạng" = "Chưa có camera mạng";
@@ -52,11 +53,13 @@
 "Cài đặt" = "Cài đặt";
 "Cần iPadOS/iOS 17.4 trở lên cho đăng nhập Facebook" = "Cần iPadOS/iOS 17.4 trở lên cho đăng nhập Facebook";
 "Cập nhật từ Git" = "Cập nhật từ Git";
+"Cổ điển" = "Cổ điển";
 "Cỡ chữ" = "Cỡ chữ";
 "Cỡ khung" = "Cỡ khung";
 "Dung lượng" = "Dung lượng";
 "Dòng 1" = "Dòng 1";
 "Dòng 2" = "Dòng 2";
+"Dòng chữ dưới (vd LIVE MATCH DAY)" = "Dòng chữ dưới (vd LIVE MATCH DAY)";
 "Dòng phụ (tuỳ chọn)" = "Dòng phụ (tuỳ chọn)";
 "Dùng làm PiP" = "Dùng làm PiP";
 "Dưới phải" = "Dưới phải";
@@ -121,6 +124,7 @@
 "Lặp" = "Lặp";
 "Lớn giữa phải" = "Lớn giữa phải";
 "Lớp phủ" = "Lớp phủ";
+"Lửa đỏ" = "Lửa đỏ";
 "Màn hình" = "Màn hình";
 "Màn hình ngoài" = "Màn hình ngoài";
 "Màn ngoài" = "Màn ngoài";
@@ -188,6 +192,7 @@
 "Server URL (rtmp:// hoặc rtmps://)" = "Server URL (rtmp:// hoặc rtmps://)";
 "Show đã lưu (Files › DTD Studio › Shows)" = "Show đã lưu (Files › DTD Studio › Shows)";
 "SuperFG của bạn (PNG trong suốt · video có kênh alpha .mov)" = "SuperFG của bạn (PNG trong suốt · video có kênh alpha .mov)";
+"Sân vận động" = "Sân vận động";
 "Sắp xếp" = "Sắp xếp";
 "SỌC" = "SỌC";
 "Sọc" = "Sọc";
@@ -245,6 +250,7 @@
 "Viền" = "Viền";
 "Vuốt 1 ngón trên PVW về phía PGM = CUT · 2 ngón = AUTO" = "Vuốt 1 ngón trên PVW về phía PGM = CUT · 2 ngón = AUTO";
 "Vuốt PVW → PGM để chuyển" = "Vuốt PVW → PGM để chuyển";
+"Vát góc" = "Vát góc";
 "Vẽ" = "Vẽ";
 "Vị trí" = "Vị trí";
 "Vị trí & cỡ" = "Vị trí & cỡ";

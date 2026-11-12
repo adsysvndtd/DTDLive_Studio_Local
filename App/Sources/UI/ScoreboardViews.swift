@@ -129,6 +129,31 @@ struct ScoreboardControl: View {
                 Text("Gọn ở góc").tag(true)
             }
             .pickerStyle(.segmented)
+            if !t.sb.compact {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 6) {
+                        ForEach(ScoreboardStyle.allCases) { st in
+                            let on = t.sb.look == st
+                            Button { engine.setScoreboardStyle(st) } label: {
+                                VStack(spacing: 3) {
+                                    Image(uiImage: ScoreboardRenderer.preview(st))
+                                        .resizable().scaledToFit().frame(width: compact ? 130 : 170)
+                                    Text(verbatim: st.label).font(.system(size: 11, weight: .semibold))
+                                        .foregroundStyle(on ? .black : .white)
+                                }
+                                .padding(4)
+                                .background(on ? DS.accent : DS.surface2, in: Rectangle())
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                }
+                if t.sb.look != .classic {
+                    TextField("Dòng chữ dưới (vd LIVE MATCH DAY)", text: Binding(get: { t.sb.banner }, set: { engine.setScoreboardBanner($0) }))
+                        .font(.system(size: 13)).padding(.horizontal, 8).frame(height: 30)
+                        .background(DS.surface2, in: Rectangle())
+                }
+            }
             HStack(alignment: .top, spacing: 12) {
                 Grid(horizontalSpacing: 6, verticalSpacing: 6) {
                     GridRow {

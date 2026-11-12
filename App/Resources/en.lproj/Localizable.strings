@@ -24,6 +24,7 @@
 "Camera mạng (SRT · RTSP · RTMP · DTDLive)" = "Network cameras (SRT · RTSP · RTMP · DTDLive)";
 "Camera trong máy & USB" = "Built-in & USB cameras";
 "Cho phép DTDLive tìm và ghép nối" = "Let DTDLive find and pair";
+"Chrome xanh" = "Blue chrome";
 "Chuyển cảnh" = "Transitions";
 "Chuyển sang 1080×1920" = "Switch to 1080×1920";
 "Chưa có camera mạng" = "No network cameras yet";
@@ -52,11 +53,13 @@
 "Cài đặt" = "Settings";
 "Cần iPadOS/iOS 17.4 trở lên cho đăng nhập Facebook" = "Facebook sign-in needs iPadOS/iOS 17.4 or later";
 "Cập nhật từ Git" = "Update from Git";
+"Cổ điển" = "Classic";
 "Cỡ chữ" = "Text size";
 "Cỡ khung" = "Window size";
 "Dung lượng" = "Size";
 "Dòng 1" = "Line 1";
 "Dòng 2" = "Line 2";
+"Dòng chữ dưới (vd LIVE MATCH DAY)" = "Ribbon text (e.g. LIVE MATCH DAY)";
 "Dòng phụ (tuỳ chọn)" = "Sub line (optional)";
 "Dùng làm PiP" = "Use as PiP";
 "Dưới phải" = "Bottom right";
@@ -121,6 +124,7 @@
 "Lặp" = "Loop";
 "Lớn giữa phải" = "Large centre-right";
 "Lớp phủ" = "Overlay";
+"Lửa đỏ" = "Red flame";
 "Màn hình" = "Display";
 "Màn hình ngoài" = "External display";
 "Màn ngoài" = "External";
@@ -188,6 +192,7 @@
 "Server URL (rtmp:// hoặc rtmps://)" = "Server URL (rtmp:// or rtmps://)";
 "Show đã lưu (Files › DTD Studio › Shows)" = "Saved shows (Files › DTD Studio › Shows)";
 "SuperFG của bạn (PNG trong suốt · video có kênh alpha .mov)" = "Your SuperFG (transparent PNG · alpha video .mov)";
+"Sân vận động" = "Arena";
 "Sắp xếp" = "Arrange";
 "SỌC" = "BARS";
 "Sọc" = "Bars";
@@ -245,6 +250,7 @@
 "Viền" = "Line";
 "Vuốt 1 ngón trên PVW về phía PGM = CUT · 2 ngón = AUTO" = "Swipe PVW toward PGM: 1 finger = CUT · 2 fingers = AUTO";
 "Vuốt PVW → PGM để chuyển" = "Swipe PVW → PGM to switch";
+"Vát góc" = "Angled";
 "Vẽ" = "Draw";
 "Vị trí" = "Position";
 "Vị trí & cỡ" = "Position & size";

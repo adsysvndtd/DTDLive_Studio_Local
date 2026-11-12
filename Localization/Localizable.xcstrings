@@ -261,6 +261,16 @@
         }
       }
     },
+    "Chrome xanh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blue chrome"
+          }
+        }
+      }
+    },
     "Chuyển cảnh": {
       "localizations": {
         "en": {
@@ -541,6 +551,16 @@
         }
       }
     },
+    "Cổ điển": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Classic"
+          }
+        }
+      }
+    },
     "Cỡ chữ": {
       "localizations": {
         "en": {
@@ -587,6 +607,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Line 2"
+          }
+        }
+      }
+    },
+    "Dòng chữ dưới (vd LIVE MATCH DAY)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ribbon text (e.g. LIVE MATCH DAY)"
           }
         }
       }
@@ -1227,6 +1257,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Overlay"
+          }
+        }
+      }
+    },
+    "Lửa đỏ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Red flame"
           }
         }
       }
@@ -1901,6 +1941,16 @@
         }
       }
     },
+    "Sân vận động": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arena"
+          }
+        }
+      }
+    },
     "Sắp xếp": {
       "localizations": {
         "en": {
@@ -2467,6 +2517,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Swipe PVW → PGM to switch"
+          }
+        }
+      }
+    },
+    "Vát góc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Angled"
           }
         }
       }
