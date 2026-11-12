@@ -101,8 +101,11 @@ final class RTMPInputSource: VideoSource {
 enum RTMPURL {
     /// "rtmp://host/app/key" -> ("rtmp://host/app", "key"). Keeps query strings on the key.
     static func split(_ url: URL) -> (String, String) {
-        let s = url.absoluteString
-        guard let slash = s.lastIndex(of: "/"), s.distance(from: s.startIndex, to: slash) > 8 else { return (s, "") }
+        let s = url.absoluteString.trimmingCharacters(in: .whitespacesAndNewlines)
+        // Only look for the app/key separator before any query string (stream keys may carry ?a=b/c).
+        let pathEnd = s.firstIndex(of: "?") ?? s.endIndex
+        let head = s[..<pathEnd]
+        guard let slash = head.lastIndex(of: "/"), s.distance(from: s.startIndex, to: slash) > 8 else { return (s, "") }
         return (String(s[..<slash]), String(s[s.index(after: slash)...]))
     }
 }
