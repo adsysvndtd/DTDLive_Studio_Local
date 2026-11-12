@@ -95,6 +95,10 @@ struct CategoryContent: View {
     @State private var importing: LibraryKind?
     @State private var photoKind: LibraryKind?
     @State private var photoItems: [PhotosPickerItem] = []
+    /// Library the open picker imports into — kept separately so dismissing the picker
+    /// (which clears photoKind / importing) never sends a Logo into Ảnh or vice versa.
+    @State private var photoTarget: LibraryKind = .picture
+    @State private var fileTarget: LibraryKind = .picture
     @State private var adjustingSource: UUID?
     @State private var ptzSource: UUID?
     @State private var infoSource: UUID?
@@ -129,10 +133,10 @@ struct CategoryContent: View {
         }
         .background(DS.bg)
         .fileImporter(isPresented: Binding(get: { importing != nil }, set: { if !$0 { importing = nil } }),
-                      allowedContentTypes: importing.map(types) ?? [.data], allowsMultipleSelection: true) { r in
+                      allowedContentTypes: types(fileTarget), allowsMultipleSelection: true) { r in
             switch r {
             case .success(let urls):
-                if let k = importing, let err = library.importFiles(urls, into: k) { engine.message = err }
+                if let err = library.importFiles(urls, into: fileTarget) { engine.message = err }
             case .failure(let e):
                 engine.message = "Không mở được tệp: \(e.localizedDescription)"
             }
@@ -141,9 +145,10 @@ struct CategoryContent: View {
         .photosPicker(isPresented: Binding(get: { photoKind != nil }, set: { if !$0 { photoKind = nil } }),
                       selection: $photoItems, matching: .images)
         .onChange(of: photoItems) { _, items in
-            let k = photoKind ?? .picture
+            guard !items.isEmpty else { return }
+            let k = photoTarget
             Task {
-                for i in items { if let d = try? await i.loadTransferable(type: Data.self) { library.importImage(d, into: k) } }
+                for i in items { if let d = try? await i.loadTransferable(type: Data.self) { library.importImage(d, into: k, name: k == .logo ? "Logo" : k == .overlay ? "SuperFG" : "Ảnh") } }
                 photoItems = []
             }
         }
@@ -181,12 +186,12 @@ struct CategoryContent: View {
                 }
                 headerButton("Thêm nguồn", "plus") { showAddSource = true }
             case .movie:
-                headerButton("Nhập video", "square.and.arrow.down") { importing = .movie }
+                headerButton("Nhập video", "square.and.arrow.down") { fileTarget = .movie; importing = .movie }
             case .picture, .overlay, .logo:
                 importImageMenu(category == .picture ? .picture : category == .overlay ? .overlay : .logo)
             case .audio:
-                headerButton("Nhập nhạc", "square.and.arrow.down") { importing = .music }
-                headerButton("Nhập hiệu ứng", "sparkles") { importing = .sound }
+                headerButton("Nhập nhạc", "square.and.arrow.down") { fileTarget = .music; importing = .music }
+                headerButton("Nhập hiệu ứng", "sparkles") { fileTarget = .sound; importing = .sound }
             case .title:
                 Menu {
                     ForEach(TitleStyle.allCases) { s in
@@ -218,8 +223,8 @@ struct CategoryContent: View {
     /// One "Nhập ảnh" button; the source (Photos or Files) is chosen from its menu.
     private func importImageMenu(_ k: LibraryKind) -> some View {
         Menu {
-            Button { photoKind = k } label: { Label("Thư viện ảnh", systemImage: "photo.on.rectangle") }
-            Button { importing = k } label: { Label("Tệp", systemImage: "folder") }
+            Button { photoTarget = k; photoKind = k } label: { Label("Thư viện ảnh", systemImage: "photo.on.rectangle") }
+            Button { fileTarget = k; importing = k } label: { Label("Tệp", systemImage: "folder") }
         } label: { toolbarLabel("Nhập ảnh", "square.and.arrow.down") }
         .id(k)
     }
