@@ -2,6 +2,8 @@ import SwiftUI
 
 /// Design tokens + small reusable controls so every screen looks consistent.
 enum DS {
+    /// One text size for every row and header in Cài đặt.
+    static let settingsFont = Font.system(size: 15)
     static let bg = Color(red: 0.055, green: 0.06, blue: 0.075)
     static let surface = Color(red: 0.10, green: 0.105, blue: 0.125)
     static let surface2 = Color(red: 0.145, green: 0.15, blue: 0.175)

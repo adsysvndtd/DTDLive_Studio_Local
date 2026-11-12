@@ -89,7 +89,7 @@ struct GraphicsRepoRows: View {
                 Button(repo.syncing ? "Đang tải…" : "Cập nhật từ Git") { repo.token = token; Task { await repo.sync(force: true) } }
                     .disabled(repo.syncing)
                 Spacer()
-                Text(repo.status).font(.caption).foregroundStyle(.secondary).lineLimit(2)
+                Text(repo.status).foregroundStyle(.secondary).lineLimit(2)
             }
         }
     }

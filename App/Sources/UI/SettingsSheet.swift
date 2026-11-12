@@ -20,7 +20,7 @@ struct SettingsForm: View {
 
     var body: some View {
             Form {
-                Section("Phát trực tiếp") {
+                Section(header: SettingsHeader("Phát trực tiếp")) {
                     if engine.outputs.isEmpty {
                         Text("Chưa có đích phát").foregroundStyle(.secondary)
                     }
@@ -31,7 +31,7 @@ struct SettingsForm: View {
                         Button { onOpenOutputs() } label: { Label("Quản lý đích phát (RTMP · SRT · RTSP · YouTube · Facebook)", systemImage: "dot.radiowaves.left.and.right") }
                     }
                 }
-                Section("Chương trình (Program)") {
+                Section(header: SettingsHeader("Chương trình (Program)")) {
                     Picker("Độ phân giải", selection: Binding(
                         get: { engine.format.resolutionID },
                         set: { id in if let r = ProgramFormat.resolutions.first(where: { $0.id == id }) { engine.format.width = r.width; engine.format.height = r.height } })) {
@@ -47,9 +47,9 @@ struct SettingsForm: View {
                             value: $engine.encoder.bitrate, in: 1_000_000...40_000_000, step: 500_000)
                     Toggle("Bitrate thích ứng", isOn: $engine.encoder.adaptive)
                     Text("Đổi độ phân giải/fps khi đang phát: các đích tự kết nối lại với thông số mới.")
-                        .font(.caption).foregroundStyle(.secondary)
+                        .foregroundStyle(.secondary)
                 }
-                Section("Âm thanh") {
+                Section(header: SettingsHeader("Âm thanh")) {
                     Picker("Đầu vào", selection: Binding(get: { engine.audioInputID ?? "" }, set: { engine.setAudioInput($0.isEmpty ? nil : $0) })) {
                         Text("Mặc định").tag("")
                         ForEach(engine.audioInputs) { Text($0.name).tag($0.id) }
@@ -59,15 +59,15 @@ struct SettingsForm: View {
                     VStack(alignment: .leading) {
                         Text("Trễ âm thanh Mic/Line: \(Int(engine.micDelayMs)) ms")
                         Slider(value: Binding(get: { engine.micDelayMs }, set: { engine.micDelayMs = $0 }), in: 0...500, step: 10)
-                        Text("Kéo cho tiếng khớp với hình khi camera mạng bị trễ.").font(.caption).foregroundStyle(.secondary)
+                        Text("Kéo cho tiếng khớp với hình khi camera mạng bị trễ.").foregroundStyle(.secondary)
                     }
-                    Text("Chỉ bật khi dùng tai nghe — loa ngoài sẽ hú vào micro.").font(.caption).foregroundStyle(.secondary)
+                    Text("Chỉ bật khi dùng tai nghe — loa ngoài sẽ hú vào micro.").foregroundStyle(.secondary)
                 }
-                Section("Thao tác") {
+                Section(header: SettingsHeader("Thao tác")) {
                     Toggle("Vuốt PVW → PGM để chuyển", isOn: $engine.swipeToTake)
-                    Text("Vuốt 1 ngón trên PVW về phía PGM = CUT · 2 ngón = AUTO").font(.caption).foregroundStyle(.secondary)
+                    Text("Vuốt 1 ngón trên PVW về phía PGM = CUT · 2 ngón = AUTO").foregroundStyle(.secondary)
                 }
-                Section("Màn hình") {
+                Section(header: SettingsHeader("Màn hình")) {
                     Toggle("Khung an toàn trên PVW/PGM", isOn: $engine.showSafeGuides)
                     Toggle("Khung an toàn trên màn hình ngoài", isOn: $engine.externalSafeGuides)
                     Toggle("Thông số trên PGM", isOn: $engine.showMonitorInfo)
@@ -78,29 +78,29 @@ struct SettingsForm: View {
                         }
                     }
                 }
-                Section("Nhận camera: SRT · RTMP · RTSP · DTDLive") {
+                Section(header: SettingsHeader("Nhận camera: SRT · RTMP · RTSP · DTDLive")) {
                     IngestSettingsRows(ingest: engine.ingest)
                     let ip = NetworkInfo.wifiIPv4() ?? "<IP iPad>"
                     ForEach(engine.ingest.urls(ip: ip)) { u in
-                        LabeledContent(u.proto, value: u.url).font(.caption.monospaced())
+                        LabeledContent(u.proto, value: u.url)
                     }
                 }
                 .textSelection(.enabled)
-                Section("Ngôn ngữ") {
+                Section(header: SettingsHeader("Ngôn ngữ")) {
                     LanguagePicker()
                 }
-                Section("Tạo phiên live YouTube / Facebook") {
+                Section(header: SettingsHeader("Tạo phiên live YouTube / Facebook")) {
                     PlatformKeyField(title: "Google OAuth Client ID (loại iOS)", key: PlatformLive.googleKey,
                                      hint: "xxxx.apps.googleusercontent.com — Google Cloud › Credentials, bật YouTube Data API v3")
                     PlatformKeyField(title: "Facebook App ID", key: PlatformLive.facebookKey,
                                      hint: "developers.facebook.com › App › quyền publish_video")
                     Text("Không muốn đăng ký app: dùng Đầu ra › Thêm đích › YouTube/Facebook (stream key).")
-                        .font(.caption).foregroundStyle(.secondary)
+                        .foregroundStyle(.secondary)
                 }
-                Section("Đồ hoạ HTML5 (tải từ Git)") {
+                Section(header: SettingsHeader("Đồ hoạ HTML5 (tải từ Git)")) {
                     GraphicsRepoRows(repo: engine.graphicsRepo)
                 }
-                Section("Điều khiển từ xa & ghép nối") {
+                Section(header: SettingsHeader("Điều khiển từ xa & ghép nối")) {
                     let ip = NetworkInfo.wifiIPv4() ?? "—"
                     LabeledContent("Web remote", value: "http://\(ip):\(engine.controlPort)")
                     LabeledContent("OSC (UDP)", value: "\(ip):8000")
@@ -108,13 +108,14 @@ struct SettingsForm: View {
                     Toggle("Tự kết nối thiết bị tin cậy", isOn: Binding(get: { engine.pairing.autoAcceptTrusted }, set: { engine.pairing.autoAcceptTrusted = $0 }))
                 }
                 .textSelection(.enabled)
-                Section("Giới thiệu") {
+                Section(header: SettingsHeader("Giới thiệu")) {
                     LabeledContent("Ứng dụng", value: "DTD Studio")
                     LabeledContent("Phiên bản", value: "\(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0") (\(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "1"))")
                     LabeledContent("Bundle ID", value: Bundle.main.bundleIdentifier ?? "")
                     LabeledContent("NDI", value: NDIAvailability.isAvailable ? "Có" : "Chưa tích hợp SDK")
                 }
             }
+            .font(DS.settingsFont)
             .scrollContentBackground(.hidden)
             .background(DS.bg)
     }
@@ -135,7 +136,7 @@ struct PlatformKeyField: View {
                 .onChange(of: value) { _, v in
                     UserDefaults.standard.set(v.trimmingCharacters(in: .whitespacesAndNewlines), forKey: key)
                 }
-            Text(hint).font(.caption2).foregroundStyle(.secondary)
+            Text(hint).foregroundStyle(.secondary)
         }
     }
 }
@@ -157,7 +158,16 @@ struct LanguagePicker: View {
             changed = true
         }
         if changed {
-            Text(verbatim: "Mở lại app để đổi ngôn ngữ · Relaunch the app to apply").font(.caption).foregroundStyle(.secondary)
+            Text(verbatim: "Mở lại app để đổi ngôn ngữ · Relaunch the app to apply").foregroundStyle(.secondary)
         }
+    }
+}
+
+/// Settings section header — same size as every row (only colour/weight differ).
+struct SettingsHeader: View {
+    let title: String
+    init(_ title: String) { self.title = title }
+    var body: some View {
+        Text(LocalizedStringKey(title)).font(DS.settingsFont.weight(.semibold)).textCase(nil).foregroundStyle(DS.text2)
     }
 }
