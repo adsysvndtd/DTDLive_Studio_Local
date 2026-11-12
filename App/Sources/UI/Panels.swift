@@ -75,91 +75,130 @@ struct SidePanel: View {
 
 struct TitlesPanel: View {
     @ObservedObject var engine: StudioEngine
-    @State private var expanded: Set<UUID> = []
+    @State private var editingID: UUID?
 
     var body: some View {
-        VStack(alignment: .leading, spacing: DS.gap) {
+        VStack(alignment: .leading, spacing: 4) {
             HStack {
-                Text("Gán title vào phím Title / Title 2, rồi bấm “Title On” ở cột phải để lên sóng").font(.caption).foregroundStyle(DS.text3)
+                Text("Title").textCase(.uppercase).font(.caption2.weight(.bold)).foregroundStyle(DS.text3).tracking(0.6)
                 Spacer()
-                Button("Ẩn tất cả") { engine.setTitleVisible(nil, false) }.buttonStyle(.bordered)
+                Button { engine.setTitleVisible(nil, false) } label: {
+                    Text("Ẩn tất cả").font(.caption2.weight(.semibold)).padding(.horizontal, 8).frame(height: 24)
+                        .foregroundStyle(DS.text2).background(DS.surface2, in: Rectangle())
+                }.buttonStyle(.plain)
             }
-            ForEach($engine.titles) { $t in
-                titleCard($t)
+            ForEach(engine.titles.enumerated().filter { $0.offset != engine.scoreboardIndex }.map(\.element)) { item in
+                titleRow(item)
             }
-            Text("Điều khiển title từ điện thoại/laptop: http://<IP máy>:8080")
-                .font(.caption2).foregroundStyle(DS.text3)
+        }
+        .sheet(item: Binding(get: { editingID.map { IDBox(id: $0) } }, set: { editingID = $0?.id })) { box in
+            if let i = engine.titles.firstIndex(where: { $0.id == box.id }) {
+                TitleEditorSheet(item: $engine.titles[i]) {
+                    editingID = nil; engine.removeTitle(box.id)
+                }
+            }
         }
     }
 
-    @ViewBuilder
-    private func titleCard(_ t: Binding<TitleItem>) -> some View {
-        let item = t.wrappedValue
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 8) {
-                Menu {
-                    Picker("Kiểu", selection: t.style) { ForEach(TitleStyle.allCases) { Text($0.label).tag($0) } }
-                } label: {
-                    HStack(spacing: 4) {
-                        Text(item.style.label).font(.subheadline.weight(.semibold))
-                        Image(systemName: "chevron.down").font(.caption2)
-                    }
-                    .foregroundStyle(.white)
-                }
-                Spacer()
-                if item.visible {
-                    Text("TRÊN SÓNG").font(.caption2.weight(.heavy)).foregroundStyle(DS.pgm)
-                }
-                assignChip("Title", on: (engine.armedTitleID ?? engine.titles.first?.id) == item.id) { engine.armedTitleID = item.id }
-                assignChip("Title 2", on: engine.secondTitle?.id == item.id) { engine.armedTitle2ID = item.id }
-                Menu {
-                    Button(expanded.contains(item.id) ? "Ẩn tuỳ chỉnh" : "Vị trí, cỡ, màu…") { toggle(item.id) }
-                    Button("Xoá", role: .destructive) { engine.removeTitle(item.id) }
-                } label: { Image(systemName: "ellipsis.circle").font(.title3).foregroundStyle(DS.text2) }
+    private func titleRow(_ item: TitleItem) -> some View {
+        HStack(spacing: 6) {
+            Image(systemName: icon(item.style)).font(.system(size: 12)).foregroundStyle(DS.accent).frame(width: 16)
+            VStack(alignment: .leading, spacing: 0) {
+                Text(verbatim: preview(item)).font(.system(size: 12, weight: .semibold)).lineLimit(1)
+                Text(item.style.label).font(.system(size: 10)).foregroundStyle(DS.text3).lineLimit(1)
             }
-            if item.style != .clock && item.style != .scoreBug {
-                CaptionField(title: item.style == .scoreBug ? "Đội A" : item.style == .ticker ? "Nội dung chữ chạy" : item.style == .countdown ? "Nhãn (vd: Bắt đầu sau)" : "Dòng 1", text: t.line1)
-            }
-            if [.lowerThird, .nameStrap, .fullScreen].contains(item.style) {
-                CaptionField(title: item.style == .scoreBug ? "Đội B" : "Dòng 2", text: t.line2)
-            }
-            if item.style == .countdown {
-                HStack {
-                    Stepper("Phút \(item.scoreA)", value: t.scoreA, in: 0...180).font(.subheadline.monospacedDigit())
-                    Stepper("Giây \(item.scoreB)", value: t.scoreB, in: 0...59).font(.subheadline.monospacedDigit())
-                }
-                Text("Bắt đầu đếm khi bấm LÊN SÓNG").font(.caption2).foregroundStyle(DS.text3)
-            }
-            if item.style == .scoreBug {
-                Text("Điều khiển tỉ số, đồng hồ, logo, màu ở thẻ Bảng tỉ số phía trên").font(.caption2).foregroundStyle(DS.text3)
-            }
-            if expanded.contains(item.id) {
-                LabeledSlider(title: "Ngang", value: Binding(get: { Double(t.wrappedValue.position.x) }, set: { t.wrappedValue.position.x = $0 }),
-                              range: 0...0.9) { "\(Int($0 * 100))%" }
-                LabeledSlider(title: "Dọc", value: Binding(get: { Double(t.wrappedValue.position.y) }, set: { t.wrappedValue.position.y = $0 }),
-                              range: 0...0.95) { "\(Int($0 * 100))%" }
-                LabeledSlider(title: "Cỡ chữ", value: Binding(get: { Double(t.wrappedValue.scale) }, set: { t.wrappedValue.scale = $0 }),
-                              range: 0.5...2) { String(format: "%.1f×", $0) }
-                ColorPicker("Màu nhấn", selection: Binding(
-                    get: { Color(UIColor(hex: t.wrappedValue.accentHex)) },
-                    set: { t.wrappedValue.accentHex = UIColor($0).hexString }))
-                    .font(.caption).foregroundStyle(DS.text2)
-            }
+            Spacer(minLength: 4)
+            if item.visible { Circle().fill(DS.pgm).frame(width: 7, height: 7) }
+            assignChip("T1", on: (engine.armedTitleID ?? engine.titles.first?.id) == item.id) { engine.armedTitleID = item.id }
+            assignChip("T2", on: engine.secondTitle?.id == item.id) { engine.armedTitle2ID = item.id }
+            Button { editingID = item.id } label: {
+                Image(systemName: "pencil").font(.system(size: 12, weight: .semibold)).frame(width: 26, height: 24)
+                    .foregroundStyle(.white).background(DS.surface2, in: Rectangle())
+            }.buttonStyle(.plain)
         }
-        .padding(12)
+        .padding(.horizontal, 8).padding(.vertical, 5)
         .background(DS.surface, in: Rectangle())
-        .overlay(Rectangle().stroke(item.visible ? DS.pgm : DS.stroke, lineWidth: item.visible ? 1.5 : 1))
+        .overlay(Rectangle().stroke(item.visible ? DS.pgm : DS.stroke, lineWidth: 1))
+        .contentShape(Rectangle())
+        .onTapGesture(count: 2) { editingID = item.id }
     }
 
-    private func toggle(_ id: UUID) { if expanded.contains(id) { expanded.remove(id) } else { expanded.insert(id) } }
+    private func preview(_ t: TitleItem) -> String {
+        if t.style == .clock { return "00:00:00" }
+        if t.style == .countdown { return "\(t.line1) \(t.scoreA):" + String(format: "%02d", t.scoreB) }
+        return t.line2.isEmpty ? t.line1 : "\(t.line1) · \(t.line2)"
+    }
+
+    private func icon(_ s: TitleStyle) -> String {
+        switch s {
+        case .ticker: return "text.alignleft"
+        case .clock: return "clock"
+        case .countdown: return "timer"
+        case .fullScreen: return "rectangle.inset.filled"
+        default: return "text.below.photo"
+        }
+    }
 
     private func assignChip(_ t: String, on: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Text(LocalizedStringKey(t)).font(.caption.weight(.bold)).padding(.horizontal, 9).padding(.vertical, 5)
+            Text(verbatim: t).font(.system(size: 10, weight: .bold)).frame(width: 26, height: 24)
                 .foregroundStyle(on ? .black : DS.text2)
                 .background(on ? Color.white : DS.surface2, in: Rectangle())
         }
         .buttonStyle(.plain)
+    }
+}
+
+private struct IDBox: Identifiable { let id: UUID }
+
+/// Full editor for one title / lower third.
+struct TitleEditorSheet: View {
+    @Binding var item: TitleItem
+    var onDelete: () -> Void
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section {
+                    Picker("Kiểu", selection: $item.style) {
+                        ForEach(TitleStyle.allCases.filter { $0 != .scoreBug }) { Text($0.label).tag($0) }
+                    }
+                    if item.style != .clock {
+                        TextField(item.style == .ticker ? "Nội dung chữ chạy" : item.style == .countdown ? "Nhãn" : "Dòng 1", text: $item.line1)
+                    }
+                    if [.lowerThird, .nameStrap, .fullScreen].contains(item.style) {
+                        TextField("Dòng 2", text: $item.line2)
+                    }
+                    if item.style == .countdown {
+                        Stepper("Phút \(item.scoreA)", value: $item.scoreA, in: 0...180).monospacedDigit()
+                        Stepper("Giây \(item.scoreB)", value: $item.scoreB, in: 0...59).monospacedDigit()
+                    }
+                }
+                Section("Vị trí & cỡ") {
+                    LabeledSlider(title: "Ngang", value: Binding(get: { Double(item.position.x) }, set: { item.position.x = $0 }),
+                                  range: 0...0.9) { "\(Int($0 * 100))%" }
+                    LabeledSlider(title: "Dọc", value: Binding(get: { Double(item.position.y) }, set: { item.position.y = $0 }),
+                                  range: 0...0.95) { "\(Int($0 * 100))%" }
+                    LabeledSlider(title: "Cỡ chữ", value: Binding(get: { Double(item.scale) }, set: { item.scale = $0 }),
+                                  range: 0.5...2) { String(format: "%.1f×", $0) }
+                    if item.style == .ticker {
+                        LabeledSlider(title: "Tốc độ chạy", value: Binding(get: { Double(item.tickerSpeed) }, set: { item.tickerSpeed = $0 }),
+                                      range: 40...400) { "\(Int($0))" }
+                    }
+                    ColorPicker("Màu nhấn", selection: Binding(
+                        get: { Color(UIColor(hex: item.accentHex)) },
+                        set: { item.accentHex = UIColor($0).hexString }), supportsOpacity: false)
+                }
+                Section {
+                    Button("Xoá title", role: .destructive) { onDelete(); dismiss() }
+                }
+            }
+            .navigationTitle(item.style.label)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Xong") { dismiss() } } }
+        }
+        .presentationDetents([.medium, .large])
     }
 }
 

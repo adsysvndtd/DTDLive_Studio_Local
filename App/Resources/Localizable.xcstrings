@@ -61,6 +61,16 @@
         }
       }
     },
+    "Bật bộ đệm replay (60 giây gần nhất)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Replay buffer on (last 60 seconds)"
+          }
+        }
+      }
+    },
     "Bật scopes (Program)": {
       "localizations": {
         "en": {
@@ -401,6 +411,16 @@
         }
       }
     },
+    "Cỡ chữ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Text size"
+          }
+        }
+      }
+    },
     "Dung lượng": {
       "localizations": {
         "en": {
@@ -457,6 +477,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Wide strip"
+          }
+        }
+      }
+    },
+    "Dọc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vertical"
           }
         }
       }
@@ -1091,6 +1121,16 @@
         }
       }
     },
+    "Ngang": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Horizontal"
+          }
+        }
+      }
+    },
     "Nghe Program (tai nghe)": {
       "localizations": {
         "en": {
@@ -1167,6 +1207,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Branch"
+          }
+        }
+      }
+    },
+    "Nhãn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Label"
           }
         }
       }
@@ -1307,6 +1357,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Replacement background"
+          }
+        }
+      }
+    },
+    "Nội dung chữ chạy": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ticker text"
           }
         }
       }
@@ -1681,6 +1741,16 @@
         }
       }
     },
+    "Title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Title"
+          }
+        }
+      }
+    },
     "Tiêu đề buổi live": {
       "localizations": {
         "en": {
@@ -1781,6 +1851,16 @@
         }
       }
     },
+    "Tắt khi không dùng replay để đỡ nóng máy và tiết kiệm pin.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Turn off when not using replay to keep the device cool and save battery."
+          }
+        }
+      }
+    },
     "Tệp": {
       "localizations": {
         "en": {
@@ -1797,6 +1877,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Speed"
+          }
+        }
+      }
+    },
+    "Tốc độ chạy": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scroll speed"
           }
         }
       }
@@ -1921,6 +2011,16 @@
         }
       }
     },
+    "Vị trí & cỡ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Position & size"
+          }
+        }
+      }
+    },
     "Xanh dương": {
       "localizations": {
         "en": {
@@ -2007,6 +2107,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Clear drawing"
+          }
+        }
+      }
+    },
+    "Xoá title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete title"
           }
         }
       }
@@ -2347,26 +2457,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "→ Title 2"
-          }
-        }
-      }
-    },
-    "Bật bộ đệm replay (60 giây gần nhất)": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Replay buffer on (last 60 seconds)"
-          }
-        }
-      }
-    },
-    "Tắt khi không dùng replay để đỡ nóng máy và tiết kiệm pin.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Turn off when not using replay to keep the device cool and save battery."
           }
         }
       }

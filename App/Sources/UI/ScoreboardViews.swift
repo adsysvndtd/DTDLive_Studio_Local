@@ -12,10 +12,10 @@ struct ScoreboardControl: View {
     var body: some View {
         if let i = engine.scoreboardIndex {
             let t = engine.titles[i]
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: compact ? 6 : 8) {
                 HStack(spacing: 8) {
-                    Image(systemName: "sportscourt.fill").foregroundStyle(DS.accent)
-                    Text("Bảng tỉ số").font(.subheadline.weight(.bold))
+                    Image(systemName: "sportscourt.fill").font(compact ? .caption : .body).foregroundStyle(DS.accent)
+                    Text("Bảng tỉ số").font(compact ? .caption.weight(.bold) : .subheadline.weight(.bold))
                     Spacer()
                     if t.visible { Text("TRÊN SÓNG").font(.caption2.weight(.heavy)).foregroundStyle(DS.pgm) }
                     assign("→ Title", on: (engine.armedTitleID ?? engine.titles.first?.id) == t.id) { engine.armedTitleID = t.id }
@@ -27,7 +27,7 @@ struct ScoreboardControl: View {
                 }
                 if showLayout { layoutPanel(t) }
             }
-            .padding(12)
+            .padding(compact ? 8 : 12)
             .background(DS.surface, in: Rectangle())
             .overlay(Rectangle().stroke(t.visible ? DS.pgm : DS.stroke, lineWidth: t.visible ? 1.5 : 1))
             .sheet(isPresented: $editing) {

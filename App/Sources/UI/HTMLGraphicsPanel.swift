@@ -6,9 +6,15 @@ struct HTMLGraphicsPanel: View {
     @ObservedObject var html: HTMLGraphics
     @ObservedObject var repo: GraphicsRepo
     var compact = false
+    @AppStorage("ui.htmlPanelOpen") private var open = true
 
     var body: some View {
-        SectionCard("Đồ hoạ HTML5", systemImage: "chevron.left.forwardslash.chevron.right") {
+        SectionCard("Đồ hoạ HTML5", systemImage: "chevron.left.forwardslash.chevron.right",
+                    trailing: AnyView(Button { open.toggle() } label: {
+                        Image(systemName: open ? "chevron.up" : "chevron.down").font(.caption.weight(.bold))
+                            .frame(width: 28, height: 22).foregroundStyle(DS.text2)
+                    }.buttonStyle(.plain))) {
+          if open {
             HStack(spacing: 8) {
                 Button {
                     Task { await repo.sync() }
@@ -54,12 +60,13 @@ struct HTMLGraphicsPanel: View {
                             .font(.caption.weight(.semibold)).foregroundStyle(DS.text2)
                     } else {
                         TextField(f.label, text: Binding(get: { html.value(t, f) }, set: { html.setValue(t, f, $0) }))
-                            .font(.system(size: 14, weight: .semibold))
-                            .padding(.horizontal, 8).frame(height: 34)
+                            .font(.system(size: compact ? 12 : 14, weight: .semibold))
+                            .padding(.horizontal, 8).frame(height: compact ? 28 : 34)
                             .background(DS.surface2, in: Rectangle())
                     }
                 }
             }
+          }
         }
     }
 }

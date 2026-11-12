@@ -236,10 +236,8 @@ struct CategoryContent: View {
             let local = engine.sources.filter { $0 is CameraSource }
             let net = engine.sources.filter { !($0 is CameraSource) && !($0 is FileSource) && !($0 is ImageSource) && $0.id != engine.replay.id }
             sectionHeader("Camera trong máy & USB")
-            if local.isEmpty { emptyHint("Chưa có camera — bấm Thêm nguồn") }
             sourceGrid(local)
             sectionHeader("Camera mạng (SRT · RTSP · RTMP · DTDLive)")
-            if net.isEmpty { emptyHint("Chưa có camera mạng") }
             sourceGrid(net)
             IngestSection(ingest: engine.ingest, pairing: engine.pairing).padding(.top, 8)
             PairedDevicesSection(pairing: engine.pairing, port: engine.controlPort).padding(.top, 8)
@@ -263,8 +261,8 @@ struct CategoryContent: View {
             sectionHeader("SuperFG của bạn (PNG trong suốt · video có kênh alpha .mov)")
             libraryGrid(.overlay, selected: engine.currentForegroundURL) { engine.useForeground($0) }
         case .title:
-            HTMLGraphicsPanel(html: engine.html, repo: engine.graphicsRepo, compact: compact).padding(.bottom, 4)
-            ScoreboardControl(engine: engine, compact: compact).padding(.bottom, 4)
+            HTMLGraphicsPanel(html: engine.html, repo: engine.graphicsRepo, compact: true).padding(.bottom, 2)
+            ScoreboardControl(engine: engine, compact: true).padding(.bottom, 2)
             TitlesPanel(engine: engine)
         case .logo:
             HStack {

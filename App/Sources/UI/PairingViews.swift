@@ -51,16 +51,11 @@ struct PairedDevicesSection: View {
 
     var body: some View {
         SectionCard("Ghép nối qua Wi-Fi", systemImage: "wifi") {
-            Text("Mở DTDLive (hoặc app hỗ trợ DTD pairing) trên cùng mạng Wi-Fi → chọn DTD Studio → so ID xác nhận → Chấp nhận. Không cần nhập mã.")
-                .font(.caption).foregroundStyle(DS.text2)
             HStack {
                 Label(NetworkInfo.wifiIPv4().map { "\($0):\(port)" } ?? "Chưa có Wi-Fi", systemImage: "network")
                     .font(.caption.monospaced()).foregroundStyle(DS.text2)
                 Spacer()
                 Toggle("Tự kết nối thiết bị tin cậy", isOn: $pairing.autoAcceptTrusted).font(.caption).fixedSize()
-            }
-            if pairing.trusted.isEmpty {
-                Text("Chưa có thiết bị nào được ghép nối").font(.caption).foregroundStyle(DS.text3)
             }
             ForEach(pairing.trusted) { d in
                 HStack {
@@ -85,8 +80,6 @@ struct IngestSection: View {
 
     var body: some View {
         SectionCard("Nhận camera (đẩy về DTD Studio)", systemImage: "antenna.radiowaves.left.and.right") {
-            Text("Mỗi giao thức dùng chung một cổng; mỗi camera đặt một stream key riêng (cam1, cam2…) và tự hiện thành một nguồn.")
-                .font(.caption).foregroundStyle(DS.text2)
             let ip = NetworkInfo.wifiIPv4() ?? "<IP iPad>"
             ForEach(ingest.urls(ip: ip)) { u in
                 HStack(spacing: 8) {
@@ -100,8 +93,7 @@ struct IngestSection: View {
             }
             HStack(spacing: 8) {
                 Image(systemName: "iphone.radiowaves.left.and.right").foregroundStyle(DS.pvw)
-                Text(ingest.dtdLive.listening ? "DTDLive: đang hiện tên \(DTDLiveLink.serviceName) — trên DTDLive chọn Gửi tới máy khác › \(DTDLiveLink.serviceName), so mã 6 số rồi Chấp nhận"
-                                              : "DTDLive: đang tắt")
+                Text(verbatim: "DTDLive · " + (ingest.dtdLive.listening ? DTDLiveLink.serviceName : "—"))
                     .font(.caption).foregroundStyle(DS.text2)
             }
             if !ingest.streams.isEmpty {
