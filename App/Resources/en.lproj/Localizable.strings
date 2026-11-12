@@ -69,6 +69,7 @@
 "Giờ" = "Clock";
 "Gán nguồn" = "Assign sources";
 "Gán title vào phím Title / Title 2, rồi bấm “Title On” ở cột phải để lên sóng" = "Assign a title to the Title / Title 2 key, then press “Title On” to go on air";
+"Góc" = "Corners";
 "GẤP" = "FOLD";
 "Gấp" = "Fold";
 "Gọn ở góc" = "Corner";
@@ -87,6 +88,7 @@
 "Khung an toàn" = "Safe area";
 "Khung an toàn trên PVW/PGM" = "Safe area on PVW/PGM";
 "Khung an toàn trên màn hình ngoài" = "Safe area on external display";
+"Khung viền" = "Window frame";
 "Không" = "No";
 "Không có tín hiệu" = "No signal";
 "Không muốn đăng ký app: dùng Đầu ra › Thêm đích › YouTube/Facebook (stream key)." = "No app registration: use Outputs › Add destination › YouTube/Facebook (stream key).";
@@ -117,6 +119,9 @@
 "Màn ngoài" = "External";
 "Màu" = "Colour";
 "Màu & PTZ" = "Colour & PTZ";
+"Màu 1" = "Colour 1";
+"Màu 2" = "Colour 2";
+"Màu 3" = "Colour 3";
 "Màu nhấn" = "Accent";
 "Màu nền" = "Background colour";
 "Màu sắc" = "Colour";
@@ -155,6 +160,7 @@
 "Nội dung chữ chạy" = "Ticker text";
 "Nửa trái" = "Left half";
 "PHÁT REPLAY" = "PLAY REPLAY";
+"PNG có tâm trong suốt, lấy từ thư viện SuperFG" = "PNG with a transparent centre, from the SuperFG library";
 "Phiên bản" = "Version";
 "Phát" = "Go live";
 "Phát lại từ đầu" = "Restart";
@@ -179,6 +185,7 @@
 "Sửa bảng tỉ số" = "Edit scoreboard";
 "Sửa tên, logo, màu…" = "Edit names, logos, colours…";
 "TRÊN SÓNG" = "ON AIR";
+"Tech" = "Tech";
 "Thao tác" = "Gestures";
 "Thiết bị muốn kết nối" = "Device wants to connect";
 "Thêm" = "Add";
@@ -221,6 +228,7 @@
 "Video" = "Video";
 "Video đang dùng làm nguồn" = "Videos in use";
 "Video đã ghi / thư viện" = "Recorded / library videos";
+"Viền" = "Line";
 "Vuốt 1 ngón trên PVW về phía PGM = CUT · 2 ngón = AUTO" = "Swipe PVW toward PGM: 1 finger = CUT · 2 fingers = AUTO";
 "Vuốt PVW → PGM để chuyển" = "Swipe PVW → PGM to switch";
 "Vẽ" = "Draw";
@@ -257,6 +265,7 @@
 "Đèn" = "Torch";
 "Đích phát (chạy song song, encode 1 lần)" = "Destinations (in parallel, encoded once)";
 "Đóng" = "Close";
+"Đôi" = "Double";
 "Đưa lên Preview" = "Send to Preview";
 "Đầu ra" = "Outputs";
 "Đầu vào" = "Inputs";
@@ -270,8 +279,10 @@
 "Đồng hồ" = "Clock";
 "Đổi bên (tên, tỉ số, logo)" = "Swap sides (names, scores, logos)";
 "Đổi độ phân giải/fps khi đang phát: các đích tự kết nối lại với thông số mới." = "Changing resolution/fps while live reconnects every destination with the new settings.";
+"Độ dày" = "Thickness";
 "Độ phân giải" = "Resolution";
 "Ảnh" = "Pictures";
+"Ảnh PNG" = "PNG image";
 "Ẩn tất cả" = "Hide all";
 "Ứng dụng" = "App";
 "→ Title" = "→ Title";

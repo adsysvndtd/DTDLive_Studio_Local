@@ -351,6 +351,7 @@ struct CategoryContent: View {
                     .font(.caption.weight(.semibold)).buttonStyle(.bordered)
             }
             Spacer()
+            importImageMenu(.picture)
         }
         let pics = library.list(.picture)
         if pics.isEmpty {
@@ -380,6 +381,63 @@ struct CategoryContent: View {
         }
     }
 
+    /// Frame drawn around each layout window: built-in designs, or a PNG from the SuperFG library.
+    @ViewBuilder private var layoutFramePicker: some View {
+        sectionHeader("Khung viền")
+        HStack(spacing: 6) {
+            ForEach(LayoutFrame.Style.allCases) { st in
+                let on = engine.layoutFrame.style == st
+                Button { engine.layoutFrame.style = st } label: {
+                    Text(verbatim: st.label).font(.system(size: compact ? 12 : 13, weight: .semibold))
+                        .padding(.horizontal, 10).frame(height: compact ? 28 : 32)
+                        .foregroundStyle(on ? .black : .white)
+                        .background(on ? DS.accent : DS.surface2, in: Rectangle())
+                }
+                .buttonStyle(.plain)
+            }
+            Spacer(minLength: 0)
+        }
+        switch engine.layoutFrame.style {
+        case .none:
+            EmptyView()
+        case .image:
+            let pngs = library.list(.overlay).filter { ["png", "heic"].contains($0.pathExtension.lowercased()) }
+            HStack {
+                Text("PNG có tâm trong suốt, lấy từ thư viện SuperFG").font(.caption2).foregroundStyle(DS.text3)
+                Spacer()
+                importImageMenu(.overlay)
+            }
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 6) {
+                    ForEach(pngs, id: \.self) { url in
+                        Button { engine.layoutFrame.imageName = url.lastPathComponent } label: {
+                            LibraryCell(url: url, kind: .overlay, selected: engine.layoutFrame.imageName == url.lastPathComponent)
+                                .frame(width: compact ? 120 : 160)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
+        default:
+            HStack(spacing: 14) {
+                ColorPicker("Màu 1", selection: Binding(get: { Color(UIColor(hex: engine.layoutFrame.color1)) },
+                                                         set: { engine.layoutFrame.color1 = UIColor($0).hexString }), supportsOpacity: false).fixedSize()
+                if engine.layoutFrame.style != .line {
+                    ColorPicker("Màu 2", selection: Binding(get: { Color(UIColor(hex: engine.layoutFrame.color2)) },
+                                                             set: { engine.layoutFrame.color2 = UIColor($0).hexString }), supportsOpacity: false).fixedSize()
+                }
+                if engine.layoutFrame.style == .tech {
+                    ColorPicker("Màu 3", selection: Binding(get: { Color(UIColor(hex: engine.layoutFrame.color3)) },
+                                                             set: { engine.layoutFrame.color3 = UIColor($0).hexString }), supportsOpacity: false).fixedSize()
+                }
+                Spacer()
+            }
+            .font(.caption.weight(.semibold))
+            LabeledSlider(title: "Độ dày", value: $engine.layoutFrame.thickness, range: 0.004...0.04) { String(format: "%.1f%%", $0 * 100) }
+                .frame(maxWidth: 420)
+        }
+    }
+
     @ViewBuilder private var pipContent: some View {
         sectionHeader("Mẫu bố cục")
         LazyVGrid(columns: [GridItem(.adaptive(minimum: compact ? 150 : 220), spacing: compact ? 6 : 10)], spacing: compact ? 6 : 10) {
@@ -400,6 +458,7 @@ struct CategoryContent: View {
                 .frame(maxWidth: 420)
         }
         layoutBackgroundPicker
+        layoutFramePicker
         if !engine.layoutSlots.isEmpty {
             sectionHeader("Gán nguồn")
             HStack(spacing: 6) {

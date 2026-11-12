@@ -2,6 +2,7 @@ import CoreImage
 import CoreVideo
 import Foundation
 import os
+import UIKit
 
 /// Multi-source picture-in-picture layouts (2-up, 3-up, main + side, quad strip, perspective…).
 /// A layout renders into its own FrameStore, so it is an input like any camera: put it on
@@ -35,6 +36,32 @@ struct LayoutTemplate: Identifiable, Equatable {
     }()
 }
 
+/// Decorative frame drawn around every layout window (own vector designs, or a user PNG).
+struct LayoutFrame: Codable, Equatable {
+    enum Style: String, Codable, CaseIterable, Identifiable {
+        case none, line, tech, brackets, double, image
+        var id: String { rawValue }
+        var label: String {
+            switch self {
+            case .none: return L("Không")
+            case .line: return L("Viền")
+            case .tech: return L("Tech")
+            case .brackets: return L("Góc")
+            case .double: return L("Đôi")
+            case .image: return L("Ảnh PNG")
+            }
+        }
+    }
+    var style: Style = .tech
+    var color1 = "#3EC6E8"
+    var color2 = "#D0509E"
+    var color3 = "#000000"
+    /// band thickness as a fraction of the output height
+    var thickness: Double = 0.014
+    /// PNG (transparent centre) in the Lớp phủ library, used when style == .image
+    var imageName: String?
+}
+
 @MainActor
 final class LayoutSource: VideoSource {
     let id = UUID()
@@ -48,8 +75,9 @@ final class LayoutSource: VideoSource {
     private let queue = DispatchQueue(label: "layout.render", qos: .userInteractive)
 
     func configure(template: LayoutTemplate, inputs: [FrameStore?], size: CGSize, background: FrameStore?,
-                   still: CIImage? = nil, color: CIColor? = nil) {
-        renderer.update(template: template, inputs: inputs, size: size, background: background, still: still, color: color)
+                   still: CIImage? = nil, color: CIColor? = nil, frame: LayoutFrame = LayoutFrame(), frameImage: CIImage? = nil) {
+        renderer.update(template: template, inputs: inputs, size: size, background: background, still: still, color: color,
+                        frame: frame, frameImage: frameImage)
         name = "BỐ CỤC \(template.id)"
     }
 
@@ -67,20 +95,25 @@ final class LayoutSource: VideoSource {
 }
 
 final class LayoutRenderer: @unchecked Sendable {
-    private var lock = os_unfair_lock()
+    fileprivate var lock = os_unfair_lock()
     private var template = LayoutTemplate.all[1]
     private var inputs: [FrameStore?] = []
     private var background: FrameStore?
     private var still: CIImage?          // background picture behind the windows
     private var color: CIColor?          // background colour (overrides the template's)
     private var size = CGSize(width: 1920, height: 1080)
+    private var frame = LayoutFrame()
+    private var frameImage: CIImage?
+    fileprivate var frameCache: [String: CIImage] = [:]
     private var pool: CVPixelBufferPool?
     private let ci = CIContext(options: [.cacheIntermediates: false])
 
     func update(template: LayoutTemplate, inputs: [FrameStore?], size: CGSize, background: FrameStore?,
-                still: CIImage? = nil, color: CIColor? = nil) {
+                still: CIImage? = nil, color: CIColor? = nil, frame: LayoutFrame = LayoutFrame(), frameImage: CIImage? = nil) {
         os_unfair_lock_lock(&lock)
         if size != self.size { pool = nil }
+        if frame != self.frame || frameImage !== self.frameImage { frameCache.removeAll() }
+        self.frame = frame; self.frameImage = frameImage
         self.template = template; self.inputs = inputs; self.size = size; self.background = background
         self.still = still; self.color = color
         os_unfair_lock_unlock(&lock)
@@ -88,7 +121,7 @@ final class LayoutRenderer: @unchecked Sendable {
 
     func render() -> CVPixelBuffer? {
         os_unfair_lock_lock(&lock)
-        let t = template, ins = inputs, bg = background, sz = size, stillImg = still, bgColor = color
+        let t = template, ins = inputs, bg = background, sz = size, stillImg = still, bgColor = color, fr = frame, frImg = frameImage
         if pool == nil {
             let attrs: [String: Any] = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA,
                                         kCVPixelBufferWidthKey as String: Int(sz.width), kCVPixelBufferHeightKey as String: Int(sz.height),
@@ -141,11 +174,112 @@ final class LayoutRenderer: @unchecked Sendable {
                 f.setValue(CIVector(cgPoint: CGPoint(x: r.minX, y: r.minY)), forKey: "inputBottomLeft")
                 tile = f.outputImage ?? tile
             }
-            // Thin frame around each window.
-            let border = CIImage(color: CIColor(red: 0.98, green: 0.45, blue: 0.13, alpha: 0.9)).cropped(to: r.insetBy(dx: -3, dy: -3))
-            out = tile.composited(over: slot.perspective ? out : border.composited(over: out))
+            out = tile.composited(over: out)
+            if !slot.perspective, let f = frameOverlay(fr, image: frImg, rect: r, canvas: sz) {
+                out = f.composited(over: out)
+            }
         }
         ci.render(out.cropped(to: extent), to: pb)
         return pb
+    }
+}
+
+// MARK: Window frames
+
+extension LayoutRenderer {
+    /// Frame for one window, positioned in CoreImage (bottom-left) pixel space. Cached per size/style.
+    fileprivate func frameOverlay(_ f: LayoutFrame, image: CIImage?, rect r: CGRect, canvas: CGSize) -> CIImage? {
+        if f.style == .none { return nil }
+        let t = max(2, (f.thickness * canvas.height).rounded())
+        if f.style == .image {
+            guard let img = image, img.extent.width > 0 else { return nil }
+            // PNG frame with transparent centre: stretched slightly past the window so its border sits on the edge
+            let target = r.insetBy(dx: -r.width * 0.04, dy: -r.height * 0.04)
+            let sx = target.width / img.extent.width, sy = target.height / img.extent.height
+            return img.transformed(by: CGAffineTransform(translationX: -img.extent.minX, y: -img.extent.minY))
+                .transformed(by: CGAffineTransform(scaleX: sx, y: sy))
+                .transformed(by: CGAffineTransform(translationX: target.minX, y: target.minY))
+        }
+        let key = "\(f.style.rawValue)|\(f.color1)|\(f.color2)|\(f.color3)|\(Int(t))|\(Int(r.width))x\(Int(r.height))"
+        os_unfair_lock_lock(&lock)
+        let cached = frameCache[key]
+        os_unfair_lock_unlock(&lock)
+        let base: CIImage
+        if let cached { base = cached } else {
+            guard let drawn = Self.drawFrame(f, size: r.size, band: t) else { return nil }
+            base = drawn
+            os_unfair_lock_lock(&lock)
+            frameCache[key] = drawn
+            os_unfair_lock_unlock(&lock)
+        }
+        // drawn canvas is the window grown by `t` on every side
+        return base.transformed(by: CGAffineTransform(translationX: r.minX - t, y: r.minY - t))
+    }
+
+    /// Vector frames (original designs). Canvas = window + band on each side; origin top-left.
+    static func drawFrame(_ f: LayoutFrame, size: CGSize, band t: CGFloat) -> CIImage? {
+        let W = size.width + 2 * t, H = size.height + 2 * t
+        guard W > 4, H > 4 else { return nil }
+        let c1 = UIColor(hex: f.color1), c2 = UIColor(hex: f.color2), c3 = UIColor(hex: f.color3)
+        let fmt = UIGraphicsImageRendererFormat(); fmt.scale = 1; fmt.opaque = false
+        let img = UIGraphicsImageRenderer(size: CGSize(width: W, height: H), format: fmt).image { ctx in
+            let g = ctx.cgContext
+            let outer = CGRect(x: 0, y: 0, width: W, height: H)
+            let inner = outer.insetBy(dx: t, dy: t)
+            func band(_ rect: CGRect, _ col: UIColor) {     // ring between rect and rect inset by t
+                let p = UIBezierPath(rect: rect); p.append(UIBezierPath(rect: rect.insetBy(dx: t, dy: t)))
+                p.usesEvenOddFillRule = true; col.setFill(); p.fill()
+            }
+            func poly(_ pts: [CGPoint], _ col: UIColor) {
+                guard let f = pts.first else { return }
+                g.beginPath(); g.move(to: f); pts.dropFirst().forEach { g.addLine(to: $0) }; g.closePath()
+                g.setFillColor(col.cgColor); g.fillPath()
+            }
+            switch f.style {
+            case .line:
+                band(outer, c1)
+            case .double:
+                band(outer, c1)
+                // thin colour-2 line just inside the band
+                let p = UIBezierPath(rect: inner.insetBy(dx: t * 0.15, dy: t * 0.15)); p.lineWidth = max(1, t * 0.3)
+                c2.setStroke(); p.stroke()
+            case .brackets:
+                let L = min(W, H) * 0.16
+                c1.setFill()
+                let corners: [(CGFloat, CGFloat, CGFloat, CGFloat)] = [(0, 0, 1, 1), (W, 0, -1, 1), (0, H, 1, -1), (W, H, -1, -1)]
+                for (x, y, sx, sy) in corners {
+                    g.fill(CGRect(x: sx > 0 ? x : x - L, y: sy > 0 ? y : y - t, width: L, height: t))
+                    g.fill(CGRect(x: sx > 0 ? x : x - t, y: sy > 0 ? y : y - L, width: t, height: L))
+                    // small accent tick in colour 2
+                    c2.setFill()
+                    g.fill(CGRect(x: sx > 0 ? x + L + t : x - L - 2 * t, y: sy > 0 ? y : y - t, width: t, height: t))
+                    c1.setFill()
+                }
+            case .tech:
+                // 1) base ring in colour 1
+                band(outer, c1)
+                // 2) colour-2 accent runs with 45° ends (top-middle, top-right corner, bottom-right, bottom-left corner)
+                let d = t                                    // chamfer = band thickness
+                poly([CGPoint(x: W * 0.22, y: 0), CGPoint(x: W * 0.52, y: 0), CGPoint(x: W * 0.52 - d, y: t), CGPoint(x: W * 0.22 + d, y: t)], c2)
+                poly([CGPoint(x: W * 0.86, y: 0), CGPoint(x: W, y: 0), CGPoint(x: W, y: H * 0.40), CGPoint(x: W - t, y: H * 0.40 - d),
+                      CGPoint(x: W - t, y: t), CGPoint(x: W * 0.86 + d, y: t)], c2)
+                poly([CGPoint(x: 0, y: H * 0.72), CGPoint(x: t, y: H * 0.72 + d), CGPoint(x: t, y: H - t), CGPoint(x: W * 0.20, y: H - t),
+                      CGPoint(x: W * 0.20 + d, y: H), CGPoint(x: 0, y: H)], c2)
+                poly([CGPoint(x: W * 0.56 + d, y: H - t), CGPoint(x: W * 0.84, y: H - t), CGPoint(x: W * 0.84 + d, y: H), CGPoint(x: W * 0.56, y: H)], c2)
+                // 3) colour-3 inner rails with stepped notches (sit just inside the ring)
+                let k = t * 0.85
+                poly([CGPoint(x: W * 0.12, y: t), CGPoint(x: W * 0.58, y: t), CGPoint(x: W * 0.54, y: t + k), CGPoint(x: W * 0.20, y: t + k),
+                      CGPoint(x: W * 0.17, y: t + k * 0.5)], c3)
+                poly([CGPoint(x: t, y: H * 0.45), CGPoint(x: t + k, y: H * 0.45 + k), CGPoint(x: t + k, y: H * 0.80), CGPoint(x: t + 2 * k, y: H * 0.80 + k),
+                      CGPoint(x: t + 2 * k, y: H - t - k), CGPoint(x: W * 0.55, y: H - t - k), CGPoint(x: W * 0.58, y: H - t),
+                      CGPoint(x: t, y: H - t)], c3)
+                poly([CGPoint(x: W * 0.60, y: H - t - k), CGPoint(x: W * 0.80, y: H - t - k), CGPoint(x: W * 0.86, y: H - t), CGPoint(x: W * 0.57, y: H - t)], c3)
+            case .none, .image:
+                break
+            }
+            _ = inner
+        }
+        guard let cg = img.cgImage else { return nil }
+        return CIImage(cgImage: cg)
     }
 }

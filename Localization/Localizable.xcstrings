@@ -711,6 +711,16 @@
         }
       }
     },
+    "Góc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Corners"
+          }
+        }
+      }
+    },
     "GẤP": {
       "localizations": {
         "en": {
@@ -887,6 +897,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Safe area on external display"
+          }
+        }
+      }
+    },
+    "Khung viền": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Window frame"
           }
         }
       }
@@ -1187,6 +1207,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "Colour & PTZ"
+          }
+        }
+      }
+    },
+    "Màu 1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Colour 1"
+          }
+        }
+      }
+    },
+    "Màu 2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Colour 2"
+          }
+        }
+      }
+    },
+    "Màu 3": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Colour 3"
           }
         }
       }
@@ -1571,6 +1621,16 @@
         }
       }
     },
+    "PNG có tâm trong suốt, lấy từ thư viện SuperFG": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PNG with a transparent centre, from the SuperFG library"
+          }
+        }
+      }
+    },
     "Phiên bản": {
       "localizations": {
         "en": {
@@ -1807,6 +1867,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "ON AIR"
+          }
+        }
+      }
+    },
+    "Tech": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tech"
           }
         }
       }
@@ -2231,6 +2301,16 @@
         }
       }
     },
+    "Viền": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Line"
+          }
+        }
+      }
+    },
     "Vuốt 1 ngón trên PVW về phía PGM = CUT · 2 ngón = AUTO": {
       "localizations": {
         "en": {
@@ -2591,6 +2671,16 @@
         }
       }
     },
+    "Đôi": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Double"
+          }
+        }
+      }
+    },
     "Đưa lên Preview": {
       "localizations": {
         "en": {
@@ -2721,6 +2811,16 @@
         }
       }
     },
+    "Độ dày": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thickness"
+          }
+        }
+      }
+    },
     "Độ phân giải": {
       "localizations": {
         "en": {
@@ -2737,6 +2837,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Pictures"
+          }
+        }
+      }
+    },
+    "Ảnh PNG": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PNG image"
           }
         }
       }

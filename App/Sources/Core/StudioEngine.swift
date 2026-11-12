@@ -48,6 +48,10 @@ final class StudioEngine: ObservableObject {
     // MARK: Multi-source layouts (PiP templates)
     private(set) lazy var layoutSource = LayoutSource()
     @Published var layoutTemplateID = 2
+    /// Decorative frame around layout windows.
+    @Published var layoutFrame: LayoutFrame = StudioEngine.load(LayoutFrame.self, key: "dtd.layoutframe.v1") ?? LayoutFrame() {
+        didSet { UserDefaults.standard.set(try? JSONEncoder().encode(layoutFrame), forKey: "dtd.layoutframe.v1"); refreshLayout() }
+    }
     /// Size of the window in the one-window layouts (1 = full frame), centred on the background.
     @Published var layoutSingleScale: Double = UserDefaults.standard.object(forKey: "dtd.layout.single") as? Double ?? 0.7 {
         didSet { UserDefaults.standard.set(layoutSingleScale, forKey: "dtd.layout.single"); refreshLayout() }
@@ -510,9 +514,13 @@ final class StudioEngine: ObservableObject {
             slot.rect = CGRect(x: (1 - k) / 2, y: (1 - k) / 2, width: k, height: k)
             tpl = LayoutTemplate(id: tpl.id, name: tpl.name, slots: [slot], background: tpl.background)
         }
+        var frameImg: CIImage?
+        if layoutFrame.style == .image, let n = layoutFrame.imageName {
+            frameImg = Self.loadOverlayImage(MediaLibrary.directory(.overlay).appendingPathComponent(n))?.0
+        }
         layoutSource.configure(template: tpl, inputs: stores,
                                size: CGSize(width: format.width, height: format.height), background: live,
-                               still: still, color: color)
+                               still: still, color: color, frame: layoutFrame, frameImage: frameImg)
     }
 
     /// What fills the frame behind the PiP layout windows when the cameras don't cover it.

@@ -69,6 +69,7 @@
 "Giờ" = "Giờ";
 "Gán nguồn" = "Gán nguồn";
 "Gán title vào phím Title / Title 2, rồi bấm “Title On” ở cột phải để lên sóng" = "Gán title vào phím Title / Title 2, rồi bấm “Title On” ở cột phải để lên sóng";
+"Góc" = "Góc";
 "GẤP" = "GẤP";
 "Gấp" = "Gấp";
 "Gọn ở góc" = "Gọn ở góc";
@@ -87,6 +88,7 @@
 "Khung an toàn" = "Khung an toàn";
 "Khung an toàn trên PVW/PGM" = "Khung an toàn trên PVW/PGM";
 "Khung an toàn trên màn hình ngoài" = "Khung an toàn trên màn hình ngoài";
+"Khung viền" = "Khung viền";
 "Không" = "Không";
 "Không có tín hiệu" = "Không có tín hiệu";
 "Không muốn đăng ký app: dùng Đầu ra › Thêm đích › YouTube/Facebook (stream key)." = "Không muốn đăng ký app: dùng Đầu ra › Thêm đích › YouTube/Facebook (stream key).";
@@ -117,6 +119,9 @@
 "Màn ngoài" = "Màn ngoài";
 "Màu" = "Màu";
 "Màu & PTZ" = "Màu & PTZ";
+"Màu 1" = "Màu 1";
+"Màu 2" = "Màu 2";
+"Màu 3" = "Màu 3";
 "Màu nhấn" = "Màu nhấn";
 "Màu nền" = "Màu nền";
 "Màu sắc" = "Màu sắc";
@@ -155,6 +160,7 @@
 "Nội dung chữ chạy" = "Nội dung chữ chạy";
 "Nửa trái" = "Nửa trái";
 "PHÁT REPLAY" = "PHÁT REPLAY";
+"PNG có tâm trong suốt, lấy từ thư viện SuperFG" = "PNG có tâm trong suốt, lấy từ thư viện SuperFG";
 "Phiên bản" = "Phiên bản";
 "Phát" = "Phát";
 "Phát lại từ đầu" = "Phát lại từ đầu";
@@ -179,6 +185,7 @@
 "Sửa bảng tỉ số" = "Sửa bảng tỉ số";
 "Sửa tên, logo, màu…" = "Sửa tên, logo, màu…";
 "TRÊN SÓNG" = "TRÊN SÓNG";
+"Tech" = "Tech";
 "Thao tác" = "Thao tác";
 "Thiết bị muốn kết nối" = "Thiết bị muốn kết nối";
 "Thêm" = "Thêm";
@@ -221,6 +228,7 @@
 "Video" = "Video";
 "Video đang dùng làm nguồn" = "Video đang dùng làm nguồn";
 "Video đã ghi / thư viện" = "Video đã ghi / thư viện";
+"Viền" = "Viền";
 "Vuốt 1 ngón trên PVW về phía PGM = CUT · 2 ngón = AUTO" = "Vuốt 1 ngón trên PVW về phía PGM = CUT · 2 ngón = AUTO";
 "Vuốt PVW → PGM để chuyển" = "Vuốt PVW → PGM để chuyển";
 "Vẽ" = "Vẽ";
@@ -257,6 +265,7 @@
 "Đèn" = "Đèn";
 "Đích phát (chạy song song, encode 1 lần)" = "Đích phát (chạy song song, encode 1 lần)";
 "Đóng" = "Đóng";
+"Đôi" = "Đôi";
 "Đưa lên Preview" = "Đưa lên Preview";
 "Đầu ra" = "Đầu ra";
 "Đầu vào" = "Đầu vào";
@@ -270,8 +279,10 @@
 "Đồng hồ" = "Đồng hồ";
 "Đổi bên (tên, tỉ số, logo)" = "Đổi bên (tên, tỉ số, logo)";
 "Đổi độ phân giải/fps khi đang phát: các đích tự kết nối lại với thông số mới." = "Đổi độ phân giải/fps khi đang phát: các đích tự kết nối lại với thông số mới.";
+"Độ dày" = "Độ dày";
 "Độ phân giải" = "Độ phân giải";
 "Ảnh" = "Ảnh";
+"Ảnh PNG" = "Ảnh PNG";
 "Ẩn tất cả" = "Ẩn tất cả";
 "Ứng dụng" = "Ứng dụng";
 "→ Title" = "→ Title";
