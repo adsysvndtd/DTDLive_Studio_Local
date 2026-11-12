@@ -116,8 +116,13 @@ final class RTMPOutput: OutputTarget, @unchecked Sendable {
         let masked = key.count > 6 ? String(key.prefix(4)) + "…" + String(key.suffix(2)) : "…"
         log("Kết nối \(app)  key \(masked)")
         let c = RTMPConnection()
-        let s = RTMPStream(connection: c)
+        // fcPublishName → FMLE sequence (releaseStream / FCPublish / FCUnpublish) like OBS & Larix;
+        // YouTube, Facebook and most CDN ingests expect it.
+        let s = RTMPStream(connection: c, fcPublishName: key)
         connection = c; stream = s; sentVideo = 0; sentAudio = 0
+        // RTMPStream registers itself with the connection in a background task; give it a moment so the
+        // stream is created during connect (otherwise publish can race createStream and go to stream id 0).
+        try? await Task.sleep(nanoseconds: 150_000_000)
         // server status messages (rejections, disconnect reasons) into the log
         watchers = [
             Task { [weak self] in for await st in await c.status { self?.log("Conn: \(st.code) \(st.description)") } },
