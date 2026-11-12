@@ -27,6 +27,9 @@ else
   say "SRTKit.xcframework đã có — bỏ qua (xoá thư mục đó để build lại)"
 fi
 
+say "Tạo chuỗi song ngữ (vi/en)"
+python3 scripts/gen-strings.py
+
 say "Tạo DTDStudio.xcodeproj"
 xcodegen generate
 

@@ -144,21 +144,15 @@ struct PlatformKeyField: View {
 
 /// In-app language (Tiếng Việt / English / follow iOS). Takes effect on next launch.
 struct LanguagePicker: View {
-    @AppStorage("dtd.language") private var lang = "system"
-    @State private var changed = false
+    @AppStorage(AppLanguage.key) private var lang = "system"
     var body: some View {
-        Picker("Ngôn ngữ", selection: $lang) {
+        Picker("Ngôn ngữ", selection: Binding(get: { lang }, set: { v in
+            AppLanguage.apply(v)   // switch the bundle first…
+            lang = v               // …then the root view rebuilds in the new language
+        })) {
             Text(verbatim: "Theo iOS / System").tag("system")
             Text(verbatim: "Tiếng Việt").tag("vi")
             Text(verbatim: "English").tag("en")
-        }
-        .onChange(of: lang) { _, v in
-            if v == "system" { UserDefaults.standard.removeObject(forKey: "AppleLanguages") }
-            else { UserDefaults.standard.set([v], forKey: "AppleLanguages") }
-            changed = true
-        }
-        if changed {
-            Text(verbatim: "Mở lại app để đổi ngôn ngữ · Relaunch the app to apply").foregroundStyle(.secondary)
         }
     }
 }

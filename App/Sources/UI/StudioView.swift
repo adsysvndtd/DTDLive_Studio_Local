@@ -5,14 +5,15 @@ import UIKit
 import UniformTypeIdentifiers
 
 struct StudioView: View {
-    @StateObject private var engine = StudioEngine()
+    @ObservedObject var engine: StudioEngine
     @State private var showAddSource = false
     @State private var showOutputs = false
     @State private var drawing = false
     @State private var clearDrawing = 0
     @State private var showShows = false
     @State private var tbarValue = 0.0
-    @State private var category: ProdCategory = ProdCategory(rawValue: DemoMode.arg("-category") ?? "") ?? .camera
+    // SceneStorage: survives the root rebuild done on a language switch
+    @SceneStorage("ui.category") private var category: ProdCategory = ProdCategory(rawValue: DemoMode.arg("-category") ?? "") ?? .camera
     @State private var scopesOnPreview = false
     @State private var arranging = false
     @State private var showSettings = false
