@@ -22,6 +22,11 @@ final class ExternalDisplaySceneDelegate: NSObject, UIWindowSceneDelegate {
 }
 
 final class AppDelegate: NSObject, UIApplicationDelegate {
+    /// Landscape only on iPhone and iPad, whatever the Info.plist says (the switcher layout has no portrait form).
+    func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
+        .landscape
+    }
+
     func application(_ application: UIApplication, configurationForConnecting session: UISceneSession,
                      options: UIScene.ConnectionOptions) -> UISceneConfiguration {
         if session.role == .windowExternalDisplayNonInteractive {
