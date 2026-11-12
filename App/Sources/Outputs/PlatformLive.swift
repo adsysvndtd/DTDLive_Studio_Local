@@ -9,7 +9,8 @@ import UIKit
 /// Configuration: Settings › Phát trực tiếp (UserDefaults), falling back to Info.plist (project.yml):
 ///   DTDGoogleClientID   — OAuth client of type "iOS" in Google Cloud (YouTube Data API v3 enabled)
 ///   DTDFacebookAppID    — Facebook app with "publish_video" permission (needs App Review for public use)
-/// Tokens are kept in memory only; the operator signs in once per app run.
+/// Sign-in is kept in the Keychain (Google refresh token, Facebook token with its expiry), so the operator
+/// logs in once; each "Tạo live" then fetches a fresh RTMP URL + stream key automatically.
 @MainActor
 final class PlatformLive: NSObject, ObservableObject, ASWebAuthenticationPresentationContextProviding {
     enum Platform: String { case youtube, facebook }
@@ -40,9 +41,52 @@ final class PlatformLive: NSObject, ObservableObject, ASWebAuthenticationPresent
         return s.isEmpty ? nil : s
     }
 
+    static let shared = PlatformLive()
+
     private var googleToken: String?
-    private var facebookToken: String?
+    private var googleExpiry = Date.distantPast
+    private var facebookToken: String? = Keychain.get("dtd.facebook.token")
+    private var facebookExpiry = Date(timeIntervalSince1970: UserDefaults.standard.double(forKey: "dtd.facebook.expiry"))
     private var session: ASWebAuthenticationSession?
+
+    /// Account names shown in Settings (nil = not signed in).
+    @Published private(set) var youtubeAccount: String? = UserDefaults.standard.string(forKey: "dtd.youtube.account")
+    @Published private(set) var facebookAccount: String? = UserDefaults.standard.string(forKey: "dtd.facebook.account")
+
+    var youtubeSignedIn: Bool { Keychain.get("dtd.google.refresh") != nil || (googleToken != nil && googleExpiry > Date()) }
+    var facebookSignedIn: Bool { facebookToken != nil && facebookExpiry > Date() }
+
+    /// Explicit sign-in from Settings (also fetches the account name).
+    func signIn(_ p: Platform) async throws {
+        switch p {
+        case .youtube:
+            googleToken = nil; googleExpiry = .distantPast
+            let t = try await googleAccessToken(interactive: true)
+            let j = try await api("https://www.googleapis.com/youtube/v3/channels?part=snippet&mine=true", token: t, body: nil, method: "GET")
+            let name = ((j["items"] as? [[String: Any]])?.first?["snippet"] as? [String: Any])?["title"] as? String ?? "YouTube"
+            youtubeAccount = name; UserDefaults.standard.set(name, forKey: "dtd.youtube.account")
+        case .facebook:
+            facebookToken = nil
+            let t = try await facebookAccessToken()
+            var req = URLRequest(url: URL(string: "https://graph.facebook.com/v19.0/me?fields=name&access_token=\(t)")!)
+            req.httpMethod = "GET"
+            let name = (try? await send(req))?["name"] as? String ?? "Facebook"
+            facebookAccount = name; UserDefaults.standard.set(name, forKey: "dtd.facebook.account")
+        }
+    }
+
+    func signOut(_ p: Platform) {
+        switch p {
+        case .youtube:
+            googleToken = nil; googleExpiry = .distantPast
+            Keychain.set("", for: "dtd.google.refresh")
+            youtubeAccount = nil; UserDefaults.standard.removeObject(forKey: "dtd.youtube.account")
+        case .facebook:
+            facebookToken = nil; Keychain.set("", for: "dtd.facebook.token")
+            UserDefaults.standard.removeObject(forKey: "dtd.facebook.expiry")
+            facebookAccount = nil; UserDefaults.standard.removeObject(forKey: "dtd.facebook.account")
+        }
+    }
 
     nonisolated func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
         MainActor.assumeIsolated {
@@ -75,9 +119,22 @@ final class PlatformLive: NSObject, ObservableObject, ASWebAuthenticationPresent
         return Destination(name: "YouTube: \(title)", url: "\(address)/\(key)", watchURL: "https://youtu.be/\(bid)")
     }
 
-    private func googleAccessToken() async throws -> String {
-        if let googleToken { return googleToken }
+    private func googleAccessToken(interactive: Bool = false) async throws -> String {
+        if let googleToken, googleExpiry > Date().addingTimeInterval(60) { return googleToken }
         guard let clientID = Self.configured(Self.googleKey) else { throw LiveError.notConfigured(Self.googleKey) }
+        // silent refresh with the stored refresh token
+        if !interactive, let refresh = Keychain.get("dtd.google.refresh") {
+            var req = URLRequest(url: URL(string: "https://oauth2.googleapis.com/token")!)
+            req.httpMethod = "POST"
+            req.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+            req.httpBody = Self.form(["client_id": clientID, "refresh_token": refresh, "grant_type": "refresh_token"])
+            if let json = try? await send(req), let token = json["access_token"] as? String {
+                googleToken = token
+                googleExpiry = Date().addingTimeInterval((json["expires_in"] as? Double) ?? 3500)
+                return token
+            }
+            Keychain.set("", for: "dtd.google.refresh")       // revoked/expired → sign in again
+        }
         // Installed-app flow with PKCE; redirect is the reversed client ID scheme.
         let scheme = clientID.split(separator: ".").reversed().joined(separator: ".")
         let redirect = "\(scheme):/oauth2redirect"
@@ -87,7 +144,8 @@ final class PlatformLive: NSObject, ObservableObject, ASWebAuthenticationPresent
         c.queryItems = [
             .init(name: "client_id", value: clientID), .init(name: "redirect_uri", value: redirect),
             .init(name: "response_type", value: "code"), .init(name: "scope", value: "https://www.googleapis.com/auth/youtube"),
-            .init(name: "code_challenge", value: challenge), .init(name: "code_challenge_method", value: "S256")
+            .init(name: "code_challenge", value: challenge), .init(name: "code_challenge_method", value: "S256"),
+            .init(name: "access_type", value: "offline"), .init(name: "prompt", value: "consent select_account")
         ]
         let callback = try await authenticate(url: c.url!) { done in
             ASWebAuthenticationSession(url: c.url!, callbackURLScheme: scheme, completionHandler: done)
@@ -103,6 +161,9 @@ final class PlatformLive: NSObject, ObservableObject, ASWebAuthenticationPresent
         let json = try await send(req)
         guard let token = json["access_token"] as? String else { throw LiveError.badResponse }
         googleToken = token
+        googleExpiry = Date().addingTimeInterval((json["expires_in"] as? Double) ?? 3500)
+        if let r = json["refresh_token"] as? String { Keychain.set(r, for: "dtd.google.refresh") }
+        if youtubeAccount == nil { youtubeAccount = "YouTube"; UserDefaults.standard.set("YouTube", forKey: "dtd.youtube.account") }
         return token
     }
 
@@ -122,7 +183,7 @@ final class PlatformLive: NSObject, ObservableObject, ASWebAuthenticationPresent
     }
 
     private func facebookAccessToken() async throws -> String {
-        if let facebookToken { return facebookToken }
+        if let facebookToken, facebookExpiry > Date().addingTimeInterval(60) { return facebookToken }
         guard let appID = Self.configured(Self.facebookKey) else { throw LiveError.notConfigured(Self.facebookKey) }
         guard #available(iOS 17.4, *) else { throw LiveError.unsupportedOS }
         // Manual login flow with the standard desktop redirect, intercepted by ASWebAuthenticationSession.
@@ -138,11 +199,16 @@ final class PlatformLive: NSObject, ObservableObject, ASWebAuthenticationPresent
         // Token comes back in the URL fragment.
         let fragment = URLComponents(string: "x://y?" + (callback.fragment ?? ""))
         guard let token = fragment?.queryItems?.first(where: { $0.name == "access_token" })?.value else { throw LiveError.badResponse }
+        let secs = fragment?.queryItems?.first(where: { $0.name == "expires_in" })?.value.flatMap(Double.init) ?? 3600
         facebookToken = token
+        facebookExpiry = Date().addingTimeInterval(secs > 0 ? secs : 3600)
+        Keychain.set(token, for: "dtd.facebook.token")
+        UserDefaults.standard.set(facebookExpiry.timeIntervalSince1970, forKey: "dtd.facebook.expiry")
+        if facebookAccount == nil { facebookAccount = "Facebook"; UserDefaults.standard.set("Facebook", forKey: "dtd.facebook.account") }
         return token
     }
 
-    func signOut() { googleToken = nil; facebookToken = nil }
+    func signOut() { signOut(.youtube); signOut(.facebook) }
 
     // MARK: Helpers
 
@@ -161,9 +227,9 @@ final class PlatformLive: NSObject, ObservableObject, ASWebAuthenticationPresent
         }
     }
 
-    private func api(_ url: String, token: String, body: [String: Any]?) async throws -> [String: Any] {
+    private func api(_ url: String, token: String, body: [String: Any]?, method: String = "POST") async throws -> [String: Any] {
         var req = URLRequest(url: URL(string: url)!)
-        req.httpMethod = "POST"
+        req.httpMethod = method
         req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         if let body {
             req.setValue("application/json", forHTTPHeaderField: "Content-Type")

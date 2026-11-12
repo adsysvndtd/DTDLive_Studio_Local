@@ -2111,6 +2111,16 @@
         }
       }
     },
+    "Tài khoản phát trực tiếp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Streaming accounts"
+          }
+        }
+      }
+    },
     "Tên": {
       "localizations": {
         "en": {
@@ -2677,6 +2687,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "Double"
+          }
+        }
+      }
+    },
+    "Đăng nhập": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign in"
+          }
+        }
+      }
+    },
+    "Đăng nhập một lần; ở Đầu ra bấm Tạo live YouTube/Facebook để tự lấy URL + stream key.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign in once; in Outputs tap Create YouTube/Facebook live to get the URL + stream key automatically."
+          }
+        }
+      }
+    },
+    "Đăng xuất": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign out"
           }
         }
       }

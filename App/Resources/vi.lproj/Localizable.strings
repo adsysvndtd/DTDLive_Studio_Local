@@ -209,6 +209,7 @@
 "Trên phải" = "Trên phải";
 "Trên trái" = "Trên trái";
 "Trạng thái" = "Trạng thái";
+"Tài khoản phát trực tiếp" = "Tài khoản phát trực tiếp";
 "Tên" = "Tên";
 "Tên + chức danh" = "Tên + chức danh";
 "Tên show" = "Tên show";
@@ -266,6 +267,9 @@
 "Đích phát (chạy song song, encode 1 lần)" = "Đích phát (chạy song song, encode 1 lần)";
 "Đóng" = "Đóng";
 "Đôi" = "Đôi";
+"Đăng nhập" = "Đăng nhập";
+"Đăng nhập một lần; ở Đầu ra bấm Tạo live YouTube/Facebook để tự lấy URL + stream key." = "Đăng nhập một lần; ở Đầu ra bấm Tạo live YouTube/Facebook để tự lấy URL + stream key.";
+"Đăng xuất" = "Đăng xuất";
 "Đưa lên Preview" = "Đưa lên Preview";
 "Đầu ra" = "Đầu ra";
 "Đầu vào" = "Đầu vào";

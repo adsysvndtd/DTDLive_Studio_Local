@@ -499,7 +499,7 @@ struct OutputsSheet: View {
     @ObservedObject var engine: StudioEngine
     @Environment(\.dismiss) private var dismiss
     @State private var draft = OutputConfig(name: "", proto: .rtmp, url: "")
-    @StateObject private var platform = PlatformLive()
+    @ObservedObject private var platform = PlatformLive.shared
     @State private var liveTitle = "DTD Studio Live"
     @State private var platformBusy = false
     @State private var platformMessage: String?

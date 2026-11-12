@@ -89,6 +89,12 @@ struct SettingsForm: View {
                 Section(header: SettingsHeader("Ngôn ngữ")) {
                     LanguagePicker()
                 }
+                Section(header: SettingsHeader("Tài khoản phát trực tiếp")) {
+                    PlatformAccountRow(platform: .youtube)
+                    PlatformAccountRow(platform: .facebook)
+                    Text("Đăng nhập một lần; ở Đầu ra bấm Tạo live YouTube/Facebook để tự lấy URL + stream key.")
+                        .foregroundStyle(.secondary)
+                }
                 Section(header: SettingsHeader("Tạo phiên live YouTube / Facebook")) {
                     PlatformKeyField(title: "Google OAuth Client ID (loại iOS)", key: PlatformLive.googleKey,
                                      hint: "xxxx.apps.googleusercontent.com — Google Cloud › Credentials, bật YouTube Data API v3")
@@ -163,5 +169,43 @@ struct SettingsHeader: View {
     init(_ title: String) { self.title = title }
     var body: some View {
         Text(LocalizedStringKey(title)).font(DS.settingsFont.weight(.semibold)).textCase(nil).foregroundStyle(DS.text2)
+    }
+}
+
+/// Sign in / out of YouTube or Facebook; shows the account name.
+struct PlatformAccountRow: View {
+    let platform: PlatformLive.Platform
+    @ObservedObject private var live = PlatformLive.shared
+    @State private var busy = false
+    @State private var error: String?
+
+    private var account: String? { platform == .youtube ? live.youtubeAccount : live.facebookAccount }
+    private var signedIn: Bool { platform == .youtube ? live.youtubeSignedIn : live.facebookSignedIn }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Image(systemName: platform == .youtube ? "play.rectangle.fill" : "f.square.fill")
+                    .foregroundStyle(platform == .youtube ? Color.red : Color.blue)
+                Text(verbatim: platform == .youtube ? "YouTube" : "Facebook")
+                Spacer()
+                if busy { ProgressView() }
+                else if signedIn, let account {
+                    Text(verbatim: account).foregroundStyle(.secondary).lineLimit(1)
+                    Button("Đăng xuất", role: .destructive) { live.signOut(platform) }
+                } else {
+                    Button("Đăng nhập") { signIn() }
+                }
+            }
+            if let error { Text(verbatim: error).foregroundStyle(.red) }
+        }
+    }
+
+    private func signIn() {
+        busy = true; error = nil
+        Task {
+            defer { busy = false }
+            do { try await live.signIn(platform) } catch { self.error = error.localizedDescription }
+        }
     }
 }

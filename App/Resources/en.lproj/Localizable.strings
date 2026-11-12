@@ -209,6 +209,7 @@
 "Trên phải" = "Top right";
 "Trên trái" = "Top left";
 "Trạng thái" = "Status";
+"Tài khoản phát trực tiếp" = "Streaming accounts";
 "Tên" = "Name";
 "Tên + chức danh" = "Name + title";
 "Tên show" = "Show name";
@@ -266,6 +267,9 @@
 "Đích phát (chạy song song, encode 1 lần)" = "Destinations (in parallel, encoded once)";
 "Đóng" = "Close";
 "Đôi" = "Double";
+"Đăng nhập" = "Sign in";
+"Đăng nhập một lần; ở Đầu ra bấm Tạo live YouTube/Facebook để tự lấy URL + stream key." = "Sign in once; in Outputs tap Create YouTube/Facebook live to get the URL + stream key automatically.";
+"Đăng xuất" = "Sign out";
 "Đưa lên Preview" = "Send to Preview";
 "Đầu ra" = "Outputs";
 "Đầu vào" = "Inputs";
