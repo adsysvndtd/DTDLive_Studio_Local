@@ -49,6 +49,12 @@ struct OutputConfig: Identifiable, Codable, Equatable {
 }
 
 /// Context a destination needs to start: parameter sets for RTSP SDP / MP4 header.
+/// Values the RTMP metadata needs from the engine (written on the main thread, read when connecting).
+enum StreamStats {
+    static var bitrateKbps = 6000
+    static var fps = 30
+}
+
 struct StreamDescription: Sendable {
     /// H.264: [SPS, PPS]; HEVC: [VPS, SPS, PPS]
     var parameterSets: [[UInt8]]
@@ -92,6 +98,25 @@ final class RTMPOutput: OutputTarget, @unchecked Sendable {
         connection = c; stream = s
         _ = try await c.connect(app)
         _ = try await s.publish(key)
+        // HaishinKit builds onMetaData from its own capture/encoder; with pre-encoded passthrough it would
+        // send an empty one, and strict ingests (Facebook) then never see a video track. Send a full one.
+        let dims = CMVideoFormatDescriptionGetDimensions(desc.videoFormat)
+        var meta: AMFObject = [
+            "duration": 0.0,
+            "width": Double(dims.width), "height": Double(dims.height),
+            "videocodecid": desc.isHEVC ? ("hvc1" as any Sendable) : (7.0 as any Sendable),
+            "videodatarate": Double(StreamStats.bitrateKbps),
+            "framerate": Double(StreamStats.fps),
+            "encoder": "DTD Studio",
+        ]
+        if desc.hasAudio {
+            meta["audiocodecid"] = 10.0
+            meta["audiodatarate"] = 128.0
+            meta["audiosamplerate"] = desc.audioFormat.sampleRate
+            meta["audiosamplesize"] = 16.0
+            meta["stereo"] = desc.audioFormat.channelCount > 1
+        }
+        try? await s.send("@setDataFrame", arguments: "onMetaData", meta, isResetTimestamp: true)
     }
 
     func disconnect() async {

@@ -256,6 +256,8 @@ final class StudioEngine: ObservableObject {
         timers.append(Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
             Task { @MainActor in
                 guard let self else { return }
+                StreamStats.bitrateKbps = self.currentBitrate / 1000
+                StreamStats.fps = self.format.fps
                 await self.adaptBitrate()
                 self.updateOutputRates()
                 self.updateEncodeGate()
