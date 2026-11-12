@@ -6,7 +6,7 @@ import UIKit
 /// Creates a live event on YouTube / Facebook and returns an RTMP(S) destination,
 /// so the operator doesn't have to copy stream keys by hand.
 ///
-/// Configuration (Info.plist, set via project.yml):
+/// Configuration: Settings › Phát trực tiếp (UserDefaults), falling back to Info.plist (project.yml):
 ///   DTDGoogleClientID   — OAuth client of type "iOS" in Google Cloud (YouTube Data API v3 enabled)
 ///   DTDFacebookAppID    — Facebook app with "publish_video" permission (needs App Review for public use)
 /// Tokens are kept in memory only; the operator signs in once per app run.
@@ -17,7 +17,10 @@ final class PlatformLive: NSObject, ObservableObject, ASWebAuthenticationPresent
         case notConfigured(String), cancelled, http(Int, String), badResponse, unsupportedOS
         var errorDescription: String? {
             switch self {
-            case .notConfigured(let k): return "Chưa cấu hình \(k) trong Info.plist"
+            case .notConfigured(let k):
+                return k == PlatformLive.googleKey
+                    ? "Chưa nhập Google OAuth Client ID (iOS) — vào Cài đặt › Phát trực tiếp, hoặc dùng 'Thêm đích' với stream key YouTube"
+                    : "Chưa nhập Facebook App ID — vào Cài đặt › Phát trực tiếp, hoặc dùng 'Thêm đích' với stream key Facebook"
             case .cancelled: return "Đã huỷ đăng nhập"
             case .http(let c, let m): return "HTTP \(c): \(m)"
             case .badResponse: return "Phản hồi không hợp lệ"
@@ -27,6 +30,15 @@ final class PlatformLive: NSObject, ObservableObject, ASWebAuthenticationPresent
     }
 
     struct Destination { var name: String; var url: String; var watchURL: String? }
+
+    static let googleKey = "DTDGoogleClientID"
+    static let facebookKey = "DTDFacebookAppID"
+    /// IDs entered in Settings win over the Info.plist values, so no rebuild is needed to configure them.
+    static func configured(_ key: String) -> String? {
+        let s = (UserDefaults.standard.string(forKey: key) ?? (Bundle.main.object(forInfoDictionaryKey: key) as? String) ?? "")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        return s.isEmpty ? nil : s
+    }
 
     private var googleToken: String?
     private var facebookToken: String?
@@ -65,9 +77,7 @@ final class PlatformLive: NSObject, ObservableObject, ASWebAuthenticationPresent
 
     private func googleAccessToken() async throws -> String {
         if let googleToken { return googleToken }
-        guard let clientID = Bundle.main.object(forInfoDictionaryKey: "DTDGoogleClientID") as? String, !clientID.isEmpty else {
-            throw LiveError.notConfigured("DTDGoogleClientID")
-        }
+        guard let clientID = Self.configured(Self.googleKey) else { throw LiveError.notConfigured(Self.googleKey) }
         // Installed-app flow with PKCE; redirect is the reversed client ID scheme.
         let scheme = clientID.split(separator: ".").reversed().joined(separator: ".")
         let redirect = "\(scheme):/oauth2redirect"
@@ -113,9 +123,7 @@ final class PlatformLive: NSObject, ObservableObject, ASWebAuthenticationPresent
 
     private func facebookAccessToken() async throws -> String {
         if let facebookToken { return facebookToken }
-        guard let appID = Bundle.main.object(forInfoDictionaryKey: "DTDFacebookAppID") as? String, !appID.isEmpty else {
-            throw LiveError.notConfigured("DTDFacebookAppID")
-        }
+        guard let appID = Self.configured(Self.facebookKey) else { throw LiveError.notConfigured(Self.facebookKey) }
         guard #available(iOS 17.4, *) else { throw LiveError.unsupportedOS }
         // Manual login flow with the standard desktop redirect, intercepted by ASWebAuthenticationSession.
         let redirect = "https://www.facebook.com/connect/login_success.html"

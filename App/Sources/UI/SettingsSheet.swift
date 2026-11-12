@@ -86,6 +86,14 @@ struct SettingsForm: View {
                     }
                 }
                 .textSelection(.enabled)
+                Section("Tạo phiên live YouTube / Facebook") {
+                    PlatformKeyField(title: "Google OAuth Client ID (loại iOS)", key: PlatformLive.googleKey,
+                                     hint: "xxxx.apps.googleusercontent.com — Google Cloud › Credentials, bật YouTube Data API v3")
+                    PlatformKeyField(title: "Facebook App ID", key: PlatformLive.facebookKey,
+                                     hint: "developers.facebook.com › App › quyền publish_video")
+                    Text("Không muốn đăng ký app: dùng Đầu ra › Thêm đích › YouTube/Facebook (stream key).")
+                        .font(.caption).foregroundStyle(.secondary)
+                }
                 Section("Đồ hoạ HTML5 (tải từ Git)") {
                     GraphicsRepoRows(repo: engine.graphicsRepo)
                 }
@@ -106,5 +114,25 @@ struct SettingsForm: View {
             }
             .scrollContentBackground(.hidden)
             .background(DS.bg)
+    }
+}
+
+
+/// One platform ID stored in UserDefaults (read by PlatformLive).
+struct PlatformKeyField: View {
+    let title: String
+    let key: String
+    let hint: String
+    @State private var value = ""
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            TextField(title, text: $value)
+                .textInputAutocapitalization(.never).autocorrectionDisabled()
+                .onAppear { value = UserDefaults.standard.string(forKey: key) ?? "" }
+                .onChange(of: value) { _, v in
+                    UserDefaults.standard.set(v.trimmingCharacters(in: .whitespacesAndNewlines), forKey: key)
+                }
+            Text(hint).font(.caption2).foregroundStyle(.secondary)
+        }
     }
 }

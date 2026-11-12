@@ -166,6 +166,9 @@ struct CategoryContent: View {
                     iconButton("info.circle", "Thông tin nguồn PVW") { infoSource = pv }
                     iconButton("arrow.up.and.down.and.arrow.left.and.right", "PTZ nguồn PVW") { ptzSource = pv }
                     iconButton("paintpalette", "Màu nguồn PVW") { adjustingSource = pv }
+                    iconButton("rotate.right", "Xoay 180° nguồn PVW") {
+                        var p = engine.processing[pv] ?? SourceProcessing(); p.rotate180.toggle(); engine.setProcessing(pv, p)
+                    }
                 }
                 headerButton("Thêm nguồn", "plus") { showAddSource = true }
             case .movie:

@@ -526,6 +526,16 @@ struct OutputsSheet: View {
                     if let platformMessage { Text(platformMessage).font(.caption).textSelection(.enabled) }
                 }
                 Section("Thêm đích") {
+                    // Stream-key presets: no app registration needed (copy the key from YouTube Studio / Facebook Live Producer)
+                    HStack {
+                        Button("YouTube (stream key)") {
+                            draft = OutputConfig(name: "YouTube", proto: .rtmp, url: "rtmp://a.rtmp.youtube.com/live2/")
+                        }
+                        Button("Facebook (stream key)") {
+                            draft = OutputConfig(name: "Facebook", proto: .rtmp, url: "rtmps://live-api-s.facebook.com:443/rtmp/")
+                        }
+                    }
+                    .buttonStyle(.bordered)
                     Picker("Giao thức", selection: $draft.proto) {
                         ForEach(OutputProtocol.allCases) { Text($0.label).tag($0) }
                     }

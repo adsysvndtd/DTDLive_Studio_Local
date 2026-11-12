@@ -47,9 +47,11 @@ final class CameraSource: NSObject, VideoSource {
         output.alwaysDiscardsLateVideoFrames = true
         output.setSampleBufferDelegate(delegate, queue: queue)
         if session.canAddOutput(output) { session.addOutput(output) }
+        // Never mirror: a broadcast picture must read correctly (text, logos). Mirroring combined with the
+        // rotation angle flipped the front camera upside down. Use "Lật gương" in Màu & PTZ if wanted.
         if let c = output.connection(with: .video), c.isVideoMirroringSupported {
             c.automaticallyAdjustsVideoMirroring = false
-            c.isVideoMirrored = device.position == .front
+            c.isVideoMirrored = false
         }
         session.commitConfiguration()
         startRotationTracking(device)

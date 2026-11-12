@@ -177,8 +177,8 @@ final class StudioEngine: ObservableObject {
         ve.onEncoded = { sb in om.video(sb); rb.append(sb) }
         audio.onBuffer = { pcm, when in ae.append(pcm, when: when) }
         ae.onEncoded = { buf, when in om.audio(buf, when: when) }
-        let ac = audio
-        om.hasAudio = { ac.isRunning }
+        // audio always flows: the mixer, or silence when the mixer could not start (see startSilentAudio)
+        om.hasAudio = { true }
         om.onStatus = { [weak self] id, st in Task { @MainActor in self?.outputStatus[id] = st } }
         switcher.graphicsProvider = { [weak self] size, now in
             let items = MainActorBox.titles(self)
@@ -204,6 +204,9 @@ final class StudioEngine: ObservableObject {
         // Demo/screenshot mode: no microphone or LAN listeners, so no permission alerts cover the UI.
         if !DemoMode.isOn {
             try? audio.start()
+            // YouTube / Facebook refuse or stall a stream without an audio track: if the mixer can't run
+            // (no microphone permission, audio session error) feed silent AAC so every output still has audio.
+            if !audio.isRunning { startSilentAudio(ae) }
             control.target = self
             try? control.start()
         }
@@ -675,6 +678,22 @@ final class StudioEngine: ObservableObject {
     // MARK: Audio
 
     func updateAudioChannel(_ c: AudioChannelState) { audio.update(c) }
+
+    private var silenceTimer: DispatchSourceTimer?
+    private func startSilentAudio(_ ae: AudioEncoder) {
+        let fmt = AVAudioFormat(standardFormatWithSampleRate: 48000, channels: 2)!
+        let frames: AVAudioFrameCount = 1024
+        let t = DispatchSource.makeTimerSource(queue: DispatchQueue(label: "silence.audio", qos: .userInitiated))
+        t.schedule(deadline: .now(), repeating: .nanoseconds(Int(Double(frames) / 48000 * 1e9)))
+        t.setEventHandler {
+            guard let b = AVAudioPCMBuffer(pcmFormat: fmt, frameCapacity: frames) else { return }
+            b.frameLength = frames            // freshly allocated buffers are zero-filled
+            ae.append(b, when: AVAudioTime(hostTime: mach_absolute_time()))
+        }
+        t.resume()
+        silenceTimer = t
+        message = "Không mở được micro/bộ trộn âm thanh — đang phát kèm âm thanh câm. Kiểm tra quyền Micro trong Cài đặt iOS."
+    }
 
     /// PCM from a pushed camera (ingest server thread) into its own mixer channel.
     nonisolated func audioFeed(sourceID: UUID, name: String) -> @Sendable (AVAudioPCMBuffer) -> Void {
