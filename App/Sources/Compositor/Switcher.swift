@@ -131,6 +131,8 @@ final class Switcher: @unchecked Sendable {
         var background: CIImage
         var text: CIImage?
         var motion: SuperFGMotion
+        /// Text animation override (nil = follows the card's motion).
+        var textMotion: SuperFGTextMotion? = nil
         var inAt: CFTimeInterval
         var outAt: CFTimeInterval?
     }
@@ -139,15 +141,15 @@ final class Switcher: @unchecked Sendable {
     private var card: Card?
 
     /// Starts a card's in-animation (replaces any card on screen).
-    func showCard(background: CIImage, text: CIImage?, motion: SuperFGMotion) {
+    func showCard(background: CIImage, text: CIImage?, motion: SuperFGMotion, textMotion: SuperFGTextMotion? = nil) {
         let now = HostClock.now
-        locked { card = Card(background: background, text: text, motion: motion, inAt: now, outAt: nil) }
+        locked { card = Card(background: background, text: text, motion: motion, textMotion: textMotion, inAt: now, outAt: nil) }
     }
     /// Swaps the artwork of the card on screen without restarting its animation (text edits).
-    func updateCard(background: CIImage, text: CIImage?, motion: SuperFGMotion) {
+    func updateCard(background: CIImage, text: CIImage?, motion: SuperFGMotion, textMotion: SuperFGTextMotion? = nil) {
         locked {
             guard card != nil else { return }
-            card?.background = background; card?.text = text; card?.motion = motion
+            card?.background = background; card?.text = text; card?.motion = motion; card?.textMotion = textMotion
         }
     }
     /// Plays the out-animation.
@@ -485,6 +487,25 @@ final class Switcher: @unchecked Sendable {
         var tx = c.text.map(fit)
         if var t = tx {
             let e = easeInOut(tp)
+            if let tm = c.textMotion, tm != .auto {
+                switch tm {
+                case .spin:
+                    // spins about the frame centre while growing in (and back out when leaving)
+                    let k = max(0.001, 0.15 + 0.85 * easeOutBack(tp))
+                    let rot = CGAffineTransform(translationX: extent.midX, y: extent.midY)
+                        .rotated(by: -(1 - e) * .pi * 2).scaledBy(x: k, y: k)
+                        .translatedBy(x: -extent.midX, y: -extent.midY)
+                    t = t.transformed(by: rot)
+                case .pop: t = scaled(t, max(0.001, easeOutBack(tp)), extent: extent)
+                case .flip:
+                    // squeezes horizontally like a card turning over
+                    let sx = max(0.01, abs(cos((1 - e) * .pi / 2)))
+                    t = t.transformed(by: CGAffineTransform(translationX: extent.midX, y: 0).scaledBy(x: sx, y: 1).translatedBy(x: -extent.midX, y: 0))
+                case .rise: t = t.transformed(by: CGAffineTransform(translationX: 0, y: -h * 0.3 * (1 - e)))
+                case .fade, .auto: break
+                }
+                tx = fade(t, tp)
+            } else {
             switch c.motion {
             case .zoom, .spin: t = scaled(t, 0.4 + 0.6 * easeOutBack(tp), extent: extent)
             case .slide: t = t.transformed(by: CGAffineTransform(translationX: w * 0.35 * (1 - e), y: 0))
@@ -496,6 +517,7 @@ final class Switcher: @unchecked Sendable {
             case .wipe, .split, .splitH, .blinds: t = scaled(t, 1.25 - 0.25 * e, extent: extent)
             }
             tx = fade(t, tp)
+            }
         }
         var mask: CIImage?
         switch c.motion {

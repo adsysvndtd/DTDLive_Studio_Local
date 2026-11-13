@@ -6560,6 +6560,36 @@
           }
         }
       }
+    },
+    "Theo thẻ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Follow card"
+          }
+        }
+      }
+    },
+    "Xoay từ giữa": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spin from centre"
+          }
+        }
+      }
+    },
+    "Dùng cho mọi thẻ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use for all cards"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

@@ -124,6 +124,7 @@
 "Dòng 2 (để trống = 1 dòng)" = "Dòng 2 (để trống = 1 dòng)";
 "Dòng chữ dưới (vd LIVE MATCH DAY)" = "Dòng chữ dưới (vd LIVE MATCH DAY)";
 "Dòng phụ (tuỳ chọn)" = "Dòng phụ (tuỳ chọn)";
+"Dùng cho mọi thẻ" = "Dùng cho mọi thẻ";
 "Dùng làm PiP" = "Dùng làm PiP";
 "Dùng làm chuyển cảnh: cắt PVW lên PGM khi thẻ phủ kín" = "Dùng làm chuyển cảnh: cắt PVW lên PGM khi thẻ phủ kín";
 "Dưới phải" = "Dưới phải";
@@ -420,6 +421,7 @@
 "Tech" = "Tech";
 "Thao tác" = "Thao tác";
 "Theo mẫu" = "Theo mẫu";
+"Theo thẻ" = "Theo thẻ";
 "Theo âm thanh" = "Theo âm thanh";
 "Thiết bị muốn kết nối" = "Thiết bị muốn kết nối";
 "Thiết kế" = "Thiết kế";
@@ -529,6 +531,7 @@
 "Xoay 180°" = "Xoay 180°";
 "Xoay 180° nguồn PVW" = "Xoay 180° nguồn PVW";
 "Xoay nguồn PVW 90°" = "Xoay nguồn PVW 90°";
+"Xoay từ giữa" = "Xoay từ giữa";
 "Xong" = "Xong";
 "Xoá" = "Xoá";
 "Xoá bảng tỉ số" = "Xoá bảng tỉ số";

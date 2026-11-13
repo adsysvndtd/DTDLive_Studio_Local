@@ -502,14 +502,20 @@ final class StudioEngine: ObservableObject {
             if libraryCardURL != nil, oldValue.libraryMotion != superFG.libraryMotion, let c = superFGCard {
                 superFGCard = (c.bg, c.text, superFG.libraryMotionValue)
             }
-            if superFGActiveTemplate != nil, oldValue.texts != superFG.texts || oldValue.accents != superFG.accents {
+            if superFGActiveTemplate != nil, oldValue.texts != superFG.texts || oldValue.accents != superFG.accents
+                || oldValue.textMotions != superFG.textMotions {
                 renderSuperFGCard()
-                if foregroundOn, let c = superFGCard { switcher.updateCard(background: c.bg, text: c.text, motion: c.motion) }
+                if foregroundOn, let c = superFGCard {
+                    switcher.updateCard(background: c.bg, text: c.text, motion: c.motion, textMotion: superFGTextMotion)
+                }
             }
         }
     }
     @Published private(set) var superFGActiveTemplate: String?
     private var superFGCard: (bg: CIImage, text: CIImage?, motion: SuperFGMotion)?
+    private var superFGTextMotion: SuperFGTextMotion? {
+        superFGActiveTemplate.map { superFG.textMotion($0) }
+    }
     private var superFGToken = 0
 
     /// Arms a card; if SuperFG is on, the new card plays in straight away.
@@ -535,7 +541,7 @@ final class StudioEngine: ObservableObject {
     private func playSuperFGCard() {
         if superFGCard == nil { renderSuperFGCard() }
         guard let c = superFGCard else { return }
-        switcher.showCard(background: c.bg, text: c.text, motion: c.motion)
+        switcher.showCard(background: c.bg, text: c.text, motion: c.motion, textMotion: superFGTextMotion)
         superFGToken += 1
         let token = superFGToken
         if superFG.takeOnCover {

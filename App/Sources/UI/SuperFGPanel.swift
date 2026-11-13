@@ -65,6 +65,20 @@ struct SuperFGPanel: View {
                         } label: { Image(systemName: "arrow.uturn.backward") }
                             .buttonStyle(.bordered).font(DS.fBody)
                     }
+                    HStack(spacing: 8) {
+                        Text("Hiệu ứng chữ").font(DS.fBody).foregroundStyle(DS.text2)
+                        Picker("", selection: Binding(get: { engine.superFG.textMotion(t.id) },
+                                                      set: { engine.superFG.textMotions[t.id] = $0 == .auto ? nil : $0.rawValue })) {
+                            ForEach(SuperFGTextMotion.allCases) { m in Text(m.label).tag(m) }
+                        }
+                        .pickerStyle(.menu)
+                        Button("Dùng cho mọi thẻ") {
+                            let m = engine.superFG.textMotion(t.id)
+                            for card in SuperFGTemplate.all { engine.superFG.textMotions[card.id] = m == .auto ? nil : m.rawValue }
+                        }
+                        .font(DS.fBody).buttonStyle(.borderless)
+                        Spacer(minLength: 0)
+                    }
                 }
             }
             LazyVGrid(columns: columns, spacing: compact ? 6 : 10) {

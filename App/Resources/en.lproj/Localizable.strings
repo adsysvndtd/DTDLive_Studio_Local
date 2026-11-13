@@ -124,6 +124,7 @@
 "Dòng 2 (để trống = 1 dòng)" = "Line 2 (empty = one line)";
 "Dòng chữ dưới (vd LIVE MATCH DAY)" = "Ribbon text (e.g. LIVE MATCH DAY)";
 "Dòng phụ (tuỳ chọn)" = "Sub line (optional)";
+"Dùng cho mọi thẻ" = "Use for all cards";
 "Dùng làm PiP" = "Use as PiP";
 "Dùng làm chuyển cảnh: cắt PVW lên PGM khi thẻ phủ kín" = "Use as transition: cut PVW to PGM while the card covers the screen";
 "Dưới phải" = "Bottom right";
@@ -420,6 +421,7 @@
 "Tech" = "Tech";
 "Thao tác" = "Gestures";
 "Theo mẫu" = "Template";
+"Theo thẻ" = "Follow card";
 "Theo âm thanh" = "By audio";
 "Thiết bị muốn kết nối" = "Device wants to connect";
 "Thiết kế" = "Design";
@@ -529,6 +531,7 @@
 "Xoay 180°" = "Rotate 180°";
 "Xoay 180° nguồn PVW" = "Rotate PVW source 180°";
 "Xoay nguồn PVW 90°" = "Rotate PVW source 90°";
+"Xoay từ giữa" = "Spin from centre";
 "Xong" = "Done";
 "Xoá" = "Delete";
 "Xoá bảng tỉ số" = "Delete scoreboard";

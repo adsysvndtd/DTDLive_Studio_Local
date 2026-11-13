@@ -16,6 +16,9 @@ struct SuperFGConfig: Codable, Equatable {
     var takeOnCover = false
     /// Transition for pictures from the SuperFG library.
     var libraryMotion = SuperFGMotion.zoom.rawValue
+    /// Text animation per card id (missing = follows the card).
+    var textMotions: [String: String] = [:]
+    func textMotion(_ id: String) -> SuperFGTextMotion { SuperFGTextMotion(rawValue: textMotions[id] ?? "") ?? .auto }
     var libraryMotionValue: SuperFGMotion { SuperFGMotion(rawValue: libraryMotion) ?? .zoom }
 
     init() {}
@@ -28,12 +31,29 @@ struct SuperFGConfig: Codable, Equatable {
         hold = (try? c.decodeIfPresent(Double.self, forKey: .hold)) ?? 3
         takeOnCover = (try? c.decodeIfPresent(Bool.self, forKey: .takeOnCover)) ?? false
         libraryMotion = (try? c.decodeIfPresent(String.self, forKey: .libraryMotion)) ?? SuperFGMotion.zoom.rawValue
+        textMotions = (try? c.decodeIfPresent([String: String].self, forKey: .textMotions)) ?? [:]
         if SuperFGTemplate.all.first(where: { $0.id == templateID }) == nil { templateID = "ready" }
     }
 
     func lines(_ t: SuperFGTemplate) -> [String] { texts[t.id] ?? t.defaultLines }
     func accent(_ t: SuperFGTemplate) -> UIColor { UIColor(hex: accents[t.id] ?? t.defaultAccent) }
     func accentHex(_ t: SuperFGTemplate) -> String { accents[t.id] ?? t.defaultAccent }
+}
+
+/// How a card's text enters (out is the reverse); `auto` follows the card's own motion.
+enum SuperFGTextMotion: String, CaseIterable, Identifiable, Codable {
+    case auto, spin, pop, flip, rise, fade
+    var id: String { rawValue }
+    var label: String {
+        switch self {
+        case .auto: return L("Theo thẻ")
+        case .spin: return L("Xoay từ giữa")
+        case .pop: return L("Bật nảy")
+        case .flip: return L("Lật")
+        case .rise: return L("Trồi lên")
+        case .fade: return L("Mờ dần")
+        }
+    }
 }
 
 /// How a card enters and leaves (out is the reverse).
