@@ -43,8 +43,7 @@ struct SettingsForm: View {
                     Picker("Codec", selection: $engine.encoder.codec) {
                         ForEach(VideoCodecChoice.allCases) { Text($0.label).tag($0) }
                     }
-                    Stepper(String(format: "Bitrate: %.1f Mbps", Double(engine.encoder.bitrate) / 1e6),
-                            value: $engine.encoder.bitrate, in: 1_000_000...40_000_000, step: 500_000)
+                    BitrateControl(bitrate: $engine.encoder.bitrate)
                     let rec = StudioEngine.recommendedBitrate(engine.format, codec: engine.encoder.codec)
                     HStack {
                         Text(LF("Khuyến nghị cho %@×%@ %@ fps: %@ Mbps", "\(engine.format.width)", "\(engine.format.height)",

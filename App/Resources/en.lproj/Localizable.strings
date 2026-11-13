@@ -1,4 +1,5 @@
 "%.1f Mbps · Âm thanh %.0f dBFS" = "%.1f Mbps · Audio %.0f dBFS";
+"%@ (mặc định)" = "%@ (default)";
 "(bản sao)" = "(copy)";
 "(lưu vào Files › DTDStudio)" = "(saved to Files › DTDStudio)";
 "0.25×" = "0.25×";
@@ -17,6 +18,7 @@
 "Bitrate thích ứng: giảm %@ → %@ kbps (mạng tải lên chậm, trễ %@ s)" = "Adaptive bitrate: down %@ → %@ kbps (slow upload, %@ s behind)";
 "Bitrate thích ứng: tăng lại %@ → %@ kbps (trễ %@ s)" = "Adaptive bitrate: back up %@ → %@ kbps (%@ s behind)";
 "Bitrate thấp so với độ phân giải → hình trên YouTube/Facebook sẽ mờ, nhất là cảnh chuyển động." = "Bitrate is low for this resolution → the picture on YouTube/Facebook will look soft, especially in motion.";
+"Bitrate video" = "Video bitrate";
 "Bàn thắng" = "Goal";
 "Bão hoà" = "Saturation";
 "Bên phải" = "Right";

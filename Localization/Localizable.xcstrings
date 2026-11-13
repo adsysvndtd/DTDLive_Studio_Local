@@ -7182,6 +7182,38 @@
           }
         }
       }
+    },
+    "Bitrate video": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video bitrate"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bitrate video"
+          }
+        }
+      }
+    },
+    "%@ (mặc định)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ (default)"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ (mặc định)"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

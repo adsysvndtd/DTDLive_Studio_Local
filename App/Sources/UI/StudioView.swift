@@ -662,7 +662,7 @@ struct OutputsSheet: View {
                         Text("HEVC: YouTube/RTMP cần máy chủ hỗ trợ Enhanced RTMP; Facebook chỉ nhận H.264. SRT/RTSP/ghi file dùng được.")
                             .font(.caption).foregroundStyle(.orange)
                     }
-                    Stepper(String(format: "Bitrate: %.1f Mbps", Double(engine.encoder.bitrate) / 1e6), value: $engine.encoder.bitrate, in: 1_000_000...20_000_000, step: 500_000)
+                    BitrateControl(bitrate: $engine.encoder.bitrate)
                     Toggle("Bitrate thích ứng", isOn: $engine.encoder.adaptive)
                     if engine.encoder.adaptive {
                         Stepper(String(format: L("Tối thiểu: %.1f Mbps"), Double(engine.encoder.minBitrate) / 1e6), value: $engine.encoder.minBitrate, in: 500_000...10_000_000, step: 250_000)

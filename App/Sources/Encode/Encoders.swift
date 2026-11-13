@@ -11,7 +11,7 @@ enum VideoCodecChoice: String, Codable, CaseIterable, Identifiable {
 
 struct EncoderSettings: Equatable, Codable {
     var codec: VideoCodecChoice = .h264
-    var bitrate = 8_000_000
+    var bitrate = 6_000_000
     /// Adaptive bitrate floor (bps) — the encoder never goes below this under congestion.
     var minBitrate = 1_500_000
     var adaptive = true

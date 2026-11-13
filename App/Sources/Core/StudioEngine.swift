@@ -289,7 +289,16 @@ final class StudioEngine: ObservableObject {
                 self.applyThermalState()
             }
         })
-        if let saved = Self.load(EncoderSettings.self, key: "dtd.encoder.v1") { encoder = saved }
+        if var saved = Self.load(EncoderSettings.self, key: "dtd.encoder.v1") {
+            // One-time move to the new 6 Mbps default for installs still on the old 8 Mbps default.
+            if !UserDefaults.standard.bool(forKey: "dtd.encoder.default6") {
+                UserDefaults.standard.set(true, forKey: "dtd.encoder.default6")
+                if saved.bitrate == 8_000_000 { saved.bitrate = 6_000_000 }
+            }
+            encoder = saved
+        } else {
+            UserDefaults.standard.set(true, forKey: "dtd.encoder.default6")
+        }
         if let fg = Self.load(SuperFGConfig.self, key: "dtd.superfg.v1") { superFG = fg }
         if let f = Self.load(ProgramFormat.self, key: "dtd.format.v1") { format = f }
     }

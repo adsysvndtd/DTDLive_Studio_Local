@@ -1,4 +1,5 @@
 "%.1f Mbps · Âm thanh %.0f dBFS" = "%.1f Mbps · Âm thanh %.0f dBFS";
+"%@ (mặc định)" = "%@ (mặc định)";
 "(bản sao)" = "(bản sao)";
 "(lưu vào Files › DTDStudio)" = "(lưu vào Files › DTDStudio)";
 "0.25×" = "0.25×";
@@ -17,6 +18,7 @@
 "Bitrate thích ứng: giảm %@ → %@ kbps (mạng tải lên chậm, trễ %@ s)" = "Bitrate thích ứng: giảm %@ → %@ kbps (mạng tải lên chậm, trễ %@ s)";
 "Bitrate thích ứng: tăng lại %@ → %@ kbps (trễ %@ s)" = "Bitrate thích ứng: tăng lại %@ → %@ kbps (trễ %@ s)";
 "Bitrate thấp so với độ phân giải → hình trên YouTube/Facebook sẽ mờ, nhất là cảnh chuyển động." = "Bitrate thấp so với độ phân giải → hình trên YouTube/Facebook sẽ mờ, nhất là cảnh chuyển động.";
+"Bitrate video" = "Bitrate video";
 "Bàn thắng" = "Bàn thắng";
 "Bão hoà" = "Bão hoà";
 "Bên phải" = "Bên phải";
