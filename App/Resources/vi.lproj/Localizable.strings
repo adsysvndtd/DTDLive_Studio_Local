@@ -23,6 +23,7 @@
 "Bấm ♡ trên một nguồn để thêm vào Yêu thích" = "Bấm ♡ trên một nguồn để thêm vào Yêu thích";
 "BẬT" = "BẬT";
 "Bật bộ đệm replay (60 giây gần nhất)" = "Bật bộ đệm replay (60 giây gần nhất)";
+"Bật nảy" = "Bật nảy";
 "Bật scopes (Program)" = "Bật scopes (Program)";
 "Bật để xoá phông xanh lá / xanh dương" = "Bật để xoá phông xanh lá / xanh dương";
 "Bắt đầu" = "Bắt đầu";
@@ -76,6 +77,7 @@
 "Chạm để nạp, bật/tắt bằng phím ở cột phải" = "Chạm để nạp, bật/tắt bằng phím ở cột phải";
 "Chạm để đưa lên PVW, rồi Cut / chuyển cảnh ở cột phải" = "Chạm để đưa lên PVW, rồi Cut / chuyển cảnh ở cột phải";
 "Chạy hiệu ứng" = "Chạy hiệu ứng";
+"Chạy lại" = "Chạy lại";
 "Chạy một lần" = "Chạy một lần";
 "Chấp nhận" = "Chấp nhận";
 "Chế độ" = "Chế độ";
@@ -128,6 +130,7 @@
 "Dừng" = "Dừng";
 "Dừng tất cả" = "Dừng tất cả";
 "Facebook › Video trực tiếp › Phần mềm phát trực tiếp › Khoá luồng." = "Facebook › Video trực tiếp › Phần mềm phát trực tiếp › Khoá luồng.";
+"Font" = "Font";
 "Ghi" = "Ghi";
 "Ghép nối camera" = "Ghép nối camera";
 "Ghép nối qua Wi-Fi" = "Ghép nối qua Wi-Fi";
@@ -136,6 +139,7 @@
 "Giây %@" = "Giây %@";
 "Giây %lf" = "Giây %lf";
 "Giây %lld" = "Giây %lld";
+"Giãn chữ" = "Giãn chữ";
 "Giải lao" = "Giải lao";
 "Giới thiệu" = "Giới thiệu";
 "Giờ" = "Giờ";
@@ -161,9 +165,11 @@
 "Gửi tới máy khác" = "Gửi tới máy khác";
 "HEVC: YouTube/RTMP cần máy chủ hỗ trợ Enhanced RTMP; Facebook chỉ nhận H.264. SRT/RTSP/ghi file dùng được." = "HEVC: YouTube/RTMP cần máy chủ hỗ trợ Enhanced RTMP; Facebook chỉ nhận H.264. SRT/RTSP/ghi file dùng được.";
 "Hai khung ngang" = "Hai khung ngang";
+"Hiện" = "Hiện";
 "Hiệp (vd H1, Q2)" = "Hiệp (vd H1, Q2)";
 "Hiệu ứng" = "Hiệu ứng";
 "Hiệu ứng cho ảnh của bạn" = "Hiệu ứng cho ảnh của bạn";
+"Hiệu ứng chạy cùng chuyển động sẵn có của mẫu; ra bằng hiệu ứng ngược lại." = "Hiệu ứng chạy cùng chuyển động sẵn có của mẫu; ra bằng hiệu ứng ngược lại.";
 "Hiệu ứng âm thanh" = "Hiệu ứng âm thanh";
 "Hoà trộn" = "Hoà trộn";
 "Hoàn tác" = "Hoàn tác";
@@ -174,6 +180,7 @@
 "Hình học" = "Hình học";
 "Họ và tên" = "Họ và tên";
 "ID xác nhận" = "ID xác nhận";
+"IN HOA" = "IN HOA";
 "Khoá cân bằng trắng" = "Khoá cân bằng trắng";
 "Khung LIVE" = "Khung LIVE";
 "Khung PiP đơn đè lên Program" = "Khung PiP đơn đè lên Program";
@@ -249,6 +256,7 @@
 "Lỗi: %lf" = "Lỗi: %lf";
 "Lỗi: %lld" = "Lỗi: %lld";
 "Lớn giữa phải" = "Lớn giữa phải";
+"Lớp" = "Lớp";
 "Lớp phủ" = "Lớp phủ";
 "Lửa đỏ" = "Lửa đỏ";
 "Màn hình" = "Màn hình";
@@ -259,6 +267,7 @@
 "Màu 1" = "Màu 1";
 "Màu 2" = "Màu 2";
 "Màu 3" = "Màu 3";
+"Màu chữ" = "Màu chữ";
 "Màu dải" = "Màu dải";
 "Màu nguồn PVW" = "Màu nguồn PVW";
 "Màu nhấn" = "Màu nhấn";
@@ -274,6 +283,7 @@
 "Mạng tải lên không kịp (hàng đợi %@ KB) — tạm bỏ khung hình để bắt kịp" = "Mạng tải lên không kịp (hàng đợi %@ KB) — tạm bỏ khung hình để bắt kịp";
 "Mất kết nối — thử lại" = "Mất kết nối — thử lại";
 "Mẫu bố cục" = "Mẫu bố cục";
+"Mẫu này chưa có lớp nào: đánh dấu khối bằng data-layer=\"tên\" trong HTML." = "Mẫu này chưa có lớp nào: đánh dấu khối bằng data-layer=\"tên\" trong HTML.";
 "Mật khẩu SRT (để trống = không mã hoá, 10–79 ký tự)" = "Mật khẩu SRT (để trống = không mã hoá, 10–79 ký tự)";
 "Mặc định" = "Mặc định";
 "Mềm biên" = "Mềm biên";
@@ -283,6 +293,7 @@
 "Mỗi giao thức dùng chung một cổng; mỗi camera đặt một stream key riêng (cam1, cam2…) và tự hiện thành một nguồn." = "Mỗi giao thức dùng chung một cổng; mỗi camera đặt một stream key riêng (cam1, cam2…) và tự hiện thành một nguồn.";
 "Một khung giữa" = "Một khung giữa";
 "Mờ dần" = "Mờ dần";
+"Mờ nét" = "Mờ nét";
 "Mở DTDLive (hoặc app hỗ trợ DTD pairing) trên cùng mạng Wi-Fi → chọn DTD Studio → so ID xác nhận → Chấp nhận. Không cần nhập mã." = "Mở DTDLive (hoặc app hỗ trợ DTD pairing) trên cùng mạng Wi-Fi → chọn DTD Studio → so ID xác nhận → Chấp nhận. Không cần nhập mã.";
 "Mở dọc" = "Mở dọc";
 "Mở ngang" = "Mở ngang";
@@ -301,12 +312,14 @@
 "Ngắt kết nối (video %@, audio %@ gói)" = "Ngắt kết nối (video %@, audio %@ gói)";
 "Ngắt kết nối (video %lf, audio %lf gói)" = "Ngắt kết nối (video %lf, audio %lf gói)";
 "Ngắt kết nối (video %lld, audio %lld gói)" = "Ngắt kết nối (video %lld, audio %lld gói)";
+"Nhiễu" = "Nhiễu";
 "Nhiệt độ màu" = "Nhiệt độ màu";
 "Nhà tài trợ" = "Nhà tài trợ";
 "Nhánh" = "Nhánh";
 "Nhân bản" = "Nhân bản";
 "Nhân bản để sửa" = "Nhân bản để sửa";
 "Nhãn" = "Nhãn";
+"Như đã gõ" = "Như đã gõ";
 "Nhạc" = "Nhạc";
 "Nhạc nền" = "Nhạc nền";
 "Nhạc nền & hiệu ứng" = "Nhạc nền & hiệu ứng";
@@ -359,6 +372,8 @@
 "QUÉT" = "QUÉT";
 "Quét" = "Quét";
 "Quét chéo" = "Quét chéo";
+"Quét dọc" = "Quét dọc";
+"Quét ngang" = "Quét ngang";
 "Quên mọi DTDLive đã ghép" = "Quên mọi DTDLive đã ghép";
 "Quản lý đích phát (RTMP · SRT · RTSP · YouTube · Facebook)" = "Quản lý đích phát (RTMP · SRT · RTSP · YouTube · Facebook)";
 "RTMP (một cổng, nhiều stream key)" = "RTMP (một cổng, nhiều stream key)";
@@ -393,8 +408,10 @@
 "TRÊN SÓNG" = "TRÊN SÓNG";
 "Tech" = "Tech";
 "Thao tác" = "Thao tác";
+"Theo mẫu" = "Theo mẫu";
 "Theo âm thanh" = "Theo âm thanh";
 "Thiết bị muốn kết nối" = "Thiết bị muốn kết nối";
+"Thiết kế" = "Thiết kế";
 "Thu gọn" = "Thu gọn";
 "Thêm" = "Thêm";
 "Thêm %@" = "Thêm %@";
@@ -487,6 +504,8 @@
 "Vẽ" = "Vẽ";
 "Về gốc" = "Về gốc";
 "Về màu mặc định của kiểu" = "Về màu mặc định của kiểu";
+"Về mặc định lớp" = "Về mặc định lớp";
+"Vệt sáng lướt qua sau khi vào" = "Vệt sáng lướt qua sau khi vào";
 "Vị trí" = "Vị trí";
 "Vị trí & cỡ" = "Vị trí & cỡ";
 "Xanh dương" = "Xanh dương";
@@ -553,6 +572,7 @@
 "Điều khiển tỉ số, đồng hồ, logo, màu ở thẻ Bảng tỉ số phía trên" = "Điều khiển tỉ số, đồng hồ, logo, màu ở thẻ Bảng tỉ số phía trên";
 "Điều khiển từ xa & ghép nối" = "Điều khiển từ xa & ghép nối";
 "Điểm neo" = "Điểm neo";
+"Điểm đứng yên khi phóng to/thu nhỏ." = "Điểm đứng yên khi phóng to/thu nhỏ.";
 "Điểm đứng yên khi phóng to/thu nhỏ. Lưu vào file HTML." = "Điểm đứng yên khi phóng to/thu nhỏ. Lưu vào file HTML.";
 "Điện ảnh" = "Điện ảnh";
 "Đoạn %.1f s" = "Đoạn %.1f s";
@@ -586,6 +606,7 @@
 "Đưa lên Preview" = "Đưa lên Preview";
 "Đầu ra" = "Đầu ra";
 "Đầu vào" = "Đầu vào";
+"Đậm %@" = "Đậm %@";
 "Đặt MARK IN / MARK OUT rồi bấm Lưu clip" = "Đặt MARK IN / MARK OUT rồi bấm Lưu clip";
 "Đặt lại" = "Đặt lại";
 "Đặt lại tỉ số 0 - 0" = "Đặt lại tỉ số 0 - 0";
@@ -604,6 +625,8 @@
 "Độ trễ SRT %@ ms" = "Độ trễ SRT %@ ms";
 "Độ trễ SRT %lf ms" = "Độ trễ SRT %lf ms";
 "Độ trễ SRT %lld ms" = "Độ trễ SRT %lld ms";
+"Độ đậm" = "Độ đậm";
+"Độ đậm chữ" = "Độ đậm chữ";
 "Độ đậm nền" = "Độ đậm nền";
 "Đội A" = "Đội A";
 "Đội B" = "Đội B";

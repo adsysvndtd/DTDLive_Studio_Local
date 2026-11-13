@@ -23,6 +23,7 @@
 "Bấm ♡ trên một nguồn để thêm vào Yêu thích" = "Tap ♡ on a source to add it to Favorites";
 "BẬT" = "ON";
 "Bật bộ đệm replay (60 giây gần nhất)" = "Replay buffer on (last 60 seconds)";
+"Bật nảy" = "Pop";
 "Bật scopes (Program)" = "Show scopes (Program)";
 "Bật để xoá phông xanh lá / xanh dương" = "Turn on to remove a green / blue screen";
 "Bắt đầu" = "Game starts";
@@ -76,6 +77,7 @@
 "Chạm để nạp, bật/tắt bằng phím ở cột phải" = "Tap to load; turn on/off with the keys on the right";
 "Chạm để đưa lên PVW, rồi Cut / chuyển cảnh ở cột phải" = "Tap to send to PVW, then Cut / transition on the right";
 "Chạy hiệu ứng" = "Play animation";
+"Chạy lại" = "Replay";
 "Chạy một lần" = "Play once";
 "Chấp nhận" = "Accept";
 "Chế độ" = "Mode";
@@ -128,6 +130,7 @@
 "Dừng" = "Stop";
 "Dừng tất cả" = "Stop all";
 "Facebook › Video trực tiếp › Phần mềm phát trực tiếp › Khoá luồng." = "Facebook › Live video › Streaming software › Stream key.";
+"Font" = "Font";
 "Ghi" = "Rec";
 "Ghép nối camera" = "Camera pairing";
 "Ghép nối qua Wi-Fi" = "Wi-Fi pairing";
@@ -136,6 +139,7 @@
 "Giây %@" = "Seconds %@";
 "Giây %lf" = "Seconds %lf";
 "Giây %lld" = "Seconds %lld";
+"Giãn chữ" = "Letter spacing";
 "Giải lao" = "Break";
 "Giới thiệu" = "About";
 "Giờ" = "Clock";
@@ -161,9 +165,11 @@
 "Gửi tới máy khác" = "Send to another device";
 "HEVC: YouTube/RTMP cần máy chủ hỗ trợ Enhanced RTMP; Facebook chỉ nhận H.264. SRT/RTSP/ghi file dùng được." = "HEVC: YouTube/RTMP needs an Enhanced-RTMP server; Facebook takes H.264 only. SRT/RTSP/recording are fine.";
 "Hai khung ngang" = "Two across";
+"Hiện" = "Show";
 "Hiệp (vd H1, Q2)" = "Period (e.g. H1, Q2)";
 "Hiệu ứng" = "Effects";
 "Hiệu ứng cho ảnh của bạn" = "Transition for your picture";
+"Hiệu ứng chạy cùng chuyển động sẵn có của mẫu; ra bằng hiệu ứng ngược lại." = "The effect runs together with the template's own animation; it leaves with the reverse.";
 "Hiệu ứng âm thanh" = "Sound effects";
 "Hoà trộn" = "Dissolve";
 "Hoàn tác" = "Undo";
@@ -174,6 +180,7 @@
 "Hình học" = "Geometry";
 "Họ và tên" = "Full name";
 "ID xác nhận" = "Confirmation ID";
+"IN HOA" = "UPPERCASE";
 "Khoá cân bằng trắng" = "Lock white balance";
 "Khung LIVE" = "LIVE frame";
 "Khung PiP đơn đè lên Program" = "Single PiP window over Program";
@@ -249,6 +256,7 @@
 "Lỗi: %lf" = "Error: %lf";
 "Lỗi: %lld" = "Error: %lld";
 "Lớn giữa phải" = "Large centre-right";
+"Lớp" = "Layers";
 "Lớp phủ" = "Overlay";
 "Lửa đỏ" = "Red flame";
 "Màn hình" = "Display";
@@ -259,6 +267,7 @@
 "Màu 1" = "Colour 1";
 "Màu 2" = "Colour 2";
 "Màu 3" = "Colour 3";
+"Màu chữ" = "Text colour";
 "Màu dải" = "Strip colour";
 "Màu nguồn PVW" = "PVW source colour";
 "Màu nhấn" = "Accent colour";
@@ -274,6 +283,7 @@
 "Mạng tải lên không kịp (hàng đợi %@ KB) — tạm bỏ khung hình để bắt kịp" = "Upload can't keep up (queue %@ KB) — dropping video frames to catch up";
 "Mất kết nối — thử lại" = "Connection lost — retrying";
 "Mẫu bố cục" = "Layouts";
+"Mẫu này chưa có lớp nào: đánh dấu khối bằng data-layer=\"tên\" trong HTML." = "This template has no layers yet: mark blocks with data-layer=\"name\" in the HTML.";
 "Mật khẩu SRT (để trống = không mã hoá, 10–79 ký tự)" = "SRT passphrase (empty = unencrypted, 10–79 characters)";
 "Mặc định" = "Default";
 "Mềm biên" = "Edge softness";
@@ -283,6 +293,7 @@
 "Mỗi giao thức dùng chung một cổng; mỗi camera đặt một stream key riêng (cam1, cam2…) và tự hiện thành một nguồn." = "One port per protocol; each camera uses its own stream key (cam1, cam2…) and appears as a source.";
 "Một khung giữa" = "Single centre";
 "Mờ dần" = "Fade";
+"Mờ nét" = "Blur";
 "Mở DTDLive (hoặc app hỗ trợ DTD pairing) trên cùng mạng Wi-Fi → chọn DTD Studio → so ID xác nhận → Chấp nhận. Không cần nhập mã." = "Open DTDLive on the same Wi-Fi → pick DTD Studio → compare the confirmation ID → Accept. No code to type.";
 "Mở dọc" = "Open vertical";
 "Mở ngang" = "Open horizontal";
@@ -301,12 +312,14 @@
 "Ngắt kết nối (video %@, audio %@ gói)" = "Disconnected (video %@, audio %@ packets)";
 "Ngắt kết nối (video %lf, audio %lf gói)" = "Disconnected (video %lf, audio %lf packets)";
 "Ngắt kết nối (video %lld, audio %lld gói)" = "Disconnected (video %lld, audio %lld packets)";
+"Nhiễu" = "Glitch";
 "Nhiệt độ màu" = "Colour temperature";
 "Nhà tài trợ" = "Sponsor";
 "Nhánh" = "Branch";
 "Nhân bản" = "Duplicate";
 "Nhân bản để sửa" = "Duplicate to edit";
 "Nhãn" = "Label";
+"Như đã gõ" = "As typed";
 "Nhạc" = "Music";
 "Nhạc nền" = "Music";
 "Nhạc nền & hiệu ứng" = "Music & effects";
@@ -359,6 +372,8 @@
 "QUÉT" = "WIPE";
 "Quét" = "Wipe";
 "Quét chéo" = "Diagonal wipe";
+"Quét dọc" = "Vertical wipe";
+"Quét ngang" = "Wipe";
 "Quên mọi DTDLive đã ghép" = "Forget all paired DTDLive";
 "Quản lý đích phát (RTMP · SRT · RTSP · YouTube · Facebook)" = "Manage destinations (RTMP · SRT · RTSP · YouTube · Facebook)";
 "RTMP (một cổng, nhiều stream key)" = "RTMP (one port, many stream keys)";
@@ -393,8 +408,10 @@
 "TRÊN SÓNG" = "ON AIR";
 "Tech" = "Tech";
 "Thao tác" = "Gestures";
+"Theo mẫu" = "Template";
 "Theo âm thanh" = "By audio";
 "Thiết bị muốn kết nối" = "Device wants to connect";
+"Thiết kế" = "Design";
 "Thu gọn" = "Collapse";
 "Thêm" = "Add";
 "Thêm %@" = "Add %@";
@@ -487,6 +504,8 @@
 "Vẽ" = "Draw";
 "Về gốc" = "Reset";
 "Về màu mặc định của kiểu" = "Reset to the style's colours";
+"Về mặc định lớp" = "Reset layer";
+"Vệt sáng lướt qua sau khi vào" = "Light sweep after it comes in";
 "Vị trí" = "Position";
 "Vị trí & cỡ" = "Position & size";
 "Xanh dương" = "Blue";
@@ -553,6 +572,7 @@
 "Điều khiển tỉ số, đồng hồ, logo, màu ở thẻ Bảng tỉ số phía trên" = "Score, clock, logos and colours are in the Scoreboard card above";
 "Điều khiển từ xa & ghép nối" = "Remote control & pairing";
 "Điểm neo" = "Anchor";
+"Điểm đứng yên khi phóng to/thu nhỏ." = "The point that stays put when scaling.";
 "Điểm đứng yên khi phóng to/thu nhỏ. Lưu vào file HTML." = "The point that stays put when scaling. Saved into the HTML file.";
 "Điện ảnh" = "Cinema";
 "Đoạn %.1f s" = "Clip %.1f s";
@@ -586,6 +606,7 @@
 "Đưa lên Preview" = "Send to Preview";
 "Đầu ra" = "Outputs";
 "Đầu vào" = "Inputs";
+"Đậm %@" = "Weight %@";
 "Đặt MARK IN / MARK OUT rồi bấm Lưu clip" = "Set MARK IN / MARK OUT, then Save clip";
 "Đặt lại" = "Reset";
 "Đặt lại tỉ số 0 - 0" = "Reset score to 0 - 0";
@@ -604,6 +625,8 @@
 "Độ trễ SRT %@ ms" = "SRT latency %@ ms";
 "Độ trễ SRT %lf ms" = "SRT latency %lf ms";
 "Độ trễ SRT %lld ms" = "SRT latency %lld ms";
+"Độ đậm" = "Opacity";
+"Độ đậm chữ" = "Weight";
 "Độ đậm nền" = "Background opacity";
 "Đội A" = "Team A";
 "Đội B" = "Team B";

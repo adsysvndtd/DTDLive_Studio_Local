@@ -29,7 +29,7 @@ struct HTMLManifest: Codable {
 }
 
 /// Size / position of a whole HTML graphic on the 1920×1080 page (Resize in the panel).
-struct HTMLLayout: Equatable {
+struct HTMLLayout: Codable, Equatable {
     var scale: Double = 1
     var x: Double = 0          // px, + = right
     var y: Double = 0          // px, + = down
@@ -42,6 +42,93 @@ struct HTMLLayout: Equatable {
         ("left center", "←"), ("center center", "•"), ("right center", "→"),
         ("left bottom", "↙"), ("center bottom", "↓"), ("right bottom", "↘")]
 }
+
+/// Look of one layer (block or text) of an HTML graphic: `[data-layer=k]`, `[data-field=k]` or `#k`.
+struct HTMLLayerStyle: Codable, Equatable {
+    var hidden = false
+    var x: Double = 0, y: Double = 0, scale: Double = 1, opacity: Double = 1
+    var fontFamily: String? = nil
+    var fontSize: Double? = nil        // px; nil = template's size
+    var weight: Int? = nil
+    var italic = false
+    var uppercase: Bool? = nil         // nil = template default
+    var letterSpacing: Double? = nil   // px
+    var color: String? = nil           // text colour
+    var background: String? = nil
+    var bgAlpha: Double = 1
+    var isDefault: Bool { self == HTMLLayerStyle() }
+
+    /// `translate` / `scale` / `filter` compose with the template's own transform animations instead of fighting them.
+    func css(_ base: String) -> String {
+        var own: [String] = [], text: [String] = []
+        if hidden { own.append("visibility:hidden!important") }
+        if abs(x) > 0.5 || abs(y) > 0.5 { own.append("translate:\(Int(x.rounded()))px \(Int(y.rounded()))px") }
+        if abs(scale - 1) > 0.001 { own.append("scale:\(String(format: "%.3f", scale))") }
+        if opacity < 0.999 { own.append("filter:opacity(\(String(format: "%.2f", opacity)))") }
+        if let fontSize { own.append("font-size:\(Int(fontSize))px!important") }
+        if let background {
+            let c = UIColor(hex: background); var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+            c.getRed(&r, green: &g, blue: &b, alpha: &a)
+            own.append("background:rgba(\(Int(r * 255)),\(Int(g * 255)),\(Int(b * 255)),\(String(format: "%.2f", bgAlpha)))!important")
+        }
+        if let fontFamily { text.append("font-family:\(fontFamily)!important") }
+        if let weight { text.append("font-weight:\(weight)!important") }
+        if italic { text.append("font-style:italic!important") }
+        if let uppercase { text.append("text-transform:\(uppercase ? "uppercase" : "none")!important") }
+        if let letterSpacing { text.append("letter-spacing:\(String(format: "%.1f", letterSpacing))px!important") }
+        if let color { text.append("color:\(color)!important;-webkit-text-fill-color:\(color)!important") }
+        var out = ""
+        if !own.isEmpty { out += "\(base){\(own.joined(separator: ";"))}\n" }
+        if !text.isEmpty { out += "\(base),\(base) *{\(text.joined(separator: ";"))}\n" }
+        return out
+    }
+
+    static let fonts: [(String, String)] = [
+        ("-apple-system,sans-serif", "SF (hệ thống)"), ("'Avenir Next',sans-serif", "Avenir Next"),
+        ("'Helvetica Neue',sans-serif", "Helvetica Neue"), ("Futura,sans-serif", "Futura"), ("'Gill Sans',sans-serif", "Gill Sans"),
+        ("'Trebuchet MS',sans-serif", "Trebuchet"), ("Verdana,sans-serif", "Verdana"), ("Arial,sans-serif", "Arial"),
+        ("Georgia,serif", "Georgia"), ("'Times New Roman',serif", "Times New Roman"), ("Didot,serif", "Didot"),
+        ("'American Typewriter',serif", "American Typewriter"), ("Menlo,monospace", "Menlo"),
+        ("'Marker Felt',cursive", "Marker Felt"), ("'Chalkboard SE',cursive", "Chalkboard")]
+}
+
+/// Everything the operator designs for one template, stored in its HTML file (see writeDesign).
+/// A styleable layer of a template (shown as a chip in Design › Layers).
+struct HTMLLayerRef: Identifiable, Equatable {
+    let key: String
+    let label: String
+    var id: String { key }
+}
+
+struct HTMLDesign: Codable, Equatable {
+    var layout = HTMLLayout()
+    var fx = "none"               // in/out effect on the whole graphic (keyframes in shimJS)
+    var fxDuration: Double = 0.6
+    var shine = false             // light sweep after it comes in
+    var layers: [String: HTMLLayerStyle] = [:]
+
+    static let effects: [(String, String)] = [
+        ("none", "Theo mẫu"), ("fade", "Mờ dần"), ("slideL", "Trượt từ trái"), ("slideR", "Trượt từ phải"),
+        ("slideU", "Trồi lên"), ("drop", "Rơi xuống"), ("zoom", "Phóng to"), ("pop", "Bật nảy"), ("flip", "Lật"),
+        ("wipe", "Quét ngang"), ("wipeV", "Quét dọc"), ("blur", "Mờ nét"), ("glitch", "Nhiễu")]
+
+    /// CSS for this template id (layout + effect variables + layers).
+    func css(for id: String) -> String {
+        let body = "body[data-dtd=\"\(id)\"]"
+        var b = "--dtd-fx:\(fx);--dtd-fxd:\(String(format: "%.2f", fxDuration))s;--dtd-shine:\(shine ? 1 : 0);"
+        if !layout.isIdentity { b += "transform-origin:\(layout.anchor);transform:\(layout.transform);" }
+        var out = "\(body){\(b)}\n"
+        for (k, st) in layers.sorted(by: { $0.key < $1.key }) where !st.isDefault {
+            let safe = k.replacingOccurrences(of: "\"", with: "")
+            var sel = "\(body) :is([data-layer=\"\(safe)\"],[data-field=\"\(safe)\"]"
+            if let f = safe.first, f.isLetter, safe.allSatisfy({ $0.isLetter || $0.isNumber || $0 == "-" || $0 == "_" }) { sel += ",#\(safe)" }
+            sel += ")"
+            out += st.css(sel)
+        }
+        return out
+    }
+}
+
 
 enum HTMLGraphicsStore {
     static var directory: URL {
@@ -243,15 +330,57 @@ enum HTMLGraphicsStore {
           if(e.tagName==='IMG'){e.src=v;}else{e.textContent=v;}
         });
       }
+      // Everything goes in one wrapper: the app's layout transform sits on <body>, effects animate the wrapper.
+      var w=document.getElementById('dtd-fx');
+      if(!w){
+        w=document.createElement('div');w.id='dtd-fx';
+        w.style.cssText='position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:visible';
+        while(document.body.firstChild){w.appendChild(document.body.firstChild);}
+        document.body.appendChild(w);
+      }
+      var st=document.createElement('style');
+      st.textContent=[
+        '@keyframes dtd-fade{from{opacity:0}to{opacity:1}}',
+        '@keyframes dtd-slideL{from{transform:translateX(-110%);opacity:0}to{transform:none;opacity:1}}',
+        '@keyframes dtd-slideR{from{transform:translateX(110%);opacity:0}to{transform:none;opacity:1}}',
+        '@keyframes dtd-slideU{from{transform:translateY(40%);opacity:0}to{transform:none;opacity:1}}',
+        '@keyframes dtd-drop{from{transform:translateY(-40%);opacity:0}to{transform:none;opacity:1}}',
+        '@keyframes dtd-zoom{from{transform:scale(.5);opacity:0}to{transform:none;opacity:1}}',
+        '@keyframes dtd-pop{0%{transform:scale(0);opacity:0}60%{transform:scale(1.08);opacity:1}80%{transform:scale(.97)}100%{transform:none;opacity:1}}',
+        '@keyframes dtd-flip{from{transform:perspective(1400px) rotateX(90deg);opacity:0}to{transform:none;opacity:1}}',
+        '@keyframes dtd-wipe{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}',
+        '@keyframes dtd-wipeV{from{clip-path:inset(100% 0 0 0)}to{clip-path:inset(0 0 0 0)}}',
+        '@keyframes dtd-blur{from{filter:blur(24px);opacity:0}to{filter:none;opacity:1}}',
+        '@keyframes dtd-glitch{0%{opacity:0;transform:translate(-30px,0) skewX(20deg)}20%{opacity:1;transform:translate(20px,0) skewX(-12deg)}40%{transform:translate(-10px,0)}60%{transform:translate(6px,0) skewX(4deg)}80%{transform:translate(-2px,0)}100%{transform:none;opacity:1}}',
+        '#dtd-fx.dtd-shine::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.45) 50%,transparent 60%);background-size:250% 100%;mix-blend-mode:screen;animation:dtd-sweep 1.1s ease-in-out both}',
+        '@keyframes dtd-sweep{from{background-position:120% 0}to{background-position:-30% 0}}',
+        'body.dtd-in #dtd-fx.dtd-plain{animation:dtd-fade .45s ease-out both}',
+        'body.dtd-out #dtd-fx.dtd-plain{animation:dtd-fade .4s ease-in reverse both}'
+      ].join('\\n');
+      document.head.appendChild(st);
       if(typeof window.update!=='function'){window.update=function(d){if(typeof d==='string')d=JSON.parse(d);for(var k in d)setv(k,d[k]);};}
+      // pages without their own animation: plain fade in/out of the wrapper
       if(typeof window.play!=='function'){
-        var st=document.createElement('style');
-        st.textContent='body.dtd-in{animation:dtdIn .45s ease-out both}body.dtd-out{animation:dtdOut .4s ease-in both}@keyframes dtdIn{from{opacity:0;transform:translateY(24px)}}@keyframes dtdOut{to{opacity:0;transform:translateY(24px)}}';
-        document.head.appendChild(st);
-        window.play=function(){document.body.classList.remove('dtd-out');void document.body.offsetWidth;document.body.classList.add('dtd-in');};
+        w.classList.add('dtd-plain');
+        window.play=function(){document.body.classList.remove('dtd-out');void w.offsetWidth;document.body.classList.add('dtd-in');};
       }
       if(typeof window.stop!=='function'){window.stop=function(){document.body.classList.remove('dtd-in');document.body.classList.add('dtd-out');};}
       if(typeof window.next!=='function'){window.next=function(){};}
+      function v(n){return getComputedStyle(document.body).getPropertyValue(n).trim();}
+      // In/out effect chosen in the app (on top of the template's own animation).
+      window.dtdPlay=function(){
+        var fx=v('--dtd-fx')||'none', d=v('--dtd-fxd')||'0.6s';
+        w.classList.remove('dtd-shine'); w.style.animation='none'; void w.offsetWidth;
+        if(fx!=='none'){w.style.animation='dtd-'+fx+' '+d+' cubic-bezier(.2,.8,.2,1) both';}
+        if(v('--dtd-shine')==='1'){setTimeout(function(){w.classList.add('dtd-shine');},(parseFloat(d)||0.6)*1000);}
+        try{play();}catch(e){}
+      };
+      window.dtdStop=function(){
+        var fx=v('--dtd-fx')||'none', d=v('--dtd-fxd')||'0.6s';
+        w.classList.remove('dtd-shine');
+        if(fx!=='none'){w.style.animation='none';void w.offsetWidth;w.style.animation='dtd-'+fx+' '+d+' cubic-bezier(.6,0,.8,.2) reverse both';}
+        try{stop();}catch(e){}
+      };
     })();
     """
 
@@ -263,44 +392,71 @@ enum HTMLGraphicsStore {
         return cfg
     }
 
-    // MARK: Layout (size / position), saved inside the template's HTML file
+    // MARK: Design (layout, layers, effect), saved inside the template's HTML file
 
-    /// Rule per template id in one <style id="dtd-layout"> block, e.g.
-    /// body[data-dtd="lt-news-red"]{transform-origin:left bottom;transform:translate(0px,0px) scale(1.2)}
-    /// (several templates can share one file — the colour variants — each keeps its own rule).
-    static func readLayout(_ t: HTMLTemplate) -> HTMLLayout {
-        guard let html = try? String(contentsOf: entryURL(t), encoding: .utf8) else { return HTMLLayout() }
+    /// In the page's <style id="dtd-layout"> block, one section per template id (colour variants share a file):
+    ///   /*<dtd id="lt-news-red">{json}*/ …generated CSS… /*</dtd>*/
+    static func readDesign(_ t: HTMLTemplate) -> HTMLDesign {
+        guard let html = try? String(contentsOf: entryURL(t), encoding: .utf8) else { return HTMLDesign() }
         let id = NSRegularExpression.escapedPattern(for: t.id)
-        let pattern = #"body\[data-dtd=""# + id + #""\]\{transform-origin:([a-z ]+);transform:translate\((-?[\d.]+)px,(-?[\d.]+)px\) scale\(([\d.]+)\)\}"#
-        guard let re = try? NSRegularExpression(pattern: pattern),
-              let m = re.firstMatch(in: html, range: NSRange(location: 0, length: (html as NSString).length)) else { return HTMLLayout() }
-        let ns = html as NSString
-        return HTMLLayout(scale: Double(ns.substring(with: m.range(at: 4))) ?? 1,
-                          x: Double(ns.substring(with: m.range(at: 2))) ?? 0,
-                          y: Double(ns.substring(with: m.range(at: 3))) ?? 0,
-                          anchor: ns.substring(with: m.range(at: 1)))
+        guard let re = try? NSRegularExpression(pattern: #"/\*<dtd id=""# + id + #"">(.*?)\*/"#, options: .dotMatchesLineSeparators),
+              let m = re.firstMatch(in: html, range: NSRange(location: 0, length: (html as NSString).length)) else { return HTMLDesign() }
+        let json = (html as NSString).substring(with: m.range(at: 1))
+        return (try? JSONDecoder().decode(HTMLDesign.self, from: Data(json.utf8))) ?? HTMLDesign()
     }
 
-    static func writeLayout(_ t: HTMLTemplate, _ l: HTMLLayout) {
+    static func writeDesign(_ t: HTMLTemplate, _ d: HTMLDesign) {
         let url = entryURL(t)
         guard var html = try? String(contentsOf: url, encoding: .utf8) else { return }
-        let ns = html as NSString
         let id = NSRegularExpression.escapedPattern(for: t.id)
-        // drop this template's old rule
-        if let re = try? NSRegularExpression(pattern: #"\s*body\[data-dtd=""# + id + #""\]\{[^}]*\}"#) {
-            html = re.stringByReplacingMatches(in: html, range: NSRange(location: 0, length: ns.length), withTemplate: "")
+        for pattern in [#"\s*/\*<dtd id=""# + id + #"">.*?/\*</dtd>\*/"#,
+                        #"\s*body\[data-dtd=""# + id + #""\]\{transform-origin:[^}]*\}"#] {   // this section / older single rule
+            if let re = try? NSRegularExpression(pattern: pattern, options: .dotMatchesLineSeparators) {
+                html = re.stringByReplacingMatches(in: html, range: NSRange(location: 0, length: (html as NSString).length), withTemplate: "")
+            }
         }
-        if !l.isIdentity {
-            let rule = "\n  " + l.cssRule(for: t.id)
+        if d != HTMLDesign() {
+            let enc = JSONEncoder(); enc.outputFormatting = [.sortedKeys, .withoutEscapingSlashes]
+            let json = (try? enc.encode(d)).flatMap { String(data: $0, encoding: .utf8) }?.replacingOccurrences(of: "*/", with: "* /") ?? "{}"
+            let section = "\n/*<dtd id=\"\(t.id)\">\(json)*/\n\(d.css(for: t.id))/*</dtd>*/"
             if let r = html.range(of: #"<style id="dtd-layout">"#) {
-                html.insert(contentsOf: rule, at: r.upperBound)
+                html.insert(contentsOf: section, at: r.upperBound)
             } else if let r = html.range(of: "</head>", options: .caseInsensitive) {
-                html.insert(contentsOf: "<style id=\"dtd-layout\">" + rule + "\n</style>\n", at: r.lowerBound)
+                html.insert(contentsOf: "<style id=\"dtd-layout\">" + section + "\n</style>\n", at: r.lowerBound)
             } else {
-                html = "<style id=\"dtd-layout\">" + rule + "\n</style>\n" + html
+                html = "<style id=\"dtd-layout\">" + section + "\n</style>\n" + html
             }
         }
         try? html.write(to: url, atomically: true, encoding: .utf8)
+    }
+
+    /// Layers the operator can style: blocks marked `data-layer` (+ `data-label`), then the template's text/image fields.
+    static func layers(_ t: HTMLTemplate) -> [HTMLLayerRef] {
+        var out: [HTMLLayerRef] = []
+        if let html = try? String(contentsOf: entryURL(t), encoding: .utf8),
+           let re = try? NSRegularExpression(pattern: #"<[^>]*\bdata-layer\s*=\s*["']([^"']+)["'][^>]*>"#),
+           let lre = try? NSRegularExpression(pattern: #"data-label\s*=\s*["']([^"']+)["']"#) {
+            let ns = html as NSString
+            for m in re.matches(in: html, range: NSRange(location: 0, length: ns.length)) {
+                let key = ns.substring(with: m.range(at: 1)), tag = ns.substring(with: m.range(at: 0))
+                var label = key
+                if let lm = lre.firstMatch(in: tag, range: NSRange(location: 0, length: (tag as NSString).length)) {
+                    label = (tag as NSString).substring(with: lm.range(at: 1))
+                }
+                if !out.contains(where: { $0.key == key }) { out.append(HTMLLayerRef(key: key, label: label)) }
+            }
+        }
+        for f in t.fields where !f.isColor && !f.id.hasPrefix("--") && !out.contains(where: { $0.key == f.id }) {
+            out.append(HTMLLayerRef(key: f.id, label: f.label))
+        }
+        return out
+    }
+
+    /// JS that applies a design straight away (a <style id="dtd-live"> after the saved one).
+    static func designJS(_ t: HTMLTemplate, _ d: HTMLDesign) -> String {
+        let css = d.css(for: t.id)
+        let lit = (try? JSONSerialization.data(withJSONObject: [css])).flatMap { String(data: $0, encoding: .utf8) } ?? "[\"\"]"
+        return "document.body.dataset.dtd='\(t.id)';(function(c){var s=document.getElementById('dtd-live');if(!s){s=document.createElement('style');s.id='dtd-live';document.head.appendChild(s);}s.textContent=c;})(\(lit)[0]);"
     }
 
     /// Image values are stored as "logo:<file>" (the container path changes between installs).
@@ -310,17 +466,12 @@ enum HTMLGraphicsStore {
     }
 
     /// JS that pushes values to a page (also sets CSS variables directly for pages whose update() ignores them).
-    static func pushJS(_ t: HTMLTemplate, values: [String: String], layout: HTMLLayout? = nil) -> String? {
+    static func pushJS(_ t: HTMLTemplate, values: [String: String], design: HTMLDesign? = nil) -> String? {
         var d: [String: String] = [:]
         for f in t.fields { d[f.id] = resolve(values[f.id] ?? f.default ?? "", f) }
         guard let json = try? JSONSerialization.data(withJSONObject: d), let s = String(data: json, encoding: .utf8) else { return nil }
-        let lay = layout.map { layoutJS($0) } ?? ""
-        return "document.body.dataset.dtd='\(t.id)';\(lay)(function(d){try{if(typeof update==='function')update(d);}catch(e){}for(var k in d){if(k.indexOf('--')===0)document.documentElement.style.setProperty(k,d[k]);}})(\(s))"
-    }
-
-    /// Applies a layout straight away (inline style beats the saved rule while editing).
-    static func layoutJS(_ l: HTMLLayout) -> String {
-        "document.body.style.transformOrigin='\(l.anchor)';document.body.style.transform='\(l.transform)';"
+        let des = design.map { designJS(t, $0) } ?? "document.body.dataset.dtd='\(t.id)';"
+        return "\(des)(function(d){try{if(typeof update==='function')update(d);}catch(e){}for(var k in d){if(k.indexOf('--')===0)document.documentElement.style.setProperty(k,d[k]);}})(\(s))"
     }
 }
 
@@ -509,32 +660,49 @@ final class HTMLGraphics: NSObject, ObservableObject, WKNavigationDelegate {
     }
     func saveSource(_ t: HTMLTemplate, html: String) throws {
         _ = try HTMLGraphicsStore.saveSource(t, html: html)
-        layouts[t.id] = nil
+        designs[t.id] = nil; layerCache[t.id] = nil
         reload()
     }
     func values(for t: HTMLTemplate) -> [String: String] { values[t.id] ?? [:] }
 
-    // Resize: per-template layout, read from / written into the template's HTML file.
-    @Published private(set) var layouts: [String: HTMLLayout] = [:]
-    private var layoutSave: [String: Task<Void, Never>] = [:]
+    // Design (Resize / layers / effect): per template, read from / written into its HTML file.
+    @Published private(set) var designs: [String: HTMLDesign] = [:]
+    private var designSave: [String: Task<Void, Never>] = [:]
+    private var layerCache: [String: [HTMLLayerRef]] = [:]
 
-    func layout(_ t: HTMLTemplate) -> HTMLLayout {
-        if let l = layouts[t.id] { return l }
-        let l = HTMLGraphicsStore.readLayout(t)
-        DispatchQueue.main.async { self.layouts[t.id] = l }
+    func design(_ t: HTMLTemplate) -> HTMLDesign {
+        if let d = designs[t.id] { return d }
+        let d = HTMLGraphicsStore.readDesign(t)
+        DispatchQueue.main.async { if self.designs[t.id] == nil { self.designs[t.id] = d } }
+        return d
+    }
+
+    func setDesign(_ t: HTMLTemplate, _ d: HTMLDesign) {
+        designs[t.id] = d
+        if loadedID == t.id { web?.evaluateJavaScript(HTMLGraphicsStore.designJS(t, d)) }
+        // written into the HTML file once the control settles
+        designSave[t.id]?.cancel()
+        designSave[t.id] = Task { [t, d] in
+            try? await Task.sleep(nanoseconds: 400_000_000)
+            guard !Task.isCancelled else { return }
+            HTMLGraphicsStore.writeDesign(t, d)
+        }
+    }
+
+    func layout(_ t: HTMLTemplate) -> HTMLLayout { design(t).layout }
+    func setLayout(_ t: HTMLTemplate, _ l: HTMLLayout) { var d = design(t); d.layout = l; setDesign(t, d) }
+
+    func layers(_ t: HTMLTemplate) -> [HTMLLayerRef] {
+        if let l = layerCache[t.id] { return l }
+        let l = HTMLGraphicsStore.layers(t)
+        layerCache[t.id] = l
         return l
     }
 
-    func setLayout(_ t: HTMLTemplate, _ l: HTMLLayout) {
-        layouts[t.id] = l
-        if loadedID == t.id { web?.evaluateJavaScript("document.body.dataset.dtd='\(t.id)';" + HTMLGraphicsStore.layoutJS(l)) }
-        // write into the HTML file once the slider settles
-        layoutSave[t.id]?.cancel()
-        layoutSave[t.id] = Task { [t, l] in
-            try? await Task.sleep(nanoseconds: 400_000_000)
-            guard !Task.isCancelled else { return }
-            HTMLGraphicsStore.writeLayout(t, l)
-        }
+    /// Plays the graphic's in-effect on air again (to check a new effect).
+    func replay() {
+        guard onAir else { return }
+        web?.evaluateJavaScript("window.dtdPlay?dtdPlay():play()")
     }
 
     func value(_ t: HTMLTemplate, _ f: HTMLTemplate.Field) -> String { values[t.id]?[f.id] ?? f.default ?? "" }
@@ -559,14 +727,14 @@ final class HTMLGraphics: NSObject, ObservableObject, WKNavigationDelegate {
 
     func play() {
         guard loadedID != nil, pageReady else { return }
-        web?.evaluateJavaScript("play()")
+        web?.evaluateJavaScript("window.dtdPlay?dtdPlay():play()")
         onAir = true; stopDeadline = nil
         startCapture()
     }
 
     func stop() {
         guard onAir else { return }
-        web?.evaluateJavaScript("stop()")
+        web?.evaluateJavaScript("window.dtdStop?dtdStop():stop()")
         onAir = false
         stopDeadline = Date().addingTimeInterval(1.2)   // let the out-animation finish on air
     }
@@ -582,7 +750,7 @@ final class HTMLGraphics: NSObject, ObservableObject, WKNavigationDelegate {
     }
 
     private func pushData(_ t: HTMLTemplate) {
-        guard let js = HTMLGraphicsStore.pushJS(t, values: values[t.id] ?? [:], layout: layout(t)) else { return }
+        guard let js = HTMLGraphicsStore.pushJS(t, values: values[t.id] ?? [:], design: design(t)) else { return }
         web?.evaluateJavaScript(js)
     }
 

@@ -12,7 +12,7 @@
   .off .bar{transform:none;animation:down .4s ease-in forwards}
   @keyframes up{to{transform:none}} @keyframes down{to{transform:translateY(140px)}}
 </style></head>
-<body><div id="root"><div class="bar"><div class="tag" id="f0"></div><div class="lane"><div class="text" id="run"></div></div></div></div>
+<body><div id="root"><div class="bar" data-layer="bar" data-label="Thanh chữ chạy"><div class="tag" id="f0"></div><div class="lane" data-layer="lane" data-label="Dòng chữ chạy"><div class="text" id="run"></div></div></div></div>
 <script>
   const root=document.getElementById('root'), run=document.getElementById('run');
   let items=[], x=0, last=0, raf=0;

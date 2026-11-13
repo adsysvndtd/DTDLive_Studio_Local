@@ -157,66 +157,211 @@ struct HTMLFieldRows: View {
     }
 }
 
-/// Resize: scale and move the whole graphic; saved into the template's HTML file.
+/// Design: Resize (whole graphic), per-layer look (font, colours, position, size) and the in/out effect.
+/// Everything is saved into the template's HTML file.
 struct HTMLResizeRows: View {
     @ObservedObject var html: HTMLGraphics
     let template: HTMLTemplate
     var compact = false
     @State private var open = false
+    @State private var tab = 0
+    @State private var layerKey: String?
 
     var body: some View {
         let t = template
-        let l = html.layout(t)
+        let d = html.design(t)
         VStack(alignment: .leading, spacing: 4) {
             HStack(spacing: 8) {
                 Button { open.toggle() } label: {
-                    Label("Resize", systemImage: "arrow.up.left.and.arrow.down.right")
+                    Label("Thiết kế", systemImage: "paintbrush.pointed")
                         .font(DS.fBodyBold).padding(.horizontal, 10).frame(height: compact ? 28 : 32)
                         .foregroundStyle(.white).background(open ? DS.accent.opacity(0.35) : DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
                 }
                 .buttonStyle(.plain)
-                Text(verbatim: "\(Int((l.scale * 100).rounded()))% · x \(Int(l.x)) · y \(Int(l.y))")
+                Text(verbatim: "\(Int((d.layout.scale * 100).rounded()))% · " + L(HTMLDesign.effects.first(where: { $0.0 == d.fx })?.1 ?? "Theo mẫu"))
                     .font(.caption.monospacedDigit()).foregroundStyle(DS.text3)
                 Spacer()
-                if !l.isIdentity {
-                    Button("Về gốc") { html.setLayout(t, HTMLLayout(anchor: l.anchor)) }
-                        .font(DS.fBody).buttonStyle(.borderless)
+                if d != HTMLDesign() {
+                    Button("Về gốc") { html.setDesign(t, HTMLDesign()) }.font(DS.fBody).buttonStyle(.borderless)
                 }
             }
             if open {
-                row("Kích thước", value: Binding(get: { l.scale }, set: { var n = html.layout(t); n.scale = $0; html.setLayout(t, n) }),
-                    range: 0.3...2.5) { "\(Int(($0 * 100).rounded()))%" }
-                row("Ngang", value: Binding(get: { l.x }, set: { var n = html.layout(t); n.x = $0; html.setLayout(t, n) }),
-                    range: -1200...1200) { "\(Int($0)) px" }
-                row("Dọc", value: Binding(get: { l.y }, set: { var n = html.layout(t); n.y = $0; html.setLayout(t, n) }),
-                    range: -800...800) { "\(Int($0)) px" }
-                HStack(spacing: 8) {
-                    Text("Điểm neo").font(DS.fBody).foregroundStyle(DS.text2).frame(width: 84, alignment: .leading)
-                    LazyVGrid(columns: Array(repeating: GridItem(.fixed(26), spacing: 3), count: 3), spacing: 3) {
-                        ForEach(HTMLLayout.anchors, id: \.0) { a in
-                            Button { var n = html.layout(t); n.anchor = a.0; html.setLayout(t, n) } label: {
-                                Text(a.1).font(.system(size: 12, weight: .bold)).frame(width: 26, height: 22)
-                                    .foregroundStyle(l.anchor == a.0 ? .black : .white)
-                                    .background(l.anchor == a.0 ? DS.accent : DS.surface2, in: RoundedRectangle(cornerRadius: 4))
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
-                    .frame(width: 84)
-                    Text("Điểm đứng yên khi phóng to/thu nhỏ. Lưu vào file HTML.").font(.caption2).foregroundStyle(DS.text3)
-                    Spacer(minLength: 0)
+                Picker("", selection: $tab) {
+                    Text("Bố cục").tag(0)
+                    Text("Lớp").tag(1)
+                    Text("Hiệu ứng").tag(2)
+                }
+                .pickerStyle(.segmented)
+                switch tab {
+                case 0: layoutRows(t, d)
+                case 1: layerRows(t, d)
+                default: effectRows(t, d)
                 }
             }
         }
     }
 
-    private func row(_ title: LocalizedStringKey, value: Binding<Double>, range: ClosedRange<Double>, fmt: @escaping (Double) -> String) -> some View {
+    // MARK: Layout (whole graphic)
+
+    @ViewBuilder private func layoutRows(_ t: HTMLTemplate, _ d: HTMLDesign) -> some View {
+        let l = d.layout
+        row("Kích thước", Binding(get: { l.scale }, set: { var n = html.layout(t); n.scale = $0; html.setLayout(t, n) }), 0.3...2.5) { "\(Int(($0 * 100).rounded()))%" }
+        row("Ngang", Binding(get: { l.x }, set: { var n = html.layout(t); n.x = $0; html.setLayout(t, n) }), -1200...1200) { "\(Int($0)) px" }
+        row("Dọc", Binding(get: { l.y }, set: { var n = html.layout(t); n.y = $0; html.setLayout(t, n) }), -800...800) { "\(Int($0)) px" }
         HStack(spacing: 8) {
-            Text(title).font(DS.fBody).foregroundStyle(DS.text2).frame(width: 84, alignment: .leading)
+            label("Điểm neo")
+            LazyVGrid(columns: Array(repeating: GridItem(.fixed(26), spacing: 3), count: 3), spacing: 3) {
+                ForEach(HTMLLayout.anchors, id: \.0) { a in
+                    Button { var n = html.layout(t); n.anchor = a.0; html.setLayout(t, n) } label: {
+                        Text(a.1).font(.system(size: 12, weight: .bold)).frame(width: 26, height: 22)
+                            .foregroundStyle(l.anchor == a.0 ? .black : .white)
+                            .background(l.anchor == a.0 ? DS.accent : DS.surface2, in: RoundedRectangle(cornerRadius: 4))
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .frame(width: 84)
+            Text("Điểm đứng yên khi phóng to/thu nhỏ.").font(.caption2).foregroundStyle(DS.text3)
+            Spacer(minLength: 0)
+        }
+    }
+
+    // MARK: Layers (header / title / logo / blocks…)
+
+    @ViewBuilder private func layerRows(_ t: HTMLTemplate, _ d: HTMLDesign) -> some View {
+        let layers = html.layers(t)
+        let key = layerKey ?? layers.first?.key
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 5) {
+                ForEach(layers) { ly in
+                    let on = ly.key == key
+                    Button { layerKey = ly.key } label: {
+                        HStack(spacing: 3) {
+                            if !(d.layers[ly.key]?.isDefault ?? true) { Circle().fill(DS.accent).frame(width: 5, height: 5) }
+                            Text(ly.label).lineLimit(1)
+                        }
+                        .font(.system(size: 12, weight: .semibold)).padding(.horizontal, 10).frame(height: 26)
+                        .foregroundStyle(on ? .black : .white)
+                        .background(on ? DS.accent : DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+        if let key {
+            let st = d.layers[key] ?? HTMLLayerStyle()
+            let set: (@escaping (inout HTMLLayerStyle) -> Void) -> Void = { change in
+                var n = html.design(t); var s = n.layers[key] ?? HTMLLayerStyle(); change(&s)
+                n.layers[key] = s.isDefault ? nil : s; html.setDesign(t, n)
+            }
+            HStack(spacing: 10) {
+                Toggle(isOn: Binding(get: { !st.hidden }, set: { v in set { $0.hidden = !v } })) { Text("Hiện").font(DS.fBody) }.fixedSize()
+                Spacer()
+                if !st.isDefault { Button("Về mặc định lớp") { set { $0 = HTMLLayerStyle() } }.font(DS.fBody).buttonStyle(.borderless) }
+            }
+            row("Ngang", Binding(get: { st.x }, set: { v in set { $0.x = v } }), -800...800) { "\(Int($0)) px" }
+            row("Dọc", Binding(get: { st.y }, set: { v in set { $0.y = v } }), -500...500) { "\(Int($0)) px" }
+            row("Kích thước", Binding(get: { st.scale }, set: { v in set { $0.scale = v } }), 0.3...3) { "\(Int(($0 * 100).rounded()))%" }
+            row("Độ đậm", Binding(get: { st.opacity }, set: { v in set { $0.opacity = v } }), 0...1) { "\(Int($0 * 100))%" }
+            HStack(spacing: 8) {
+                label("Font")
+                Menu {
+                    Button("Theo mẫu") { set { $0.fontFamily = nil } }
+                    ForEach(HTMLLayerStyle.fonts, id: \.0) { f in Button(f.1) { set { $0.fontFamily = f.0 } } }
+                } label: {
+                    Text(HTMLLayerStyle.fonts.first { $0.0 == st.fontFamily }?.1 ?? L("Theo mẫu"))
+                        .font(DS.fBodyBold).lineLimit(1).padding(.horizontal, 10).frame(height: 28)
+                        .background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
+                }
+                Menu {
+                    Button("Theo mẫu") { set { $0.weight = nil } }
+                    ForEach([300, 400, 500, 600, 700, 800, 900], id: \.self) { w in Button("\(w)") { set { $0.weight = w } } }
+                } label: {
+                    Text(st.weight.map { LF("Đậm %@", "\($0)") } ?? L("Độ đậm chữ"))
+                        .font(DS.fBodyBold).padding(.horizontal, 10).frame(height: 28)
+                        .background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
+                }
+                Button { set { $0.italic.toggle() } } label: {
+                    Image(systemName: "italic").frame(width: 30, height: 28)
+                        .background(st.italic ? DS.accent.opacity(0.4) : DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
+                }.buttonStyle(.plain)
+                Menu {
+                    Button("Theo mẫu") { set { $0.uppercase = nil } }
+                    Button("IN HOA") { set { $0.uppercase = true } }
+                    Button("Như đã gõ") { set { $0.uppercase = false } }
+                } label: {
+                    Text(verbatim: st.uppercase == nil ? "Aa" : (st.uppercase! ? "AA" : "aa")).font(DS.fBodyBold).frame(width: 36, height: 28)
+                        .background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
+                }
+                Spacer(minLength: 0)
+            }
+            row("Cỡ chữ", Binding(get: { st.fontSize ?? 0 }, set: { v in set { $0.fontSize = v < 8 ? nil : v.rounded() } }), 0...200) { $0 < 8 ? L("Theo mẫu") : "\(Int($0)) px" }
+            row("Giãn chữ", Binding(get: { st.letterSpacing ?? 0 }, set: { v in set { $0.letterSpacing = abs(v) < 0.2 ? nil : v } }), -5...20) { String(format: "%.1f", $0) }
+            colorRow("Màu chữ", st.color) { c in set { $0.color = c } }
+            colorRow("Màu nền", st.background) { c in set { $0.background = c } }
+            if st.background != nil {
+                row("Độ đậm nền", Binding(get: { st.bgAlpha }, set: { v in set { $0.bgAlpha = v } }), 0...1) { "\(Int($0 * 100))%" }
+            }
+        } else {
+            Text("Mẫu này chưa có lớp nào: đánh dấu khối bằng data-layer=\"tên\" trong HTML.").font(.caption2).foregroundStyle(DS.text3)
+        }
+    }
+
+    // MARK: Effect
+
+    @ViewBuilder private func effectRows(_ t: HTMLTemplate, _ d: HTMLDesign) -> some View {
+        LazyVGrid(columns: [GridItem(.adaptive(minimum: 96), spacing: 5)], spacing: 5) {
+            ForEach(HTMLDesign.effects, id: \.0) { e in
+                let on = d.fx == e.0
+                Button { var n = html.design(t); n.fx = e.0; html.setDesign(t, n); html.replay() } label: {
+                    Text(L(e.1)).font(.system(size: 12, weight: .semibold)).lineLimit(1).frame(maxWidth: .infinity).frame(height: 28)
+                        .foregroundStyle(on ? .black : .white)
+                        .background(on ? DS.accent : DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        row("Thời gian", Binding(get: { d.fxDuration }, set: { v in var n = html.design(t); n.fxDuration = v; html.setDesign(t, n) }), 0.2...2) { String(format: "%.1f s", $0) }
+        HStack {
+            Toggle(isOn: Binding(get: { d.shine }, set: { v in var n = html.design(t); n.shine = v; html.setDesign(t, n) })) {
+                Text("Vệt sáng lướt qua sau khi vào").font(DS.fBody)
+            }
+            .fixedSize()
+            Spacer()
+            Button { html.replay() } label: { Label("Chạy lại", systemImage: "play.fill") }
+                .font(DS.fBody).buttonStyle(.bordered).disabled(!html.onAir)
+        }
+        Text("Hiệu ứng chạy cùng chuyển động sẵn có của mẫu; ra bằng hiệu ứng ngược lại.").font(.caption2).foregroundStyle(DS.text3)
+    }
+
+    // MARK: Rows
+
+    private func label(_ s: LocalizedStringKey) -> some View {
+        Text(s).font(DS.fBody).foregroundStyle(DS.text2).frame(width: 84, alignment: .leading)
+    }
+
+    private func row(_ title: LocalizedStringKey, _ value: Binding<Double>, _ range: ClosedRange<Double>, fmt: @escaping (Double) -> String) -> some View {
+        HStack(spacing: 8) {
+            label(title)
             Slider(value: value, in: range).tint(DS.accent).controlSize(.small)
             Text(verbatim: fmt(value.wrappedValue)).font(.caption.monospacedDigit()).foregroundStyle(DS.text3).frame(width: 64, alignment: .trailing)
         }
         .frame(height: 28)
+    }
+
+    private func colorRow(_ title: LocalizedStringKey, _ hex: String?, _ set: @escaping (String?) -> Void) -> some View {
+        HStack(spacing: 8) {
+            label(title)
+            ColorPicker("", selection: Binding(get: { Color(UIColor(hex: hex ?? "#FFFFFF")) }, set: { set(UIColor($0).hexString) }),
+                        supportsOpacity: false).labelsHidden()
+            if hex != nil {
+                Button { set(nil) } label: { Image(systemName: "arrow.uturn.backward").font(.system(size: 11)) }.buttonStyle(.borderless)
+            } else {
+                Text("Theo mẫu").font(.caption2).foregroundStyle(DS.text3)
+            }
+            Spacer(minLength: 0)
+        }
+        .frame(height: 30)
     }
 }
 
@@ -239,7 +384,7 @@ struct HTMLEditorSheet: View {
                 ZStack {
                     HTMLCheckerBackground()
                     HTMLPreviewView(template: current, source: previewSource, values: html.values(for: current),
-                                    layout: html.layout(current), playToken: playToken)
+                                    design: html.design(current), playToken: playToken)
                 }
                 .aspectRatio(16 / 9, contentMode: .fit)
                 .clipShape(RoundedRectangle(cornerRadius: DS.radius))
@@ -305,14 +450,14 @@ struct HTMLPreviewView: UIViewRepresentable {
     /// Unsaved source to preview; empty = the saved file.
     let source: String
     let values: [String: String]
-    var layout = HTMLLayout()
+    var design = HTMLDesign()
     let playToken: Int
 
     final class Box: UIView, WKNavigationDelegate {
         let web = WKWebView(frame: .zero, configuration: HTMLGraphicsStore.webConfiguration())
         var template: HTMLTemplate?
         var values: [String: String] = [:]
-        var layout = HTMLLayout()
+        var design = HTMLDesign()
         var loadedKey = ""
         var playToken = -1
         override init(frame: CGRect) {
@@ -330,8 +475,8 @@ struct HTMLPreviewView: UIViewRepresentable {
             if bounds.width > 0 { web.pageZoom = bounds.width / 1920 }
         }
         func push(play: Bool) {
-            guard let t = template, let js = HTMLGraphicsStore.pushJS(t, values: values, layout: layout) else { return }
-            web.evaluateJavaScript(js + (play ? ";typeof play==='function'&&play()" : ""))
+            guard let t = template, let js = HTMLGraphicsStore.pushJS(t, values: values, design: design) else { return }
+            web.evaluateJavaScript(js + (play ? ";window.dtdPlay?dtdPlay():(typeof play==='function'&&play())" : ""))
         }
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) { push(play: true) }
     }
@@ -341,7 +486,7 @@ struct HTMLPreviewView: UIViewRepresentable {
     func updateUIView(_ v: Box, context: Context) {
         v.template = template
         v.values = values
-        v.layout = layout
+        v.design = design
         let key = template.id + "|" + String(source.hashValue)
         if key != v.loadedKey {
             v.loadedKey = key

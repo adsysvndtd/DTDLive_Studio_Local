@@ -20,8 +20,8 @@
   @keyframes out{to{transform:translateX(-140%);opacity:0}}
 </style></head>
 <body><div id="root"><div class="wrap"><div class="tag"></div>
-  <div class="top"><div class="name" id="f0"></div></div>
-  <div class="bot"><div class="role" id="f1"></div></div></div></div>
+  <div class="top" data-layer="top" data-label="Khối tên"><div class="name" id="f0"></div></div>
+  <div class="bot" data-layer="bot" data-label="Khối chức danh"><div class="role" id="f1"></div></div></div></div>
 <script>
   const root=document.getElementById('root');
   function update(d){ if(typeof d==='string') d=JSON.parse(d);
