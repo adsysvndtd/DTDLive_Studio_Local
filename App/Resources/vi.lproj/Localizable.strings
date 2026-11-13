@@ -15,6 +15,10 @@
 "Bitrate thích ứng" = "Bitrate thích ứng";
 "Bàn thắng" = "Bàn thắng";
 "Bão hoà" = "Bão hoà";
+"Bên phải" = "Bên phải";
+"Bên trái" = "Bên trái";
+"Bình luận" = "Bình luận";
+"Bình luận mới sẽ tự chạy từ dưới lên trên PGM." = "Bình luận mới sẽ tự chạy từ dưới lên trên PGM.";
 "Bóng (glossy)" = "Bóng (glossy)";
 "Bù phơi sáng" = "Bù phơi sáng";
 "Bản ghi" = "Bản ghi";
@@ -74,6 +78,7 @@
 "Chưa nạp logo" = "Chưa nạp logo";
 "Chưa tích hợp SDK" = "Chưa tích hợp SDK";
 "Chương trình (Program)" = "Chương trình (Program)";
+"Chạm một bình luận để đưa lên PGM." = "Chạm một bình luận để đưa lên PGM.";
 "Chạm một mẫu để nạp (đang trên sóng thì thay ngay); bật/tắt bằng SuperFG On ở cột phải. Sửa chữ, màu cập nhật ngay." = "Chạm một mẫu để nạp (đang trên sóng thì thay ngay); bật/tắt bằng SuperFG On ở cột phải. Sửa chữ, màu cập nhật ngay.";
 "Chạm một thẻ hoặc ảnh trong thư viện bên dưới để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh." = "Chạm một thẻ hoặc ảnh trong thư viện bên dưới để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh.";
 "Chạm một thẻ để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh." = "Chạm một thẻ để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh.";
@@ -89,8 +94,10 @@
 "Chỉ mình tôi" = "Chỉ mình tôi";
 "Chỉnh khung" = "Chỉnh khung";
 "Chọn một nguồn ở hàng PREVIEW để chỉnh" = "Chọn một nguồn ở hàng PREVIEW để chỉnh";
+"Chọn tay" = "Chọn tay";
 "Chọn từ thư viện Logo" = "Chọn từ thư viện Logo";
 "Chọn video…" = "Chọn video…";
+"Chọn ít nhất một nền tảng" = "Chọn ít nhất một nền tảng";
 "Chống rung" = "Chống rung";
 "Chớp sáng" = "Chớp sáng";
 "Chủ repo (owner)" = "Chủ repo (owner)";
@@ -105,6 +112,7 @@
 "Copy link" = "Copy link";
 "Copy nhật ký" = "Copy nhật ký";
 "Cài đặt" = "Cài đặt";
+"Cách đáy" = "Cách đáy";
 "Có" = "Có";
 "Công khai" = "Công khai";
 "Cảm ơn" = "Cảm ơn";
@@ -114,6 +122,7 @@
 "Cổng RTMP" = "Cổng RTMP";
 "Cổng RTSP" = "Cổng RTSP";
 "Cổng SRT" = "Cổng SRT";
+"Cỡ" = "Cỡ";
 "Cỡ %@%% bề rộng" = "Cỡ %@%% bề rộng";
 "Cỡ chữ" = "Cỡ chữ";
 "Cỡ khung" = "Cỡ khung";
@@ -132,8 +141,10 @@
 "Dải ngang" = "Dải ngang";
 "Dọc" = "Dọc";
 "Dừng" = "Dừng";
+"Dừng nhận" = "Dừng nhận";
 "Dừng tất cả" = "Dừng tất cả";
 "Facebook › Video trực tiếp › Phần mềm phát trực tiếp › Khoá luồng." = "Facebook › Video trực tiếp › Phần mềm phát trực tiếp › Khoá luồng.";
+"Facebook: khi app còn ở chế độ phát triển chỉ đọc được bình luận live của chính tài khoản quản trị app; cho mọi người dùng cần Meta duyệt quyền (App Review)." = "Facebook: khi app còn ở chế độ phát triển chỉ đọc được bình luận live của chính tài khoản quản trị app; cho mọi người dùng cần Meta duyệt quyền (App Review).";
 "Font" = "Font";
 "Ghi" = "Ghi";
 "Ghép nối camera" = "Ghép nối camera";
@@ -170,6 +181,7 @@
 "HEVC: YouTube/RTMP cần máy chủ hỗ trợ Enhanced RTMP; Facebook chỉ nhận H.264. SRT/RTSP/ghi file dùng được." = "HEVC: YouTube/RTMP cần máy chủ hỗ trợ Enhanced RTMP; Facebook chỉ nhận H.264. SRT/RTSP/ghi file dùng được.";
 "Hai khung ngang" = "Hai khung ngang";
 "Hiện" = "Hiện";
+"Hiện trên PGM" = "Hiện trên PGM";
 "Hiệp (vd H1, Q2)" = "Hiệp (vd H1, Q2)";
 "Hiệu ứng" = "Hiệu ứng";
 "Hiệu ứng cho ảnh của bạn" = "Hiệu ứng cho ảnh của bạn";
@@ -210,6 +222,8 @@
 "Không phát được nhạc: %@" = "Không phát được nhạc: %@";
 "Không phát được nhạc: %lf" = "Không phát được nhạc: %lf";
 "Không phát được nhạc: %lld" = "Không phát được nhạc: %lld";
+"Không thấy buổi live đang chạy trên kênh đã đăng nhập — dán link video live vào ô bên trên" = "Không thấy buổi live đang chạy trên kênh đã đăng nhập — dán link video live vào ô bên trên";
+"Không thấy live Facebook đang chạy — dán link/ID video live vào ô Facebook" = "Không thấy live Facebook đang chạy — dán link/ID video live vào ô Facebook";
 "Không đọc được %@" = "Không đọc được %@";
 "Không đọc được %lf" = "Không đọc được %lf";
 "Không đọc được %lld" = "Không đọc được %lld";
@@ -237,6 +251,8 @@
 "Link xem (tuỳ chọn)" = "Link xem (tuỳ chọn)";
 "Link xem (tuỳ chọn, vd https://youtube.com/@kenh/live)" = "Link xem (tuỳ chọn, vd https://youtube.com/@kenh/live)";
 "Link xem live" = "Link xem live";
+"Link/ID video Facebook (trống = live đang chạy của tài khoản đã đăng nhập)" = "Link/ID video Facebook (trống = live đang chạy của tài khoản đã đăng nhập)";
+"Link/ID video YouTube (trống = live đang chạy trên kênh đã đăng nhập)" = "Link/ID video YouTube (trống = live đang chạy trên kênh đã đăng nhập)";
 "Logo" = "Logo";
 "Logo + tên + chức danh" = "Logo + tên + chức danh";
 "Logo đang trên PGM" = "Logo đang trên PGM";
@@ -330,6 +346,7 @@
 "Nhạc" = "Nhạc";
 "Nhạc nền" = "Nhạc nền";
 "Nhạc nền & hiệu ứng" = "Nhạc nền & hiệu ứng";
+"Nhận bình luận" = "Nhận bình luận";
 "Nhận camera (đẩy về DTD Studio)" = "Nhận camera (đẩy về DTD Studio)";
 "Nhận camera: SRT · RTMP · RTSP · DTDLive" = "Nhận camera: SRT · RTMP · RTSP · DTDLive";
 "Nhập HTML" = "Nhập HTML";
@@ -395,6 +412,7 @@
 "Rèm" = "Rèm";
 "Rơi xuống" = "Rơi xuống";
 "Rộng" = "Rộng";
+"Rộng tối đa" = "Rộng tối đa";
 "SRT (một cổng, nhiều streamid)" = "SRT (một cổng, nhiều streamid)";
 "Satin" = "Satin";
 "Server URL (rtmp:// hoặc rtmps://)" = "Server URL (rtmp:// hoặc rtmps://)";
@@ -409,6 +427,7 @@
 "SỌC" = "SỌC";
 "Sọc" = "Sọc";
 "Sọc chéo" = "Sọc chéo";
+"Số bình luận" = "Số bình luận";
 "Sửa" = "Sửa";
 "Sửa bảng tỉ số" = "Sửa bảng tỉ số";
 "Sửa link" = "Sửa link";
@@ -452,6 +471,7 @@
 "Thời gian" = "Thời gian";
 "Thời gian %.1fs" = "Thời gian %.1fs";
 "Thời gian chuyển cảnh" = "Thời gian chuyển cảnh";
+"Thời gian hiện" = "Thời gian hiện";
 "Thời lượng %@ phút" = "Thời lượng %@ phút";
 "Thời lượng %lf phút" = "Thời lượng %lf phút";
 "Thời lượng %lld phút" = "Thời lượng %lld phút";
@@ -506,6 +526,7 @@
 "Tự động" = "Tự động";
 "Tự động chuyển cảnh" = "Tự động chuyển cảnh";
 "Video" = "Video";
+"Video này không có chat trực tiếp đang mở" = "Video này không có chat trực tiếp đang mở";
 "Video đang dùng làm nguồn" = "Video đang dùng làm nguồn";
 "Video đã ghi / thư viện" = "Video đã ghi / thư viện";
 "Viền" = "Viền";
@@ -535,6 +556,7 @@
 "Xoay từ giữa" = "Xoay từ giữa";
 "Xong" = "Xong";
 "Xoá" = "Xoá";
+"Xoá bình luận trên PGM" = "Xoá bình luận trên PGM";
 "Xoá bảng tỉ số" = "Xoá bảng tỉ số";
 "Xoá khung %@" = "Xoá khung %@";
 "Xoá khung %lf" = "Xoá khung %lf";
@@ -581,7 +603,9 @@
 "Đang kết nối" = "Đang kết nối";
 "Đang kết nối…" = "Đang kết nối…";
 "Đang lên sóng" = "Đang lên sóng";
+"Đang nhận" = "Đang nhận";
 "Đang phát" = "Đang phát";
+"Đang tìm buổi live…" = "Đang tìm buổi live…";
 "Đang tìm…" = "Đang tìm…";
 "Đang tải…" = "Đang tải…";
 "Điều khiển PTZ" = "Điều khiển PTZ";
@@ -599,6 +623,7 @@
 "Đã cập nhật %@ tệp (%@)" = "Đã cập nhật %@ tệp (%@)";
 "Đã cập nhật %lf tệp (%lf)" = "Đã cập nhật %lf tệp (%lf)";
 "Đã cập nhật %lld tệp (%lld)" = "Đã cập nhật %lld tệp (%lld)";
+"Đã dừng" = "Đã dừng";
 "Đã huỷ đăng nhập" = "Đã huỷ đăng nhập";
 "Đã lưu %@ (%@ s)" = "Đã lưu %@ (%@ s)";
 "Đã lưu %lf (%lf s)" = "Đã lưu %lf (%lf s)";
@@ -654,6 +679,7 @@
 "Ảnh" = "Ảnh";
 "Ảnh PNG" = "Ảnh PNG";
 "Ảnh nền từ Thư viện" = "Ảnh nền từ Thư viện";
+"Ảnh đại diện" = "Ảnh đại diện";
 "Ẩn tất cả" = "Ẩn tất cả";
 "Ứng dụng" = "Ứng dụng";
 "→ Title" = "→ Title";

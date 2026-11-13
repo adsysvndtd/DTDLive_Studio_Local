@@ -15,6 +15,10 @@
 "Bitrate thích ứng" = "Adaptive bitrate";
 "Bàn thắng" = "Goal";
 "Bão hoà" = "Saturation";
+"Bên phải" = "Right";
+"Bên trái" = "Left";
+"Bình luận" = "Comments";
+"Bình luận mới sẽ tự chạy từ dưới lên trên PGM." = "New comments rise from the bottom of PGM automatically.";
 "Bóng (glossy)" = "Glossy";
 "Bù phơi sáng" = "Exposure compensation";
 "Bản ghi" = "Recordings";
@@ -74,6 +78,7 @@
 "Chưa nạp logo" = "No logo loaded";
 "Chưa tích hợp SDK" = "SDK not integrated";
 "Chương trình (Program)" = "Program";
+"Chạm một bình luận để đưa lên PGM." = "Tap a comment to put it on PGM.";
 "Chạm một mẫu để nạp (đang trên sóng thì thay ngay); bật/tắt bằng SuperFG On ở cột phải. Sửa chữ, màu cập nhật ngay." = "Tap a template to load it (replaces it live if on air); turn it on/off with SuperFG On. Text and colour update instantly.";
 "Chạm một thẻ hoặc ảnh trong thư viện bên dưới để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh." = "Tap a card or a picture in the library below to load it; SuperFG On plays its in-animation, then it leaves by itself (or holds until switched off). The small icon shows the transition type.";
 "Chạm một thẻ để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh." = "Tap a card to load it; SuperFG On plays its in-animation, then it leaves by itself (or holds until switched off). The small icon shows the transition type.";
@@ -89,8 +94,10 @@
 "Chỉ mình tôi" = "Only me";
 "Chỉnh khung" = "Edit windows";
 "Chọn một nguồn ở hàng PREVIEW để chỉnh" = "Pick a source on PREVIEW to adjust";
+"Chọn tay" = "Manual";
 "Chọn từ thư viện Logo" = "Choose from Logo library";
 "Chọn video…" = "Choose video…";
+"Chọn ít nhất một nền tảng" = "Pick at least one platform";
 "Chống rung" = "Stabilization";
 "Chớp sáng" = "Flash";
 "Chủ repo (owner)" = "Repo owner";
@@ -105,6 +112,7 @@
 "Copy link" = "Copy link";
 "Copy nhật ký" = "Copy log";
 "Cài đặt" = "Settings";
+"Cách đáy" = "From bottom";
 "Có" = "Yes";
 "Công khai" = "Public";
 "Cảm ơn" = "Thank you";
@@ -114,6 +122,7 @@
 "Cổng RTMP" = "RTMP port";
 "Cổng RTSP" = "RTSP port";
 "Cổng SRT" = "SRT port";
+"Cỡ" = "Size";
 "Cỡ %@%% bề rộng" = "Size %@%% of width";
 "Cỡ chữ" = "Text size";
 "Cỡ khung" = "Window size";
@@ -132,8 +141,10 @@
 "Dải ngang" = "Wide strip";
 "Dọc" = "Vertical";
 "Dừng" = "Stop";
+"Dừng nhận" = "Stop";
 "Dừng tất cả" = "Stop all";
 "Facebook › Video trực tiếp › Phần mềm phát trực tiếp › Khoá luồng." = "Facebook › Live video › Streaming software › Stream key.";
+"Facebook: khi app còn ở chế độ phát triển chỉ đọc được bình luận live của chính tài khoản quản trị app; cho mọi người dùng cần Meta duyệt quyền (App Review)." = "Facebook: while the app is in development mode only the app admin's own live comments can be read; for everyone Meta must approve the permission (App Review).";
 "Font" = "Font";
 "Ghi" = "Rec";
 "Ghép nối camera" = "Camera pairing";
@@ -170,6 +181,7 @@
 "HEVC: YouTube/RTMP cần máy chủ hỗ trợ Enhanced RTMP; Facebook chỉ nhận H.264. SRT/RTSP/ghi file dùng được." = "HEVC: YouTube/RTMP needs an Enhanced-RTMP server; Facebook takes H.264 only. SRT/RTSP/recording are fine.";
 "Hai khung ngang" = "Two across";
 "Hiện" = "Show";
+"Hiện trên PGM" = "Show on PGM";
 "Hiệp (vd H1, Q2)" = "Period (e.g. H1, Q2)";
 "Hiệu ứng" = "Effects";
 "Hiệu ứng cho ảnh của bạn" = "Transition for your picture";
@@ -210,6 +222,8 @@
 "Không phát được nhạc: %@" = "Couldn't play music: %@";
 "Không phát được nhạc: %lf" = "Couldn't play music: %lf";
 "Không phát được nhạc: %lld" = "Couldn't play music: %lld";
+"Không thấy buổi live đang chạy trên kênh đã đăng nhập — dán link video live vào ô bên trên" = "No live running on the signed-in channel — paste the live video link above";
+"Không thấy live Facebook đang chạy — dán link/ID video live vào ô Facebook" = "No Facebook live running — paste the live video link/ID in the Facebook box";
 "Không đọc được %@" = "Couldn't read %@";
 "Không đọc được %lf" = "Couldn't read %lf";
 "Không đọc được %lld" = "Couldn't read %lld";
@@ -237,6 +251,8 @@
 "Link xem (tuỳ chọn)" = "Watch link (optional)";
 "Link xem (tuỳ chọn, vd https://youtube.com/@kenh/live)" = "Watch link (optional, e.g. https://youtube.com/@channel/live)";
 "Link xem live" = "Live watch link";
+"Link/ID video Facebook (trống = live đang chạy của tài khoản đã đăng nhập)" = "Facebook video link/ID (empty = current live of the signed-in account)";
+"Link/ID video YouTube (trống = live đang chạy trên kênh đã đăng nhập)" = "YouTube video link/ID (empty = current live on the signed-in channel)";
 "Logo" = "Logo";
 "Logo + tên + chức danh" = "Logo + name + title";
 "Logo đang trên PGM" = "Logo is on PGM";
@@ -330,6 +346,7 @@
 "Nhạc" = "Music";
 "Nhạc nền" = "Music";
 "Nhạc nền & hiệu ứng" = "Music & effects";
+"Nhận bình luận" = "Get comments";
 "Nhận camera (đẩy về DTD Studio)" = "Camera ingest (push to DTD Studio)";
 "Nhận camera: SRT · RTMP · RTSP · DTDLive" = "Camera ingest: SRT · RTMP · RTSP · DTDLive";
 "Nhập HTML" = "Import HTML";
@@ -395,6 +412,7 @@
 "Rèm" = "Blinds";
 "Rơi xuống" = "Drop";
 "Rộng" = "Width";
+"Rộng tối đa" = "Max width";
 "SRT (một cổng, nhiều streamid)" = "SRT (one port, many streamids)";
 "Satin" = "Satin";
 "Server URL (rtmp:// hoặc rtmps://)" = "Server URL (rtmp:// or rtmps://)";
@@ -409,6 +427,7 @@
 "SỌC" = "BARS";
 "Sọc" = "Bars";
 "Sọc chéo" = "Diagonal stripes";
+"Số bình luận" = "Comments shown";
 "Sửa" = "Edit";
 "Sửa bảng tỉ số" = "Edit scoreboard";
 "Sửa link" = "Edit link";
@@ -452,6 +471,7 @@
 "Thời gian" = "Duration";
 "Thời gian %.1fs" = "Duration %.1fs";
 "Thời gian chuyển cảnh" = "Transition duration";
+"Thời gian hiện" = "Show for";
 "Thời lượng %@ phút" = "Length %@ min";
 "Thời lượng %lf phút" = "Length %lf min";
 "Thời lượng %lld phút" = "Length %lld min";
@@ -506,6 +526,7 @@
 "Tự động" = "Auto";
 "Tự động chuyển cảnh" = "Auto switching";
 "Video" = "Video";
+"Video này không có chat trực tiếp đang mở" = "This video has no open live chat";
 "Video đang dùng làm nguồn" = "Videos in use";
 "Video đã ghi / thư viện" = "Recorded / library videos";
 "Viền" = "Line";
@@ -535,6 +556,7 @@
 "Xoay từ giữa" = "Spin from centre";
 "Xong" = "Done";
 "Xoá" = "Delete";
+"Xoá bình luận trên PGM" = "Clear comments on PGM";
 "Xoá bảng tỉ số" = "Delete scoreboard";
 "Xoá khung %@" = "Remove window %@";
 "Xoá khung %lf" = "Remove window %lf";
@@ -581,7 +603,9 @@
 "Đang kết nối" = "Connecting";
 "Đang kết nối…" = "Connecting…";
 "Đang lên sóng" = "It's on air";
+"Đang nhận" = "Receiving";
 "Đang phát" = "Live";
+"Đang tìm buổi live…" = "Looking for the live…";
 "Đang tìm…" = "Searching…";
 "Đang tải…" = "Loading…";
 "Điều khiển PTZ" = "PTZ control";
@@ -599,6 +623,7 @@
 "Đã cập nhật %@ tệp (%@)" = "Updated %@ files (%@)";
 "Đã cập nhật %lf tệp (%lf)" = "Updated %lf files (%lf)";
 "Đã cập nhật %lld tệp (%lld)" = "Updated %lld files (%lld)";
+"Đã dừng" = "Stopped";
 "Đã huỷ đăng nhập" = "Sign-in cancelled";
 "Đã lưu %@ (%@ s)" = "Saved %@ (%@ s)";
 "Đã lưu %lf (%lf s)" = "Saved %lf (%lf s)";
@@ -654,6 +679,7 @@
 "Ảnh" = "Pictures";
 "Ảnh PNG" = "PNG image";
 "Ảnh nền từ Thư viện" = "Background from Photos";
+"Ảnh đại diện" = "Avatars";
 "Ẩn tất cả" = "Hide all";
 "Ứng dụng" = "App";
 "→ Title" = "→ Title";

@@ -5,7 +5,7 @@ import UniformTypeIdentifiers
 
 /// Bottom half of the studio: category list · content · transition column.
 enum ProdCategory: String, CaseIterable, Identifiable {
-    case favorite, camera, pip, movie, picture, transition, overlay, title, logo, audio, adjust, auto, replay, settings
+    case favorite, camera, pip, movie, picture, transition, overlay, title, chat, logo, audio, adjust, auto, replay, settings
     var id: String { rawValue }
     var label: String {
         switch self {
@@ -17,6 +17,7 @@ enum ProdCategory: String, CaseIterable, Identifiable {
         case .transition: return L("Chuyển cảnh")
         case .overlay: return "SuperFG"
         case .title: return "Title"
+        case .chat: return L("Bình luận")
         case .logo: return "Logo"
         case .audio: return L("Âm thanh")
         case .adjust: return L("Màu & PTZ")
@@ -35,6 +36,7 @@ enum ProdCategory: String, CaseIterable, Identifiable {
         case .transition: return "square.on.square.dashed"
         case .overlay: return "square.3.layers.3d"
         case .title: return "textformat"
+        case .chat: return "bubble.left.and.bubble.right.fill"
         case .logo: return "seal.fill"
         case .audio: return "music.note"
         case .adjust: return "slider.horizontal.3"
@@ -353,6 +355,8 @@ struct CategoryContent: View {
             effectsPads
         case .adjust:
             SourcePanel(engine: engine)
+        case .chat:
+            LiveChatPanel(chat: engine.liveChat, compact: compact)
         case .auto:
             AutoPanel(auto: engine.autoSwitcher, engine: engine)
         case .replay:

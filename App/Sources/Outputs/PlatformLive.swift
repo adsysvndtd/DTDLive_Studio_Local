@@ -250,6 +250,21 @@ final class PlatformLive: NSObject, ObservableObject, ASWebAuthenticationPresent
         }
     }
 
+    /// Authenticated GET on the YouTube Data API (live chat etc.).
+    func youtubeGET(_ url: String) async throws -> [String: Any] {
+        let t = try await googleAccessToken()
+        return try await api(url, token: t, body: nil, method: "GET")
+    }
+
+    /// GET on the Facebook Graph API with the signed-in user token (path like "me/live_videos?…").
+    func facebookGET(_ path: String) async throws -> [String: Any] {
+        let t = try await facebookAccessToken()
+        let sep = path.contains("?") ? "&" : "?"
+        var req = URLRequest(url: URL(string: "https://graph.facebook.com/v19.0/\(path)\(sep)access_token=\(t)")!)
+        req.httpMethod = "GET"
+        return try await send(req)
+    }
+
     private func api(_ url: String, token: String, body: [String: Any]?, method: String = "POST") async throws -> [String: Any] {
         var req = URLRequest(url: URL(string: url)!)
         req.httpMethod = method

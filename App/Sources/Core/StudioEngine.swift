@@ -42,6 +42,8 @@ final class StudioEngine: ObservableObject {
     let ingest = IngestHub()
     /// HTML5 graphics (lower thirds, tickers) synced from Git.
     let html = HTMLGraphics()
+    /// YouTube / Facebook live comments → overlay rising from the bottom of PGM.
+    let liveChat = LiveChat()
     let graphicsRepo = GraphicsRepo()
     private var htmlChange: AnyCancellable?
 
@@ -193,7 +195,7 @@ final class StudioEngine: ObservableObject {
         outputManager = OutputManager(audioFormat: ae.outputFormat, requestKeyframe: { [weak ve] in ve?.requestKeyframe() })
         Self.shared = self
 
-        let om = outputManager, rb = replayBuffer, titlesR = titleRenderer, ann = annotation
+        let om = outputManager, rb = replayBuffer, titlesR = titleRenderer, ann = annotation, chatR = liveChat.renderer
         #if targetEnvironment(simulator)
         // No hardware encoder in the Simulator: skip encoding in UI-test/demo runs (outputs can't work there anyway).
         let encodeOn = !DemoMode.isOn
@@ -226,6 +228,7 @@ final class StudioEngine: ObservableObject {
                 let hs = h.transformed(by: CGAffineTransform(scaleX: k, y: k))
                 img = img.map { hs.composited(over: $0) } ?? hs
             }
+            if let c = chatR.render(canvas: size, now: now) { img = img.map { c.composited(over: $0) } ?? c }
             if let a = ann.current { img = img.map { a.composited(over: $0) } ?? a }
             return img
         }

@@ -6600,6 +6600,266 @@
           }
         }
       }
+    },
+    "Bình luận": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Comments"
+          }
+        }
+      }
+    },
+    "Đang tìm buổi live…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Looking for the live…"
+          }
+        }
+      }
+    },
+    "Đã dừng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stopped"
+          }
+        }
+      }
+    },
+    "Chọn ít nhất một nền tảng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pick at least one platform"
+          }
+        }
+      }
+    },
+    "Đang nhận": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Receiving"
+          }
+        }
+      }
+    },
+    "Video này không có chat trực tiếp đang mở": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This video has no open live chat"
+          }
+        }
+      }
+    },
+    "Không thấy buổi live đang chạy trên kênh đã đăng nhập — dán link video live vào ô bên trên": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No live running on the signed-in channel — paste the live video link above"
+          }
+        }
+      }
+    },
+    "Không thấy live Facebook đang chạy — dán link/ID video live vào ô Facebook": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Facebook live running — paste the live video link/ID in the Facebook box"
+          }
+        }
+      }
+    },
+    "Dừng nhận": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stop"
+          }
+        }
+      }
+    },
+    "Nhận bình luận": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Get comments"
+          }
+        }
+      }
+    },
+    "Hiện trên PGM": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show on PGM"
+          }
+        }
+      }
+    },
+    "Chọn tay": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Manual"
+          }
+        }
+      }
+    },
+    "Xoá bình luận trên PGM": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear comments on PGM"
+          }
+        }
+      }
+    },
+    "Link/ID video YouTube (trống = live đang chạy trên kênh đã đăng nhập)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube video link/ID (empty = current live on the signed-in channel)"
+          }
+        }
+      }
+    },
+    "Link/ID video Facebook (trống = live đang chạy của tài khoản đã đăng nhập)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Facebook video link/ID (empty = current live of the signed-in account)"
+          }
+        }
+      }
+    },
+    "Bình luận mới sẽ tự chạy từ dưới lên trên PGM.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New comments rise from the bottom of PGM automatically."
+          }
+        }
+      }
+    },
+    "Chạm một bình luận để đưa lên PGM.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap a comment to put it on PGM."
+          }
+        }
+      }
+    },
+    "Facebook: khi app còn ở chế độ phát triển chỉ đọc được bình luận live của chính tài khoản quản trị app; cho mọi người dùng cần Meta duyệt quyền (App Review).": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Facebook: while the app is in development mode only the app admin's own live comments can be read; for everyone Meta must approve the permission (App Review)."
+          }
+        }
+      }
+    },
+    "Bên trái": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Left"
+          }
+        }
+      }
+    },
+    "Bên phải": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Right"
+          }
+        }
+      }
+    },
+    "Ảnh đại diện": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avatars"
+          }
+        }
+      }
+    },
+    "Số bình luận": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Comments shown"
+          }
+        }
+      }
+    },
+    "Thời gian hiện": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show for"
+          }
+        }
+      }
+    },
+    "Cỡ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Size"
+          }
+        }
+      }
+    },
+    "Rộng tối đa": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Max width"
+          }
+        }
+      }
+    },
+    "Cách đáy": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "From bottom"
+          }
+        }
+      }
     }
   },
   "version": "1.0"
