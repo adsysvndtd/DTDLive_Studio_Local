@@ -35,13 +35,33 @@ enum HTMLGraphicsStore {
         return d
     }
 
-    /// First launch: copy the templates shipped in the app (Graphics/ folder) so it works before any sync.
+    /// Copies the templates shipped in the app (Graphics/ folder) so it works before any sync,
+    /// and merges in bundled templates that a later app version added.
     static func seedIfNeeded() {
+        let fm = FileManager.default
         let dst = directory
-        guard !FileManager.default.fileExists(atPath: dst.appendingPathComponent("manifest.json").path),
-              let src = Bundle.main.url(forResource: "Graphics", withExtension: nil) else { return }
-        for name in (try? FileManager.default.contentsOfDirectory(atPath: src.path)) ?? [] {
-            try? FileManager.default.copyItem(at: src.appendingPathComponent(name), to: dst.appendingPathComponent(name))
+        guard let src = Bundle.main.url(forResource: "Graphics", withExtension: nil) else { return }
+        let mURL = dst.appendingPathComponent("manifest.json")
+        guard fm.fileExists(atPath: mURL.path), var local = manifest() else {
+            for name in (try? fm.contentsOfDirectory(atPath: src.path)) ?? [] {
+                try? fm.removeItem(at: dst.appendingPathComponent(name))
+                try? fm.copyItem(at: src.appendingPathComponent(name), to: dst.appendingPathComponent(name))
+            }
+            return
+        }
+        guard let d = try? Data(contentsOf: src.appendingPathComponent("manifest.json")),
+              let bundled = try? JSONDecoder().decode(HTMLManifest.self, from: d) else { return }
+        var changed = false
+        for t in bundled.templates where !local.templates.contains(where: { $0.id == t.id }) {
+            let folder = (t.entry as NSString).pathComponents.first ?? ""
+            if !folder.isEmpty, !fm.fileExists(atPath: dst.appendingPathComponent(folder).path) {
+                try? fm.copyItem(at: src.appendingPathComponent(folder), to: dst.appendingPathComponent(folder))
+            }
+            local.templates.append(t); changed = true
+        }
+        if changed {
+            let enc = JSONEncoder(); enc.outputFormatting = [.prettyPrinted, .withoutEscapingSlashes]
+            try? enc.encode(local).write(to: mURL)
         }
     }
 
