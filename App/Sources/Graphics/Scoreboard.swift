@@ -415,17 +415,19 @@ enum ScoreboardRenderer {
             team(t.line1, b.homeSub, ScoreboardLogos.image(b.homeLogo), in: nameA)
             team(t.line2, b.awaySub, ScoreboardLogos.image(b.awayLogo), in: nameB)
 
-            // 5) ribbon under the centre
+            // 5) ribbon under the centre: starts under the bar, text sits below the glass (the glass overlaps its top)
             if !b.banner.isEmpty {
-                let rw: CGFloat = 620, rh: CGFloat = 44
-                let rr = CGRect(x: cx - rw / 2, y: top + h - 4, width: rw, height: rh)
-                let rp = UIBezierPath(roundedRect: rr, byRoundingCorners: [.bottomLeft, .bottomRight], cornerRadii: CGSize(width: 16, height: 16))
+                let rw: CGFloat = 680
+                let glassBottom = glassTop + glassH
+                let rr = CGRect(x: cx - rw / 2, y: top + h - 4, width: rw, height: glassBottom + 44 - (top + h - 4))
+                let rp = UIBezierPath(roundedRect: rr, byRoundingCorners: [.bottomLeft, .bottomRight], cornerRadii: CGSize(width: 18, height: 18))
                 g.setShadow(offset: CGSize(width: 0, height: 4), blur: 8, color: shadow)
                 gradientFill(g, rp, accent.lighter(0.12), accent.darker(0.25))
                 g.setShadow(offset: .zero, blur: 0, color: nil)
                 UIColor.white.withAlphaComponent(0.5).setStroke(); rp.lineWidth = 2; rp.stroke()
-                let bf = UIFont.systemFont(ofSize: 24, weight: .bold)
-                (b.banner.uppercased() as NSString).draw(in: CGRect(x: rr.minX, y: rr.minY + (rh - bf.lineHeight) / 2 + 2, width: rw, height: bf.lineHeight),
+                let bf = UIFont.systemFont(ofSize: 25, weight: .bold)
+                let ty = glassBottom + (rr.maxY - glassBottom - bf.lineHeight) / 2
+                (b.banner.uppercased() as NSString).draw(in: CGRect(x: rr.minX, y: ty, width: rw, height: bf.lineHeight),
                     withAttributes: [.font: bf, .foregroundColor: UIColor.white, .paragraphStyle: center, .kern: 1.5])
             }
 
