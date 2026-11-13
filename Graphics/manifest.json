@@ -12,6 +12,12 @@
           "default": "TIÊU ĐỀ BẢN TIN"
         },
         {
+          "id": "logo",
+          "label": "Logo (thay chữ nhãn)",
+          "default": "",
+          "type": "image"
+        },
+        {
           "id": "tag1",
           "label": "Nhãn dòng 1",
           "default": "DTD"
@@ -53,6 +59,12 @@
           "id": "title",
           "label": "Tiêu đề chính",
           "default": "TIÊU ĐỀ BẢN TIN"
+        },
+        {
+          "id": "logo",
+          "label": "Logo (thay chữ nhãn)",
+          "default": "",
+          "type": "image"
         },
         {
           "id": "tag1",
@@ -98,6 +110,12 @@
           "default": "TIÊU ĐỀ BẢN TIN"
         },
         {
+          "id": "logo",
+          "label": "Logo (thay chữ nhãn)",
+          "default": "",
+          "type": "image"
+        },
+        {
           "id": "tag1",
           "label": "Nhãn dòng 1",
           "default": "DTD"
@@ -139,6 +157,12 @@
           "id": "title",
           "label": "Tiêu đề chính",
           "default": "TIÊU ĐỀ BẢN TIN"
+        },
+        {
+          "id": "logo",
+          "label": "Logo (thay chữ nhãn)",
+          "default": "",
+          "type": "image"
         },
         {
           "id": "tag1",
