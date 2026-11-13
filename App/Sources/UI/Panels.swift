@@ -85,7 +85,7 @@ struct TitlesPanel: View {
         }
         .sheet(item: Binding(get: { editingID.map { IDBox(id: $0) } }, set: { editingID = $0?.id })) { box in
             if let i = engine.titles.firstIndex(where: { $0.id == box.id }) {
-                TitleEditorSheet(item: $engine.titles[i]) {
+                TitleEditorSheet(item: $engine.titles[i], program: engine.switcher.programMonitor) {
                     editingID = nil; engine.removeTitle(box.id)
                 }
             }
@@ -146,12 +146,18 @@ private struct IDBox: Identifiable { let id: UUID }
 /// Full editor for one title / lower third.
 struct TitleEditorSheet: View {
     @Binding var item: TitleItem
+    var program: FrameStore?
     var onDelete: () -> Void
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         NavigationStack {
             Form {
+                // Live preview on top of the current Program picture: see position / size while adjusting
+                Section {
+                    TitlePreview(item: item, program: program)
+                        .listRowInsets(EdgeInsets(top: 6, leading: 6, bottom: 6, trailing: 6))
+                }
                 Section {
                     Picker("Kiểu", selection: $item.style) {
                         ForEach(TitleStyle.allCases.filter { $0 != .scoreBug }) { Text($0.label).tag($0) }
@@ -167,30 +173,82 @@ struct TitleEditorSheet: View {
                         Stepper("Giây \(item.scoreB)", value: $item.scoreB, in: 0...59).monospacedDigit()
                     }
                 }
-                Section("Vị trí & cỡ") {
-                    LabeledSlider(title: "Ngang", value: Binding(get: { Double(item.position.x) }, set: { item.position.x = $0 }),
-                                  range: 0...0.9) { "\(Int($0 * 100))%" }
-                    LabeledSlider(title: "Dọc", value: Binding(get: { Double(item.position.y) }, set: { item.position.y = $0 }),
-                                  range: 0...0.95) { "\(Int($0 * 100))%" }
-                    LabeledSlider(title: "Cỡ chữ", value: Binding(get: { Double(item.scale) }, set: { item.scale = $0 }),
-                                  range: 0.5...2) { String(format: "%.1f×", $0) }
+                Section(header: Text("Vị trí & cỡ")) {
+                    if item.style != .ticker && item.style != .fullScreen {
+                        compactSlider("Ngang", Binding(get: { Double(item.position.x) }, set: { item.position.x = $0 }), 0...0.9) { "\(Int($0 * 100))%" }
+                        compactSlider("Dọc", Binding(get: { Double(item.position.y) }, set: { item.position.y = $0 }), 0...0.95) { "\(Int($0 * 100))%" }
+                    }
+                    compactSlider("Cỡ chữ", Binding(get: { Double(item.scale) }, set: { item.scale = $0 }), 0.5...2) { String(format: "%.1f×", $0) }
                     if item.style == .ticker {
-                        LabeledSlider(title: "Tốc độ chạy", value: Binding(get: { Double(item.tickerSpeed) }, set: { item.tickerSpeed = $0 }),
-                                      range: 40...400) { "\(Int($0))" }
+                        compactSlider("Tốc độ chạy", Binding(get: { Double(item.tickerSpeed) }, set: { item.tickerSpeed = $0 }), 40...400) { "\(Int($0))" }
                     }
                     ColorPicker("Màu nhấn", selection: Binding(
                         get: { Color(UIColor(hex: item.accentHex)) },
                         set: { item.accentHex = UIColor($0).hexString }), supportsOpacity: false)
+                        .font(.system(size: 13))
+                        .listRowInsets(EdgeInsets(top: 2, leading: 14, bottom: 2, trailing: 14))
                 }
                 Section {
                     Button("Xoá title", role: .destructive) { onDelete(); dismiss() }
                 }
             }
+            .environment(\.defaultMinListRowHeight, 32)
             .navigationTitle(item.style.label)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Xong") { dismiss() } } }
         }
-        .presentationDetents([.medium, .large])
+        .presentationDetents([.large, .medium])
+    }
+
+    /// One-line slider row: label · slider · value (instead of a two-line block).
+    private func compactSlider(_ title: String, _ v: Binding<Double>, _ r: ClosedRange<Double>,
+                               _ fmt: @escaping (Double) -> String) -> some View {
+        HStack(spacing: 8) {
+            Text(LocalizedStringKey(title)).font(.system(size: 13)).foregroundStyle(DS.text2).frame(width: 78, alignment: .leading)
+            Slider(value: v, in: r).tint(DS.accent).controlSize(.small)
+            Text(verbatim: fmt(v.wrappedValue)).font(.system(size: 12).monospacedDigit()).foregroundStyle(DS.text3).frame(width: 40, alignment: .trailing)
+        }
+        .listRowInsets(EdgeInsets(top: 0, leading: 14, bottom: 0, trailing: 14))
+        .frame(height: 30)
+    }
+}
+
+/// 16:9 preview of one title over the live Program, laid out exactly like the renderer
+/// (top-left at position · frame size, text scaled by height/1080 · scale; ticker at the bottom, full-screen centred).
+struct TitlePreview: View {
+    let item: TitleItem
+    var program: FrameStore?
+
+    var body: some View {
+        GeometryReader { g in
+            let W = g.size.width, H = g.size.height
+            let img = TitleRenderer.draw(item, k: H / 1080 * item.scale,
+                                         remaining: item.style == .countdown ? item.scoreA * 60 + item.scoreB : nil)
+            ZStack(alignment: .topLeading) {
+                if let program { MonitorView(store: program, maxFPS: 10) } else { Color.black }
+                // safe-area guides (90 % title safe)
+                Rectangle().stroke(Color.white.opacity(0.18), style: StrokeStyle(lineWidth: 1, dash: [4, 4]))
+                    .frame(width: W * 0.9, height: H * 0.9).offset(x: W * 0.05, y: H * 0.05)
+                switch item.style {
+                case .ticker:
+                    ZStack(alignment: .leading) {
+                        Color.black.opacity(0.75)
+                        Image(uiImage: img).resizable().frame(width: img.size.width, height: img.size.height).padding(.leading, W * 0.1)
+                    }
+                    .frame(width: W, height: img.size.height).clipped()
+                    .offset(y: H - img.size.height - 0.04 * H)
+                case .fullScreen:
+                    Image(uiImage: img).resizable().frame(width: img.size.width, height: img.size.height)
+                        .offset(x: (W - img.size.width) / 2, y: (H - img.size.height) / 2)
+                default:
+                    Image(uiImage: img).resizable().frame(width: img.size.width, height: img.size.height)
+                        .offset(x: item.position.x * W, y: item.position.y * H)
+                }
+            }
+            .frame(width: W, height: H).clipped()
+        }
+        .aspectRatio(16 / 9, contentMode: .fit)
+        .overlay(Rectangle().stroke(DS.stroke))
     }
 }
 
