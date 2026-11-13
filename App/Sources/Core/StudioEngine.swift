@@ -971,7 +971,8 @@ final class StudioEngine: ObservableObject {
         _ = videoEncoder.restartIfStalled(i - lastEncIn, o - lastEncOut)
         watchdogTick += 1
         if watchdogTick % 5 == 1 {
-            logToLiveOutputs("Khung hình/giây: dựng \(r - lastRendered) · vào mã hoá \(i - lastEncIn) · ra \(o - lastEncOut)")
+            let st = switcher.renderStats.take()
+            logToLiveOutputs("Khung hình/giây: dựng \(r - lastRendered) · vào mã hoá \(i - lastEncIn) · ra \(o - lastEncOut) · dựng TB \(String(format: "%.1f", st.avg)) ms, max \(String(format: "%.0f", st.max)) ms, quá hạn \(st.over)")
         }
     }
 

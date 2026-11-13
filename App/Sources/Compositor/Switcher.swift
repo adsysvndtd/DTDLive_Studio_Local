@@ -264,12 +264,69 @@ final class Switcher: @unchecked Sendable {
         guard let out = render(program, extent: extent) else { return }
         renderedFrames.add(1)
         programMonitor.put(out)
-        onProgramFrame?(out, now)
+        onProgramFrame?(out, cadencePTS(now, fps: Double(snap.5.fps)))
 
-        // Preview monitor at reduced cost: share the same pool.
-        if let pv = render(image(from: snap.1, fitting: extent), extent: extent) {
-            previewMonitor.put(pv)
+        // Preview monitor is only for the operator: half resolution, every other frame.
+        previewTick &+= 1
+        if previewTick % 2 == 0 {
+            let half = CGRect(x: 0, y: 0, width: (extent.width / 2).rounded(), height: (extent.height / 2).rounded())
+            let pv = image(from: snap.1, fitting: extent).transformed(by: CGAffineTransform(scaleX: 0.5, y: 0.5)).cropped(to: half)
+            if let pb = renderPreview(pv, extent: half) { previewMonitor.put(pb) }
         }
+        let ms = (HostClock.now - now) * 1000
+        renderStats.record(ms, budget: 1000 / Double(snap.5.fps))
+    }
+
+    // MARK: Timing
+
+    private var previewTick = 0
+    private var previewPool: (CGSize, CVPixelBufferPool)?
+    private var ptsBase: CFTimeInterval = 0
+    private var ptsIndex: Int64 = 0
+    private var ptsFPS: Double = 0
+
+    /// Encoder timestamps on an exact frame grid (the timer fires a few ms early/late; jittered PTS makes
+    /// players stutter). Re-anchors to the host clock if it drifts more than two frames, so audio stays in sync.
+    private func cadencePTS(_ now: CFTimeInterval, fps: Double) -> CFTimeInterval {
+        if fps != ptsFPS { ptsFPS = fps; ptsBase = now; ptsIndex = 0 }
+        let ideal = ptsBase + Double(ptsIndex) / fps
+        if abs(now - ideal) > 2 / fps { ptsBase = now; ptsIndex = 0 }
+        let pts = ptsBase + Double(ptsIndex) / fps
+        ptsIndex += 1
+        return pts
+    }
+
+    /// Render time per program frame, for the on-air log ("dựng TB/max ms, trễ").
+    final class RenderStats: @unchecked Sendable {
+        private let lock = NSLock()
+        private var sum = 0.0, count = 0, maxMs = 0.0, over = 0
+        func record(_ ms: Double, budget: Double) {
+            lock.lock(); sum += ms; count += 1; maxMs = max(maxMs, ms); if ms > budget { over += 1 }; lock.unlock()
+        }
+        /// Average ms, max ms, frames over budget — and resets.
+        func take() -> (avg: Double, max: Double, over: Int) {
+            lock.lock(); defer { sum = 0; count = 0; maxMs = 0; over = 0; lock.unlock() }
+            return (count > 0 ? sum / Double(count) : 0, maxMs, over)
+        }
+    }
+    let renderStats = RenderStats()
+
+    private func renderPreview(_ img: CIImage, extent: CGRect) -> CVPixelBuffer? {
+        if previewPool?.0 != extent.size {
+            let attrs: [String: Any] = [
+                kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
+                kCVPixelBufferWidthKey as String: Int(extent.width), kCVPixelBufferHeightKey as String: Int(extent.height),
+                kCVPixelBufferIOSurfacePropertiesKey as String: [:], kCVPixelBufferMetalCompatibilityKey as String: true
+            ]
+            var p: CVPixelBufferPool?
+            CVPixelBufferPoolCreate(nil, [kCVPixelBufferPoolMinimumBufferCountKey: 4] as CFDictionary, attrs as CFDictionary, &p)
+            previewPool = p.map { (extent.size, $0) }
+        }
+        guard let pool = previewPool?.1 else { return nil }
+        var pb: CVPixelBuffer?
+        guard CVPixelBufferPoolCreatePixelBuffer(nil, pool, &pb) == kCVReturnSuccess, let pb else { return nil }
+        ciContext.render(img, to: pb, bounds: extent, colorSpace: CGColorSpace(name: CGColorSpace.itur_709))
+        return pb
     }
 
     private var ftbMix: Double = 0

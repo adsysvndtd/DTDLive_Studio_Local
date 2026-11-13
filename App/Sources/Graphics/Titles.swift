@@ -48,6 +48,7 @@ struct TitleItem: Identifiable, Codable, Equatable {
 /// plus animated fade/slide in-out and ticker scrolling.
 final class TitleRenderer: @unchecked Sendable {
     private var cache: [UUID: (TitleItem, CGSize, CIImage)] = [:]
+    private var tickCache: [UUID: Int] = [:]
     private var boardCache: [UUID: (String, CGSize, CIImage)] = [:]
     private var shownAt: [UUID: CFTimeInterval] = [:]
     private var hiddenAt: [UUID: CFTimeInterval] = [:]
@@ -128,11 +129,8 @@ final class TitleRenderer: @unchecked Sendable {
             lock.lock(); boardCache[item.id] = (sig, canvas, ci); lock.unlock()
             return ci
         }
-        // Clock changes every second; everything else is cached by content.
-        let dynamic = item.style == .clock || item.style == .countdown
-        lock.lock()
-        if !dynamic, let c = cache[item.id], c.0 == item, c.1 == canvas { lock.unlock(); return c.2 }
-        lock.unlock()
+        // Clock / countdown change once a second: redraw only when the shown second changes
+        // (drawing text on the CPU every frame made program stutter).
         let k = canvas.height / 1080 * item.scale
         var remaining: Int?
         if item.style == .countdown {
@@ -140,10 +138,14 @@ final class TitleRenderer: @unchecked Sendable {
             let total = item.scoreA * 60 + item.scoreB
             remaining = max(0, total - Int(now - (start ?? now)))
         }
+        let tick: Int = item.style == .clock ? Int(Date().timeIntervalSince1970) : (remaining ?? -1)
+        lock.lock()
+        if let c = cache[item.id], c.0 == item, c.1 == canvas, tickCache[item.id] == tick { lock.unlock(); return c.2 }
+        lock.unlock()
         let ui = Self.draw(item, k: k, remaining: remaining)
         guard let cg = ui.cgImage else { return nil }
         let ci = CIImage(cgImage: cg)
-        lock.lock(); cache[item.id] = (item, canvas, ci); lock.unlock()
+        lock.lock(); cache[item.id] = (item, canvas, ci); tickCache[item.id] = tick; lock.unlock()
         return ci
     }
 
