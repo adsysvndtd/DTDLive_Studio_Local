@@ -43,6 +43,7 @@
 "Camera" = "Camera";
 "Camera mạng (SRT · RTSP · RTMP · DTDLive)" = "Camera mạng (SRT · RTSP · RTMP · DTDLive)";
 "Camera trong máy & USB" = "Camera trong máy & USB";
+"Cao" = "Cao";
 "Cho phép DTDLive tìm và ghép nối" = "Cho phép DTDLive tìm và ghép nối";
 "Chrome xanh" = "Chrome xanh";
 "Chuyển cảnh" = "Chuyển cảnh";
@@ -88,6 +89,10 @@
 "Chủ repo (owner)" = "Chủ repo (owner)";
 "Chức danh" = "Chức danh";
 "Chữ chạy" = "Chữ chạy";
+"Chữ dòng 1" = "Chữ dòng 1";
+"Chữ dòng 2" = "Chữ dòng 2";
+"Chữ nhãn" = "Chữ nhãn";
+"Chữ số giờ" = "Chữ số giờ";
 "Chữ tên" = "Chữ tên";
 "Clip đã lưu" = "Clip đã lưu";
 "Copy link" = "Copy link";
@@ -311,9 +316,12 @@
 "Nạp show sẽ dừng phát và thay toàn bộ nguồn, đầu ra, title." = "Nạp show sẽ dừng phát và thay toàn bộ nguồn, đầu ra, title.";
 "Nền" = "Nền";
 "Nền bố cục" = "Nền bố cục";
+"Nền dòng 1" = "Nền dòng 1";
+"Nền dòng 2" = "Nền dòng 2";
 "Nền là nguồn video (làm mờ): %@" = "Nền là nguồn video (làm mờ): %@";
 "Nền là nguồn video (làm mờ): %lf" = "Nền là nguồn video (làm mờ): %lf";
 "Nền là nguồn video (làm mờ): %lld" = "Nền là nguồn video (làm mờ): %lld";
+"Nền thanh chạy" = "Nền thanh chạy";
 "Nền thay thế" = "Nền thay thế";
 "Nền tên" = "Nền tên";
 "Nền tảng này hiển thị dọc 9:16" = "Nền tảng này hiển thị dọc 9:16";
@@ -348,6 +356,7 @@
 "Ra mắt" = "Ra mắt";
 "Replay" = "Replay";
 "Reset" = "Reset";
+"Rộng" = "Rộng";
 "SRT (một cổng, nhiều streamid)" = "SRT (một cổng, nhiều streamid)";
 "Server URL (rtmp:// hoặc rtmps://)" = "Server URL (rtmp:// hoặc rtmps://)";
 "Show đã lưu (Files › DTD Studio › Shows)" = "Show đã lưu (Files › DTD Studio › Shows)";
@@ -457,6 +466,7 @@
 "Vào trận" = "Vào trận";
 "Vát góc" = "Vát góc";
 "Vẽ" = "Vẽ";
+"Về màu mặc định của kiểu" = "Về màu mặc định của kiểu";
 "Vị trí" = "Vị trí";
 "Vị trí & cỡ" = "Vị trí & cỡ";
 "Xanh dương" = "Xanh dương";
@@ -571,6 +581,7 @@
 "Độ trễ SRT %@ ms" = "Độ trễ SRT %@ ms";
 "Độ trễ SRT %lf ms" = "Độ trễ SRT %lf ms";
 "Độ trễ SRT %lld ms" = "Độ trễ SRT %lld ms";
+"Độ đậm nền" = "Độ đậm nền";
 "Đội A" = "Đội A";
 "Đội B" = "Đội B";
 "Đội khách" = "Đội khách";

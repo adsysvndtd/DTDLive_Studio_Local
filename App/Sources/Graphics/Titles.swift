@@ -42,6 +42,15 @@ struct TitleItem: Identifiable, Codable, Equatable {
     /// logoStrap: logo file (Logo library) and a small header line above the name (organisation / programme)
     var logoFile: String? = nil
     var header: String? = nil
+    /// Box size in px at 1080p (nil = fit the text).
+    var boxWidth: CGFloat? = nil
+    var boxHeight: CGFloat? = nil
+    /// Text colours of line 1 / line 2 and the boxes behind them (nil = the style's own colours).
+    var text1Hex: String? = nil
+    var text2Hex: String? = nil
+    var bg1Hex: String? = nil
+    var bg2Hex: String? = nil
+    var bgOpacity: CGFloat? = nil
 }
 
 /// Renders TitleItems to CIImages (cached; re-rendered only when content changes),
@@ -89,7 +98,8 @@ final class TitleRenderer: @unchecked Sendable {
                 let travel = canvas.width + img.extent.width
                 let offset = CGFloat((now - (shown ?? now))) * item.tickerSpeed * canvas.width / 1920
                 let tx = canvas.width - offset.truncatingRemainder(dividingBy: travel)
-                let bar = CIImage(color: CIColor(red: 0, green: 0, blue: 0, alpha: 0.75))
+                let barC = UIColor(hex: item.bg1Hex ?? "#000000").withAlphaComponent(item.bg1Hex == nil ? 0.75 : (item.bgOpacity ?? 0.9))
+                let bar = CIImage(color: CIColor(color: barC))
                     .cropped(to: CGRect(x: 0, y: 0, width: canvas.width, height: img.extent.height))
                 img = img.transformed(by: .init(translationX: tx, y: 0)).composited(over: bar)
                     .cropped(to: CGRect(x: 0, y: 0, width: canvas.width, height: img.extent.height))
@@ -156,32 +166,49 @@ final class TitleRenderer: @unchecked Sendable {
         func attr(_ s: String, _ f: UIFont, _ c: UIColor = .white) -> NSAttributedString {
             NSAttributedString(string: s, attributes: [.font: f, .foregroundColor: c])
         }
+        // Operator overrides (size / colours in the title editor)
+        let op = t.bgOpacity ?? 0.9
+        let text1 = t.text1Hex.map { UIColor(hex: $0) }, text2 = t.text2Hex.map { UIColor(hex: $0) }
+        let bg1 = t.bg1Hex.map { UIColor(hex: $0).withAlphaComponent(op) }, bg2 = t.bg2Hex.map { UIColor(hex: $0).withAlphaComponent(op) }
+        let px = k / max(t.scale, 0.1)                       // 1080p px → canvas px (box size is not tied to text scale)
+        let fixedW = t.boxWidth.map { $0 * px }, fixedH = t.boxHeight.map { $0 * px }
+        /// One line, vertically centred in its row, truncated at the row's right edge.
+        func line(_ a: NSAttributedString, x: CGFloat, row: CGRect, align: NSTextAlignment = .left) {
+            let m = NSMutableAttributedString(attributedString: a)
+            let p = NSMutableParagraphStyle(); p.lineBreakMode = .byTruncatingTail; p.alignment = align
+            m.addAttribute(.paragraphStyle, value: p, range: NSRange(location: 0, length: m.length))
+            let hgt = a.size().height
+            m.draw(in: CGRect(x: x, y: row.midY - hgt / 2, width: max(1, row.maxX - x - (align == .left ? 12 * k : 0)), height: hgt))
+        }
         let fmt = UIGraphicsImageRendererFormat(); fmt.scale = 1; fmt.opaque = false
         switch t.style {
         case .lowerThird, .nameStrap:
-            let a = attr(t.line1, big), b = attr(t.line2, small)
-            let w = max(a.size().width, b.size().width) + 60 * k
-            let h1 = a.size().height + 16 * k, h2 = t.line2.isEmpty ? 0 : b.size().height + 12 * k
+            let a = attr(t.line1, big, text1 ?? .white), b = attr(t.line2, small, text2 ?? .white)
+            let w = fixedW.map { max(60 * k, $0 - 12 * k) } ?? (max(a.size().width, b.size().width) + 60 * k)
+            var h1 = a.size().height + 16 * k, h2 = t.line2.isEmpty ? 0 : b.size().height + 12 * k
+            if let H = fixedH { let tot = h1 + h2; h1 = H * h1 / tot; h2 = H - h1 }
             return UIGraphicsImageRenderer(size: CGSize(width: w + 12 * k, height: h1 + h2), format: fmt).image { _ in
                 accent.setFill(); UIBezierPath(rect: CGRect(x: 0, y: 0, width: 12 * k, height: h1 + h2)).fill()
-                UIColor(white: 0.08, alpha: 0.9).setFill(); UIBezierPath(rect: CGRect(x: 12 * k, y: 0, width: w, height: h1)).fill()
-                a.draw(at: CGPoint(x: 40 * k, y: 8 * k))
+                (bg1 ?? UIColor(white: 0.08, alpha: 0.9)).setFill(); UIBezierPath(rect: CGRect(x: 12 * k, y: 0, width: w, height: h1)).fill()
+                line(a, x: 40 * k, row: CGRect(x: 12 * k, y: 0, width: w, height: h1))
                 if h2 > 0 {
-                    (t.style == .nameStrap ? accent : UIColor(white: 0.2, alpha: 0.9)).setFill()
+                    (bg2 ?? (t.style == .nameStrap ? accent : UIColor(white: 0.2, alpha: 0.9))).setFill()
                     UIBezierPath(rect: CGRect(x: 12 * k, y: h1, width: w, height: h2)).fill()
-                    b.draw(at: CGPoint(x: 40 * k, y: h1 + 6 * k))
+                    line(b, x: 40 * k, row: CGRect(x: 12 * k, y: h1, width: w, height: h2))
                 }
             }
         case .logoStrap:
             // [logo] | HEADER (accent, small caps) / NAME (big) / role
             let head = attr((t.header ?? "").uppercased(), UIFont.systemFont(ofSize: 22 * k, weight: .heavy), accent)
-            let a = attr(t.line1, big), b = attr(t.line2, small, UIColor(white: 0.85, alpha: 1))
+            let a = attr(t.line1, big, text1 ?? .white), b = attr(t.line2, small, text2 ?? UIColor(white: 0.85, alpha: 1))
             let logo = t.logoFile.flatMap { UIImage(contentsOfFile: MediaLibrary.directory(.logo).appendingPathComponent($0).path) }
             let textW = max(head.size().width, a.size().width, b.size().width)
             let hHead = (t.header ?? "").isEmpty ? 0 : head.size().height + 2 * k
-            let h = hHead + a.size().height + (t.line2.isEmpty ? 0 : b.size().height) + 28 * k
+            let roleH = t.line2.isEmpty ? 0 : b.size().height
+            let hText = hHead + a.size().height + roleH
+            let h = fixedH ?? (hText + 28 * k)
             let logoBox = logo == nil ? 0 : h
-            let w = logoBox + 8 * k + textW + 56 * k
+            let w = fixedW ?? (logoBox + 8 * k + textW + 56 * k)
             return UIGraphicsImageRenderer(size: CGSize(width: w, height: h), format: fmt).image { ctx in
                 // logo tile (white) + accent divider + dark text panel with a soft gradient
                 if let logo {
@@ -191,30 +218,46 @@ final class TitleRenderer: @unchecked Sendable {
                     logo.draw(in: AVMakeRect(aspectRatio: logo.size, insideRect: r))
                 }
                 accent.setFill(); UIBezierPath(rect: CGRect(x: logoBox, y: 0, width: 8 * k, height: h)).fill()
-                let panel = CGRect(x: logoBox + 8 * k, y: 0, width: w - logoBox - 8 * k, height: h)
-                let cs = CGColorSpaceCreateDeviceRGB()
-                if let g = CGGradient(colorsSpace: cs, colors: [UIColor(white: 0.12, alpha: 0.95).cgColor, UIColor(white: 0.04, alpha: 0.85).cgColor] as CFArray, locations: [0, 1]) {
+                let panel = CGRect(x: logoBox + 8 * k, y: 0, width: max(1, w - logoBox - 8 * k), height: h)
+                if let bg1 {
+                    bg1.setFill(); UIBezierPath(rect: panel).fill()
+                } else if let g = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(),
+                                             colors: [UIColor(white: 0.12, alpha: 0.95).cgColor, UIColor(white: 0.04, alpha: 0.85).cgColor] as CFArray,
+                                             locations: [0, 1]) {
                     ctx.cgContext.saveGState(); ctx.cgContext.clip(to: panel)
                     ctx.cgContext.drawLinearGradient(g, start: CGPoint(x: panel.minX, y: 0), end: CGPoint(x: panel.maxX, y: 0), options: [])
                     ctx.cgContext.restoreGState()
                 }
-                var y = 12 * k
+                // role line on its own coloured strip when a second background is set
+                if let bg2, roleH > 0 {
+                    bg2.setFill(); UIBezierPath(rect: CGRect(x: panel.minX, y: h - roleH - 10 * k, width: panel.width, height: roleH + 10 * k)).fill()
+                }
+                var y = (h - hText) / 2
                 let x = panel.minX + 24 * k
-                if hHead > 0 { head.draw(at: CGPoint(x: x, y: y)); y += hHead }
-                a.draw(at: CGPoint(x: x, y: y)); y += a.size().height
-                if !t.line2.isEmpty { b.draw(at: CGPoint(x: x, y: y)) }
+                if hHead > 0 { line(head, x: x, row: CGRect(x: panel.minX, y: y, width: panel.width, height: head.size().height)); y += hHead }
+                line(a, x: x, row: CGRect(x: panel.minX, y: y, width: panel.width, height: a.size().height)); y += a.size().height
+                if roleH > 0 {
+                    let ry = bg2 != nil ? h - roleH - 5 * k : y
+                    line(b, x: x, row: CGRect(x: panel.minX, y: ry, width: panel.width, height: roleH))
+                }
             }
         case .fullScreen:
-            let a = attr(t.line1, UIFont.systemFont(ofSize: 80 * k, weight: .heavy)), b = attr(t.line2, small)
-            let w = max(a.size().width, b.size().width) + 120 * k
-            let h = a.size().height + b.size().height + 80 * k
+            let a = attr(t.line1, UIFont.systemFont(ofSize: 80 * k, weight: .heavy), text1 ?? .white), b = attr(t.line2, small, text2 ?? .white)
+            let w = fixedW ?? (max(a.size().width, b.size().width) + 120 * k)
+            let h = fixedH ?? (a.size().height + b.size().height + 80 * k)
             return UIGraphicsImageRenderer(size: CGSize(width: w, height: h), format: fmt).image { _ in
-                UIColor(white: 0, alpha: 0.7).setFill(); UIBezierPath(roundedRect: CGRect(x: 0, y: 0, width: w, height: h), cornerRadius: 24 * k).fill()
-                a.draw(at: CGPoint(x: (w - a.size().width) / 2, y: 30 * k))
-                b.draw(at: CGPoint(x: (w - b.size().width) / 2, y: 40 * k + a.size().height))
+                (bg1 ?? UIColor(white: 0, alpha: 0.7)).setFill()
+                UIBezierPath(roundedRect: CGRect(x: 0, y: 0, width: w, height: h), cornerRadius: 24 * k).fill()
+                let ty = (h - a.size().height - (t.line2.isEmpty ? 0 : b.size().height + 10 * k)) / 2
+                line(a, x: 24 * k, row: CGRect(x: 24 * k, y: ty, width: w - 48 * k, height: a.size().height), align: .center)
+                if !t.line2.isEmpty {
+                    let r2 = CGRect(x: 24 * k, y: ty + a.size().height + 10 * k, width: w - 48 * k, height: b.size().height)
+                    if let bg2 { bg2.setFill(); UIBezierPath(roundedRect: r2.insetBy(dx: -10 * k, dy: -4 * k), cornerRadius: 8 * k).fill() }
+                    line(b, x: 24 * k, row: r2, align: .center)
+                }
             }
         case .ticker:
-            let a = attr(t.line1, small)
+            let a = attr(t.line1, small, text1 ?? .white)
             return UIGraphicsImageRenderer(size: CGSize(width: a.size().width + 40 * k, height: a.size().height + 20 * k), format: fmt).image { _ in
                 a.draw(at: CGPoint(x: 20 * k, y: 10 * k))
             }
@@ -222,23 +265,27 @@ final class TitleRenderer: @unchecked Sendable {
             return ScoreboardRenderer.render(t)
         case .countdown:
             let r = remaining ?? (t.scoreA * 60 + t.scoreB)
-            let label = attr(t.line1.isEmpty ? L("Bắt đầu sau") : t.line1, small)
+            let label = attr(t.line1.isEmpty ? L("Bắt đầu sau") : t.line1, small, text2 ?? .white)
             let time = attr(String(format: "%02d:%02d", r / 60, r % 60), UIFont.monospacedDigitSystemFont(ofSize: 64 * k, weight: .heavy),
-                            r <= 10 ? UIColor.systemRed : .white)
-            let w = max(label.size().width, time.size().width) + 60 * k, h = label.size().height + time.size().height + 30 * k
+                            r <= 10 ? UIColor.systemRed : (text1 ?? .white))
+            let w = fixedW ?? (max(label.size().width, time.size().width) + 60 * k)
+            let h = fixedH ?? (label.size().height + time.size().height + 30 * k)
             return UIGraphicsImageRenderer(size: CGSize(width: w, height: h), format: fmt).image { _ in
-                UIColor(white: 0, alpha: 0.7).setFill(); UIBezierPath(roundedRect: CGRect(x: 0, y: 0, width: w, height: h), cornerRadius: 12 * k).fill()
+                (bg1 ?? UIColor(white: 0, alpha: 0.7)).setFill()
+                UIBezierPath(roundedRect: CGRect(x: 0, y: 0, width: w, height: h), cornerRadius: 12 * k).fill()
                 accent.setFill(); UIBezierPath(rect: CGRect(x: 0, y: 0, width: w, height: 6 * k)).fill()
-                label.draw(at: CGPoint(x: (w - label.size().width) / 2, y: 12 * k))
-                time.draw(at: CGPoint(x: (w - time.size().width) / 2, y: 14 * k + label.size().height))
+                let ty = (h - label.size().height - time.size().height) / 2 + 3 * k
+                line(label, x: 0, row: CGRect(x: 0, y: ty, width: w, height: label.size().height), align: .center)
+                line(time, x: 0, row: CGRect(x: 0, y: ty + label.size().height, width: w, height: time.size().height), align: .center)
             }
         case .clock:
             let df = DateFormatter(); df.dateFormat = "HH:mm:ss"
-            let a = attr(df.string(from: Date()), small)
-            return UIGraphicsImageRenderer(size: CGSize(width: a.size().width + 30 * k, height: a.size().height + 14 * k), format: fmt).image { _ in
-                UIColor(white: 0, alpha: 0.6).setFill()
-                UIBezierPath(roundedRect: CGRect(x: 0, y: 0, width: a.size().width + 30 * k, height: a.size().height + 14 * k), cornerRadius: 6 * k).fill()
-                a.draw(at: CGPoint(x: 15 * k, y: 7 * k))
+            let a = attr(df.string(from: Date()), small, text1 ?? .white)
+            let w = fixedW ?? (a.size().width + 30 * k), h = fixedH ?? (a.size().height + 14 * k)
+            return UIGraphicsImageRenderer(size: CGSize(width: w, height: h), format: fmt).image { _ in
+                (bg1 ?? UIColor(white: 0, alpha: 0.6)).setFill()
+                UIBezierPath(roundedRect: CGRect(x: 0, y: 0, width: w, height: h), cornerRadius: 6 * k).fill()
+                line(a, x: 0, row: CGRect(x: 0, y: 0, width: w, height: h), align: .center)
             }
         }
     }

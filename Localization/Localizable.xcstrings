@@ -2326,7 +2326,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Colour"
+            "value": "Colours"
           }
         }
       }
@@ -2396,7 +2396,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Accent"
+            "value": "Accent colour"
           }
         }
       }
@@ -5837,6 +5837,116 @@
           "stringUnit": {
             "state": "translated",
             "value": "It's on air"
+          }
+        }
+      }
+    },
+    "Rộng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Width"
+          }
+        }
+      }
+    },
+    "Cao": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Height"
+          }
+        }
+      }
+    },
+    "Chữ số giờ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time digits"
+          }
+        }
+      }
+    },
+    "Chữ dòng 1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Line 1 text"
+          }
+        }
+      }
+    },
+    "Chữ nhãn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Label text"
+          }
+        }
+      }
+    },
+    "Chữ dòng 2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Line 2 text"
+          }
+        }
+      }
+    },
+    "Nền thanh chạy": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ticker bar"
+          }
+        }
+      }
+    },
+    "Nền dòng 1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Line 1 background"
+          }
+        }
+      }
+    },
+    "Nền dòng 2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Line 2 background"
+          }
+        }
+      }
+    },
+    "Độ đậm nền": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Background opacity"
+          }
+        }
+      }
+    },
+    "Về màu mặc định của kiểu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset to the style's colours"
           }
         }
       }

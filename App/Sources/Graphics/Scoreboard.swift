@@ -326,26 +326,55 @@ enum ScoreboardRenderer {
         return UIGraphicsImageRenderer(size: S, format: fmt).image { ctx in
             let g = ctx.cgContext
             let W = S.width, cx = W / 2
-            let top: CGFloat = 46, h: CGFloat = 104, rim: CGFloat = 10
+            let top: CGFloat = 34, h: CGFloat = 108, rim: CGFloat = 10
             let x0: CGFloat = 40, x1 = W - 40
-            let glassW: CGFloat = 300, glassTop: CGFloat = 26, glassH: CGFloat = 136
-            let scoreW: CGFloat = 120
+            let glassW: CGFloat = 270, glassTop: CGFloat = 16
+            let glassH: CGFloat = top + h + 8 - glassTop          // glass ends just under the bar
+            let scoreW: CGFloat = 118
             let home = UIColor(hex: b.homeColor), away = UIColor(hex: b.awayColor), accent = UIColor(hex: b.centerColor)
             let shadow = UIColor.black.withAlphaComponent(0.45).cgColor
             let center = NSMutableParagraphStyle(); center.alignment = .center
+            func poly(_ pts: [CGPoint]) -> UIBezierPath {
+                let p = UIBezierPath(); p.move(to: pts[0]); pts.dropFirst().forEach { p.addLine(to: $0) }; p.close(); return p
+            }
+
+            // 0) ribbon behind the bar and glass: from under the bar to below the glass; its text is drawn last
+            let rw: CGFloat = 760, ry = top + h - 10
+            let ribbon = CGRect(x: cx - rw / 2, y: ry, width: rw, height: glassTop + glassH - ry + 46)
+            if !b.banner.isEmpty {
+                let rp = UIBezierPath(roundedRect: ribbon, byRoundingCorners: [.bottomLeft, .bottomRight], cornerRadii: CGSize(width: 20, height: 20))
+                g.setShadow(offset: CGSize(width: 0, height: 4), blur: 8, color: shadow)
+                gradientFill(g, rp, accent.lighter(0.15), accent.darker(0.3))
+                g.setShadow(offset: .zero, blur: 0, color: nil)
+                UIColor.white.withAlphaComponent(0.55).setStroke(); rp.lineWidth = 2; rp.stroke()
+            }
 
             // 1) outer body (chrome rim) by style
-            let outer = CGRect(x: x0, y: top, width: x1 - x0, height: h)
             let body: UIBezierPath
             switch look {
-            case .arena: body = UIBezierPath(roundedRect: outer, cornerRadius: h / 2)
-            case .angular: body = parallelogramBar(outer, cut: 46)
-            case .flame: body = UIBezierPath(rect: outer)
-            default: body = chamferBar(outer, cut: 40)
+            case .arena: body = UIBezierPath(roundedRect: CGRect(x: x0, y: top, width: x1 - x0, height: h), cornerRadius: h / 2)
+            case .angular: body = parallelogramBar(CGRect(x: x0, y: top, width: x1 - x0, height: h), cut: 46)
+            case .flame: body = UIBezierPath(rect: CGRect(x: x0, y: top, width: x1 - x0, height: h))
+            default: body = poly([CGPoint(x: x0 - 12, y: top - 10), CGPoint(x: x1 + 12, y: top - 10), CGPoint(x: x1 - 24, y: top + h), CGPoint(x: x0 + 24, y: top + h)])
             }
             g.setShadow(offset: CGSize(width: 0, height: 8), blur: 18, color: shadow)
             metalFill(g, body)
             g.setShadow(offset: .zero, blur: 0, color: nil)
+            // coloured / chrome end pieces
+            switch look {
+            case .chrome:
+                glossFill(g, poly([CGPoint(x: x0 - 4, y: top - 6), CGPoint(x: x0 + 26, y: top - 6), CGPoint(x: x0 + 52, y: top + h - 4), CGPoint(x: x0 + 22, y: top + h - 4)]), home)
+                glossFill(g, poly([CGPoint(x: x1 + 4, y: top - 6), CGPoint(x: x1 - 26, y: top - 6), CGPoint(x: x1 - 52, y: top + h - 4), CGPoint(x: x1 - 22, y: top + h - 4)]), away)
+            case .angular:
+                glossFill(g, poly([CGPoint(x: x0 - 30, y: top), CGPoint(x: x0 + 10, y: top), CGPoint(x: x0 + 56, y: top + h), CGPoint(x: x0 + 16, y: top + h)]), home)
+                glossFill(g, poly([CGPoint(x: x1 + 30, y: top), CGPoint(x: x1 - 10, y: top), CGPoint(x: x1 - 56, y: top + h), CGPoint(x: x1 - 16, y: top + h)]), away)
+            case .flame:
+                metalFill(g, UIBezierPath(rect: CGRect(x: x0 - 26, y: top + 16, width: 26, height: h - 32)))
+                metalFill(g, UIBezierPath(rect: CGRect(x: x1, y: top + 16, width: 26, height: h - 32)))
+            default: break
+            }
+            let endPad: CGFloat = look == .chrome ? 52 : look == .angular ? 44 : 18
+            let outer = CGRect(x: x0 + endPad - 18, y: top, width: x1 - x0 - 2 * (endPad - 18), height: h)
 
             // 2) inner team panels in team colours (glossy)
             let inner = outer.insetBy(dx: rim + 18, dy: rim)
@@ -415,22 +444,6 @@ enum ScoreboardRenderer {
             team(t.line1, b.homeSub, ScoreboardLogos.image(b.homeLogo), in: nameA)
             team(t.line2, b.awaySub, ScoreboardLogos.image(b.awayLogo), in: nameB)
 
-            // 5) ribbon under the centre: starts under the bar, text sits below the glass (the glass overlaps its top)
-            if !b.banner.isEmpty {
-                let rw: CGFloat = 680
-                let glassBottom = glassTop + glassH
-                let rr = CGRect(x: cx - rw / 2, y: top + h - 4, width: rw, height: glassBottom + 44 - (top + h - 4))
-                let rp = UIBezierPath(roundedRect: rr, byRoundingCorners: [.bottomLeft, .bottomRight], cornerRadii: CGSize(width: 18, height: 18))
-                g.setShadow(offset: CGSize(width: 0, height: 4), blur: 8, color: shadow)
-                gradientFill(g, rp, accent.lighter(0.12), accent.darker(0.25))
-                g.setShadow(offset: .zero, blur: 0, color: nil)
-                UIColor.white.withAlphaComponent(0.5).setStroke(); rp.lineWidth = 2; rp.stroke()
-                let bf = UIFont.systemFont(ofSize: 25, weight: .bold)
-                let ty = glassBottom + (rr.maxY - glassBottom - bf.lineHeight) / 2
-                (b.banner.uppercased() as NSString).draw(in: CGRect(x: rr.minX, y: ty, width: rw, height: bf.lineHeight),
-                    withAttributes: [.font: bf, .foregroundColor: UIColor.white, .paragraphStyle: center, .kern: 1.5])
-            }
-
             // 6) centre glass: clock + period
             let gr = CGRect(x: cx - glassW / 2, y: glassTop, width: glassW, height: glassH)
             let gp: UIBezierPath
@@ -465,6 +478,13 @@ enum ScoreboardRenderer {
                 let y = b.showClock ? glass.maxY - pf.lineHeight - 6 : glass.midY - pf.lineHeight / 2
                 (t.period.uppercased() as NSString).draw(in: CGRect(x: glass.minX, y: y, width: glass.width, height: pf.lineHeight),
                     withAttributes: [.font: pf, .foregroundColor: darkText ? UIColor(white: 0.15, alpha: 1) : UIColor.white.withAlphaComponent(0.9), .paragraphStyle: center])
+            }
+            // 7) ribbon text, in the part of the ribbon below the glass
+            if !b.banner.isEmpty {
+                let bf = UIFont.systemFont(ofSize: 26, weight: .bold)
+                let gb = glassTop + glassH
+                (b.banner.uppercased() as NSString).draw(in: CGRect(x: ribbon.minX, y: gb + (ribbon.maxY - gb - bf.lineHeight) / 2, width: ribbon.width, height: bf.lineHeight),
+                    withAttributes: [.font: bf, .foregroundColor: UIColor.white, .paragraphStyle: center, .kern: 1.5])
             }
         }
     }

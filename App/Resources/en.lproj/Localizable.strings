@@ -43,6 +43,7 @@
 "Camera" = "Camera";
 "Camera mạng (SRT · RTSP · RTMP · DTDLive)" = "Network cameras (SRT · RTSP · RTMP · DTDLive)";
 "Camera trong máy & USB" = "Built-in & USB cameras";
+"Cao" = "Height";
 "Cho phép DTDLive tìm và ghép nối" = "Let DTDLive find and pair";
 "Chrome xanh" = "Blue chrome";
 "Chuyển cảnh" = "Transitions";
@@ -88,6 +89,10 @@
 "Chủ repo (owner)" = "Repo owner";
 "Chức danh" = "Title";
 "Chữ chạy" = "Ticker";
+"Chữ dòng 1" = "Line 1 text";
+"Chữ dòng 2" = "Line 2 text";
+"Chữ nhãn" = "Label text";
+"Chữ số giờ" = "Time digits";
 "Chữ tên" = "Name text";
 "Clip đã lưu" = "Saved clips";
 "Copy link" = "Copy link";
@@ -245,14 +250,14 @@
 "Màn hình" = "Display";
 "Màn hình ngoài" = "External display";
 "Màn ngoài" = "External";
-"Màu" = "Colour";
+"Màu" = "Colours";
 "Màu & PTZ" = "Colour & PTZ";
 "Màu 1" = "Colour 1";
 "Màu 2" = "Colour 2";
 "Màu 3" = "Colour 3";
 "Màu dải" = "Strip colour";
 "Màu nguồn PVW" = "PVW source colour";
-"Màu nhấn" = "Accent";
+"Màu nhấn" = "Accent colour";
 "Màu nền" = "Background colour";
 "Màu sắc" = "Colour";
 "Màu, key, PTZ…" = "Colour, key, PTZ…";
@@ -311,9 +316,12 @@
 "Nạp show sẽ dừng phát và thay toàn bộ nguồn, đầu ra, title." = "Loading a show stops streaming and replaces all sources, outputs and titles.";
 "Nền" = "Background";
 "Nền bố cục" = "Layout background";
+"Nền dòng 1" = "Line 1 background";
+"Nền dòng 2" = "Line 2 background";
 "Nền là nguồn video (làm mờ): %@" = "Background is a video source (blurred): %@";
 "Nền là nguồn video (làm mờ): %lf" = "Background is a video source (blurred): %lf";
 "Nền là nguồn video (làm mờ): %lld" = "Background is a video source (blurred): %lld";
+"Nền thanh chạy" = "Ticker bar";
 "Nền thay thế" = "Replacement background";
 "Nền tên" = "Name background";
 "Nền tảng này hiển thị dọc 9:16" = "This platform shows vertical 9:16";
@@ -348,6 +356,7 @@
 "Ra mắt" = "Premiere";
 "Replay" = "Replay";
 "Reset" = "Reset";
+"Rộng" = "Width";
 "SRT (một cổng, nhiều streamid)" = "SRT (one port, many streamids)";
 "Server URL (rtmp:// hoặc rtmps://)" = "Server URL (rtmp:// or rtmps://)";
 "Show đã lưu (Files › DTD Studio › Shows)" = "Saved shows (Files › DTD Studio › Shows)";
@@ -457,6 +466,7 @@
 "Vào trận" = "Game on";
 "Vát góc" = "Angled";
 "Vẽ" = "Draw";
+"Về màu mặc định của kiểu" = "Reset to the style's colours";
 "Vị trí" = "Position";
 "Vị trí & cỡ" = "Position & size";
 "Xanh dương" = "Blue";
@@ -571,6 +581,7 @@
 "Độ trễ SRT %@ ms" = "SRT latency %@ ms";
 "Độ trễ SRT %lf ms" = "SRT latency %lf ms";
 "Độ trễ SRT %lld ms" = "SRT latency %lld ms";
+"Độ đậm nền" = "Background opacity";
 "Đội A" = "Team A";
 "Đội B" = "Team B";
 "Đội khách" = "Away";

@@ -186,12 +186,29 @@ struct TitleEditorSheet: View {
                     compactSlider("Cỡ chữ", Binding(get: { Double(item.scale) }, set: { item.scale = $0 }), 0.5...2) { String(format: "%.1f×", $0) }
                     if item.style == .ticker {
                         compactSlider("Tốc độ chạy", Binding(get: { Double(item.tickerSpeed) }, set: { item.tickerSpeed = $0 }), 40...400) { "\(Int($0))" }
+                    } else {
+                        // 0 = fit the text
+                        compactSlider("Rộng", Binding(get: { Double(item.boxWidth ?? 0) }, set: { item.boxWidth = $0 < 20 ? nil : CGFloat($0.rounded()) }),
+                                      0...1900) { $0 < 20 ? L("Tự động") : "\(Int($0))" }
+                        compactSlider("Cao", Binding(get: { Double(item.boxHeight ?? 0) }, set: { item.boxHeight = $0 < 10 ? nil : CGFloat($0.rounded()) }),
+                                      0...700) { $0 < 10 ? L("Tự động") : "\(Int($0))" }
                     }
-                    ColorPicker("Màu nhấn", selection: Binding(
-                        get: { Color(UIColor(hex: item.accentHex)) },
-                        set: { item.accentHex = UIColor($0).hexString }), supportsOpacity: false)
-                        .font(.system(size: 13))
-                        .listRowInsets(EdgeInsets(top: 2, leading: 14, bottom: 2, trailing: 14))
+                }
+                Section(header: Text("Màu")) {
+                    colorRow("Màu nhấn", Binding(get: { item.accentHex }, set: { item.accentHex = $0 ?? item.accentHex }), fallback: item.accentHex)
+                    colorRow(item.style == .countdown ? "Chữ số giờ" : "Chữ dòng 1", $item.text1Hex, fallback: "#FFFFFF")
+                    if [.lowerThird, .nameStrap, .fullScreen, .logoStrap, .countdown].contains(item.style) {
+                        colorRow(item.style == .countdown ? "Chữ nhãn" : "Chữ dòng 2", $item.text2Hex, fallback: item.style == .logoStrap ? "#D9D9D9" : "#FFFFFF")
+                    }
+                    colorRow(item.style == .ticker ? "Nền thanh chạy" : "Nền dòng 1", $item.bg1Hex, fallback: "#141414")
+                    if [.lowerThird, .nameStrap, .fullScreen, .logoStrap].contains(item.style) {
+                        colorRow("Nền dòng 2", $item.bg2Hex, fallback: item.style == .nameStrap ? item.accentHex : "#333333")
+                    }
+                    compactSlider("Độ đậm nền", Binding(get: { Double(item.bgOpacity ?? 0.9) }, set: { item.bgOpacity = CGFloat($0) }), 0...1) { "\(Int($0 * 100))%" }
+                    Button("Về màu mặc định của kiểu") {
+                        item.text1Hex = nil; item.text2Hex = nil; item.bg1Hex = nil; item.bg2Hex = nil; item.bgOpacity = nil
+                    }
+                    .font(.system(size: 13))
                 }
                 Section {
                     Button("Xoá title", role: .destructive) { onDelete(); dismiss() }
@@ -231,6 +248,23 @@ struct TitleEditorSheet: View {
                 if files.isEmpty { Text("Nhập logo ở mục Logo").font(.system(size: 12)).foregroundStyle(DS.text3) }
             }
         }
+    }
+
+    /// Colour row; a nil value means the style's own colour (shown as `fallback`, with a reset button once changed).
+    private func colorRow(_ title: String, _ hex: Binding<String?>, fallback: String) -> some View {
+        HStack(spacing: 8) {
+            Text(LocalizedStringKey(title)).font(.system(size: 13)).foregroundStyle(DS.text2)
+            Spacer()
+            if hex.wrappedValue != nil, title != "Màu nhấn" {
+                Button { hex.wrappedValue = nil } label: { Image(systemName: "arrow.uturn.backward").font(.system(size: 11)) }
+                    .buttonStyle(.borderless)
+            }
+            ColorPicker("", selection: Binding(get: { Color(UIColor(hex: hex.wrappedValue ?? fallback)) },
+                                               set: { hex.wrappedValue = UIColor($0).hexString }), supportsOpacity: false)
+                .labelsHidden()
+        }
+        .listRowInsets(EdgeInsets(top: 0, leading: 14, bottom: 0, trailing: 14))
+        .frame(height: 32)
     }
 
     /// One-line slider row: label · slider · value (instead of a two-line block).
