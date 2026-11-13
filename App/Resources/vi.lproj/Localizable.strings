@@ -13,6 +13,7 @@
 "Ai được xem" = "Ai được xem";
 "Ba khung ngang" = "Ba khung ngang";
 "Bitrate thích ứng" = "Bitrate thích ứng";
+"Bàn thắng" = "Bàn thắng";
 "Bão hoà" = "Bão hoà";
 "Bù phơi sáng" = "Bù phơi sáng";
 "Bản ghi" = "Bản ghi";
@@ -24,6 +25,7 @@
 "Bật bộ đệm replay (60 giây gần nhất)" = "Bật bộ đệm replay (60 giây gần nhất)";
 "Bật scopes (Program)" = "Bật scopes (Program)";
 "Bật để xoá phông xanh lá / xanh dương" = "Bật để xoá phông xanh lá / xanh dương";
+"Bắt đầu" = "Bắt đầu";
 "Bắt đầu sau" = "Bắt đầu sau";
 "Bắt đầu đếm khi bấm LÊN SÓNG" = "Bắt đầu đếm khi bấm LÊN SÓNG";
 "Bỏ SuperFG" = "Bỏ SuperFG";
@@ -68,9 +70,11 @@
 "Chưa tích hợp SDK" = "Chưa tích hợp SDK";
 "Chương trình (Program)" = "Chương trình (Program)";
 "Chạm một mẫu để nạp (đang trên sóng thì thay ngay); bật/tắt bằng SuperFG On ở cột phải. Sửa chữ, màu cập nhật ngay." = "Chạm một mẫu để nạp (đang trên sóng thì thay ngay); bật/tắt bằng SuperFG On ở cột phải. Sửa chữ, màu cập nhật ngay.";
+"Chạm một thẻ để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh." = "Chạm một thẻ để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh.";
 "Chạm để nạp, bật/tắt bằng phím ở cột phải" = "Chạm để nạp, bật/tắt bằng phím ở cột phải";
 "Chạm để đưa lên PVW, rồi Cut / chuyển cảnh ở cột phải" = "Chạm để đưa lên PVW, rồi Cut / chuyển cảnh ở cột phải";
 "Chạy hiệu ứng" = "Chạy hiệu ứng";
+"Chạy một lần" = "Chạy một lần";
 "Chấp nhận" = "Chấp nhận";
 "Chế độ" = "Chế độ";
 "Chỉ bật khi dùng tai nghe — loa ngoài sẽ hú vào micro." = "Chỉ bật khi dùng tai nghe — loa ngoài sẽ hú vào micro.";
@@ -91,6 +95,7 @@
 "Cài đặt" = "Cài đặt";
 "Có" = "Có";
 "Công khai" = "Công khai";
+"Cảm ơn" = "Cảm ơn";
 "Cần iPadOS/iOS 17.4 trở lên cho đăng nhập Facebook" = "Cần iPadOS/iOS 17.4 trở lên cho đăng nhập Facebook";
 "Cập nhật từ Git" = "Cập nhật từ Git";
 "Cổ điển" = "Cổ điển";
@@ -104,9 +109,11 @@
 "Dung lượng" = "Dung lượng";
 "Dòng 1" = "Dòng 1";
 "Dòng 2" = "Dòng 2";
+"Dòng 2 (để trống = 1 dòng)" = "Dòng 2 (để trống = 1 dòng)";
 "Dòng chữ dưới (vd LIVE MATCH DAY)" = "Dòng chữ dưới (vd LIVE MATCH DAY)";
 "Dòng phụ (tuỳ chọn)" = "Dòng phụ (tuỳ chọn)";
 "Dùng làm PiP" = "Dùng làm PiP";
+"Dùng làm chuyển cảnh: cắt PVW lên PGM khi thẻ phủ kín" = "Dùng làm chuyển cảnh: cắt PVW lên PGM khi thẻ phủ kín";
 "Dưới phải" = "Dưới phải";
 "Dưới trái" = "Dưới trái";
 "Dải ngang" = "Dải ngang";
@@ -122,8 +129,11 @@
 "Giây %@" = "Giây %@";
 "Giây %lf" = "Giây %lf";
 "Giây %lld" = "Giây %lld";
+"Giải lao" = "Giải lao";
 "Giới thiệu" = "Giới thiệu";
 "Giờ" = "Giờ";
+"Giữ %@ giây" = "Giữ %@ giây";
+"Giữ đến khi tắt" = "Giữ đến khi tắt";
 "Google OAuth Client ID (loại iOS)" = "Google OAuth Client ID (loại iOS)";
 "Gán nguồn" = "Gán nguồn";
 "Gán title vào phím Title / Title 2, rồi bấm “Title On” ở cột phải để lên sóng" = "Gán title vào phím Title / Title 2, rồi bấm “Title On” ở cột phải để lên sóng";
@@ -211,6 +221,7 @@
 "Loại" = "Loại";
 "Làm lại" = "Làm lại";
 "Lên Preview" = "Lên Preview";
+"Lên sóng" = "Lên sóng";
 "Lên sóng ngay" = "Lên sóng ngay";
 "Lưu" = "Lưu";
 "Lưu clip" = "Lưu clip";
@@ -316,6 +327,7 @@
 "Phát" = "Phát";
 "Phát PGM qua NDI" = "Phát PGM qua NDI";
 "Phát lên PGM" = "Phát lên PGM";
+"Phát lại" = "Phát lại";
 "Phát lại từ đầu" = "Phát lại từ đầu";
 "Phát trực tiếp" = "Phát trực tiếp";
 "Phát tất cả" = "Phát tất cả";
@@ -333,6 +345,7 @@
 "Quản lý đích phát (RTMP · SRT · RTSP · YouTube · Facebook)" = "Quản lý đích phát (RTMP · SRT · RTSP · YouTube · Facebook)";
 "RTMP (một cổng, nhiều stream key)" = "RTMP (một cổng, nhiều stream key)";
 "RTSP (ANNOUNCE/RECORD, nhiều đường dẫn)" = "RTSP (ANNOUNCE/RECORD, nhiều đường dẫn)";
+"Ra mắt" = "Ra mắt";
 "Replay" = "Replay";
 "Reset" = "Reset";
 "SRT (một cổng, nhiều streamid)" = "SRT (một cổng, nhiều streamid)";
@@ -341,7 +354,9 @@
 "SuperFG của bạn (PNG trong suốt · video có kênh alpha .mov)" = "SuperFG của bạn (PNG trong suốt · video có kênh alpha .mov)";
 "SuperFG đang trên PGM" = "SuperFG đang trên PGM";
 "Sân vận động" = "Sân vận động";
+"Sắp phát sóng" = "Sắp phát sóng";
 "Sắp xếp" = "Sắp xếp";
+"Sẵn sàng" = "Sẵn sàng";
 "SỌC" = "SỌC";
 "Sọc" = "Sọc";
 "Sửa" = "Sửa";
@@ -406,6 +421,7 @@
 "Trễ âm thanh Mic/Line: %lf ms" = "Trễ âm thanh Mic/Line: %lf ms";
 "Trễ âm thanh Mic/Line: %lld ms" = "Trễ âm thanh Mic/Line: %lld ms";
 "Trực tiếp từ Hà Nội" = "Trực tiếp từ Hà Nội";
+"Tuyệt vời" = "Tuyệt vời";
 "Twitch › Creator Dashboard › Settings › Stream › Primary Stream key." = "Twitch › Creator Dashboard › Settings › Stream › Primary Stream key.";
 "Tài khoản phát trực tiếp" = "Tài khoản phát trực tiếp";
 "Tên" = "Tên";
@@ -438,6 +454,7 @@
 "Viền" = "Viền";
 "Vuốt 1 ngón trên PVW về phía PGM = CUT · 2 ngón = AUTO" = "Vuốt 1 ngón trên PVW về phía PGM = CUT · 2 ngón = AUTO";
 "Vuốt PVW → PGM để chuyển" = "Vuốt PVW → PGM để chuyển";
+"Vào trận" = "Vào trận";
 "Vát góc" = "Vát góc";
 "Vẽ" = "Vẽ";
 "Vị trí" = "Vị trí";

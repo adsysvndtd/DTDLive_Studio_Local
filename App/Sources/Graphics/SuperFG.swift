@@ -1,129 +1,281 @@
 import UIKit
 
-/// SuperFG: full-frame foreground graphics keyed over program (frames, news bands, banners, bugs).
-/// Built-in templates are DTD Studio's own designs, drawn procedurally with editable text and colour;
-/// operators can also use their own PNG (alpha) or video with alpha (HEVC .mov) from the library.
+/// SuperFG: full-screen animated cards ("READY", "BREAKING NEWS", "GOAL!"…) that play over program
+/// with their own transition when SuperFG On is pressed. Designs are DTD Studio's own, drawn procedurally
+/// (background and text are separate layers so each can animate); text and accent colour are editable per card.
+/// Operators can still use their own PNG (alpha) or video with alpha from the library as a keyed foreground.
 struct SuperFGConfig: Codable, Equatable {
-    var templateID = "news"
-    var line1 = "DTD STUDIO"
-    var line2 = "Trực tiếp từ Hà Nội"
-    var accentHex = "#E30613"
+    var templateID = "ready"
+    /// Per-card text lines and accent colour (falls back to the card's defaults).
+    var texts: [String: [String]] = [:]
+    var accents: [String: String] = [:]
+    /// true: in → hold → out by itself; false: stays until SuperFG is switched off.
+    var playOnce = true
+    var hold: Double = 3
+    /// Cut preview to program while the card covers the screen (stinger transition).
+    var takeOnCover = false
+
+    init() {}
+    init(from d: Decoder) throws {
+        let c = try d.container(keyedBy: CodingKeys.self)
+        templateID = (try? c.decodeIfPresent(String.self, forKey: .templateID)) ?? "ready"
+        texts = (try? c.decodeIfPresent([String: [String]].self, forKey: .texts)) ?? [:]
+        accents = (try? c.decodeIfPresent([String: String].self, forKey: .accents)) ?? [:]
+        playOnce = (try? c.decodeIfPresent(Bool.self, forKey: .playOnce)) ?? true
+        hold = (try? c.decodeIfPresent(Double.self, forKey: .hold)) ?? 3
+        takeOnCover = (try? c.decodeIfPresent(Bool.self, forKey: .takeOnCover)) ?? false
+        if SuperFGTemplate.all.first(where: { $0.id == templateID }) == nil { templateID = "ready" }
+    }
+
+    func lines(_ t: SuperFGTemplate) -> [String] { texts[t.id] ?? t.defaultLines }
+    func accent(_ t: SuperFGTemplate) -> UIColor { UIColor(hex: accents[t.id] ?? t.defaultAccent) }
+    func accentHex(_ t: SuperFGTemplate) -> String { accents[t.id] ?? t.defaultAccent }
+}
+
+/// How a card enters and leaves (out is the reverse).
+enum SuperFGMotion: String {
+    case wipe, slide, zoom, split, rise
 }
 
 struct SuperFGTemplate: Identifiable {
+    enum TextLook { case plain, gradient, gold }
     let id: String
     let name: String
-    let draw: (CGContext, CGSize, SuperFGConfig) -> Void
+    let motion: SuperFGMotion
+    let defaultLines: [String]
+    let defaultAccent: String
+    var look: TextLook = .plain
+    let background: (CGContext, CGSize, UIColor) -> Void
 
-    /// Renders at 1920×1080 (or the program aspect) with a transparent background.
-    func render(_ c: SuperFGConfig, size: CGSize = CGSize(width: 1920, height: 1080)) -> UIImage {
-        let fmt = UIGraphicsImageRendererFormat(); fmt.scale = 1; fmt.opaque = false
-        return UIGraphicsImageRenderer(size: size, format: fmt).image { ctx in draw(ctx.cgContext, size, c) }
+    // MARK: Rendering
+
+    private static func renderer(_ size: CGSize, opaque: Bool) -> UIGraphicsImageRenderer {
+        let fmt = UIGraphicsImageRendererFormat(); fmt.scale = 1; fmt.opaque = opaque
+        return UIGraphicsImageRenderer(size: size, format: fmt)
     }
 
-    // MARK: Built-in designs
+    func renderBackground(_ c: SuperFGConfig, size: CGSize) -> UIImage {
+        Self.renderer(size, opaque: true).image { ctx in background(ctx.cgContext, size, c.accent(self)) }
+    }
+
+    func renderText(_ c: SuperFGConfig, size: CGSize) -> UIImage {
+        Self.renderer(size, opaque: false).image { ctx in
+            Self.drawTitle(c.lines(self), in: ctx.cgContext, size: size, look: look, accent: c.accent(self))
+        }
+    }
+
+    /// Both layers together (thumbnails).
+    func render(_ c: SuperFGConfig, size: CGSize) -> UIImage {
+        let bg = renderBackground(c, size: size), tx = renderText(c, size: size)
+        return Self.renderer(size, opaque: true).image { _ in
+            bg.draw(at: .zero); tx.draw(at: .zero)
+        }
+    }
+
+    /// Big centred title, one or two lines, with a drop shadow; optional gradient/gold fill.
+    static func drawTitle(_ lines: [String], in g: CGContext, size s: CGSize, look: TextLook, accent: UIColor) {
+        let ls = lines.map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
+        guard !ls.isEmpty else { return }
+        let k = s.height / 1080
+        var fontSize = (ls.count == 1 ? 190 : 165) * k
+        let maxW = s.width * 0.86
+        func font(_ sz: CGFloat) -> UIFont {
+            let f = UIFont.systemFont(ofSize: sz, weight: .black)
+            return f.fontDescriptor.withDesign(.rounded).map { UIFont(descriptor: $0, size: sz) } ?? f
+        }
+        var f = font(fontSize)
+        let widest = { ls.map { ($0 as NSString).size(withAttributes: [.font: f]).width }.max() ?? 0 }
+        while widest() > maxW, fontSize > 40 * k { fontSize -= 6 * k; f = font(fontSize) }
+        let lineH = f.lineHeight * 0.92
+        let total = lineH * CGFloat(ls.count)
+        let p = NSMutableParagraphStyle(); p.alignment = .center
+        let attrs: [NSAttributedString.Key: Any] = [.font: f, .foregroundColor: UIColor.white, .paragraphStyle: p]
+        let rects = ls.indices.map { i in
+            CGRect(x: 0, y: (s.height - total) / 2 + CGFloat(i) * lineH - f.lineHeight * 0.04, width: s.width, height: f.lineHeight)
+        }
+        UIGraphicsPushContext(g)
+        for (l, r) in zip(ls, rects) { (l as NSString).draw(in: r, withAttributes: attrs) }
+        // Colour the glyphs only (sourceAtop paints where text already is).
+        if look != .plain {
+            g.saveGState(); g.setBlendMode(.sourceAtop)
+            let cols: [CGColor] = look == .gold
+                ? [UIColor(hex: "#FFF3C4").cgColor, UIColor(hex: "#F2B233").cgColor, UIColor(hex: "#C47A12").cgColor]
+                : [UIColor.white.cgColor, UIColor.white.cgColor, accent.cgColor]
+            if let gr = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(), colors: cols as CFArray, locations: [0, 0.45, 1]) {
+                g.drawLinearGradient(gr, start: CGPoint(x: s.width * 0.3, y: rects[0].minY),
+                                     end: CGPoint(x: s.width * 0.7, y: rects.last!.maxY), options: [])
+            }
+            g.restoreGState()
+        }
+        // Shadow and a thin accent outline behind the glyphs.
+        g.saveGState(); g.setBlendMode(.destinationOver)
+        g.setShadow(offset: CGSize(width: 0, height: 8 * k), blur: 22 * k, color: UIColor.black.withAlphaComponent(0.6).cgColor)
+        var outline = attrs
+        outline[.strokeWidth] = -14
+        outline[.strokeColor] = look == .gradient ? accent : UIColor.black.withAlphaComponent(0.35)
+        for (l, r) in zip(ls, rects) { (l as NSString).draw(in: r, withAttributes: outline) }
+        g.restoreGState()
+        UIGraphicsPopContext()
+    }
+
+    // MARK: Drawing helpers
+
+    private static func linear(_ g: CGContext, _ colors: [UIColor], from a: CGPoint, to b: CGPoint, locations: [CGFloat]? = nil) {
+        guard let gr = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(), colors: colors.map(\.cgColor) as CFArray,
+                                  locations: locations) else { return }
+        g.drawLinearGradient(gr, start: a, end: b, options: [.drawsBeforeStartLocation, .drawsAfterEndLocation])
+    }
+    private static func radial(_ g: CGContext, _ colors: [UIColor], center: CGPoint, radius: CGFloat) {
+        guard let gr = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(), colors: colors.map(\.cgColor) as CFArray, locations: nil) else { return }
+        g.drawRadialGradient(gr, startCenter: center, startRadius: 0, endCenter: center, endRadius: radius, options: [.drawsAfterEndLocation])
+    }
+    private static func poly(_ g: CGContext, _ pts: [CGPoint], _ color: UIColor) {
+        guard let f = pts.first else { return }
+        g.beginPath(); g.move(to: f); pts.dropFirst().forEach { g.addLine(to: $0) }; g.closePath()
+        g.setFillColor(color.cgColor); g.fillPath()
+    }
+    private static func hexagon(_ c: CGPoint, _ r: CGFloat) -> [CGPoint] {
+        (0..<6).map { i in let a = CGFloat(i) * .pi / 3; return CGPoint(x: c.x + r * cos(a), y: c.y + r * sin(a)) }
+    }
+    /// Deterministic pseudo-random sequence so a card always draws the same.
+    private static func rng(_ seed: UInt64) -> () -> CGFloat {
+        var x = seed
+        return { x = x &* 6364136223846793005 &+ 1442695040888963407; return CGFloat((x >> 33) % 10_000) / 10_000 }
+    }
+    private static func navyPanels(_ g: CGContext, _ s: CGSize, seed: UInt64) {
+        linear(g, [UIColor(hex: "#1B2A4A"), UIColor(hex: "#0A1430")], from: .zero, to: CGPoint(x: s.width, y: s.height))
+        let r = rng(seed)
+        for _ in 0..<6 {
+            let x = r() * s.width, w = (0.15 + r() * 0.3) * s.width, tilt = (r() - 0.5) * s.width * 0.5
+            poly(g, [CGPoint(x: x, y: 0), CGPoint(x: x + w, y: 0), CGPoint(x: x + w + tilt, y: s.height), CGPoint(x: x + tilt, y: s.height)],
+                 UIColor(white: r() > 0.5 ? 1 : 0, alpha: 0.025 + r() * 0.04))
+        }
+    }
+    private static func goldStripe(_ g: CGContext, _ s: CGSize, x: CGFloat, accent: UIColor) {
+        let k = s.height / 1080, w = 14 * k
+        g.saveGState()
+        g.beginPath()
+        g.move(to: CGPoint(x: x, y: 0)); g.addLine(to: CGPoint(x: x + w, y: 0))
+        g.addLine(to: CGPoint(x: x + w - s.height * 0.42, y: s.height)); g.addLine(to: CGPoint(x: x - s.height * 0.42, y: s.height)); g.closePath()
+        g.clip()
+        linear(g, [UIColor(hex: "#FFD66B"), accent], from: CGPoint(x: x, y: 0), to: CGPoint(x: x - s.height * 0.42, y: s.height))
+        g.restoreGState()
+    }
+
+    // MARK: Cards
 
     /// Computed so names follow a live language switch.
     static var all: [SuperFGTemplate] { [
-        SuperFGTemplate(id: "news", name: L("Bản tin")) { g, s, c in
-            let k = s.height / 1080, accent = UIColor(hex: c.accentHex)
-            let band = CGRect(x: 0, y: s.height - 190 * k, width: s.width, height: 130 * k)
-            UIColor(white: 0.06, alpha: 0.88).setFill(); g.fill(band)
-            accent.setFill(); g.fill(CGRect(x: 0, y: band.minY, width: 300 * k, height: band.height))
-            SuperFGTemplate.text("TIN TỨC", in: CGRect(x: 0, y: band.minY, width: 300 * k, height: band.height), size: 46 * k, weight: .black, align: .center)
-            SuperFGTemplate.text(c.line1, in: CGRect(x: 340 * k, y: band.minY + 14 * k, width: s.width - 380 * k, height: 62 * k), size: 50 * k, weight: .heavy)
-            SuperFGTemplate.text(c.line2, in: CGRect(x: 340 * k, y: band.minY + 74 * k, width: s.width - 380 * k, height: 44 * k), size: 32 * k, weight: .medium,
-                 color: UIColor(white: 0.85, alpha: 1))
-            accent.setFill(); g.fill(CGRect(x: 0, y: band.maxY, width: s.width, height: 8 * k))
-        },
-        SuperFGTemplate(id: "live", name: L("Khung LIVE")) { g, s, c in
-            let k = s.height / 1080, accent = UIColor(hex: c.accentHex)
-            g.setStrokeColor(accent.cgColor); g.setLineWidth(10 * k)
-            g.stroke(CGRect(origin: .zero, size: s).insetBy(dx: 5 * k, dy: 5 * k))
-            let badge = CGRect(x: 60 * k, y: 50 * k, width: 190 * k, height: 70 * k)
-            accent.setFill(); UIBezierPath(roundedRect: badge, cornerRadius: 10 * k).fill()
-            UIColor.white.setFill(); g.fillEllipse(in: CGRect(x: badge.minX + 22 * k, y: badge.midY - 11 * k, width: 22 * k, height: 22 * k))
-            SuperFGTemplate.text("LIVE", in: badge.offsetBy(dx: 26 * k, dy: 0), size: 44 * k, weight: .black, align: .center)
-            let tag = CGRect(x: s.width - 760 * k, y: 50 * k, width: 700 * k, height: 70 * k)
-            UIColor(white: 0, alpha: 0.6).setFill(); UIBezierPath(roundedRect: tag, cornerRadius: 10 * k).fill()
-            SuperFGTemplate.text(c.line1, in: tag.insetBy(dx: 24 * k, dy: 0), size: 36 * k, weight: .bold, align: .right)
-        },
-        SuperFGTemplate(id: "breaking", name: L("Tin nóng")) { g, s, c in
-            let k = s.height / 1080, accent = UIColor(hex: c.accentHex)
-            let y = s.height - 250 * k
-            let tag = UIBezierPath()
-            tag.move(to: CGPoint(x: 0, y: y)); tag.addLine(to: CGPoint(x: 470 * k, y: y))
-            tag.addLine(to: CGPoint(x: 420 * k, y: y + 90 * k)); tag.addLine(to: CGPoint(x: 0, y: y + 90 * k)); tag.close()
-            accent.setFill(); tag.fill()
-            SuperFGTemplate.text("TIN NÓNG", in: CGRect(x: 40 * k, y: y, width: 380 * k, height: 90 * k), size: 56 * k, weight: .black)
-            let bar = CGRect(x: 0, y: y + 90 * k, width: s.width, height: 110 * k)
-            UIColor.white.withAlphaComponent(0.95).setFill(); g.fill(bar)
-            SuperFGTemplate.text(c.line1, in: bar.insetBy(dx: 40 * k, dy: 0), size: 54 * k, weight: .heavy, color: UIColor(white: 0.08, alpha: 1))
-            UIColor(white: 0.08, alpha: 0.9).setFill(); g.fill(CGRect(x: 0, y: bar.maxY, width: s.width, height: 50 * k))
-            SuperFGTemplate.text(c.line2, in: CGRect(x: 40 * k, y: bar.maxY, width: s.width - 80 * k, height: 50 * k), size: 28 * k, weight: .semibold)
-        },
-        SuperFGTemplate(id: "corners", name: L("Góc ngắm")) { g, s, c in
-            let k = s.height / 1080, accent = UIColor(hex: c.accentHex)
-            let m = 70 * k, l = 120 * k
-            g.setStrokeColor(UIColor.white.withAlphaComponent(0.9).cgColor); g.setLineWidth(8 * k); g.setLineCap(.square)
-            let corners: [(CGFloat, CGFloat, CGFloat, CGFloat)] = [(m, m, 1, 1), (s.width - m, m, -1, 1), (m, s.height - m, 1, -1), (s.width - m, s.height - m, -1, -1)]
-            for (x, y, dx, dy) in corners {
-                g.move(to: CGPoint(x: x, y: y + l * dy)); g.addLine(to: CGPoint(x: x, y: y)); g.addLine(to: CGPoint(x: x + l * dx, y: y))
+        SuperFGTemplate(id: "ready", name: L("Sẵn sàng"), motion: .wipe, defaultLines: ["READY"], defaultAccent: "#7B3FF2") { g, s, a in
+            linear(g, [UIColor(hex: "#D23AC8"), UIColor(hex: "#58C8F5"), a], from: CGPoint(x: 0, y: s.height), to: CGPoint(x: s.width, y: 0),
+                   locations: [0, 0.5, 1])
+            let r = rng(7), k = s.height / 1080
+            g.setLineCap(.round)
+            for _ in 0..<26 {
+                let y = r() * s.height * 1.6 - s.height * 0.3
+                g.setStrokeColor(UIColor(white: 1, alpha: 0.06 + r() * 0.14).cgColor); g.setLineWidth((2 + r() * 10) * k)
+                g.move(to: CGPoint(x: -100 * k, y: y)); g.addLine(to: CGPoint(x: s.width + 100 * k, y: y - s.width * 0.45)); g.strokePath()
             }
-            g.strokePath()
-            accent.setFill(); g.fillEllipse(in: CGRect(x: m + 30 * k, y: m + 30 * k, width: 26 * k, height: 26 * k))
-            SuperFGTemplate.text("REC", in: CGRect(x: m + 66 * k, y: m + 20 * k, width: 200 * k, height: 46 * k), size: 36 * k, weight: .bold)
-            SuperFGTemplate.text(c.line1, in: CGRect(x: 0, y: s.height - m - 90 * k, width: s.width, height: 60 * k), size: 44 * k, weight: .bold, align: .center)
+            for _ in 0..<9 {
+                let c = CGPoint(x: s.width * (0.3 + r() * 0.4), y: r() * s.height)
+                radial(g, [UIColor(white: 1, alpha: 0.18), UIColor(white: 1, alpha: 0)], center: c, radius: (60 + r() * 120) * k)
+            }
         },
-        SuperFGTemplate(id: "event", name: L("Sự kiện")) { g, s, c in
-            let k = s.height / 1080, accent = UIColor(hex: c.accentHex)
-            let pill = CGRect(x: 60 * k, y: 50 * k, width: 820 * k, height: 96 * k)
-            UIColor(white: 0.05, alpha: 0.75).setFill(); UIBezierPath(roundedRect: pill, cornerRadius: 48 * k).fill()
-            accent.setFill(); UIBezierPath(roundedRect: CGRect(x: pill.minX, y: pill.minY, width: 96 * k, height: 96 * k), cornerRadius: 48 * k).fill()
-            SuperFGTemplate.text("★", in: CGRect(x: pill.minX, y: pill.minY, width: 96 * k, height: 96 * k), size: 48 * k, weight: .bold, align: .center)
-            SuperFGTemplate.text(c.line1, in: CGRect(x: pill.minX + 120 * k, y: pill.minY + 8 * k, width: pill.width - 150 * k, height: 50 * k), size: 38 * k, weight: .heavy)
-            SuperFGTemplate.text(c.line2, in: CGRect(x: pill.minX + 120 * k, y: pill.minY + 52 * k, width: pill.width - 150 * k, height: 36 * k), size: 26 * k, weight: .medium,
-                 color: UIColor(white: 0.85, alpha: 1))
-            accent.setFill(); g.fill(CGRect(x: 0, y: s.height - 12 * k, width: s.width, height: 12 * k))
+        SuperFGTemplate(id: "premiere", name: L("Ra mắt"), motion: .slide, defaultLines: ["PREMIERE"], defaultAccent: "#C23AF0") { g, s, a in
+            linear(g, [UIColor(hex: "#3FA2F7"), a], from: .zero, to: CGPoint(x: s.width, y: 0))
+            radial(g, [UIColor(white: 1, alpha: 0.18), UIColor(white: 1, alpha: 0)], center: CGPoint(x: s.width * 0.5, y: s.height * 0.42), radius: s.width * 0.45)
         },
-        SuperFGTemplate(id: "sponsor", name: L("Nhà tài trợ")) { g, s, c in
-            let k = s.height / 1080, accent = UIColor(hex: c.accentHex)
-            let box = CGRect(x: s.width - 620 * k, y: s.height - 240 * k, width: 560 * k, height: 170 * k)
-            UIColor.white.withAlphaComponent(0.94).setFill(); UIBezierPath(roundedRect: box, cornerRadius: 16 * k).fill()
-            accent.setFill(); UIBezierPath(roundedRect: CGRect(x: box.minX, y: box.minY, width: box.width, height: 46 * k),
-                                           byRoundingCorners: [.topLeft, .topRight], cornerRadii: CGSize(width: 16 * k, height: 16 * k)).fill()
-            SuperFGTemplate.text("ĐỒNG HÀNH CÙNG CHƯƠNG TRÌNH", in: CGRect(x: box.minX, y: box.minY, width: box.width, height: 46 * k), size: 22 * k, weight: .bold, align: .center)
-            SuperFGTemplate.text(c.line1, in: CGRect(x: box.minX + 20 * k, y: box.minY + 56 * k, width: box.width - 40 * k, height: 60 * k), size: 46 * k, weight: .black,
-                 color: UIColor(white: 0.08, alpha: 1), align: .center)
-            SuperFGTemplate.text(c.line2, in: CGRect(x: box.minX + 20 * k, y: box.minY + 116 * k, width: box.width - 40 * k, height: 40 * k), size: 26 * k, weight: .medium,
-                 color: UIColor(white: 0.3, alpha: 1), align: .center)
+        SuperFGTemplate(id: "breaking", name: L("Tin nóng"), motion: .split, defaultLines: ["TIN NÓNG", "BREAKING NEWS"], defaultAccent: "#E0242B") { g, s, a in
+            radial(g, [UIColor(hex: "#2F6FD6"), UIColor(hex: "#0B1E4D")], center: CGPoint(x: s.width / 2, y: s.height * 0.55), radius: s.width * 0.7)
+            let k = s.height / 1080
+            for i in 0..<9 {
+                let rw = s.width * (0.25 + CGFloat(i) * 0.09), rh = rw * 0.22
+                g.setStrokeColor(UIColor(white: 1, alpha: 0.10 + 0.03 * CGFloat(i % 3)).cgColor); g.setLineWidth((3 + CGFloat(i % 4) * 4) * k)
+                g.strokeEllipse(in: CGRect(x: s.width / 2 - rw / 2, y: s.height * (0.18 + CGFloat(i % 2) * 0.62) - rh / 2, width: rw, height: rh))
+            }
+            let band = CGRect(x: 0, y: s.height * 0.31, width: s.width, height: s.height * 0.38)
+            g.saveGState(); g.clip(to: band)
+            linear(g, [a.withAlphaComponent(0), a, a, a.withAlphaComponent(0)], from: CGPoint(x: 0, y: 0), to: CGPoint(x: s.width, y: 0),
+                   locations: [0, 0.18, 0.82, 1])
+            g.restoreGState()
+            g.setFillColor(UIColor(white: 1, alpha: 0.85).cgColor)
+            g.fill(CGRect(x: s.width * 0.1, y: band.minY - 6 * k, width: s.width * 0.8, height: 4 * k))
+            g.fill(CGRect(x: s.width * 0.1, y: band.maxY + 2 * k, width: s.width * 0.8, height: 4 * k))
         },
-        SuperFGTemplate(id: "letterbox", name: L("Điện ảnh")) { g, s, c in
-            let k = s.height / 1080, h = 130 * k
-            UIColor.black.setFill(); g.fill(CGRect(x: 0, y: 0, width: s.width, height: h)); g.fill(CGRect(x: 0, y: s.height - h, width: s.width, height: h))
-            SuperFGTemplate.text(c.line1, in: CGRect(x: 80 * k, y: s.height - h, width: s.width - 160 * k, height: h * 0.6), size: 40 * k, weight: .semibold)
-            SuperFGTemplate.text(c.line2, in: CGRect(x: 80 * k, y: s.height - h * 0.45, width: s.width - 160 * k, height: h * 0.4), size: 26 * k, weight: .regular,
-                 color: UIColor(white: 0.75, alpha: 1))
+        SuperFGTemplate(id: "perfect", name: L("Tuyệt vời"), motion: .zoom, defaultLines: ["PERFECT"], defaultAccent: "#E2C04E") { g, s, a in
+            a.setFill(); g.fill(CGRect(origin: .zero, size: s))
+            let c = CGPoint(x: s.width / 2, y: s.height / 2), k = s.height / 1080
+            poly(g, hexagon(c, s.height * 0.62), UIColor(white: 0.17, alpha: 1))
+            g.setStrokeColor(UIColor(white: 1, alpha: 0.85).cgColor); g.setLineWidth(3 * k)
+            for r in [0.42, 0.47] as [CGFloat] {
+                let pts = hexagon(c, s.height * r)
+                g.beginPath(); g.move(to: pts[0]); pts.dropFirst().forEach { g.addLine(to: $0) }; g.closePath(); g.strokePath()
+            }
+            poly(g, hexagon(c, s.height * 0.18), a)
         },
-        SuperFGTemplate(id: "split", name: L("Khung đôi")) { g, s, c in
-            let k = s.height / 1080, accent = UIColor(hex: c.accentHex)
-            g.setStrokeColor(accent.cgColor); g.setLineWidth(8 * k)
-            g.move(to: CGPoint(x: s.width / 2, y: 140 * k)); g.addLine(to: CGPoint(x: s.width / 2, y: s.height - 140 * k)); g.strokePath()
-            for (i, t) in [c.line1, c.line2].enumerated() {
-                let r = CGRect(x: (i == 0 ? 60 : s.width / k / 2 + 60) * k, y: s.height - 130 * k, width: s.width / 2 - 120 * k, height: 70 * k)
-                UIColor(white: 0, alpha: 0.65).setFill(); UIBezierPath(roundedRect: r, cornerRadius: 10 * k).fill()
-                accent.setFill(); g.fill(CGRect(x: r.minX, y: r.minY, width: 10 * k, height: r.height))
-                SuperFGTemplate.text(t, in: r.insetBy(dx: 30 * k, dy: 0), size: 36 * k, weight: .bold)
+        SuperFGTemplate(id: "gameon", name: L("Vào trận"), motion: .slide, defaultLines: ["GAME ON"], defaultAccent: "#38C6FF") { g, s, a in
+            linear(g, [UIColor(hex: "#0B1C8C"), UIColor(hex: "#050C4A")], from: CGPoint(x: 0, y: 0), to: CGPoint(x: 0, y: s.height))
+            let r = rng(21), k = s.height / 1080
+            for i in 0..<14 {
+                let x = r() * s.width, tilt = (r() - 0.5) * s.width * 0.6
+                g.saveGState()
+                g.setShadow(offset: .zero, blur: 24 * k, color: a.cgColor)
+                g.setStrokeColor(a.withAlphaComponent(i % 3 == 0 ? 0.9 : 0.25).cgColor); g.setLineWidth((i % 3 == 0 ? 5 : 2) * k)
+                g.move(to: CGPoint(x: x, y: -20 * k)); g.addLine(to: CGPoint(x: x + tilt, y: s.height + 20 * k)); g.strokePath()
+                g.restoreGState()
+            }
+            radial(g, [UIColor(white: 1, alpha: 0.10), UIColor(white: 1, alpha: 0)], center: CGPoint(x: s.width / 2, y: s.height / 2), radius: s.width * 0.4)
+        },
+        SuperFGTemplate(id: "start", name: L("Bắt đầu"), motion: .rise, defaultLines: ["GAME", "STARTS"], defaultAccent: "#7A3CF0") { g, s, a in
+            linear(g, [UIColor(hex: "#2B3FD8"), a], from: CGPoint(x: 0, y: s.height), to: CGPoint(x: s.width, y: 0))
+            poly(g, [CGPoint(x: s.width * 0.18, y: s.height * 0.25), CGPoint(x: s.width * 0.86, y: s.height * 0.1),
+                     CGPoint(x: s.width * 0.8, y: s.height * 0.9), CGPoint(x: s.width * 0.12, y: s.height * 0.8)], UIColor(white: 1, alpha: 0.10))
+            poly(g, [CGPoint(x: 0, y: s.height * 0.7), CGPoint(x: s.width, y: s.height * 0.55),
+                     CGPoint(x: s.width, y: s.height), CGPoint(x: 0, y: s.height)], UIColor(white: 0, alpha: 0.18))
+            let k = s.height / 1080
+            g.setStrokeColor(UIColor(hex: "#9FE8FF").withAlphaComponent(0.7).cgColor); g.setLineWidth(4 * k)
+            g.move(to: CGPoint(x: 0, y: s.height * 0.86)); g.addCurve(to: CGPoint(x: s.width, y: s.height * 0.78),
+                control1: CGPoint(x: s.width * 0.3, y: s.height * 0.7), control2: CGPoint(x: s.width * 0.7, y: s.height * 0.95)); g.strokePath()
+        },
+        SuperFGTemplate(id: "stream", name: L("Sắp phát sóng"), motion: .wipe, defaultLines: ["STREAM", "STARTING"], defaultAccent: "#5E8FE6") { g, s, a in
+            UIColor(hex: "#2C4A86").setFill(); g.fill(CGRect(origin: .zero, size: s))
+            poly(g, [CGPoint(x: 0, y: s.height * 0.05), CGPoint(x: s.width, y: s.height * 0.3), CGPoint(x: 0, y: s.height * 0.62)], a)
+            poly(g, [CGPoint(x: s.width, y: s.height * 0.3), CGPoint(x: 0, y: s.height * 0.62), CGPoint(x: s.width, y: s.height * 0.8)],
+                 a.withAlphaComponent(0.75))
+            poly(g, [CGPoint(x: 0, y: s.height * 0.62), CGPoint(x: s.width, y: s.height * 0.8), CGPoint(x: s.width, y: s.height), CGPoint(x: 0, y: s.height)],
+                 UIColor(hex: "#BFD3F5"))
+        },
+        SuperFGTemplate(id: "onair", name: L("Lên sóng"), motion: .zoom, defaultLines: ["ON AIR"], defaultAccent: "#EC4D8F", look: .gradient) { g, s, a in
+            UIColor.black.setFill(); g.fill(CGRect(origin: .zero, size: s))
+            let c = CGPoint(x: s.width / 2, y: s.height / 2)
+            for i in 0..<36 {
+                let ang = CGFloat(i) / 36 * .pi * 2, w: CGFloat = 0.035
+                poly(g, [c, CGPoint(x: c.x + cos(ang - w) * s.width, y: c.y + sin(ang - w) * s.width),
+                         CGPoint(x: c.x + cos(ang + w) * s.width, y: c.y + sin(ang + w) * s.width)],
+                     a.withAlphaComponent(i % 2 == 0 ? 0.20 : 0.07))
+            }
+            radial(g, [UIColor.black.withAlphaComponent(0), UIColor.black.withAlphaComponent(0.85)], center: c, radius: s.width * 0.6)
+        },
+        SuperFGTemplate(id: "goal", name: L("Bàn thắng"), motion: .zoom, defaultLines: ["GOAL!"], defaultAccent: "#E0782A") { g, s, a in
+            navyPanels(g, s, seed: 3); goldStripe(g, s, x: s.width * 0.08, accent: a)
+        },
+        SuperFGTemplate(id: "replay", name: L("Phát lại"), motion: .slide, defaultLines: ["REPLAY"], defaultAccent: "#E0782A") { g, s, a in
+            navyPanels(g, s, seed: 11); goldStripe(g, s, x: s.width * 0.45, accent: a)
+            poly(g, [CGPoint(x: s.width * 0.82, y: s.height), CGPoint(x: s.width * 0.86, y: s.height * 0.9), CGPoint(x: s.width * 0.9, y: s.height)],
+                 UIColor(hex: "#2BB3A3"))
+        },
+        SuperFGTemplate(id: "break", name: L("Giải lao"), motion: .rise, defaultLines: ["GIẢI LAO"], defaultAccent: "#F2B233") { g, s, a in
+            navyPanels(g, s, seed: 29)
+            poly(g, [CGPoint(x: s.width, y: s.height * 0.78), CGPoint(x: s.width, y: s.height), CGPoint(x: s.width * 0.94, y: s.height)], a)
+            poly(g, [CGPoint(x: 0, y: 0), CGPoint(x: s.width * 0.05, y: 0), CGPoint(x: 0, y: s.height * 0.12)], a)
+        },
+        SuperFGTemplate(id: "thanks", name: L("Cảm ơn"), motion: .wipe, defaultLines: ["CẢM ƠN", "ĐÃ THEO DÕI"], defaultAccent: "#1FA88E", look: .gold) { g, s, a in
+            linear(g, [UIColor(hex: "#0C2A2E"), a.withAlphaComponent(1)], from: CGPoint(x: 0, y: 0), to: CGPoint(x: s.width, y: s.height))
+            let r = rng(42), k = s.height / 1080
+            for _ in 0..<14 {
+                radial(g, [UIColor(white: 1, alpha: 0.10 + r() * 0.1), UIColor(white: 1, alpha: 0)],
+                       center: CGPoint(x: r() * s.width, y: r() * s.height), radius: (40 + r() * 160) * k)
             }
         }
     ] }
-
-    private static func text(_ s: String, in r: CGRect, size: CGFloat, weight: UIFont.Weight, color: UIColor = .white,
-                             align: NSTextAlignment = .left) {
-        let p = NSMutableParagraphStyle(); p.alignment = align; p.lineBreakMode = .byTruncatingTail
-        let f = UIFont.systemFont(ofSize: size, weight: weight)
-        let y = r.minY + (r.height - f.lineHeight) / 2
-        (s as NSString).draw(in: CGRect(x: r.minX, y: y, width: r.width, height: f.lineHeight),
-                             withAttributes: [.font: f, .foregroundColor: color, .paragraphStyle: p])
-    }
 }

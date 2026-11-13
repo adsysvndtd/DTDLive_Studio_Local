@@ -13,6 +13,7 @@
 "Ai được xem" = "Who can watch";
 "Ba khung ngang" = "Three across";
 "Bitrate thích ứng" = "Adaptive bitrate";
+"Bàn thắng" = "Goal";
 "Bão hoà" = "Saturation";
 "Bù phơi sáng" = "Exposure compensation";
 "Bản ghi" = "Recordings";
@@ -24,9 +25,10 @@
 "Bật bộ đệm replay (60 giây gần nhất)" = "Replay buffer on (last 60 seconds)";
 "Bật scopes (Program)" = "Show scopes (Program)";
 "Bật để xoá phông xanh lá / xanh dương" = "Turn on to remove a green / blue screen";
+"Bắt đầu" = "Game starts";
 "Bắt đầu sau" = "Starts in";
 "Bắt đầu đếm khi bấm LÊN SÓNG" = "Starts counting when taken on air";
-"Bỏ SuperFG" = "Clear SuperFG";
+"Bỏ SuperFG" = "Remove SuperFG";
 "Bỏ logo" = "Clear logo";
 "Bỏ ảnh nền" = "Clear background";
 "BỐ CỤC" = "LAYOUT";
@@ -68,9 +70,11 @@
 "Chưa tích hợp SDK" = "SDK not integrated";
 "Chương trình (Program)" = "Program";
 "Chạm một mẫu để nạp (đang trên sóng thì thay ngay); bật/tắt bằng SuperFG On ở cột phải. Sửa chữ, màu cập nhật ngay." = "Tap a template to load it (replaces it live if on air); turn it on/off with SuperFG On. Text and colour update instantly.";
+"Chạm một thẻ để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh." = "Tap a card to load it; SuperFG On plays its in-animation, then it leaves by itself (or holds until switched off). The small icon shows the transition type.";
 "Chạm để nạp, bật/tắt bằng phím ở cột phải" = "Tap to load; turn on/off with the keys on the right";
 "Chạm để đưa lên PVW, rồi Cut / chuyển cảnh ở cột phải" = "Tap to send to PVW, then Cut / transition on the right";
 "Chạy hiệu ứng" = "Play animation";
+"Chạy một lần" = "Play once";
 "Chấp nhận" = "Accept";
 "Chế độ" = "Mode";
 "Chỉ bật khi dùng tai nghe — loa ngoài sẽ hú vào micro." = "Headphones only — the speaker would feed back into the mic.";
@@ -91,6 +95,7 @@
 "Cài đặt" = "Settings";
 "Có" = "Yes";
 "Công khai" = "Public";
+"Cảm ơn" = "Thank you";
 "Cần iPadOS/iOS 17.4 trở lên cho đăng nhập Facebook" = "Facebook sign-in needs iPadOS/iOS 17.4 or later";
 "Cập nhật từ Git" = "Update from Git";
 "Cổ điển" = "Classic";
@@ -104,9 +109,11 @@
 "Dung lượng" = "Size";
 "Dòng 1" = "Line 1";
 "Dòng 2" = "Line 2";
+"Dòng 2 (để trống = 1 dòng)" = "Line 2 (empty = one line)";
 "Dòng chữ dưới (vd LIVE MATCH DAY)" = "Ribbon text (e.g. LIVE MATCH DAY)";
 "Dòng phụ (tuỳ chọn)" = "Sub line (optional)";
 "Dùng làm PiP" = "Use as PiP";
+"Dùng làm chuyển cảnh: cắt PVW lên PGM khi thẻ phủ kín" = "Use as transition: cut PVW to PGM while the card covers the screen";
 "Dưới phải" = "Bottom right";
 "Dưới trái" = "Bottom left";
 "Dải ngang" = "Wide strip";
@@ -122,8 +129,11 @@
 "Giây %@" = "Seconds %@";
 "Giây %lf" = "Seconds %lf";
 "Giây %lld" = "Seconds %lld";
+"Giải lao" = "Break";
 "Giới thiệu" = "About";
 "Giờ" = "Clock";
+"Giữ %@ giây" = "Hold %@ s";
+"Giữ đến khi tắt" = "Hold until off";
 "Google OAuth Client ID (loại iOS)" = "Google OAuth Client ID (iOS type)";
 "Gán nguồn" = "Assign sources";
 "Gán title vào phím Title / Title 2, rồi bấm “Title On” ở cột phải để lên sóng" = "Assign a title to the Title / Title 2 key, then press “Title On” to go on air";
@@ -211,6 +221,7 @@
 "Loại" = "Type";
 "Làm lại" = "Redo";
 "Lên Preview" = "To Preview";
+"Lên sóng" = "On air";
 "Lên sóng ngay" = "Take now";
 "Lưu" = "Save";
 "Lưu clip" = "Save clip";
@@ -316,6 +327,7 @@
 "Phát" = "Go live";
 "Phát PGM qua NDI" = "Send PGM over NDI";
 "Phát lên PGM" = "Play to PGM";
+"Phát lại" = "Replay";
 "Phát lại từ đầu" = "Restart";
 "Phát trực tiếp" = "Streaming";
 "Phát tất cả" = "Start all";
@@ -333,15 +345,18 @@
 "Quản lý đích phát (RTMP · SRT · RTSP · YouTube · Facebook)" = "Manage destinations (RTMP · SRT · RTSP · YouTube · Facebook)";
 "RTMP (một cổng, nhiều stream key)" = "RTMP (one port, many stream keys)";
 "RTSP (ANNOUNCE/RECORD, nhiều đường dẫn)" = "RTSP (ANNOUNCE/RECORD, many paths)";
+"Ra mắt" = "Premiere";
 "Replay" = "Replay";
 "Reset" = "Reset";
 "SRT (một cổng, nhiều streamid)" = "SRT (one port, many streamids)";
 "Server URL (rtmp:// hoặc rtmps://)" = "Server URL (rtmp:// or rtmps://)";
 "Show đã lưu (Files › DTD Studio › Shows)" = "Saved shows (Files › DTD Studio › Shows)";
 "SuperFG của bạn (PNG trong suốt · video có kênh alpha .mov)" = "Your SuperFG (transparent PNG · alpha video .mov)";
-"SuperFG đang trên PGM" = "SuperFG is on PGM";
+"SuperFG đang trên PGM" = "SuperFG on PGM";
 "Sân vận động" = "Arena";
+"Sắp phát sóng" = "Stream starting";
 "Sắp xếp" = "Arrange";
+"Sẵn sàng" = "Ready";
 "SỌC" = "BARS";
 "Sọc" = "Bars";
 "Sửa" = "Edit";
@@ -406,6 +421,7 @@
 "Trễ âm thanh Mic/Line: %lf ms" = "Mic/Line audio delay: %lf ms";
 "Trễ âm thanh Mic/Line: %lld ms" = "Mic/Line audio delay: %lld ms";
 "Trực tiếp từ Hà Nội" = "Live from Hanoi";
+"Tuyệt vời" = "Perfect";
 "Twitch › Creator Dashboard › Settings › Stream › Primary Stream key." = "Twitch › Creator Dashboard › Settings › Stream › Primary Stream key.";
 "Tài khoản phát trực tiếp" = "Streaming accounts";
 "Tên" = "Name";
@@ -438,6 +454,7 @@
 "Viền" = "Line";
 "Vuốt 1 ngón trên PVW về phía PGM = CUT · 2 ngón = AUTO" = "Swipe PVW toward PGM: 1 finger = CUT · 2 fingers = AUTO";
 "Vuốt PVW → PGM để chuyển" = "Swipe PVW → PGM to switch";
+"Vào trận" = "Game on";
 "Vát góc" = "Angled";
 "Vẽ" = "Draw";
 "Vị trí" = "Position";

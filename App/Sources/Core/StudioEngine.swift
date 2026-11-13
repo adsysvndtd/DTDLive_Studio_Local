@@ -76,7 +76,15 @@ final class StudioEngine: ObservableObject {
     }
     private var logoAspect: CGFloat = 1
     @Published var logoOn = false { didSet { logo?.visible = logoOn } }
-    @Published var foregroundOn = false { didSet { foreground?.visible = foregroundOn } }
+    @Published var foregroundOn = false {
+        didSet {
+            foreground?.visible = foregroundOn
+            guard oldValue != foregroundOn, superFGActiveTemplate != nil else { return }
+            foregroundOn ? playSuperFGCard() : switcher.hideCard()
+        }
+    }
+    /// SuperFG key can be pressed: a card or a library foreground is loaded.
+    var superFGArmed: Bool { foreground != nil || superFGActiveTemplate != nil }
     @Published var armedTitleID: UUID?
     /// Title assigned to the "Title 2 On" key (default: first title other than the armed one).
     @Published var armedTitle2ID: UUID?
@@ -447,13 +455,14 @@ final class StudioEngine: ObservableObject {
             }
             foreground = OverlayLayer(image: ci, rect: CGRect(x: 0, y: 0, width: 1, height: 1))
         }
+        if superFGActiveTemplate != nil { switcher.hideCard(); superFGActiveTemplate = nil; superFGCard = nil }
         foreground?.visible = foregroundOn       // armed; SuperFG On key puts it on air
-        currentForegroundURL = url; superFGActiveTemplate = nil
+        currentForegroundURL = url
     }
 
     func clearForeground() {
         foregroundOn = false; stopForegroundVideo()
-        foreground = nil; currentForegroundURL = nil; superFGActiveTemplate = nil
+        foreground = nil; currentForegroundURL = nil; superFGActiveTemplate = nil; superFGCard = nil
     }
 
     private var foregroundVideo: FileSource?
@@ -469,22 +478,55 @@ final class StudioEngine: ObservableObject {
     @Published var superFG = SuperFGConfig() {
         didSet {
             if let d = try? JSONEncoder().encode(superFG) { UserDefaults.standard.set(d, forKey: "dtd.superfg.v1") }
-            if superFGActiveTemplate != nil { applySuperFG(superFG.templateID) }
+            // Text / colour edits update the card on screen without restarting its animation.
+            if superFGActiveTemplate != nil, oldValue.texts != superFG.texts || oldValue.accents != superFG.accents {
+                renderSuperFGCard()
+                if foregroundOn, let c = superFGCard { switcher.updateCard(background: c.bg, text: c.text, motion: c.motion) }
+            }
         }
     }
     @Published private(set) var superFGActiveTemplate: String?
+    private var superFGCard: (bg: CIImage, text: CIImage?, motion: SuperFGMotion)?
+    private var superFGToken = 0
 
-    /// Renders a template at program size and keys it as the foreground layer.
+    /// Arms a card; if SuperFG is on, the new card plays in straight away.
     func applySuperFG(_ templateID: String) {
-        guard let t = SuperFGTemplate.all.first(where: { $0.id == templateID }) else { return }
+        guard SuperFGTemplate.all.contains(where: { $0.id == templateID }) else { return }
         stopForegroundVideo()
+        foreground = nil; currentForegroundURL = nil
         if superFG.templateID != templateID { superFG.templateID = templateID }
-        let img = t.render(superFG, size: CGSize(width: format.width, height: format.height))
-        guard let ci = CIImage(image: img) else { return }
-        var l = OverlayLayer(image: ci, rect: CGRect(x: 0, y: 0, width: 1, height: 1))
-        l.visible = foregroundOn
-        foreground = l
-        currentForegroundURL = nil; superFGActiveTemplate = templateID
+        superFGActiveTemplate = templateID
+        renderSuperFGCard()
+        if foregroundOn { playSuperFGCard() }
+    }
+
+    private func renderSuperFGCard() {
+        guard let id = superFGActiveTemplate, let t = SuperFGTemplate.all.first(where: { $0.id == id }) else { superFGCard = nil; return }
+        let size = CGSize(width: format.width, height: format.height)
+        guard let bg = t.renderBackground(superFG, size: size).cgImage else { return }
+        let tx = t.renderText(superFG, size: size).cgImage.map { CIImage(cgImage: $0) }
+        superFGCard = (CIImage(cgImage: bg), tx, t.motion)
+    }
+
+    /// In-animation, then (optionally) cut PVW→PGM while covered and play out after the hold time.
+    private func playSuperFGCard() {
+        if superFGCard == nil { renderSuperFGCard() }
+        guard let c = superFGCard else { return }
+        switcher.showCard(background: c.bg, text: c.text, motion: c.motion)
+        superFGToken += 1
+        let token = superFGToken
+        if superFG.takeOnCover {
+            DispatchQueue.main.asyncAfter(deadline: .now() + Switcher.cardIn) { [weak self] in
+                guard let self, self.superFGToken == token, self.foregroundOn else { return }
+                self.cut()
+            }
+        }
+        if superFG.playOnce {
+            DispatchQueue.main.asyncAfter(deadline: .now() + Switcher.cardIn + max(0.5, superFG.hold)) { [weak self] in
+                guard let self, self.superFGToken == token, self.foregroundOn else { return }
+                self.foregroundOn = false
+            }
+        }
     }
 
     func toggleMusic(_ url: URL) {

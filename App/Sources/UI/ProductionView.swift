@@ -867,7 +867,7 @@ struct TransitionColumn: View {
                         .frame(width: compact ? 30 : 38, height: compact ? 86 : 124)
                 }
                 .padding(.vertical, 4)
-                onKey("SuperFG", on: engine.foregroundOn, enabled: engine.foreground != nil) { engine.foregroundOn.toggle() }
+                onKey("SuperFG", on: engine.foregroundOn, enabled: engine.superFGArmed) { engine.foregroundOn.toggle() }
                 onKey("Title", on: engine.armedTitleVisible, enabled: !engine.titles.isEmpty) { engine.toggleArmedTitle() }
                 onKey("HTML", on: engine.html.onAir, enabled: engine.html.loadedID != nil) { engine.html.toggle() }
                 onKey("Title 2", on: engine.secondTitle?.visible ?? false, enabled: engine.secondTitle != nil) { engine.toggleSecondTitle() }

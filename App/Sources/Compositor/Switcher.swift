@@ -124,6 +124,43 @@ final class Switcher: @unchecked Sendable {
     func unregister(_ id: UUID) { locked { inputs[id] = nil; if programID == id { programID = nil }; if previewID == id { previewID = nil } } }
     func setPreview(_ id: UUID?) { locked { previewID = id } }
     func setOverlays(_ o: [OverlayLayer]) { locked { overlays = o } }
+
+    // MARK: SuperFG card (full-screen animated graphic)
+
+    struct Card {
+        var background: CIImage
+        var text: CIImage?
+        var motion: SuperFGMotion
+        var inAt: CFTimeInterval
+        var outAt: CFTimeInterval?
+    }
+    static let cardIn: CFTimeInterval = 0.75
+    static let cardOut: CFTimeInterval = 0.6
+    private var card: Card?
+
+    /// Starts a card's in-animation (replaces any card on screen).
+    func showCard(background: CIImage, text: CIImage?, motion: SuperFGMotion) {
+        let now = HostClock.now
+        locked { card = Card(background: background, text: text, motion: motion, inAt: now, outAt: nil) }
+    }
+    /// Swaps the artwork of the card on screen without restarting its animation (text edits).
+    func updateCard(background: CIImage, text: CIImage?, motion: SuperFGMotion) {
+        locked {
+            guard card != nil else { return }
+            card?.background = background; card?.text = text; card?.motion = motion
+        }
+    }
+    /// Plays the out-animation.
+    func hideCard() {
+        let now = HostClock.now
+        locked {
+            guard let c = card, c.outAt == nil else { return }
+            // Leaving during the in-animation: start out from the current position.
+            let p = min(1, (now - c.inAt) / Self.cardIn)
+            card?.outAt = now - (1 - p) * Self.cardOut
+        }
+    }
+
     func setFadeToBlack(_ on: Bool) { locked { if ftb != on { ftb = on; ftbChangedAt = HostClock.now } } }
     func setProcessing(_ id: UUID, _ p: SourceProcessing?) { locked { processing[id] = (p?.isIdentity ?? true) ? nil : p } }
     var state: (program: UUID?, preview: UUID?) { locked { (programID, previewID) } }
@@ -200,6 +237,10 @@ final class Switcher: @unchecked Sendable {
             ftbMix = ftb ? k : 1 - k
             return (programID, previewID, tr, overlays, ftb, format)
         }
+        let cardSnap: Card? = locked {
+            if let c = card, let o = c.outAt, now - o >= Self.cardOut { card = nil }
+            return card
+        }
         let tallyPgm = Set([snap.0, snap.2?.1].compactMap { $0 } + snap.3.compactMap { $0.pipSourceID })
         onTally?(tallyPgm, Set([snap.1].compactMap { $0 }))
         let extent = CGRect(x: 0, y: 0, width: snap.5.width, height: snap.5.height)
@@ -213,6 +254,7 @@ final class Switcher: @unchecked Sendable {
             program = composite(o, over: program, extent: extent)
         }
         if let g = graphicsProvider?(extent.size, now) { program = g.composited(over: program).cropped(to: extent) }
+        if let c = cardSnap { program = Self.cardFrame(c, now: now, over: program, extent: extent) }
         if ftbMix > 0.001 {
             let slate = productSlate(extent.size)
             program = ftbMix >= 0.999 ? slate
@@ -347,6 +389,73 @@ final class Switcher: @unchecked Sendable {
             f.bottomHeight = 0; f.numberOfFolds = 3; f.foldShadowAmount = 0.1
             return f.outputImage?.cropped(to: extent) ?? b
         }
+    }
+
+    private static func easeInOut(_ t: CGFloat) -> CGFloat { t < 0.5 ? 4 * t * t * t : 1 - pow(-2 * t + 2, 3) / 2 }
+    private static func easeOutBack(_ t: CGFloat) -> CGFloat { let c1: CGFloat = 1.7, c3 = c1 + 1; return 1 + c3 * pow(t - 1, 3) + c1 * pow(t - 1, 2) }
+
+    private static func fade(_ img: CIImage, _ a: CGFloat) -> CIImage {
+        a >= 0.999 ? img : img.applyingFilter("CIColorMatrix", parameters: ["inputAVector": CIVector(x: 0, y: 0, z: 0, w: max(0, a))])
+    }
+
+    /// Scales an image about the extent centre.
+    private static func scaled(_ img: CIImage, _ k: CGFloat, extent: CGRect) -> CIImage {
+        guard abs(k - 1) > 0.0005 else { return img }
+        let t = CGAffineTransform(translationX: extent.midX, y: extent.midY).scaledBy(x: k, y: k).translatedBy(x: -extent.midX, y: -extent.midY)
+        return img.transformed(by: t)
+    }
+
+    /// One frame of a SuperFG card: background reveal by motion, text arriving after it (leaving before it).
+    private static func cardFrame(_ c: Card, now: CFTimeInterval, over base: CIImage, extent: CGRect) -> CIImage {
+        var raw = min(1, CGFloat((now - c.inAt) / cardIn))
+        if let o = c.outAt { raw = min(raw, 1 - min(1, CGFloat((now - o) / cardOut))) }
+        let p = easeInOut(max(0, raw))
+        let tp = max(0, min(1, (raw - 0.3) / 0.7))           // text progress, lags the background
+        let held = CGFloat(now - c.inAt)
+        // Fit artwork rendered for another format.
+        func fit(_ i: CIImage) -> CIImage {
+            guard i.extent.size != extent.size, i.extent.width > 0 else { return i }
+            return i.transformed(by: CGAffineTransform(scaleX: extent.width / i.extent.width, y: extent.height / i.extent.height))
+        }
+        let w = extent.width, h = extent.height
+        // Slow push-in while on screen keeps the card alive.
+        var bg = scaled(fit(c.background), 1 + 0.04 * min(held / 10, 1), extent: extent).cropped(to: extent)
+        var tx = c.text.map(fit)
+        if var t = tx {
+            switch c.motion {
+            case .zoom: t = scaled(t, 0.4 + 0.6 * easeOutBack(tp), extent: extent)
+            case .slide: t = t.transformed(by: CGAffineTransform(translationX: w * 0.35 * (1 - easeInOut(tp)), y: 0))
+            case .rise: t = t.transformed(by: CGAffineTransform(translationX: 0, y: -h * 0.25 * (1 - easeInOut(tp))))
+            case .wipe, .split: t = scaled(t, 1.25 - 0.25 * easeInOut(tp), extent: extent)
+            }
+            tx = fade(t, tp)
+        }
+        switch c.motion {
+        case .slide: bg = bg.transformed(by: CGAffineTransform(translationX: -w * (1 - p), y: 0))
+        case .rise: bg = bg.transformed(by: CGAffineTransform(translationX: 0, y: -h * (1 - p)))
+        case .zoom: bg = fade(scaled(bg, 1.3 - 0.3 * p, extent: extent), p)
+        case .split:
+            let open = h * p
+            bg = bg.cropped(to: CGRect(x: 0, y: (h - open) / 2, width: w, height: open))
+        case .wipe: break
+        }
+        var cardImg = bg
+        if let t = tx { cardImg = t.composited(over: cardImg) }
+        cardImg = cardImg.cropped(to: extent)
+        if c.motion == .wipe {
+            // Slanted soft edge sweeping left → right.
+            let v = CGVector(dx: 0.94, dy: -0.34), L = w + h
+            let cx = extent.midX + v.dx * (p * 2 - 1) * L * 0.62, cy = extent.midY + v.dy * (p * 2 - 1) * L * 0.62
+            let soft: CGFloat = 40
+            let mask = CIFilter(name: "CILinearGradient", parameters: [
+                "inputPoint0": CIVector(x: cx - v.dx * soft, y: cy - v.dy * soft), "inputColor0": CIColor.white,
+                "inputPoint1": CIVector(x: cx + v.dx * soft, y: cy + v.dy * soft), "inputColor1": CIColor.black])?.outputImage?.cropped(to: extent)
+            if let mask {
+                return cardImg.applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: base, kCIInputMaskImageKey: mask])
+                    .cropped(to: extent)
+            }
+        }
+        return cardImg.composited(over: base).cropped(to: extent)
     }
 
     private func composite(_ o: OverlayLayer, over base: CIImage, extent: CGRect) -> CIImage {

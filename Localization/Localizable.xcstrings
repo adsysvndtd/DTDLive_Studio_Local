@@ -276,7 +276,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Clear SuperFG"
+            "value": "Remove SuperFG"
           }
         }
       }
@@ -3316,7 +3316,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "SuperFG is on PGM"
+            "value": "SuperFG on PGM"
           }
         }
       }
@@ -5657,6 +5657,176 @@
           "stringUnit": {
             "state": "translated",
             "value": "(copy)"
+          }
+        }
+      }
+    },
+    "Sẵn sàng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ready"
+          }
+        }
+      }
+    },
+    "Ra mắt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premiere"
+          }
+        }
+      }
+    },
+    "Tuyệt vời": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Perfect"
+          }
+        }
+      }
+    },
+    "Vào trận": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Game on"
+          }
+        }
+      }
+    },
+    "Bắt đầu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Game starts"
+          }
+        }
+      }
+    },
+    "Sắp phát sóng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stream starting"
+          }
+        }
+      }
+    },
+    "Lên sóng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "On air"
+          }
+        }
+      }
+    },
+    "Bàn thắng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Goal"
+          }
+        }
+      }
+    },
+    "Phát lại": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Replay"
+          }
+        }
+      }
+    },
+    "Giải lao": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Break"
+          }
+        }
+      }
+    },
+    "Cảm ơn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thank you"
+          }
+        }
+      }
+    },
+    "Dòng 2 (để trống = 1 dòng)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Line 2 (empty = one line)"
+          }
+        }
+      }
+    },
+    "Chạy một lần": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Play once"
+          }
+        }
+      }
+    },
+    "Giữ đến khi tắt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hold until off"
+          }
+        }
+      }
+    },
+    "Giữ %@ giây": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hold %@ s"
+          }
+        }
+      }
+    },
+    "Dùng làm chuyển cảnh: cắt PVW lên PGM khi thẻ phủ kín": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use as transition: cut PVW to PGM while the card covers the screen"
+          }
+        }
+      }
+    },
+    "Chạm một thẻ để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap a card to load it; SuperFG On plays its in-animation, then it leaves by itself (or holds until switched off). The small icon shows the transition type."
           }
         }
       }
