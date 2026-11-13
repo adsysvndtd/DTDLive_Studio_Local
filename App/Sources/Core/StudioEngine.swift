@@ -193,7 +193,11 @@ final class StudioEngine: ObservableObject {
         // Battery: the hardware encoder only runs while something consumes it (an output, a recording,
         // or the replay buffer when armed).
         let gate = encodeGate
-        switcher.onProgramFrame = { pb, t in if encodeOn && gate.value > 0 { ve.encode(pb, pts: t) } }
+        let ndiBox = ndiOut
+        switcher.onProgramFrame = { pb, t in
+            if encodeOn && gate.value > 0 { ve.encode(pb, pts: t) }
+            ndiBox.send(pb)
+        }
         ve.onEncoded = { sb in om.video(sb); rb.append(sb) }
         ve.onProblem = { [weak self] text in Task { @MainActor in self?.logToLiveOutputs(text) } }
         switcher.onPoolRebuilt = { [weak self] in
@@ -222,6 +226,7 @@ final class StudioEngine: ObservableObject {
         outputs = Self.load([OutputConfig].self, key: "dtd.outputs.v1") ?? []
         if let bg = Self.load(LayoutBackground.self, key: "dtd.layoutbg.v1") { layoutBackground = bg }
         restoreLogo()
+        if ndiOutputOn { ndiOut.configure(on: NDIAvailability.isAvailable, name: ndiName, fps: format.fps) }
         titles = Self.load([TitleItem].self, key: "dtd.titles.v1") ?? Self.defaultTitles
         titlesSnapshot = titles
         MainActorBox.setTitles(titles)
@@ -263,6 +268,8 @@ final class StudioEngine: ObservableObject {
                 StreamStats.bitrateKbps = self.currentBitrate / 1000
                 StreamStats.fps = self.format.fps
                 self.encoderWatchdog()
+                let now = HostClock.now
+                for t in self.titles where self.titleRenderer.countdownDone(t, now: now) { self.setTitleVisible(t.id, false) }
                 await self.adaptBitrate()
                 self.updateOutputRates()
                 self.updateEncodeGate()
@@ -876,6 +883,35 @@ final class StudioEngine: ObservableObject {
         }
         lastCounts = now
         if r != outputRates { outputRates = r }
+    }
+
+    // MARK: NDI
+
+    /// Program → NDI output (needs the NDI SDK; see scripts/ndi-setup.sh).
+    let ndiOut = NDIOutputBox()
+    @Published var ndiOutputOn: Bool = UserDefaults.standard.bool(forKey: "dtd.ndi.out") {
+        didSet {
+            UserDefaults.standard.set(ndiOutputOn, forKey: "dtd.ndi.out")
+            ndiOut.configure(on: ndiOutputOn && NDIAvailability.isAvailable, name: ndiName, fps: format.fps)
+        }
+    }
+    @Published var ndiName: String = UserDefaults.standard.string(forKey: "dtd.ndi.name") ?? "DTD Studio PGM" {
+        didSet { UserDefaults.standard.set(ndiName, forKey: "dtd.ndi.name"); if ndiOutputOn { ndiOut.configure(on: true, name: ndiName, fps: format.fps) } }
+    }
+
+    /// NDI sources on the network (empty without the SDK).
+    func findNDISources() async -> [String] {
+        #if NDI_SDK
+        return await Task.detached { NDIFinder().sources(waitMs: 1500) }.value
+        #else
+        return []
+        #endif
+    }
+
+    func addNDISource(_ name: String) {
+        #if NDI_SDK
+        add(NDIInputSource(ndiName: name))
+        #endif
     }
 
     /// Writes a line into the diagnostic log of every destination that is running.

@@ -348,7 +348,7 @@ final class RTMPSession: @unchecked Sendable {
         if isKey { nals = parameterSets + nals }
         guard let sink = events.sink(key) else { return }
         if let pb = sink.pipeline.video(AccessUnit(nalUnits: nals, timestamp: timestamp, isKeyframe: isKey)) {
-            sink.frames.put(pb)
+            sink.pacer.push(pb, media: Double(timestamp) / 1000)   // RTMP timestamps are ms
         }
     }
 

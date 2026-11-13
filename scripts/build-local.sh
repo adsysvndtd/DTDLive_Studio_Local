@@ -31,7 +31,12 @@ say "Tạo chuỗi song ngữ (vi/en)"
 python3 scripts/gen-strings.py
 
 say "Tạo DTDStudio.xcodeproj"
-xcodegen generate
+if [ -f Vendor/NDI/libndi_ios.a ] && [ -f Vendor/NDI/module.modulemap ]; then
+  echo "  NDI® SDK có trong Vendor/NDI → build kèm NDI"
+  xcodegen generate --spec project.ndi.yml
+else
+  xcodegen generate
+fi
 
 if [ "${1:-}" = "ipa" ]; then
   say "Build bản unsigned (iOS device)"

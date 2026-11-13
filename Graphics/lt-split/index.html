@@ -1,0 +1,33 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=1920,height=1080">
+<style>
+  html,body{margin:0;width:1920px;height:1080px;background:transparent;overflow:hidden;font-family:-apple-system,"Helvetica Neue",sans-serif}
+  :root{--accent:#E30613}
+  .wrap{position:absolute;left:100px;bottom:110px}
+  .top,.bot{position:relative;overflow:hidden;width:max-content}
+  .top{background:var(--accent);padding:14px 40px;transform:skewX(-12deg);clip-path:inset(0 100% 0 0);border-radius:4px}
+  .bot{background:#fff;padding:12px 40px;margin-left:46px;margin-top:6px;transform:skewX(-12deg);clip-path:inset(0 100% 0 0);border-radius:4px}
+  .top div,.bot div{transform:skewX(12deg)}
+  .name{color:#fff;font-weight:900;font-size:56px;text-transform:uppercase;letter-spacing:1px}
+  .role{color:#111;font-weight:700;font-size:30px}
+  .tag{position:absolute;left:-28px;top:0;bottom:0;width:16px;background:#111;transform:skewX(-12deg) scaleY(0);transform-origin:bottom}
+  .on .tag{animation:tag .25s ease-out forwards}
+  .on .top{animation:wipe .5s .15s cubic-bezier(.7,0,.2,1) forwards}
+  .on .bot{animation:wipe .5s .4s cubic-bezier(.7,0,.2,1) forwards}
+  .off .wrap{animation:out .5s cubic-bezier(.7,0,.8,.4) forwards}.off .top,.off .bot{clip-path:none}.off .tag{transform:skewX(-12deg)}
+  @keyframes tag{to{transform:skewX(-12deg) scaleY(1)}}
+  @keyframes wipe{to{clip-path:inset(0 0 0 0)}}
+  @keyframes out{to{transform:translateX(-140%);opacity:0}}
+</style></head>
+<body><div id="root"><div class="wrap"><div class="tag"></div>
+  <div class="top"><div class="name" id="f0"></div></div>
+  <div class="bot"><div class="role" id="f1"></div></div></div></div>
+<script>
+  const root=document.getElementById('root');
+  function update(d){ if(typeof d==='string') d=JSON.parse(d);
+    for(const k in d){ const el=document.getElementById(k); if(el) el.textContent=d[k]; }
+    if(d.accent) document.documentElement.style.setProperty('--accent',d.accent); }
+  function play(){ root.className=''; void root.offsetWidth; root.className='on'; }
+  function stop(){ root.className='off'; }
+  function next(){}
+</script></body></html>

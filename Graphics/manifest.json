@@ -1,17 +1,159 @@
 {
   "version": 1,
   "templates": [
-    { "id": "lt-slide", "name": "Lower third trượt", "entry": "lt-slide/index.html",
-      "fields": [ { "id": "f0", "label": "Tên", "default": "Nguyễn Văn A" },
-                  { "id": "f1", "label": "Chức danh", "default": "Phóng viên DTD" },
-                  { "id": "accent", "label": "Màu nhấn", "default": "#F26B1D", "type": "color" } ] },
-    { "id": "lt-glass", "name": "Lower third kính mờ", "entry": "lt-glass/index.html",
-      "fields": [ { "id": "f0", "label": "Dòng 1", "default": "TRỰC TIẾP" },
-                  { "id": "f1", "label": "Dòng 2", "default": "Lễ khai mạc giải đấu" },
-                  { "id": "accent", "label": "Màu nhấn", "default": "#20C4F4", "type": "color" } ] },
-    { "id": "ticker", "name": "Chữ chạy tin tức", "entry": "ticker/index.html",
-      "fields": [ { "id": "f0", "label": "Nhãn", "default": "TIN MỚI" },
-                  { "id": "f1", "label": "Nội dung (ngăn bằng |)", "default": "Chào mừng quý vị | Chương trình phát trực tiếp từ DTD Studio" },
-                  { "id": "accent", "label": "Màu nhấn", "default": "#E30613", "type": "color" } ] }
+    {
+      "id": "lt-slide",
+      "name": "Lower third trượt",
+      "entry": "lt-slide/index.html",
+      "fields": [
+        {
+          "id": "f0",
+          "label": "Tên",
+          "default": "Nguyễn Văn A"
+        },
+        {
+          "id": "f1",
+          "label": "Chức danh",
+          "default": "Phóng viên DTD"
+        },
+        {
+          "id": "accent",
+          "label": "Màu nhấn",
+          "default": "#F26B1D",
+          "type": "color"
+        }
+      ]
+    },
+    {
+      "id": "lt-glass",
+      "name": "Lower third kính mờ",
+      "entry": "lt-glass/index.html",
+      "fields": [
+        {
+          "id": "f0",
+          "label": "Dòng 1",
+          "default": "TRỰC TIẾP"
+        },
+        {
+          "id": "f1",
+          "label": "Dòng 2",
+          "default": "Lễ khai mạc giải đấu"
+        },
+        {
+          "id": "accent",
+          "label": "Màu nhấn",
+          "default": "#20C4F4",
+          "type": "color"
+        }
+      ]
+    },
+    {
+      "id": "ticker",
+      "name": "Chữ chạy tin tức",
+      "entry": "ticker/index.html",
+      "fields": [
+        {
+          "id": "f0",
+          "label": "Nhãn",
+          "default": "TIN MỚI"
+        },
+        {
+          "id": "f1",
+          "label": "Nội dung (ngăn bằng |)",
+          "default": "Chào mừng quý vị | Chương trình phát trực tiếp từ DTD Studio"
+        },
+        {
+          "id": "accent",
+          "label": "Màu nhấn",
+          "default": "#E30613",
+          "type": "color"
+        }
+      ]
+    },
+    {
+      "id": "lt-logo",
+      "name": "Logo + tên + chức danh",
+      "entry": "lt-logo/index.html",
+      "fields": [
+        {
+          "id": "f2",
+          "label": "Tiêu đề trên",
+          "default": "DTD STUDIO"
+        },
+        {
+          "id": "f0",
+          "label": "Họ và tên",
+          "default": "Nguyễn Văn A"
+        },
+        {
+          "id": "f1",
+          "label": "Chức danh",
+          "default": "Giám đốc sản xuất"
+        },
+        {
+          "id": "logo",
+          "label": "Logo (URL ảnh, để trống = chữ cái)",
+          "default": ""
+        },
+        {
+          "id": "accent",
+          "label": "Màu nhấn",
+          "default": "#F26B1D",
+          "type": "color"
+        }
+      ]
+    },
+    {
+      "id": "lt-neon",
+      "name": "Lower third neon",
+      "entry": "lt-neon/index.html",
+      "fields": [
+        {
+          "id": "f0",
+          "label": "Tên",
+          "default": "Nguyễn Văn A"
+        },
+        {
+          "id": "f1",
+          "label": "Chức danh",
+          "default": "Bình luận viên"
+        },
+        {
+          "id": "accent",
+          "label": "Màu 1",
+          "default": "#22D3EE",
+          "type": "color"
+        },
+        {
+          "id": "accent2",
+          "label": "Màu 2",
+          "default": "#F472B6",
+          "type": "color"
+        }
+      ]
+    },
+    {
+      "id": "lt-split",
+      "name": "Lower third vát hai tầng",
+      "entry": "lt-split/index.html",
+      "fields": [
+        {
+          "id": "f0",
+          "label": "Tên",
+          "default": "Nguyễn Văn A"
+        },
+        {
+          "id": "f1",
+          "label": "Chức danh",
+          "default": "Khách mời"
+        },
+        {
+          "id": "accent",
+          "label": "Màu nhấn",
+          "default": "#E30613",
+          "type": "color"
+        }
+      ]
+    }
   ]
 }

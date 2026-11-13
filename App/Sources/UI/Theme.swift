@@ -24,7 +24,7 @@ enum DS {
     static let pvw = Color(red: 0.16, green: 0.78, blue: 0.38)
     static let accent = Color(red: 0.98, green: 0.45, blue: 0.13)   // logo orange
     static let accent2 = Color(red: 0.10, green: 0.80, blue: 0.86)  // logo cyan
-    static let radius: CGFloat = 0
+    static let radius: CGFloat = 5   // light rounding for buttons / tabs (cards & monitors stay square)
     static let gap: CGFloat = 10
 }
 
@@ -119,7 +119,7 @@ struct ToolButton: View {
             }
             .frame(width: 58, height: 40)
             .foregroundStyle(active ? .black : tint)
-            .background(active ? DS.accent : DS.surface2, in: Rectangle())
+            .background(active ? DS.accent : DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
         }
         .buttonStyle(.plain)
     }
@@ -138,8 +138,8 @@ struct KeyButton: View {
             Text(LocalizedStringKey(title)).font(.system(size: 15, weight: .heavy))
                 .frame(width: width, height: height)
                 .foregroundStyle(textColor)
-                .background(color, in: Rectangle())
-                .overlay(Rectangle().stroke(Color.white.opacity(0.10)))
+                .background(color, in: RoundedRectangle(cornerRadius: DS.radius))
+                .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(Color.white.opacity(0.10)))
         }
         .buttonStyle(.plain)
     }

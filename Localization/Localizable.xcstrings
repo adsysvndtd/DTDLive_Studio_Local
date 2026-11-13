@@ -511,6 +511,16 @@
         }
       }
     },
+    "Chưa có NDI SDK. Trên Mac: cài \"NDI SDK for Apple\" từ ndi.video, chạy scripts/ndi-setup.sh rồi build lại — nhận & phát NDI sẽ tự bật.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No NDI SDK yet. On the Mac: install \"NDI SDK for Apple\" from ndi.video, run scripts/ndi-setup.sh and rebuild — NDI input & output turn on automatically."
+          }
+        }
+      }
+    },
     "Chưa có Wi-Fi": {
       "localizations": {
         "en": {
@@ -1521,6 +1531,16 @@
         }
       }
     },
+    "Họ và tên": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Full name"
+          }
+        }
+      }
+    },
     "ID xác nhận": {
       "localizations": {
         "en": {
@@ -2011,6 +2031,16 @@
         }
       }
     },
+    "Logo + tên + chức danh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logo + name + title"
+          }
+        }
+      }
+    },
     "Logo đang trên PGM": {
       "localizations": {
         "en": {
@@ -2401,6 +2431,16 @@
         }
       }
     },
+    "Máy khác trong mạng (vMix, OBS, TriCaster…) thấy nguồn này. NDI® là thương hiệu của Vizrt NDI AB.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Other machines on the network (vMix, OBS, TriCaster…) see this source. NDI® is a trademark of Vizrt NDI AB."
+          }
+        }
+      }
+    },
     "Máy đang nóng — tạm giảm bitrate để hạ nhiệt": {
       "localizations": {
         "en": {
@@ -2567,6 +2607,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Open in Replay (mark in/out)"
+          }
+        }
+      }
+    },
+    "NDI® trong mạng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "NDI® on the network"
           }
         }
       }
@@ -2811,6 +2861,16 @@
         }
       }
     },
+    "Nhập logo ở mục Logo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import a logo in the Logo tab"
+          }
+        }
+      }
+    },
     "Nhập nhạc": {
       "localizations": {
         "en": {
@@ -3007,6 +3067,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Go live"
+          }
+        }
+      }
+    },
+    "Phát PGM qua NDI": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Send PGM over NDI"
           }
         }
       }
@@ -3741,6 +3811,16 @@
         }
       }
     },
+    "Tiêu đề trên (tổ chức / chương trình)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Header (organisation / show)"
+          }
+        }
+      }
+    },
     "Tiếng Việt": {
       "localizations": {
         "en": {
@@ -3921,6 +4001,16 @@
         }
       }
     },
+    "Tên nguồn NDI": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "NDI source name"
+          }
+        }
+      }
+    },
     "Tên show": {
       "localizations": {
         "en": {
@@ -3937,6 +4027,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Team name"
+          }
+        }
+      }
+    },
+    "Tìm nguồn NDI": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Find NDI sources"
           }
         }
       }
@@ -4251,6 +4351,16 @@
         }
       }
     },
+    "Xoay": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rotate"
+          }
+        }
+      }
+    },
     "Xoay 180°": {
       "localizations": {
         "en": {
@@ -4267,6 +4377,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Rotate PVW source 180°"
+          }
+        }
+      }
+    },
+    "Xoay nguồn PVW 90°": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rotate PVW source 90°"
           }
         }
       }
@@ -4727,6 +4847,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Live"
+          }
+        }
+      }
+    },
+    "Đang tìm…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Searching…"
           }
         }
       }

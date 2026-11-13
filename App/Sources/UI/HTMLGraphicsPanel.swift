@@ -22,7 +22,7 @@ struct HTMLGraphicsPanel: View {
                     Label(repo.syncing ? "Đang tải…" : "Cập nhật từ Git", systemImage: "arrow.triangle.2.circlepath")
                         .font(.system(size: compact ? 12 : 13, weight: .semibold))
                         .padding(.horizontal, 10).frame(height: compact ? 28 : 32)
-                        .foregroundStyle(.white).background(DS.surface2, in: Rectangle())
+                        .foregroundStyle(.white).background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
                 }
                 .buttonStyle(.plain).disabled(repo.syncing)
                 Text(repo.status.isEmpty ? "\(repo.settings.owner)/\(repo.settings.repo) › \(repo.settings.path)" : repo.status)
@@ -32,7 +32,7 @@ struct HTMLGraphicsPanel: View {
                     Button { html.next() } label: {
                         Label("Next", systemImage: "forward.frame").font(DS.fBodyBold)
                             .padding(.horizontal, 10).frame(height: compact ? 28 : 32)
-                            .foregroundStyle(.white).background(DS.surface2, in: Rectangle())
+                            .foregroundStyle(.white).background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
                     }
                     .buttonStyle(.plain)
                 }
@@ -45,7 +45,7 @@ struct HTMLGraphicsPanel: View {
                             Text(t.name).font(.system(size: compact ? 12 : 13, weight: .semibold)).lineLimit(1)
                                 .padding(.horizontal, 12).frame(height: compact ? 30 : 36)
                                 .foregroundStyle(loaded ? .black : .white)
-                                .background(loaded ? (html.onAir ? DS.pgm : DS.accent) : DS.surface2, in: Rectangle())
+                                .background(loaded ? (html.onAir ? DS.pgm : DS.accent) : DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
                         }
                         .buttonStyle(.plain)
                     }

@@ -15,7 +15,7 @@ struct ArrangeOverlay: View {
                     box(logo.rect, in: g.size, color: DS.accent, label: "Logo", resizable: true) { engine.setOverlayRect(pip: false, $0) }
                 }
                 Text("Kéo để di chuyển · kéo góc để đổi cỡ").font(.caption2.weight(.semibold))
-                    .padding(5).background(.black.opacity(0.6), in: Rectangle()).padding(6)
+                    .padding(5).background(.black.opacity(0.6), in: RoundedRectangle(cornerRadius: DS.radius)).padding(6)
             }
         }
     }
@@ -28,7 +28,7 @@ struct ArrangeOverlay: View {
                 .background(color.opacity(0.12))
                 .overlay(alignment: .topLeading) {
                     Text(LocalizedStringKey(label)).font(.caption2.weight(.heavy)).padding(.horizontal, 5).padding(.vertical, 2)
-                        .background(color, in: Rectangle()).foregroundStyle(.black).padding(3)
+                        .background(color, in: RoundedRectangle(cornerRadius: DS.radius)).foregroundStyle(.black).padding(3)
                 }
                 .gesture(DragGesture().onChanged { v in
                     var n = r

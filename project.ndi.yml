@@ -1,0 +1,10 @@
+# Used by scripts/build-local.sh when Vendor/NDI (NDI® SDK, see scripts/ndi-setup.sh) is present.
+include: [project.yml]
+targets:
+  DTDStudio:
+    settings:
+      base:
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) NDI_SDK"
+        SWIFT_INCLUDE_PATHS: $(SRCROOT)/Vendor/NDI
+        LIBRARY_SEARCH_PATHS: $(SRCROOT)/Vendor/NDI
+        OTHER_LDFLAGS: "$(inherited) -lndi_ios -lc++"

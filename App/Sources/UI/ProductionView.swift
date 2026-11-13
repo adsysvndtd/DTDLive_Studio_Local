@@ -200,8 +200,12 @@ struct CategoryContent: View {
                     iconButton("info.circle", "Thông tin nguồn PVW") { infoSource = pv }
                     iconButton("arrow.up.and.down.and.arrow.left.and.right", "PTZ nguồn PVW") { ptzSource = pv }
                     iconButton("paintpalette", "Màu nguồn PVW") { adjustingSource = pv }
-                    iconButton("rotate.right", "Xoay 180° nguồn PVW") {
-                        var p = engine.processing[pv] ?? SourceProcessing(); p.rotate180.toggle(); engine.setProcessing(pv, p)
+                    iconButton("rotate.right", "Xoay nguồn PVW 90°") {
+                        // each tap: +90° clockwise (0 → 90 → 180 → 270 → 0)
+                        var p = engine.processing[pv] ?? SourceProcessing()
+                        let next = (p.turns + 1) % 4
+                        p.rotate180 = false; p.quarterTurns = next == 0 ? nil : next
+                        engine.setProcessing(pv, p)
                     }
                 }
                 headerButton("Thêm nguồn", "plus") { showAddSource = true }
@@ -218,7 +222,14 @@ struct CategoryContent: View {
             case .title:
                 Menu {
                     ForEach(TitleStyle.allCases) { s in
-                        Button(s.label) { engine.upsertTitle(TitleItem(style: s, line1: s == .clock ? "" : s.label)) }
+                        Button(s.label) {
+                            var t = TitleItem(style: s, line1: s == .clock ? "" : s.label)
+                            if s == .logoStrap {   // template: logo + header + name + role, logo = the loaded logo
+                                t.header = "DTD STUDIO"; t.line1 = L("Họ và tên"); t.line2 = L("Chức danh")
+                                t.logoFile = engine.currentLogoURL?.lastPathComponent
+                            }
+                            engine.upsertTitle(t)
+                        }
                     }
                 } label: { toolbarLabel("Thêm title", "plus") }
                 headerButton("Ẩn tất cả", "eye.slash") { engine.setTitleVisible(nil, false) }
@@ -237,8 +248,8 @@ struct CategoryContent: View {
             .font(.system(size: compact ? 11 : 12, weight: .semibold)).lineLimit(1)
             .padding(.horizontal, compact ? 6 : 8).frame(height: compact ? 24 : 28)
             .foregroundStyle(.white)
-            .background(DS.surface2, in: Rectangle())
-            .overlay(Rectangle().stroke(DS.stroke))
+            .background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
+            .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(DS.stroke))
     }
 
     private func iconButton(_ icon: String, _ label: String, action: @escaping () -> Void) -> some View {
@@ -262,8 +273,8 @@ struct CategoryContent: View {
                 .font(.system(size: compact ? 11 : 12, weight: .semibold)).lineLimit(1)
                 .padding(.horizontal, compact ? 6 : 8).frame(height: compact ? 24 : 28)
                 .foregroundStyle(.white)
-                .background(DS.surface2, in: Rectangle())
-                .overlay(Rectangle().stroke(DS.stroke))
+                .background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
+                .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(DS.stroke))
         }
         .buttonStyle(.plain)
     }
@@ -445,7 +456,7 @@ struct CategoryContent: View {
                     Text(verbatim: st.label).font(.system(size: compact ? 12 : 13, weight: .semibold))
                         .padding(.horizontal, 10).frame(height: compact ? 28 : 32)
                         .foregroundStyle(on ? .black : .white)
-                        .background(on ? DS.accent : DS.surface2, in: Rectangle())
+                        .background(on ? DS.accent : DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
                 }
                 .buttonStyle(.plain)
             }
@@ -501,7 +512,7 @@ struct CategoryContent: View {
                         .aspectRatio(16 / 9, contentMode: .fit)
                         .accessibilityLabel(t.name)
                         .clipShape(Rectangle())
-                    .overlay(Rectangle().stroke(engine.layoutTemplateID == t.id ? DS.accent : DS.stroke,
+                    .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(engine.layoutTemplateID == t.id ? DS.accent : DS.stroke,
                                                                      lineWidth: engine.layoutTemplateID == t.id ? 3 : 1))
                 }
                 .buttonStyle(.plain)
@@ -535,7 +546,7 @@ struct CategoryContent: View {
                             .font(DS.fBodyBold).lineLimit(1)
                             .padding(.horizontal, 10).padding(.vertical, 6)
                             .foregroundStyle(sel ? .black : .white)
-                            .background(sel ? DS.accent : DS.surface2, in: Rectangle())
+                            .background(sel ? DS.accent : DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
                     }
                     .buttonStyle(.plain)
                 }
@@ -648,7 +659,7 @@ struct CategoryContent: View {
                         }
                         .frame(maxWidth: .infinity, minHeight: compact ? 56 : 70)
                         .foregroundStyle(.white)
-                        .background(DS.surface2, in: Rectangle())
+                        .background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
                     }
                     .buttonStyle(.plain)
                     .contextMenu { Button("Xoá", role: .destructive) { library.delete(url) } }
@@ -731,7 +742,7 @@ struct SourceCell: View {
             .background(DS.surface)
         }
         .clipShape(Rectangle())
-        .overlay(Rectangle().stroke(pgm ? DS.pgm : pvw ? DS.pvw : DS.stroke, lineWidth: pgm || pvw ? 3 : 1))
+        .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(pgm ? DS.pgm : pvw ? DS.pvw : DS.stroke, lineWidth: pgm || pvw ? 3 : 1))
         .contentShape(Rectangle())
         .onTapGesture { engine.select(source.id) }
     }
@@ -844,7 +855,7 @@ struct TransitionColumn: View {
                         Button { engine.transitionDuration = min(3, engine.transitionDuration + 0.1) } label: { Image(systemName: "plus").frame(maxWidth: .infinity, minHeight: 24) }
                     }
                     .buttonStyle(.plain)
-                    .background(DS.surface2, in: Rectangle())
+                    .background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
                 }
                 key("PiP Trans", enabled: engine.layoutSlots.count > 0) { engine.layoutTransition() }
                 // AUTO key named after the selected transition (Dissolve, Wipe…)

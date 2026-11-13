@@ -60,7 +60,7 @@ struct AudioMixerView: View {
                     Button { engine.playEffect(url) } label: {
                         Image(systemName: "waveform").font(.system(size: 14, weight: .semibold))
                             .frame(width: compact ? 34 : 42, height: compact ? 28 : 32)
-                            .background(DS.surface2, in: Rectangle())
+                            .background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel(url.deletingPathExtension().lastPathComponent)
@@ -75,7 +75,7 @@ struct AudioMixerView: View {
             Text(LocalizedStringKey(t)).font(.system(size: compact ? 12 : 14, weight: .bold))
                 .padding(.horizontal, compact ? 10 : 14).frame(height: compact ? 28 : 32)
                 .foregroundStyle(on ? .black : .white)
-                .background(on ? Color.white : Color.clear, in: Rectangle())
+                .background(on ? Color.white : Color.clear, in: RoundedRectangle(cornerRadius: DS.radius))
         }
         .buttonStyle(.plain)
     }
@@ -146,8 +146,8 @@ struct ChannelStrip: View {
                 }
                 .frame(width: compact ? 66 : 86, height: compact ? 28 : 34)
                 .foregroundStyle(solo ? .black : (muted ? DS.pgm : .white))
-                .background(solo ? Color.yellow : DS.surface2, in: Rectangle())
-                .overlay(Rectangle().stroke(muted ? DS.pgm.opacity(0.7) : DS.stroke))
+                .background(solo ? Color.yellow : DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
+                .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(muted ? DS.pgm.opacity(0.7) : DS.stroke))
             }
             .buttonStyle(.plain)
             .simultaneousGesture(LongPressGesture(minimumDuration: 0.5).onEnded { _ in if !isMaster { onSolo() } })
@@ -159,7 +159,7 @@ struct ChannelStrip: View {
         Button(action: act) {
             Image(systemName: icon).font(.system(size: 11, weight: .bold))
                 .frame(width: compact ? 28 : 36, height: compact ? 22 : 26)
-                .background(DS.surface2, in: Rectangle())
+                .background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
         }
         .buttonStyle(.plain).foregroundStyle(DS.text2)
     }

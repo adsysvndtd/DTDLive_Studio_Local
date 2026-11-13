@@ -224,9 +224,9 @@ final class RTSPIngestSession: @unchecked Sendable {
         let m = media[idx]
         switch m.codec {
         case .h264:
-            for au in h264.push(p) { if let pb = sink.pipeline.video(au) { sink.frames.put(pb) } }
+            for au in h264.push(p) { if let pb = sink.pipeline.video(au) { sink.pacer.push(pb, media: Double(au.timestamp) / 90_000) } }
         case .h265:
-            for au in h265.push(p) { if let pb = sink.pipeline.video(au) { sink.frames.put(pb) } }
+            for au in h265.push(p) { if let pb = sink.pipeline.video(au) { sink.pacer.push(pb, media: Double(au.timestamp) / 90_000) } }
         case .aac:
             for frame in AACDepacketizer.accessUnits(p, sizeLength: m.aacSizeLength, indexLength: m.aacIndexLength) {
                 if let pcm = sink.pipeline.audio(frame) { sink.onAudio?(pcm) }

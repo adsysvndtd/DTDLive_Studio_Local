@@ -74,15 +74,8 @@ targets:
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: true
     # --- NDI (optional) ---------------------------------------------------
-    # 1) Download the NDI SDK for iOS from ndi.video, copy into Vendor/NDI/
-    #    (libndi_ios.a + headers + a module.modulemap exporting module `NDI`)
-    # 2) Uncomment:
-    # settings:
-    #   base:
-    #     SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) NDI_SDK"
-    #     SWIFT_INCLUDE_PATHS: $(SRCROOT)/Vendor/NDI
-    #     LIBRARY_SEARCH_PATHS: $(SRCROOT)/Vendor/NDI
-    #     OTHER_LDFLAGS: "-lndi_ios -lc++"
+    # Install "NDI SDK for Apple", run scripts/ndi-setup.sh; build-local.sh then generates
+    # from project.ndi.yml (this spec + NDI_SDK flag, include/library paths, -lndi_ios).
 
   DTDStudioUITests:
     type: bundle.ui-testing

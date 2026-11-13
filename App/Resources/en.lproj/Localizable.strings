@@ -49,6 +49,7 @@
 "Chính + 2 phụ xếp dọc" = "Main + 2 stacked";
 "Chính + 3 phụ xếp dọc" = "Main + 3 stacked";
 "Chính + phụ phải" = "Main + right";
+"Chưa có NDI SDK. Trên Mac: cài \"NDI SDK for Apple\" từ ndi.video, chạy scripts/ndi-setup.sh rồi build lại — nhận & phát NDI sẽ tự bật." = "No NDI SDK yet. On the Mac: install \"NDI SDK for Apple\" from ndi.video, run scripts/ndi-setup.sh and rebuild — NDI input & output turn on automatically.";
 "Chưa có Wi-Fi" = "No Wi-Fi";
 "Chưa có camera mạng" = "No network cameras yet";
 "Chưa có camera — bấm Thêm nguồn" = "No cameras — tap Add source";
@@ -150,6 +151,7 @@
 "Hình %lf/s · Tiếng %lf/s" = "Video %lf/s · Audio %lf/s";
 "Hình %lld/s · Tiếng %lld/s" = "Video %lld/s · Audio %lld/s";
 "Hình học" = "Geometry";
+"Họ và tên" = "Full name";
 "ID xác nhận" = "Confirmation ID";
 "Khoá cân bằng trắng" = "Lock white balance";
 "Khung LIVE" = "LIVE frame";
@@ -199,6 +201,7 @@
 "Link xem (tuỳ chọn, vd https://youtube.com/@kenh/live)" = "Watch link (optional, e.g. https://youtube.com/@channel/live)";
 "Link xem live" = "Live watch link";
 "Logo" = "Logo";
+"Logo + tên + chức danh" = "Logo + name + title";
 "Logo đang trên PGM" = "Logo is on PGM";
 "Logo đã nạp — bấm Logo On" = "Logo loaded — press Logo On";
 "Loại" = "Type";
@@ -238,6 +241,7 @@
 "Màu nền" = "Background colour";
 "Màu sắc" = "Colour";
 "Màu, key, PTZ…" = "Colour, key, PTZ…";
+"Máy khác trong mạng (vMix, OBS, TriCaster…) thấy nguồn này. NDI® là thương hiệu của Vizrt NDI AB." = "Other machines on the network (vMix, OBS, TriCaster…) see this source. NDI® is a trademark of Vizrt NDI AB.";
 "Máy đang nóng — tạm giảm bitrate để hạ nhiệt" = "Device is hot — bitrate lowered to cool down";
 "Máy đang nóng — tạm giảm còn %@ hình/giây để hạ nhiệt" = "Device is hot — temporarily %@ fps to cool down";
 "Máy đang nóng — tạm giảm còn %lf hình/giây để hạ nhiệt" = "Device is hot — temporarily %lf fps to cool down";
@@ -255,6 +259,7 @@
 "Mở DTDLive (hoặc app hỗ trợ DTD pairing) trên cùng mạng Wi-Fi → chọn DTD Studio → so ID xác nhận → Chấp nhận. Không cần nhập mã." = "Open DTDLive on the same Wi-Fi → pick DTD Studio → compare the confirmation ID → Accept. No code to type.";
 "Mở trang xem live" = "Open live page";
 "Mở trong Replay (mark in/out)" = "Open in Replay (mark in/out)";
+"NDI® trong mạng" = "NDI® on the network";
 "Ngang" = "Horizontal";
 "Nghe Program (tai nghe)" = "Listen to Program (headphones)";
 "Nghe nhạc, hiệu ứng, video trên loa máy" = "Play music, effects and video on the device speaker";
@@ -279,6 +284,7 @@
 "Nhập SuperFG" = "Import SuperFG";
 "Nhập hiệu ứng" = "Import effects";
 "Nhập logo" = "Import logo";
+"Nhập logo ở mục Logo" = "Import a logo in the Logo tab";
 "Nhập nhạc" = "Import music";
 "Nhập video" = "Import video";
 "Nhập ảnh" = "Import pictures";
@@ -299,6 +305,7 @@
 "PTZ nguồn PVW" = "PVW source PTZ";
 "Phiên bản" = "Version";
 "Phát" = "Go live";
+"Phát PGM qua NDI" = "Send PGM over NDI";
 "Phát lên PGM" = "Play to PGM";
 "Phát lại từ đầu" = "Restart";
 "Phát trực tiếp" = "Streaming";
@@ -372,6 +379,7 @@
 "Tin nóng" = "Breaking news";
 "Title" = "Title";
 "Tiêu đề buổi live" = "Live title";
+"Tiêu đề trên (tổ chức / chương trình)" = "Header (organisation / show)";
 "Tiếng Việt" = "Tiếng Việt";
 "Token (chỉ cần cho repo private)" = "Token (private repos only)";
 "Toàn màn hình" = "Full screen";
@@ -390,8 +398,10 @@
 "Tên" = "Name";
 "Tên + chức danh" = "Name + title";
 "Tên khách mời" = "Guest name";
+"Tên nguồn NDI" = "NDI source name";
 "Tên show" = "Show name";
 "Tên đội" = "Team name";
+"Tìm nguồn NDI" = "Find NDI sources";
 "Tương phản" = "Contrast";
 "Tạm dừng" = "Pause";
 "Tạo live" = "Create live";
@@ -423,8 +433,10 @@
 "Xanh lá" = "Green";
 "Xem live" = "Watch live";
 "Xem nhật ký" = "Show log";
+"Xoay" = "Rotate";
 "Xoay 180°" = "Rotate 180°";
 "Xoay 180° nguồn PVW" = "Rotate PVW source 180°";
+"Xoay nguồn PVW 90°" = "Rotate PVW source 90°";
 "Xong" = "Done";
 "Xoá" = "Delete";
 "Xoá bảng tỉ số" = "Delete scoreboard";
@@ -471,6 +483,7 @@
 "Đang kết nối" = "Connecting";
 "Đang kết nối…" = "Connecting…";
 "Đang phát" = "Live";
+"Đang tìm…" = "Searching…";
 "Đang tải…" = "Loading…";
 "Điều khiển PTZ" = "PTZ control";
 "Điều khiển camera" = "Camera control";

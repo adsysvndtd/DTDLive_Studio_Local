@@ -34,6 +34,8 @@ final class IngestRouter: @unchecked Sendable {
     final class Sink: @unchecked Sendable {
         let frames: FrameStore
         let pipeline = RTSPDecodePipeline()
+        /// Smooths Wi-Fi bursts: decoded frames are shown at their media time + a small fixed delay.
+        lazy var pacer = FramePacer(store: frames)
         private let lock = NSLock()
         private var audioHandler: (@Sendable (AVAudioPCMBuffer) -> Void)?
         /// Set on the main actor once the input exists in the mixer; media threads read it.
@@ -64,4 +66,37 @@ final class IngestRouter: @unchecked Sendable {
         return s
     }
     func sink(_ key: String) -> Sink? { lock.lock(); defer { lock.unlock() }; return sinks[key] }
+}
+
+
+/// Plays decoded frames out at their stream timestamps (plus `delay`) instead of the moment they
+/// arrive, so network bursts don't show as stutter. Re-anchors on gaps, jumps or when it falls behind.
+final class FramePacer: @unchecked Sendable {
+    let store: FrameStore
+    var delay: Double = 0.15
+    private let queue = DispatchQueue(label: "ingest.pacer", qos: .userInteractive)
+    private var anchorHost: Double?
+    private var anchorMedia: Double = 0
+    private var lastMedia: Double = -1
+
+    init(store: FrameStore) { self.store = store }
+
+    /// `media` = stream time in seconds.
+    func push(_ pb: CVPixelBuffer, media: Double) {
+        let now = HostClock.now
+        queue.async { [self] in
+            // new stream / backwards / big jump → re-anchor on this frame
+            if anchorHost == nil || media < lastMedia || media - lastMedia > 1.0 {
+                anchorHost = now; anchorMedia = media
+            }
+            lastMedia = media
+            var due = anchorHost! + (media - anchorMedia) + delay
+            if due < now - 0.25 {           // fell behind (decoder stall): pull the clock in
+                anchorHost = now - (media - anchorMedia); due = now + delay
+            }
+            let wait = due - now
+            if wait <= 0.002 { store.put(pb) }
+            else { queue.asyncAfter(deadline: .now() + wait) { [store] in store.put(pb) } }
+        }
+    }
 }

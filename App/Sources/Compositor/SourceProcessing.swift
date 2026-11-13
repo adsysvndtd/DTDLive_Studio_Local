@@ -8,6 +8,11 @@ struct SourceProcessing: Equatable, Codable {
     // Geometry
     var mirror = false
     var rotate180 = false
+    /// Extra clockwise quarter turns (0…3) for sources sent sideways (e.g. a phone streaming 9:16 → 16:9).
+    /// Optional so settings saved before it existed still decode.
+    var quarterTurns: Int?
+    /// Total clockwise rotation in quarter turns.
+    var turns: Int { ((quarterTurns ?? 0) + (rotate180 ? 2 : 0)) % 4 }
     var cropTop: CGFloat = 0, cropBottom: CGFloat = 0, cropLeft: CGFloat = 0, cropRight: CGFloat = 0 // 0..0.45
 
     // Color grade
@@ -37,9 +42,15 @@ final class ProcessingRenderer: @unchecked Sendable {
 
     func apply(_ p: SourceProcessing, to input: CIImage, background: CIImage?) -> CIImage {
         var img = input
-        let e = img.extent
 
-        if p.rotate180 { img = img.transformed(by: CGAffineTransform(rotationAngle: .pi).translatedBy(x: -e.width, y: -e.height)) }
+        switch p.turns {
+        case 1: img = img.oriented(.right)
+        case 2: img = img.oriented(.down)
+        case 3: img = img.oriented(.left)
+        default: break
+        }
+        if p.turns != 0 { img = img.transformed(by: CGAffineTransform(translationX: -img.extent.minX, y: -img.extent.minY)) }
+        let e = img.extent
         if p.mirror { img = img.transformed(by: CGAffineTransform(scaleX: -1, y: 1).translatedBy(x: -e.width, y: 0)) }
         if p.cropTop + p.cropBottom + p.cropLeft + p.cropRight > 0 {
             let r = CGRect(x: e.minX + e.width * p.cropLeft, y: e.minY + e.height * p.cropBottom,

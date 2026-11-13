@@ -49,6 +49,7 @@
 "Chính + 2 phụ xếp dọc" = "Chính + 2 phụ xếp dọc";
 "Chính + 3 phụ xếp dọc" = "Chính + 3 phụ xếp dọc";
 "Chính + phụ phải" = "Chính + phụ phải";
+"Chưa có NDI SDK. Trên Mac: cài \"NDI SDK for Apple\" từ ndi.video, chạy scripts/ndi-setup.sh rồi build lại — nhận & phát NDI sẽ tự bật." = "Chưa có NDI SDK. Trên Mac: cài \"NDI SDK for Apple\" từ ndi.video, chạy scripts/ndi-setup.sh rồi build lại — nhận & phát NDI sẽ tự bật.";
 "Chưa có Wi-Fi" = "Chưa có Wi-Fi";
 "Chưa có camera mạng" = "Chưa có camera mạng";
 "Chưa có camera — bấm Thêm nguồn" = "Chưa có camera — bấm Thêm nguồn";
@@ -150,6 +151,7 @@
 "Hình %lf/s · Tiếng %lf/s" = "Hình %lf/s · Tiếng %lf/s";
 "Hình %lld/s · Tiếng %lld/s" = "Hình %lld/s · Tiếng %lld/s";
 "Hình học" = "Hình học";
+"Họ và tên" = "Họ và tên";
 "ID xác nhận" = "ID xác nhận";
 "Khoá cân bằng trắng" = "Khoá cân bằng trắng";
 "Khung LIVE" = "Khung LIVE";
@@ -199,6 +201,7 @@
 "Link xem (tuỳ chọn, vd https://youtube.com/@kenh/live)" = "Link xem (tuỳ chọn, vd https://youtube.com/@kenh/live)";
 "Link xem live" = "Link xem live";
 "Logo" = "Logo";
+"Logo + tên + chức danh" = "Logo + tên + chức danh";
 "Logo đang trên PGM" = "Logo đang trên PGM";
 "Logo đã nạp — bấm Logo On" = "Logo đã nạp — bấm Logo On";
 "Loại" = "Loại";
@@ -238,6 +241,7 @@
 "Màu nền" = "Màu nền";
 "Màu sắc" = "Màu sắc";
 "Màu, key, PTZ…" = "Màu, key, PTZ…";
+"Máy khác trong mạng (vMix, OBS, TriCaster…) thấy nguồn này. NDI® là thương hiệu của Vizrt NDI AB." = "Máy khác trong mạng (vMix, OBS, TriCaster…) thấy nguồn này. NDI® là thương hiệu của Vizrt NDI AB.";
 "Máy đang nóng — tạm giảm bitrate để hạ nhiệt" = "Máy đang nóng — tạm giảm bitrate để hạ nhiệt";
 "Máy đang nóng — tạm giảm còn %@ hình/giây để hạ nhiệt" = "Máy đang nóng — tạm giảm còn %@ hình/giây để hạ nhiệt";
 "Máy đang nóng — tạm giảm còn %lf hình/giây để hạ nhiệt" = "Máy đang nóng — tạm giảm còn %lf hình/giây để hạ nhiệt";
@@ -255,6 +259,7 @@
 "Mở DTDLive (hoặc app hỗ trợ DTD pairing) trên cùng mạng Wi-Fi → chọn DTD Studio → so ID xác nhận → Chấp nhận. Không cần nhập mã." = "Mở DTDLive (hoặc app hỗ trợ DTD pairing) trên cùng mạng Wi-Fi → chọn DTD Studio → so ID xác nhận → Chấp nhận. Không cần nhập mã.";
 "Mở trang xem live" = "Mở trang xem live";
 "Mở trong Replay (mark in/out)" = "Mở trong Replay (mark in/out)";
+"NDI® trong mạng" = "NDI® trong mạng";
 "Ngang" = "Ngang";
 "Nghe Program (tai nghe)" = "Nghe Program (tai nghe)";
 "Nghe nhạc, hiệu ứng, video trên loa máy" = "Nghe nhạc, hiệu ứng, video trên loa máy";
@@ -279,6 +284,7 @@
 "Nhập SuperFG" = "Nhập SuperFG";
 "Nhập hiệu ứng" = "Nhập hiệu ứng";
 "Nhập logo" = "Nhập logo";
+"Nhập logo ở mục Logo" = "Nhập logo ở mục Logo";
 "Nhập nhạc" = "Nhập nhạc";
 "Nhập video" = "Nhập video";
 "Nhập ảnh" = "Nhập ảnh";
@@ -299,6 +305,7 @@
 "PTZ nguồn PVW" = "PTZ nguồn PVW";
 "Phiên bản" = "Phiên bản";
 "Phát" = "Phát";
+"Phát PGM qua NDI" = "Phát PGM qua NDI";
 "Phát lên PGM" = "Phát lên PGM";
 "Phát lại từ đầu" = "Phát lại từ đầu";
 "Phát trực tiếp" = "Phát trực tiếp";
@@ -372,6 +379,7 @@
 "Tin nóng" = "Tin nóng";
 "Title" = "Title";
 "Tiêu đề buổi live" = "Tiêu đề buổi live";
+"Tiêu đề trên (tổ chức / chương trình)" = "Tiêu đề trên (tổ chức / chương trình)";
 "Tiếng Việt" = "Tiếng Việt";
 "Token (chỉ cần cho repo private)" = "Token (chỉ cần cho repo private)";
 "Toàn màn hình" = "Toàn màn hình";
@@ -390,8 +398,10 @@
 "Tên" = "Tên";
 "Tên + chức danh" = "Tên + chức danh";
 "Tên khách mời" = "Tên khách mời";
+"Tên nguồn NDI" = "Tên nguồn NDI";
 "Tên show" = "Tên show";
 "Tên đội" = "Tên đội";
+"Tìm nguồn NDI" = "Tìm nguồn NDI";
 "Tương phản" = "Tương phản";
 "Tạm dừng" = "Tạm dừng";
 "Tạo live" = "Tạo live";
@@ -423,8 +433,10 @@
 "Xanh lá" = "Xanh lá";
 "Xem live" = "Xem live";
 "Xem nhật ký" = "Xem nhật ký";
+"Xoay" = "Xoay";
 "Xoay 180°" = "Xoay 180°";
 "Xoay 180° nguồn PVW" = "Xoay 180° nguồn PVW";
+"Xoay nguồn PVW 90°" = "Xoay nguồn PVW 90°";
 "Xong" = "Xong";
 "Xoá" = "Xoá";
 "Xoá bảng tỉ số" = "Xoá bảng tỉ số";
@@ -471,6 +483,7 @@
 "Đang kết nối" = "Đang kết nối";
 "Đang kết nối…" = "Đang kết nối…";
 "Đang phát" = "Đang phát";
+"Đang tìm…" = "Đang tìm…";
 "Đang tải…" = "Đang tải…";
 "Điều khiển PTZ" = "Điều khiển PTZ";
 "Điều khiển camera" = "Điều khiển camera";

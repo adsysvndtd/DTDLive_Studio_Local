@@ -43,7 +43,7 @@ struct SidePanel: View {
                         }
                         .frame(maxWidth: .infinity, minHeight: 44)
                         .foregroundStyle(tab == t ? DS.accent : DS.text2)
-                        .background(tab == t ? DS.surface2 : .clear, in: Rectangle())
+                        .background(tab == t ? DS.surface2 : .clear, in: RoundedRectangle(cornerRadius: DS.radius))
                     }
                     .buttonStyle(.plain)
                 }
@@ -105,12 +105,12 @@ struct TitlesPanel: View {
             assignChip("T2", on: engine.secondTitle?.id == item.id) { engine.armedTitle2ID = item.id }
             Button { editingID = item.id } label: {
                 Image(systemName: "pencil").font(.system(size: 12, weight: .semibold)).frame(width: 26, height: 24)
-                    .foregroundStyle(.white).background(DS.surface2, in: Rectangle())
+                    .foregroundStyle(.white).background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
             }.buttonStyle(.plain)
         }
         .padding(.horizontal, 8).padding(.vertical, 5)
-        .background(DS.surface, in: Rectangle())
-        .overlay(Rectangle().stroke(item.visible ? DS.pgm : DS.stroke, lineWidth: 1))
+        .background(DS.surface, in: RoundedRectangle(cornerRadius: DS.radius))
+        .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(item.visible ? DS.pgm : DS.stroke, lineWidth: 1))
         .contentShape(Rectangle())
         .onTapGesture(count: 2) { editingID = item.id }
     }
@@ -126,6 +126,7 @@ struct TitlesPanel: View {
         case .ticker: return "text.alignleft"
         case .clock: return "clock"
         case .countdown: return "timer"
+        case .logoStrap: return "person.text.rectangle"
         case .fullScreen: return "rectangle.inset.filled"
         default: return "text.below.photo"
         }
@@ -135,7 +136,7 @@ struct TitlesPanel: View {
         Button(action: action) {
             Text(verbatim: t).font(.system(size: 10, weight: .bold)).frame(width: 26, height: 24)
                 .foregroundStyle(on ? .black : DS.text2)
-                .background(on ? Color.white : DS.surface2, in: Rectangle())
+                .background(on ? Color.white : DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
         }
         .buttonStyle(.plain)
     }
@@ -165,9 +166,13 @@ struct TitleEditorSheet: View {
                     if item.style != .clock {
                         TextField(LocalizedStringKey(item.style == .ticker ? "Nội dung chữ chạy" : item.style == .countdown ? "Nhãn" : "Dòng 1"), text: $item.line1)
                     }
-                    if [.lowerThird, .nameStrap, .fullScreen].contains(item.style) {
-                        TextField("Dòng 2", text: $item.line2)
+                    if item.style == .logoStrap {
+                        TextField("Tiêu đề trên (tổ chức / chương trình)", text: Binding(get: { item.header ?? "" }, set: { item.header = $0 }))
                     }
+                    if [.lowerThird, .nameStrap, .fullScreen, .logoStrap].contains(item.style) {
+                        TextField(item.style == .logoStrap ? "Chức danh" : "Dòng 2", text: $item.line2)
+                    }
+                    if item.style == .logoStrap { logoPicker }
                     if item.style == .countdown {
                         Stepper("Phút \(item.scoreA)", value: $item.scoreA, in: 0...180).monospacedDigit()
                         Stepper("Giây \(item.scoreB)", value: $item.scoreB, in: 0...59).monospacedDigit()
@@ -198,6 +203,34 @@ struct TitleEditorSheet: View {
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Xong") { dismiss() } } }
         }
         .presentationDetents([.large, .medium])
+    }
+
+    /// Logos from the Logo library as tappable tiles (plus "none").
+    private var logoPicker: some View {
+        let files = (try? FileManager.default.contentsOfDirectory(at: MediaLibrary.directory(.logo), includingPropertiesForKeys: nil))?
+            .filter { ["png", "jpg", "jpeg", "heic"].contains($0.pathExtension.lowercased()) }
+            .sorted { $0.lastPathComponent < $1.lastPathComponent } ?? []
+        return ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 6) {
+                Button { item.logoFile = nil } label: {
+                    Text("Không").font(.system(size: 11, weight: .semibold)).frame(width: 56, height: 44)
+                        .foregroundStyle(item.logoFile == nil ? .black : .white)
+                        .background(item.logoFile == nil ? DS.accent : DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
+                }.buttonStyle(.plain)
+                ForEach(files, id: \.self) { u in
+                    let on = item.logoFile == u.lastPathComponent
+                    Button { item.logoFile = u.lastPathComponent } label: {
+                        Group {
+                            if let img = UIImage(contentsOfFile: u.path) { Image(uiImage: img).resizable().scaledToFit().padding(4) }
+                            else { Image(systemName: "photo") }
+                        }
+                        .frame(width: 56, height: 44).background(Color.white, in: RoundedRectangle(cornerRadius: DS.radius))
+                        .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(on ? DS.accent : .clear, lineWidth: 3))
+                    }.buttonStyle(.plain)
+                }
+                if files.isEmpty { Text("Nhập logo ở mục Logo").font(.system(size: 12)).foregroundStyle(DS.text3) }
+            }
+        }
     }
 
     /// One-line slider row: label · slider · value (instead of a two-line block).
@@ -311,7 +344,7 @@ struct AudioPanel: View {
             Text(LocalizedStringKey(text)).font(.caption2.weight(.heavy))
                 .padding(.horizontal, 8).padding(.vertical, 4)
                 .foregroundStyle(on ? .black : DS.text2)
-                .background(on ? onColor : DS.surface2, in: Rectangle())
+                .background(on ? onColor : DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
         }
         .buttonStyle(.plain)
     }
@@ -380,7 +413,10 @@ struct SourcePanel: View {
                 }
                 SectionCard("Hình học", systemImage: "crop.rotate") {
                     Toggle("Lật gương", isOn: Binding(get: { p.mirror }, set: { var n = p; n.mirror = $0; engine.setProcessing(id, n) }))
-                    Toggle("Xoay 180°", isOn: Binding(get: { p.rotate180 }, set: { var n = p; n.rotate180 = $0; engine.setProcessing(id, n) }))
+                    Picker("Xoay", selection: Binding(get: { p.turns }, set: { var n = p; n.rotate180 = false; n.quarterTurns = $0 == 0 ? nil : $0; engine.setProcessing(id, n) })) {
+                        Text(verbatim: "0°").tag(0); Text(verbatim: "90°").tag(1); Text(verbatim: "180°").tag(2); Text(verbatim: "270°").tag(3)
+                    }
+                    .pickerStyle(.segmented)
                 }
                 .font(DS.fBody)
                 if let cam = engine.sources.first(where: { $0.id == id }) as? CameraSource {
@@ -602,7 +638,7 @@ struct ReplayEditorView: View {
                         .font(.system(size: 12, weight: .heavy))
                         .padding(.horizontal, 12).frame(height: 30)
                         .foregroundStyle(engine.replayOnAir ? .white : .black)
-                        .background(engine.replayOnAir ? DS.pgm : DS.accent, in: Rectangle())
+                        .background(engine.replayOnAir ? DS.pgm : DS.accent, in: RoundedRectangle(cornerRadius: DS.radius))
                 }
                 .buttonStyle(.plain)
                 smallButton("Lên Preview", "rectangle.on.rectangle") { engine.playEditorRange(toAir: false) }
@@ -663,7 +699,7 @@ struct ReplayEditorView: View {
             }
             .padding(.horizontal, 6).frame(height: 26)
             .foregroundStyle(selected ? .black : .white)
-            .background(selected ? DS.accent : DS.surface2, in: Rectangle())
+            .background(selected ? DS.accent : DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
         }
         .buttonStyle(.plain)
     }
@@ -672,8 +708,8 @@ struct ReplayEditorView: View {
         Button(action: action) {
             Label(LocalizedStringKey(title), systemImage: icon).font(.system(size: 12, weight: .semibold))
                 .padding(.horizontal, 10).frame(height: 30)
-                .foregroundStyle(.white).background(DS.surface2, in: Rectangle())
-                .overlay(Rectangle().stroke(DS.stroke))
+                .foregroundStyle(.white).background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
+                .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(DS.stroke))
         }
         .buttonStyle(.plain)
     }
@@ -683,7 +719,7 @@ struct ReplayEditorView: View {
             Image(systemName: icon).font(.system(size: 12, weight: .semibold))
                 .frame(width: 30, height: 26)
                 .foregroundStyle(tint == DS.surface2 ? .white : .black)
-                .background(tint, in: Rectangle())
+                .background(tint, in: RoundedRectangle(cornerRadius: DS.radius))
         }
         .buttonStyle(.plain)
         .accessibilityLabel(Text(LocalizedStringKey(help)))
@@ -697,7 +733,7 @@ struct ReplayEditorView: View {
     private func transport(_ icon: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: icon).font(.system(size: 12)).frame(width: 30, height: 28)
-                .foregroundStyle(.white).background(DS.surface2, in: Rectangle())
+                .foregroundStyle(.white).background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
         }
         .buttonStyle(.plain)
     }
@@ -710,7 +746,7 @@ struct ReplayEditorView: View {
             }
             .frame(width: 78, height: 32)
             .foregroundStyle(value != nil ? .black : .white)
-            .background(value != nil ? color : DS.surface2, in: Rectangle())
+            .background(value != nil ? color : DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
         }
         .buttonStyle(.plain)
     }

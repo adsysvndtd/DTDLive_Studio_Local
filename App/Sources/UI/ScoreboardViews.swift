@@ -111,7 +111,7 @@ struct ScoreboardControl: View {
         Button(action: action) {
             Text(LocalizedStringKey(t)).font(DS.fBodyBold).padding(.horizontal, 9).padding(.vertical, 5)
                 .foregroundStyle(on ? .black : DS.text2)
-                .background(on ? Color.white : DS.surface2, in: Rectangle())
+                .background(on ? Color.white : DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
         }.buttonStyle(.plain)
     }
 
@@ -142,7 +142,7 @@ struct ScoreboardControl: View {
                                         .foregroundStyle(on ? .black : .white)
                                 }
                                 .padding(4)
-                                .background(on ? DS.accent : DS.surface2, in: Rectangle())
+                                .background(on ? DS.accent : DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
                             }
                             .buttonStyle(.plain)
                         }
@@ -180,14 +180,14 @@ struct ScoreboardControl: View {
             }
         }
         .padding(8)
-        .background(DS.surface2.opacity(0.5), in: Rectangle())
+        .background(DS.surface2.opacity(0.5), in: RoundedRectangle(cornerRadius: DS.radius))
     }
 
     private func pos(_ icon: String, _ act: @escaping () -> Void) -> some View {
         Button(action: act) {
             Image(systemName: icon).font(.system(size: 13, weight: .semibold))
                 .frame(width: compact ? 40 : 52, height: 28)
-                .background(DS.surface2, in: Rectangle())
+                .background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
         }
         .buttonStyle(.plain)
     }
@@ -274,13 +274,13 @@ struct ScoreboardEditor: View {
                 .contextMenu { if logo != nil { Button("Bỏ logo", role: .destructive, action: clearLogo) } }
                 TextField("Tên đội", text: name).font(.system(size: 14, weight: .semibold))
                     .padding(.horizontal, 8).frame(height: 34)
-                    .background(DS.surface2, in: Rectangle())
+                    .background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
                 Stepper("\(score.wrappedValue)", value: score, in: 0...999).font(.system(size: 14, weight: .bold)).fixedSize()
             }
             HStack(spacing: 8) {
                 TextField("Dòng phụ (tuỳ chọn)", text: sub).font(.system(size: 13))
                     .padding(.horizontal, 8).frame(height: 30)
-                    .background(DS.surface2, in: Rectangle())
+                    .background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
                 colorPick("Màu dải", color)
             }
         }

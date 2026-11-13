@@ -103,6 +103,17 @@ struct SettingsForm: View {
                     Text("Không muốn đăng ký app: dùng Đầu ra › Thêm đích › YouTube/Facebook (stream key).")
                         .foregroundStyle(.secondary)
                 }
+                Section(header: SettingsHeader("NDI®")) {
+                    if NDIAvailability.isAvailable {
+                        Toggle("Phát PGM qua NDI", isOn: $engine.ndiOutputOn)
+                        TextField("Tên nguồn NDI", text: $engine.ndiName)
+                        Text("Máy khác trong mạng (vMix, OBS, TriCaster…) thấy nguồn này. NDI® là thương hiệu của Vizrt NDI AB.")
+                            .foregroundStyle(.secondary)
+                    } else {
+                        Text("Chưa có NDI SDK. Trên Mac: cài \"NDI SDK for Apple\" từ ndi.video, chạy scripts/ndi-setup.sh rồi build lại — nhận & phát NDI sẽ tự bật.")
+                            .foregroundStyle(.secondary)
+                    }
+                }
                 Section(header: SettingsHeader("Đồ hoạ HTML5 (tải từ Git)")) {
                     GraphicsRepoRows(repo: engine.graphicsRepo)
                 }
@@ -117,8 +128,15 @@ struct SettingsForm: View {
                 Section(header: SettingsHeader("Giới thiệu")) {
                     LabeledContent("Ứng dụng", value: "DTD Studio")
                     LabeledContent("Phiên bản", value: "\(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0") (\(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "1"))")
-                    LabeledContent("Bundle ID", value: Bundle.main.bundleIdentifier ?? "")
-                    LabeledContent("NDI", value: L(NDIAvailability.isAvailable ? "Có" : "Chưa tích hợp SDK"))
+                    // read from Info.plist directly (Bundle.main is re-classed for the in-app language switch)
+                    let bid = (Bundle.main.infoDictionary?["CFBundleIdentifier"] as? String)
+                        ?? Bundle.main.bundleIdentifier ?? "vn.com.dtdsolution.DTDStudio"
+                    HStack {
+                        Text("Bundle ID")
+                        Spacer(minLength: 12)
+                        Text(verbatim: bid).foregroundStyle(.secondary).lineLimit(1).minimumScaleFactor(0.6).textSelection(.enabled)
+                    }
+                    LabeledContent("NDI®", value: L(NDIAvailability.isAvailable ? "Có" : "Chưa tích hợp SDK"))
                 }
             }
             .font(DS.settingsFont)

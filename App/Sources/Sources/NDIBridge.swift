@@ -1,5 +1,8 @@
 import CoreVideo
 import Foundation
+#if NDI_SDK
+import NDI
+#endif
 
 /// NDI input/output.
 ///
@@ -18,8 +21,29 @@ enum NDIAvailability {
     #endif
 }
 
+/// Thread-safe holder for the Program → NDI sender (no-op without the SDK).
+final class NDIOutputBox: @unchecked Sendable {
+    private let lock = NSLock()
+    #if NDI_SDK
+    private var sender: NDISender?
+    #endif
+    private var fps = 30
+    func configure(on: Bool, name: String, fps: Int) {
+        lock.lock(); defer { lock.unlock() }
+        self.fps = fps
+        #if NDI_SDK
+        sender = on ? NDISender(name: name) : nil
+        #endif
+    }
+    func send(_ pb: CVPixelBuffer) {
+        #if NDI_SDK
+        lock.lock(); let s = sender, f = fps; lock.unlock()
+        s?.send(pb, fps: f)
+        #endif
+    }
+}
+
 #if NDI_SDK
-import NDI
 
 final class NDIFinder: @unchecked Sendable {
     private let finder: NDIlib_find_instance_t?
@@ -119,9 +143,15 @@ final class NDIInputSource: VideoSource {
     }
 }
 
-/// Sends program out as an NDI source (BGRA; NDI|HX requires the separate HX SDK licence).
+/// Sends Program as an NDI source. Program frames are NV12 (420v); NDI wants the UV plane right after
+/// the Y plane, so each frame is packed into one contiguous buffer. Runs on its own queue and drops
+/// frames while the previous one is still being sent (never stalls the render loop).
 final class NDISender: @unchecked Sendable {
     private var sender: NDIlib_send_instance_t?
+    private let queue = DispatchQueue(label: "ndi.send", qos: .userInitiated)
+    private var busy = false
+    private let lock = NSLock()
+    private var packed = [UInt8]()
 
     init(name: String) {
         _ = NDIlib_initialize()
@@ -134,19 +164,42 @@ final class NDISender: @unchecked Sendable {
     deinit { if let sender { NDIlib_send_destroy(sender) } }
 
     func send(_ pb: CVPixelBuffer, fps: Int) {
-        guard let sender, CVPixelBufferGetPixelFormatType(pb) == kCVPixelFormatType_32BGRA else { return }
-        CVPixelBufferLockBaseAddress(pb, .readOnly)
-        defer { CVPixelBufferUnlockBaseAddress(pb, .readOnly) }
-        var f = NDIlib_video_frame_v2_t()
-        f.xres = Int32(CVPixelBufferGetWidth(pb)); f.yres = Int32(CVPixelBufferGetHeight(pb))
-        f.FourCC = NDIlib_FourCC_video_type_BGRA
-        f.frame_rate_N = Int32(fps * 1000); f.frame_rate_D = 1000
-        f.picture_aspect_ratio = Float(f.xres) / Float(f.yres)
-        f.frame_format_type = NDIlib_frame_format_type_progressive
-        f.timecode = NDIlib_send_timecode_synthesize
-        f.p_data = CVPixelBufferGetBaseAddress(pb)?.assumingMemoryBound(to: UInt8.self)
-        f.line_stride_in_bytes = Int32(CVPixelBufferGetBytesPerRow(pb))
-        NDIlib_send_send_video_v2(sender, &f)
+        lock.lock(); if busy { lock.unlock(); return }; busy = true; lock.unlock()
+        queue.async { [self] in
+            defer { lock.lock(); busy = false; lock.unlock() }
+            guard let sender else { return }
+            CVPixelBufferLockBaseAddress(pb, .readOnly)
+            defer { CVPixelBufferUnlockBaseAddress(pb, .readOnly) }
+            let w = CVPixelBufferGetWidth(pb), h = CVPixelBufferGetHeight(pb)
+            var f = NDIlib_video_frame_v2_t()
+            f.xres = Int32(w); f.yres = Int32(h)
+            f.frame_rate_N = Int32(fps * 1000); f.frame_rate_D = 1000
+            f.picture_aspect_ratio = Float(w) / Float(h)
+            f.frame_format_type = NDIlib_frame_format_type_progressive
+            f.timecode = NDIlib_send_timecode_synthesize
+            let fmt = CVPixelBufferGetPixelFormatType(pb)
+            if fmt == kCVPixelFormatType_32BGRA {
+                f.FourCC = NDIlib_FourCC_video_type_BGRA
+                f.p_data = CVPixelBufferGetBaseAddress(pb)?.assumingMemoryBound(to: UInt8.self)
+                f.line_stride_in_bytes = Int32(CVPixelBufferGetBytesPerRow(pb))
+                NDIlib_send_send_video_v2(sender, &f)
+                return
+            }
+            guard CVPixelBufferGetPlaneCount(pb) == 2,
+                  let y = CVPixelBufferGetBaseAddressOfPlane(pb, 0), let uv = CVPixelBufferGetBaseAddressOfPlane(pb, 1) else { return }
+            let ys = CVPixelBufferGetBytesPerRowOfPlane(pb, 0), uvs = CVPixelBufferGetBytesPerRowOfPlane(pb, 1)
+            let need = w * h + w * (h / 2)
+            if packed.count != need { packed = [UInt8](repeating: 0, count: need) }
+            packed.withUnsafeMutableBytes { dst in
+                let d = dst.baseAddress!
+                for r in 0..<h { memcpy(d + r * w, y + r * ys, w) }
+                for r in 0..<(h / 2) { memcpy(d + w * h + r * w, uv + r * uvs, w) }
+                f.FourCC = NDIlib_FourCC_video_type_NV12
+                f.p_data = d.assumingMemoryBound(to: UInt8.self)
+                f.line_stride_in_bytes = Int32(w)
+                NDIlib_send_send_video_v2(sender, &f)
+            }
+        }
     }
 }
 

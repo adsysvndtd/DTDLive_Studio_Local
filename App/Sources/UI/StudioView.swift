@@ -132,7 +132,7 @@ struct StudioView: View {
                     .font(.caption.weight(.bold)).lineLimit(1).fixedSize()
                     .padding(.horizontal, 10).frame(height: compact ? 28 : 32)
                     .foregroundStyle(.white)
-                    .background(engine.isAnyLive ? DS.pgm : DS.accent, in: Rectangle())
+                    .background(engine.isAnyLive ? DS.pgm : DS.accent, in: RoundedRectangle(cornerRadius: DS.radius))
             }
             .buttonStyle(.plain)
         }
@@ -281,7 +281,7 @@ struct StudioView: View {
             Text(LocalizedStringKey(t)).font(.system(size: compact ? 9 : 11, weight: .bold)).lineLimit(1).fixedSize()
                 .padding(.horizontal, 7).padding(.vertical, 3)
                 .foregroundStyle(on ? .white : DS.text2)
-                .background(on ? onColor.opacity(0.85) : DS.surface2, in: Rectangle())
+                .background(on ? onColor.opacity(0.85) : DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
         }
         .buttonStyle(.plain)
     }
@@ -456,10 +456,22 @@ struct AddSourceSheet: View {
     @State private var name = ""
     @State private var url = ""
     @State private var showFile = false
+    @State private var ndiFound: [String] = []
+    @State private var ndiSearching = false
 
     var body: some View {
         NavigationStack {
             Form {
+                if NDIAvailability.isAvailable {
+                    Section("NDI® trong mạng") {
+                        Button { ndiSearching = true; Task { ndiFound = await engine.findNDISources(); ndiSearching = false } } label: {
+                            Label(ndiSearching ? "Đang tìm…" : "Tìm nguồn NDI", systemImage: "dot.radiowaves.left.and.right")
+                        }
+                        ForEach(ndiFound, id: \.self) { n in
+                            Button(n) { engine.addNDISource(n); dismiss() }
+                        }
+                    }
+                }
                 Picker("Loại", selection: $kind) { ForEach(SourceKind.allCases) { Text($0.label).tag($0) } }
                 switch kind {
                 case .camera:
@@ -666,7 +678,15 @@ struct OutputsSheet: View {
                     }
                 }
             }
-            .navigationTitle("Đầu ra")
+            // small title pinned top-left (no large title block) so the cards start higher
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Text("Đầu ra").font(.system(size: 15, weight: .bold))
+                }
+            }
+            .listSectionSpacing(.compact)
+            .contentMargins(.top, 4, for: .scrollContent)
             .alert("Link xem live", isPresented: Binding(get: { editLinkID != nil }, set: { if !$0 { editLinkID = nil } })) {
                 TextField("https://…", text: $editLinkText)
                     .textInputAutocapitalization(.never).autocorrectionDisabled().keyboardType(.URL)
