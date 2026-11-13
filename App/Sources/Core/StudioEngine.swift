@@ -883,13 +883,18 @@ final class StudioEngine: ObservableObject {
         for o in outputs where (outputStatus[o.id] ?? .idle) != .idle { OutputLog.shared.add(o.id, text) }
     }
 
-    private var lastEncIn = 0, lastEncOut = 0
+    private var lastEncIn = 0, lastEncOut = 0, lastRendered = 0, watchdogTick = 0
     /// Every second: if frames go into the encoder but none come out, rebuild it (keeps a live stream from freezing).
+    /// Every 5 s while on air, writes render → encoder → out rates into the output logs.
     private func encoderWatchdog() {
-        let i = videoEncoder.framesIn.value, o = videoEncoder.framesOut.value
-        defer { lastEncIn = i; lastEncOut = o }
-        guard encodeGate.value > 0 else { return }
+        let i = videoEncoder.framesIn.value, o = videoEncoder.framesOut.value, r = switcher.renderedFrames.value
+        defer { lastEncIn = i; lastEncOut = o; lastRendered = r }
+        guard encodeGate.value > 0 else { watchdogTick = 0; return }
         _ = videoEncoder.restartIfStalled(i - lastEncIn, o - lastEncOut)
+        watchdogTick += 1
+        if watchdogTick % 5 == 1 {
+            logToLiveOutputs("Khung hình/giây: dựng \(r - lastRendered) · vào mã hoá \(i - lastEncIn) · ra \(o - lastEncOut)")
+        }
     }
 
     /// Heat: lower the program frame rate when iOS reports the device getting hot, restore when it cools.

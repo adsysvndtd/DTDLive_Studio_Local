@@ -208,6 +208,7 @@ final class Switcher: @unchecked Sendable {
         if snap.4 { program = CIImage(color: .black).cropped(to: extent) }
 
         guard let out = render(program, extent: extent) else { return }
+        renderedFrames.add(1)
         programMonitor.put(out)
         onProgramFrame?(out, now)
 
@@ -348,6 +349,8 @@ final class Switcher: @unchecked Sendable {
     }
 
     /// Consecutive frames dropped because the pool was exhausted, and how often the pool was rebuilt.
+    /// Program frames rendered (for the on-air rate log).
+    let renderedFrames = Counter()
     private var poolMisses = 0
     private(set) var poolRebuilds = 0
     var onPoolRebuilt: (() -> Void)?
