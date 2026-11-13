@@ -15,6 +15,7 @@
 "Bitrate thích ứng" = "Adaptive bitrate";
 "Bàn thắng" = "Goal";
 "Bão hoà" = "Saturation";
+"Bóng (glossy)" = "Glossy";
 "Bù phơi sáng" = "Exposure compensation";
 "Bản ghi" = "Recordings";
 "Bản tin" = "Newscast";
@@ -48,6 +49,8 @@
 "Cho phép DTDLive tìm và ghép nối" = "Let DTDLive find and pair";
 "Chrome xanh" = "Blue chrome";
 "Chuyển cảnh" = "Transitions";
+"Chuyển màu dọc" = "Vertical gradient";
+"Chuyển màu ngang" = "Horizontal gradient";
 "Chuyển sang 1080×1920" = "Switch to 1080×1920";
 "Chính" = "Main";
 "Chính + 2 phụ hàng ngang" = "Main + 2 side by side";
@@ -170,6 +173,8 @@
 "Hiệu ứng" = "Effects";
 "Hiệu ứng cho ảnh của bạn" = "Transition for your picture";
 "Hiệu ứng chạy cùng chuyển động sẵn có của mẫu; ra bằng hiệu ứng ngược lại." = "The effect runs together with the template's own animation; it leaves with the reverse.";
+"Hiệu ứng chữ" = "Text effect";
+"Hiệu ứng màu" = "Colour finish";
 "Hiệu ứng âm thanh" = "Sound effects";
 "Hoà trộn" = "Dissolve";
 "Hoàn tác" = "Undo";
@@ -217,6 +222,7 @@
 "Không đọc được ảnh %lf" = "Couldn't read image %lf";
 "Không đọc được ảnh %lld" = "Couldn't read image %lld";
 "Kick › Dashboard › Settings › Stream key: dán Stream URL (rtmps://…) và Stream key." = "Kick › Dashboard › Settings › Stream key: paste Stream URL (rtmps://…) and Stream key.";
+"Kim loại" = "Metallic";
 "Kiểu" = "Style";
 "Kéo cho tiếng khớp với hình khi camera mạng bị trễ." = "Delays the sound to match late network-camera video.";
 "Kéo để di chuyển · kéo góc để đổi cỡ" = "Drag to move · drag a corner to resize";
@@ -346,6 +352,7 @@
 "Nền thay thế" = "Replacement background";
 "Nền tên" = "Name background";
 "Nền tảng này hiển thị dọc 9:16" = "This platform shows vertical 9:16";
+"Nổi" = "Emboss";
 "Nội dung" = "Content";
 "Nội dung chữ chạy" = "Ticker text";
 "Nửa trái" = "Left half";
@@ -358,6 +365,7 @@
 "Phát lên PGM" = "Play to PGM";
 "Phát lại" = "Replay";
 "Phát lại từ đầu" = "Restart";
+"Phát sáng" = "Glow";
 "Phát trực tiếp" = "Streaming";
 "Phát tất cả" = "Start all";
 "Phóng to" = "Zoom";
@@ -367,6 +375,7 @@
 "Phơi sáng" = "Exposure";
 "Phản hồi không hợp lệ" = "Invalid response";
 "Phần tử có data-field=\"tên\" sẽ thành ô sửa chữ; biến màu CSS (--accent: #…) thành ô chọn màu." = "Elements with data-field=\"name\" become text fields; CSS colour variables (--accent: #…) become colour pickers.";
+"Phẳng (theo mẫu)" = "Flat (template)";
 "PiP trên Program" = "PiP on Program";
 "Preset: chạm = gọi, giữ = lưu" = "Presets: tap = recall, hold = store";
 "QUÉT" = "WIPE";
@@ -386,6 +395,7 @@
 "Rơi xuống" = "Drop";
 "Rộng" = "Width";
 "SRT (một cổng, nhiều streamid)" = "SRT (one port, many streamids)";
+"Satin" = "Satin";
 "Server URL (rtmp:// hoặc rtmps://)" = "Server URL (rtmp:// or rtmps://)";
 "Show đã lưu (Files › DTD Studio › Shows)" = "Saved shows (Files › DTD Studio › Shows)";
 "SuperFG của bạn (PNG trong suốt · video có kênh alpha .mov)" = "Your SuperFG (transparent PNG · alpha video .mov)";
@@ -397,6 +407,7 @@
 "Sẵn sàng" = "Ready";
 "SỌC" = "BARS";
 "Sọc" = "Bars";
+"Sọc chéo" = "Diagonal stripes";
 "Sửa" = "Edit";
 "Sửa bảng tỉ số" = "Edit scoreboard";
 "Sửa link" = "Edit link";
@@ -496,6 +507,7 @@
 "Video đang dùng làm nguồn" = "Videos in use";
 "Video đã ghi / thư viện" = "Recorded / library videos";
 "Viền" = "Line";
+"Viền chữ" = "Outline";
 "Vuốt 1 ngón trên PVW về phía PGM = CUT · 2 ngón = AUTO" = "Swipe PVW toward PGM: 1 finger = CUT · 2 fingers = AUTO";
 "Vuốt PVW → PGM để chuyển" = "Swipe PVW → PGM to switch";
 "Vào trận" = "Game on";
@@ -550,6 +562,8 @@
 "publish lỗi: %lf" = "publish error: %lf";
 "publish lỗi: %lld" = "publish error: %lld";
 "xxxx.apps.googleusercontent.com — Google Cloud › Credentials, bật YouTube Data API v3" = "xxxx.apps.googleusercontent.com — Google Cloud › Credentials, enable YouTube Data API v3";
+"Ánh bạc" = "Chrome";
+"Ánh vàng" = "Gold";
 "Áp dụng (khởi động lại máy chủ nhận)" = "Apply (restarts the ingest servers)";
 "Âm lượng" = "Volume";
 "Âm thanh" = "Audio";
@@ -616,6 +630,7 @@
 "Đồ hoạ HTML5" = "HTML5 graphics";
 "Đồ hoạ HTML5 (tải từ Git)" = "HTML5 graphics (from Git)";
 "Đồng hồ" = "Clock";
+"Đổ bóng" = "Drop shadow";
 "Đổi bên (tên, tỉ số, logo)" = "Swap sides (names, scores, logos)";
 "Đổi tên" = "Rename";
 "Đổi độ phân giải/fps khi đang phát: các đích tự kết nối lại với thông số mới." = "Changing resolution/fps while live reconnects every destination with the new settings.";

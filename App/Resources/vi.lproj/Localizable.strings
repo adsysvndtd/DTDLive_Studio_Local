@@ -15,6 +15,7 @@
 "Bitrate thích ứng" = "Bitrate thích ứng";
 "Bàn thắng" = "Bàn thắng";
 "Bão hoà" = "Bão hoà";
+"Bóng (glossy)" = "Bóng (glossy)";
 "Bù phơi sáng" = "Bù phơi sáng";
 "Bản ghi" = "Bản ghi";
 "Bản tin" = "Bản tin";
@@ -48,6 +49,8 @@
 "Cho phép DTDLive tìm và ghép nối" = "Cho phép DTDLive tìm và ghép nối";
 "Chrome xanh" = "Chrome xanh";
 "Chuyển cảnh" = "Chuyển cảnh";
+"Chuyển màu dọc" = "Chuyển màu dọc";
+"Chuyển màu ngang" = "Chuyển màu ngang";
 "Chuyển sang 1080×1920" = "Chuyển sang 1080×1920";
 "Chính" = "Chính";
 "Chính + 2 phụ hàng ngang" = "Chính + 2 phụ hàng ngang";
@@ -170,6 +173,8 @@
 "Hiệu ứng" = "Hiệu ứng";
 "Hiệu ứng cho ảnh của bạn" = "Hiệu ứng cho ảnh của bạn";
 "Hiệu ứng chạy cùng chuyển động sẵn có của mẫu; ra bằng hiệu ứng ngược lại." = "Hiệu ứng chạy cùng chuyển động sẵn có của mẫu; ra bằng hiệu ứng ngược lại.";
+"Hiệu ứng chữ" = "Hiệu ứng chữ";
+"Hiệu ứng màu" = "Hiệu ứng màu";
 "Hiệu ứng âm thanh" = "Hiệu ứng âm thanh";
 "Hoà trộn" = "Hoà trộn";
 "Hoàn tác" = "Hoàn tác";
@@ -217,6 +222,7 @@
 "Không đọc được ảnh %lf" = "Không đọc được ảnh %lf";
 "Không đọc được ảnh %lld" = "Không đọc được ảnh %lld";
 "Kick › Dashboard › Settings › Stream key: dán Stream URL (rtmps://…) và Stream key." = "Kick › Dashboard › Settings › Stream key: dán Stream URL (rtmps://…) và Stream key.";
+"Kim loại" = "Kim loại";
 "Kiểu" = "Kiểu";
 "Kéo cho tiếng khớp với hình khi camera mạng bị trễ." = "Kéo cho tiếng khớp với hình khi camera mạng bị trễ.";
 "Kéo để di chuyển · kéo góc để đổi cỡ" = "Kéo để di chuyển · kéo góc để đổi cỡ";
@@ -346,6 +352,7 @@
 "Nền thay thế" = "Nền thay thế";
 "Nền tên" = "Nền tên";
 "Nền tảng này hiển thị dọc 9:16" = "Nền tảng này hiển thị dọc 9:16";
+"Nổi" = "Nổi";
 "Nội dung" = "Nội dung";
 "Nội dung chữ chạy" = "Nội dung chữ chạy";
 "Nửa trái" = "Nửa trái";
@@ -358,6 +365,7 @@
 "Phát lên PGM" = "Phát lên PGM";
 "Phát lại" = "Phát lại";
 "Phát lại từ đầu" = "Phát lại từ đầu";
+"Phát sáng" = "Phát sáng";
 "Phát trực tiếp" = "Phát trực tiếp";
 "Phát tất cả" = "Phát tất cả";
 "Phóng to" = "Phóng to";
@@ -367,6 +375,7 @@
 "Phơi sáng" = "Phơi sáng";
 "Phản hồi không hợp lệ" = "Phản hồi không hợp lệ";
 "Phần tử có data-field=\"tên\" sẽ thành ô sửa chữ; biến màu CSS (--accent: #…) thành ô chọn màu." = "Phần tử có data-field=\"tên\" sẽ thành ô sửa chữ; biến màu CSS (--accent: #…) thành ô chọn màu.";
+"Phẳng (theo mẫu)" = "Phẳng (theo mẫu)";
 "PiP trên Program" = "PiP trên Program";
 "Preset: chạm = gọi, giữ = lưu" = "Preset: chạm = gọi, giữ = lưu";
 "QUÉT" = "QUÉT";
@@ -386,6 +395,7 @@
 "Rơi xuống" = "Rơi xuống";
 "Rộng" = "Rộng";
 "SRT (một cổng, nhiều streamid)" = "SRT (một cổng, nhiều streamid)";
+"Satin" = "Satin";
 "Server URL (rtmp:// hoặc rtmps://)" = "Server URL (rtmp:// hoặc rtmps://)";
 "Show đã lưu (Files › DTD Studio › Shows)" = "Show đã lưu (Files › DTD Studio › Shows)";
 "SuperFG của bạn (PNG trong suốt · video có kênh alpha .mov)" = "SuperFG của bạn (PNG trong suốt · video có kênh alpha .mov)";
@@ -397,6 +407,7 @@
 "Sẵn sàng" = "Sẵn sàng";
 "SỌC" = "SỌC";
 "Sọc" = "Sọc";
+"Sọc chéo" = "Sọc chéo";
 "Sửa" = "Sửa";
 "Sửa bảng tỉ số" = "Sửa bảng tỉ số";
 "Sửa link" = "Sửa link";
@@ -496,6 +507,7 @@
 "Video đang dùng làm nguồn" = "Video đang dùng làm nguồn";
 "Video đã ghi / thư viện" = "Video đã ghi / thư viện";
 "Viền" = "Viền";
+"Viền chữ" = "Viền chữ";
 "Vuốt 1 ngón trên PVW về phía PGM = CUT · 2 ngón = AUTO" = "Vuốt 1 ngón trên PVW về phía PGM = CUT · 2 ngón = AUTO";
 "Vuốt PVW → PGM để chuyển" = "Vuốt PVW → PGM để chuyển";
 "Vào trận" = "Vào trận";
@@ -550,6 +562,8 @@
 "publish lỗi: %lf" = "publish lỗi: %lf";
 "publish lỗi: %lld" = "publish lỗi: %lld";
 "xxxx.apps.googleusercontent.com — Google Cloud › Credentials, bật YouTube Data API v3" = "xxxx.apps.googleusercontent.com — Google Cloud › Credentials, bật YouTube Data API v3";
+"Ánh bạc" = "Ánh bạc";
+"Ánh vàng" = "Ánh vàng";
 "Áp dụng (khởi động lại máy chủ nhận)" = "Áp dụng (khởi động lại máy chủ nhận)";
 "Âm lượng" = "Âm lượng";
 "Âm thanh" = "Âm thanh";
@@ -616,6 +630,7 @@
 "Đồ hoạ HTML5" = "Đồ hoạ HTML5";
 "Đồ hoạ HTML5 (tải từ Git)" = "Đồ hoạ HTML5 (tải từ Git)";
 "Đồng hồ" = "Đồng hồ";
+"Đổ bóng" = "Đổ bóng";
 "Đổi bên (tên, tỉ số, logo)" = "Đổi bên (tên, tỉ số, logo)";
 "Đổi tên" = "Đổi tên";
 "Đổi độ phân giải/fps khi đang phát: các đích tự kết nối lại với thông số mới." = "Đổi độ phân giải/fps khi đang phát: các đích tự kết nối lại với thông số mới.";

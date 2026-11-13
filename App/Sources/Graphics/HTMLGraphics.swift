@@ -56,7 +56,27 @@ struct HTMLLayerStyle: Codable, Equatable {
     var color: String? = nil           // text colour
     var background: String? = nil
     var bgAlpha: Double = 1
+    /// Colour finish of the block: gloss, metal, satin, gradient (to color2), stripes.
+    var finish: String? = nil
+    var color2: String? = nil
+    /// Text effect: shadow, glow, outline, emboss, gold, chrome (fxColor for glow / outline).
+    var textFx: String? = nil
+    var fxColor: String? = nil
     var isDefault: Bool { self == HTMLLayerStyle() }
+
+    static let finishes: [(String, String)] = [
+        ("gloss", "Bóng (glossy)"), ("metal", "Kim loại"), ("satin", "Satin"), ("gradient", "Chuyển màu ngang"),
+        ("vgradient", "Chuyển màu dọc"), ("stripes", "Sọc chéo")]
+    static let textEffects: [(String, String)] = [
+        ("shadow", "Đổ bóng"), ("glow", "Phát sáng"), ("outline", "Viền chữ"), ("emboss", "Nổi"),
+        ("gold", "Ánh vàng"), ("chrome", "Ánh bạc")]
+
+    /// rgba() for a hex colour.
+    static func rgba(_ hex: String, _ a: Double) -> String {
+        let c = UIColor(hex: hex); var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, al: CGFloat = 0
+        c.getRed(&r, green: &g, blue: &b, alpha: &al)
+        return "rgba(\(Int(r * 255)),\(Int(g * 255)),\(Int(b * 255)),\(String(format: "%.2f", a)))"
+    }
 
     /// `translate` / `scale` / `filter` compose with the template's own transform animations instead of fighting them.
     func css(_ base: String) -> String {
@@ -77,9 +97,34 @@ struct HTMLLayerStyle: Codable, Equatable {
         if let uppercase { text.append("text-transform:\(uppercase ? "uppercase" : "none")!important") }
         if let letterSpacing { text.append("letter-spacing:\(String(format: "%.1f", letterSpacing))px!important") }
         if let color { text.append("color:\(color)!important;-webkit-text-fill-color:\(color)!important") }
+        // colour finish: a light/shade layer over the block's own colour (keeps the template's colour or the one set above)
+        let c2 = color2 ?? "#000000"
+        switch finish {
+        case "gloss": own.append("background-image:linear-gradient(180deg,rgba(255,255,255,.55) 0%,rgba(255,255,255,.18) 46%,rgba(255,255,255,0) 50%,rgba(0,0,0,.22) 100%)!important")
+        case "metal": own.append("background-image:linear-gradient(180deg,rgba(255,255,255,.75) 0%,rgba(255,255,255,.12) 40%,rgba(0,0,0,.28) 52%,rgba(255,255,255,.35) 100%)!important")
+        case "satin": own.append("background-image:radial-gradient(120% 160% at 25% 0%,rgba(255,255,255,.5) 0%,rgba(255,255,255,0) 60%)!important")
+        case "gradient": own.append("background-image:linear-gradient(90deg,rgba(0,0,0,0) 0%,\(Self.rgba(c2, 1)) 100%)!important")
+        case "vgradient": own.append("background-image:linear-gradient(180deg,rgba(0,0,0,0) 0%,\(Self.rgba(c2, 1)) 100%)!important")
+        case "stripes": own.append("background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.14) 0 12px,rgba(255,255,255,0) 12px 26px)!important")
+        default: break
+        }
+        let fc = fxColor ?? (textFx == "outline" ? "#000000" : "#FFFFFF")
+        var fx: [String] = []
+        switch textFx {
+        case "shadow": text.append("text-shadow:0 3px 8px rgba(0,0,0,.65)!important")
+        case "glow": text.append("text-shadow:0 0 10px \(Self.rgba(fc, 0.9)),0 0 24px \(Self.rgba(fc, 0.7))!important")
+        case "outline": text.append("-webkit-text-stroke:2px \(fc)!important;paint-order:stroke fill")
+        case "emboss": text.append("text-shadow:0 1px 0 rgba(255,255,255,.55),0 -1px 0 rgba(0,0,0,.45),0 3px 6px rgba(0,0,0,.35)!important")
+        case "gold", "chrome":
+            let g = textFx == "gold" ? "#FFF6C8 0%,#F5C542 45%,#B8790E 55%,#FFE08A 100%" : "#FFFFFF 0%,#D7DCE2 45%,#7D8692 55%,#F2F4F7 100%"
+            fx.append("background-image:linear-gradient(180deg,\(g))!important;-webkit-background-clip:text!important;background-clip:text!important;-webkit-text-fill-color:transparent!important;filter:drop-shadow(0 2px 3px rgba(0,0,0,.55))\(opacity < 0.999 ? " opacity(\(String(format: "%.2f", opacity)))" : "")!important")
+        default: break
+        }
         var out = ""
         if !own.isEmpty { out += "\(base){\(own.joined(separator: ";"))}\n" }
         if !text.isEmpty { out += "\(base),\(base) *{\(text.joined(separator: ";"))}\n" }
+        // gradient text: on the elements holding the text (not the block background)
+        if !fx.isEmpty { out += "\(base) :is(div,span,p,h1,h2,h3):not(:has(*)),\(base):not(:has(*)){\(fx.joined(separator: ";"))}\n" }
         return out
     }
 

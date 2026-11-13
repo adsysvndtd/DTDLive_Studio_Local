@@ -6410,6 +6410,156 @@
           }
         }
       }
+    },
+    "Hiệu ứng màu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Colour finish"
+          }
+        }
+      }
+    },
+    "Phẳng (theo mẫu)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Flat (template)"
+          }
+        }
+      }
+    },
+    "Bóng (glossy)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Glossy"
+          }
+        }
+      }
+    },
+    "Kim loại": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Metallic"
+          }
+        }
+      }
+    },
+    "Satin": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Satin"
+          }
+        }
+      }
+    },
+    "Chuyển màu ngang": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Horizontal gradient"
+          }
+        }
+      }
+    },
+    "Chuyển màu dọc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vertical gradient"
+          }
+        }
+      }
+    },
+    "Sọc chéo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diagonal stripes"
+          }
+        }
+      }
+    },
+    "Hiệu ứng chữ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Text effect"
+          }
+        }
+      }
+    },
+    "Đổ bóng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drop shadow"
+          }
+        }
+      }
+    },
+    "Phát sáng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Glow"
+          }
+        }
+      }
+    },
+    "Viền chữ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Outline"
+          }
+        }
+      }
+    },
+    "Nổi": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Emboss"
+          }
+        }
+      }
+    },
+    "Ánh vàng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gold"
+          }
+        }
+      }
+    },
+    "Ánh bạc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chrome"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

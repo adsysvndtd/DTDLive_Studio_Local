@@ -302,6 +302,38 @@ struct HTMLResizeRows: View {
             if st.background != nil {
                 row("Độ đậm nền", Binding(get: { st.bgAlpha }, set: { v in set { $0.bgAlpha = v } }), 0...1) { "\(Int($0 * 100))%" }
             }
+            HStack(spacing: 8) {
+                label("Hiệu ứng màu")
+                Menu {
+                    Button("Phẳng (theo mẫu)") { set { $0.finish = nil } }
+                    ForEach(HTMLLayerStyle.finishes, id: \.0) { f in Button(L(f.1)) { set { $0.finish = f.0 } } }
+                } label: {
+                    Text(L(HTMLLayerStyle.finishes.first(where: { $0.0 == st.finish })?.1 ?? "Phẳng (theo mẫu)"))
+                        .font(DS.fBodyBold).lineLimit(1).padding(.horizontal, 10).frame(height: 28)
+                        .background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
+                }
+                if st.finish == "gradient" || st.finish == "vgradient" {
+                    ColorPicker("", selection: Binding(get: { Color(UIColor(hex: st.color2 ?? "#000000")) },
+                                                       set: { c in set { $0.color2 = UIColor(c).hexString } }), supportsOpacity: false).labelsHidden()
+                }
+                Spacer(minLength: 0)
+            }
+            HStack(spacing: 8) {
+                label("Hiệu ứng chữ")
+                Menu {
+                    Button("Không") { set { $0.textFx = nil } }
+                    ForEach(HTMLLayerStyle.textEffects, id: \.0) { f in Button(L(f.1)) { set { $0.textFx = f.0 } } }
+                } label: {
+                    Text(L(HTMLLayerStyle.textEffects.first(where: { $0.0 == st.textFx })?.1 ?? "Không"))
+                        .font(DS.fBodyBold).lineLimit(1).padding(.horizontal, 10).frame(height: 28)
+                        .background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
+                }
+                if st.textFx == "glow" || st.textFx == "outline" {
+                    ColorPicker("", selection: Binding(get: { Color(UIColor(hex: st.fxColor ?? (st.textFx == "outline" ? "#000000" : "#FFFFFF"))) },
+                                                       set: { c in set { $0.fxColor = UIColor(c).hexString } }), supportsOpacity: false).labelsHidden()
+                }
+                Spacer(minLength: 0)
+            }
         } else {
             Text("Mẫu này chưa có lớp nào: đánh dấu khối bằng data-layer=\"tên\" trong HTML.").font(.caption2).foregroundStyle(DS.text3)
         }
