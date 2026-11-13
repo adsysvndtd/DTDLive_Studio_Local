@@ -18,14 +18,9 @@
           "type": "image"
         },
         {
-          "id": "tag1",
-          "label": "Nhãn dòng 1",
-          "default": "DTD"
-        },
-        {
-          "id": "tag2",
-          "label": "Nhãn dòng 2",
-          "default": "STUDIO"
+          "id": "label",
+          "label": "Nhãn (tự xuống dòng)",
+          "default": "DTD STUDIO"
         },
         {
           "id": "desc",
@@ -67,14 +62,9 @@
           "type": "image"
         },
         {
-          "id": "tag1",
-          "label": "Nhãn dòng 1",
-          "default": "DTD"
-        },
-        {
-          "id": "tag2",
-          "label": "Nhãn dòng 2",
-          "default": "STUDIO"
+          "id": "label",
+          "label": "Nhãn (tự xuống dòng)",
+          "default": "DTD STUDIO"
         },
         {
           "id": "desc",
@@ -116,14 +106,9 @@
           "type": "image"
         },
         {
-          "id": "tag1",
-          "label": "Nhãn dòng 1",
-          "default": "DTD"
-        },
-        {
-          "id": "tag2",
-          "label": "Nhãn dòng 2",
-          "default": "STUDIO"
+          "id": "label",
+          "label": "Nhãn (tự xuống dòng)",
+          "default": "DTD STUDIO"
         },
         {
           "id": "desc",
@@ -165,14 +150,9 @@
           "type": "image"
         },
         {
-          "id": "tag1",
-          "label": "Nhãn dòng 1",
-          "default": "DTD"
-        },
-        {
-          "id": "tag2",
-          "label": "Nhãn dòng 2",
-          "default": "STUDIO"
+          "id": "label",
+          "label": "Nhãn (tự xuống dòng)",
+          "default": "DTD STUDIO"
         },
         {
           "id": "desc",

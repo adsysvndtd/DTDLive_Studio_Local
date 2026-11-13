@@ -18,10 +18,10 @@
   .tag{left:50px;top:0;width:350px;height:160px;background:var(--paper);
        clip-path:polygon(70px 0,100% 0,280px 100%,0 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;
        opacity:0;transform:translateY(-50px)}
+  .tag .label{color:var(--accent);font-weight:800;font-size:40px;line-height:1.02;text-transform:uppercase;text-align:center;
+             max-width:200px;max-height:2.2em;overflow:hidden;overflow-wrap:anywhere}
   .tag img{max-width:200px;max-height:112px;object-fit:contain;display:none}
   .tag.has-logo img{display:block}.tag.has-logo div{display:none}
-  .tag div{color:var(--accent);font-weight:800;font-size:31px;line-height:1.02;text-transform:uppercase;text-align:center;
-           max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .sub{top:182px;height:58px;background:var(--paper);line-height:58px;font-weight:700;white-space:nowrap;overflow:hidden;
        text-overflow:ellipsis;text-align:center;opacity:0;transform:translateY(24px)}
   .clock{left:24px;width:162px;color:var(--accent);font-size:33px;clip-path:polygon(22px 0,100% 0,calc(100% - 22px) 100%,0 100%)}
@@ -47,7 +47,7 @@
   <div class="lt">
     <div class="pg bar" data-layer="bar" data-label="Thanh màu"></div>
     <div class="pg title" data-field="title" data-label="Tiêu đề chính">TIÊU ĐỀ BẢN TIN</div>
-    <div class="pg tag" id="tag" data-layer="tag" data-label="Khối nhãn / logo"><img data-field="logo" data-type="image" alt=""><div data-field="tag1" data-label="Nhãn dòng 1">DTD</div><div data-field="tag2" data-label="Nhãn dòng 2">STUDIO</div></div>
+    <div class="pg tag" id="tag" data-layer="tag" data-label="Khối nhãn / logo"><img data-field="logo" data-type="image" alt=""><div class="label" data-field="label" data-label="Nhãn (tự xuống dòng)">DTD STUDIO</div></div>
     <div class="pg sub clock" data-field="clock" data-label="Giờ (trống = giờ thực)"></div>
     <div class="pg sub desc" data-field="desc" data-label="Dòng mô tả">Thông tin bổ sung cho bản tin</div>
     <div class="pg sub loc" data-field="loc" data-label="Địa điểm">Hà Nội</div>
