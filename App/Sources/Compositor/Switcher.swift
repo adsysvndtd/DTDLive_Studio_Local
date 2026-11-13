@@ -4,6 +4,7 @@ import CoreVideo
 import Foundation
 import Metal
 import os
+import UIKit
 
 enum TransitionStyle: String, CaseIterable, Identifiable, Codable {
     case cut, mix, wipeLeft, dip, flash, push, zoom, pageCurl, ripple, bars, copyMachine, mod, fold
@@ -98,6 +99,10 @@ final class Switcher: @unchecked Sendable {
     /// Called once per program frame with the IDs on air (for tally / audio-follow-video).
     var onTally: (@Sendable (_ program: Set<UUID>, _ preview: Set<UUID>) -> Void)?
     private var ftb = false // fade to black
+    private var ftbChangedAt: CFTimeInterval = 0
+    /// Product slate shown by FTB: black with the DTD Studio logo (cached per output size).
+    private var ftbSlate: (CGSize, CIImage)?
+    var ftbLogo: UIImage? = UIImage(named: "Logo")
 
     /// Encoded-path consumer (encoder) and monitor consumers (UI).
     var onProgramFrame: FrameHandler?
@@ -119,7 +124,7 @@ final class Switcher: @unchecked Sendable {
     func unregister(_ id: UUID) { locked { inputs[id] = nil; if programID == id { programID = nil }; if previewID == id { previewID = nil } } }
     func setPreview(_ id: UUID?) { locked { previewID = id } }
     func setOverlays(_ o: [OverlayLayer]) { locked { overlays = o } }
-    func setFadeToBlack(_ on: Bool) { locked { ftb = on } }
+    func setFadeToBlack(_ on: Bool) { locked { if ftb != on { ftb = on; ftbChangedAt = HostClock.now } } }
     func setProcessing(_ id: UUID, _ p: SourceProcessing?) { locked { processing[id] = (p?.isIdentity ?? true) ? nil : p } }
     var state: (program: UUID?, preview: UUID?) { locked { (programID, previewID) } }
 
@@ -190,6 +195,9 @@ final class Switcher: @unchecked Sendable {
                     tr = (t.style, t.to, progress)
                 }
             }
+            // FTB mix amount: 0…1 over 0.6 s when switching on, 1…0 when switching off
+            let k = min(1, (now - ftbChangedAt) / 0.6)
+            ftbMix = ftb ? k : 1 - k
             return (programID, previewID, tr, overlays, ftb, format)
         }
         let tallyPgm = Set([snap.0, snap.2?.1].compactMap { $0 } + snap.3.compactMap { $0.pipSourceID })
@@ -205,7 +213,11 @@ final class Switcher: @unchecked Sendable {
             program = composite(o, over: program, extent: extent)
         }
         if let g = graphicsProvider?(extent.size, now) { program = g.composited(over: program).cropped(to: extent) }
-        if snap.4 { program = CIImage(color: .black).cropped(to: extent) }
+        if ftbMix > 0.001 {
+            let slate = productSlate(extent.size)
+            program = ftbMix >= 0.999 ? slate
+                : program.applyingFilter("CIDissolveTransition", parameters: ["inputTargetImage": slate, "inputTime": ftbMix]).cropped(to: extent)
+        }
 
         guard let out = render(program, extent: extent) else { return }
         renderedFrames.add(1)
@@ -216,6 +228,29 @@ final class Switcher: @unchecked Sendable {
         if let pv = render(image(from: snap.1, fitting: extent), extent: extent) {
             previewMonitor.put(pv)
         }
+    }
+
+    private var ftbMix: Double = 0
+
+    /// Black frame with the product logo + name, centred.
+    private func productSlate(_ size: CGSize) -> CIImage {
+        if let c = ftbSlate, c.0 == size { return c.1 }
+        let fmt = UIGraphicsImageRendererFormat(); fmt.scale = 1; fmt.opaque = true
+        let ui = UIGraphicsImageRenderer(size: size, format: fmt).image { ctx in
+            UIColor.black.setFill(); ctx.fill(CGRect(origin: .zero, size: size))
+            let h = size.height * 0.26
+            if let logo = ftbLogo {
+                let w = h * logo.size.width / max(logo.size.height, 1)
+                logo.draw(in: CGRect(x: (size.width - w) / 2, y: size.height * 0.5 - h * 0.72, width: w, height: h))
+            }
+            let p = NSMutableParagraphStyle(); p.alignment = .center
+            let f = UIFont.systemFont(ofSize: size.height * 0.05, weight: .heavy)
+            ("DTD STUDIO" as NSString).draw(in: CGRect(x: 0, y: size.height * 0.5 + h * 0.38, width: size.width, height: f.lineHeight),
+                withAttributes: [.font: f, .foregroundColor: UIColor.white, .paragraphStyle: p, .kern: size.height * 0.008])
+        }
+        let ci = ui.cgImage.map { CIImage(cgImage: $0) } ?? CIImage(color: .black).cropped(to: CGRect(origin: .zero, size: size))
+        ftbSlate = (size, ci)
+        return ci
     }
 
     // MARK: Image ops
