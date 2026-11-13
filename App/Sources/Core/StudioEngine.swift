@@ -871,25 +871,47 @@ final class StudioEngine: ObservableObject {
 
     // MARK: Adaptive bitrate
 
-    /// AIMD on the shared encoder: drop 25% when any destination is >1 s behind,
-    /// climb 8% after 5 calm seconds. One slow destination lowers quality for all —
-    /// the price of encoding once; disable `adaptive` to let that destination drop frames instead.
+    /// AIMD on the shared encoder: drop 15 % when a destination is > 1.5 s behind (never below half the set
+    /// bitrate unless the floor is higher), climb 12 % after 3 calm seconds — quick back to full quality.
+    /// One slow destination lowers quality for all (one encode); turn off "Bitrate thích ứng" to keep quality
+    /// and let that destination drop frames instead. Every change is written to the outputs' log.
     private func adaptBitrate() async {
         guard encoder.adaptive, isAnyLive else {
-            if currentBitrate != encoder.bitrate { currentBitrate = encoder.bitrate; videoEncoder.setBitrate(currentBitrate) }
+            if currentBitrate != encoder.bitrate, !thermalThrottled { currentBitrate = encoder.bitrate; videoEncoder.setBitrate(currentBitrate) }
             return
         }
         let lag = await outputManager.congestion(fps: Double(format.fps))
-        var next = currentBitrate
-        if lag > 1.0 {
-            next = max(encoder.minBitrate, Int(Double(currentBitrate) * 0.75)); calmSeconds = 0
-        } else if lag < 0.2 {
+        let ceiling = thermalThrottled ? max(encoder.minBitrate, encoder.bitrate * 2 / 3) : encoder.bitrate
+        let floor = min(ceiling, max(encoder.minBitrate, encoder.bitrate / 2))
+        var next = min(currentBitrate, ceiling)
+        if lag > 1.5 {
+            next = max(floor, Int(Double(currentBitrate) * 0.85)); calmSeconds = 0
+        } else if lag < 0.3 {
             calmSeconds += 1
-            if calmSeconds >= 5 { next = min(encoder.bitrate, Int(Double(currentBitrate) * 1.08)); calmSeconds = 0 }
+            if calmSeconds >= 3 { next = min(ceiling, Int(Double(currentBitrate) * 1.12)); calmSeconds = 0 }
         } else {
             calmSeconds = 0
         }
-        if next != currentBitrate { currentBitrate = next; videoEncoder.setBitrate(next) }
+        if next != currentBitrate {
+            let down = next < currentBitrate
+            logToLiveOutputs(LF(down ? "Bitrate thích ứng: giảm %@ → %@ kbps (mạng tải lên chậm, trễ %@ s)"
+                                     : "Bitrate thích ứng: tăng lại %@ → %@ kbps (trễ %@ s)",
+                                "\(currentBitrate / 1000)", "\(next / 1000)", String(format: "%.1f", lag)))
+            currentBitrate = next; videoEncoder.setBitrate(next)
+        }
+    }
+
+    /// Bitrate that keeps 1080p/4K sharp on YouTube / Facebook (H.264; HEVC needs ~30 % less).
+    static func recommendedBitrate(_ f: ProgramFormat, codec: VideoCodecChoice) -> Int {
+        let px = Double(f.width * f.height), hi = f.fps > 30
+        var mbps: Double
+        switch px {
+        case ..<1_000_000: mbps = hi ? 6 : 4.5           // 720p
+        case ..<2_500_000: mbps = hi ? 12 : 8            // 1080p
+        default: mbps = hi ? 35 : 25                     // 4K
+        }
+        if codec == .hevc { mbps *= 0.7 }
+        return Int(mbps * 1_000_000)
     }
 
     // MARK: Undo / redo
@@ -1004,7 +1026,7 @@ final class StudioEngine: ObservableObject {
         watchdogTick += 1
         if watchdogTick % 5 == 1 {
             let st = switcher.renderStats.take()
-            logToLiveOutputs("Khung hình/giây: dựng \(r - lastRendered) · vào mã hoá \(i - lastEncIn) · ra \(o - lastEncOut) · dựng TB \(String(format: "%.1f", st.avg)) ms, max \(String(format: "%.0f", st.max)) ms, quá hạn \(st.over)")
+            logToLiveOutputs("Khung hình/giây: dựng \(r - lastRendered) · vào mã hoá \(i - lastEncIn) · ra \(o - lastEncOut) · dựng TB \(String(format: "%.1f", st.avg)) ms, max \(String(format: "%.0f", st.max)) ms, quá hạn \(st.over) · \(format.width)×\(format.height) \(currentBitrate / 1000)/\(encoder.bitrate / 1000) kbps\(thermalThrottled ? " (máy nóng)" : "")")
         }
     }
 
@@ -1020,6 +1042,7 @@ final class StudioEngine: ObservableObject {
             let target = hot ? max(encoder.minBitrate, encoder.bitrate * 2 / 3) : encoder.bitrate
             currentBitrate = target; videoEncoder.setBitrate(target)
             if hot { message = L("Máy đang nóng — tạm giảm bitrate để hạ nhiệt") }
+            logToLiveOutputs(hot ? LF("Máy nóng: giảm bitrate còn %@ kbps", "\(target / 1000)") : L("Máy đã nguội: trả lại bitrate đầy đủ"))
             return
         }
         let fps = hot ? min(format.fps, 25) : format.fps

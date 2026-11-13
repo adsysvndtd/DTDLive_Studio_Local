@@ -45,7 +45,21 @@ struct SettingsForm: View {
                     }
                     Stepper(String(format: "Bitrate: %.1f Mbps", Double(engine.encoder.bitrate) / 1e6),
                             value: $engine.encoder.bitrate, in: 1_000_000...40_000_000, step: 500_000)
+                    let rec = StudioEngine.recommendedBitrate(engine.format, codec: engine.encoder.codec)
+                    HStack {
+                        Text(LF("Khuyến nghị cho %@×%@ %@ fps: %@ Mbps", "\(engine.format.width)", "\(engine.format.height)",
+                                "\(engine.format.fps)", String(format: "%.1f", Double(rec) / 1e6)))
+                            .foregroundStyle(engine.encoder.bitrate < rec * 3 / 4 ? .orange : .secondary)
+                        Spacer()
+                        if engine.encoder.bitrate != rec { Button("Dùng mức này") { engine.encoder.bitrate = rec } }
+                    }
+                    if engine.encoder.bitrate < rec * 3 / 4 {
+                        Text("Bitrate thấp so với độ phân giải → hình trên YouTube/Facebook sẽ mờ, nhất là cảnh chuyển động.")
+                            .foregroundStyle(.orange)
+                    }
                     Toggle("Bitrate thích ứng", isOn: $engine.encoder.adaptive)
+                    Text("Bật: mạng chậm thì tự giảm bitrate (hình mềm hơn nhưng không đứng). Tắt: giữ nét, mạng chậm thì bỏ khung hình.")
+                        .foregroundStyle(.secondary)
                     Text("Đổi độ phân giải/fps khi đang phát: các đích tự kết nối lại với thông số mới.")
                         .foregroundStyle(.secondary)
                 }

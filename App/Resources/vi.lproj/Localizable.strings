@@ -13,6 +13,9 @@
 "Ai được xem" = "Ai được xem";
 "Ba khung ngang" = "Ba khung ngang";
 "Bitrate thích ứng" = "Bitrate thích ứng";
+"Bitrate thích ứng: giảm %@ → %@ kbps (mạng tải lên chậm, trễ %@ s)" = "Bitrate thích ứng: giảm %@ → %@ kbps (mạng tải lên chậm, trễ %@ s)";
+"Bitrate thích ứng: tăng lại %@ → %@ kbps (trễ %@ s)" = "Bitrate thích ứng: tăng lại %@ → %@ kbps (trễ %@ s)";
+"Bitrate thấp so với độ phân giải → hình trên YouTube/Facebook sẽ mờ, nhất là cảnh chuyển động." = "Bitrate thấp so với độ phân giải → hình trên YouTube/Facebook sẽ mờ, nhất là cảnh chuyển động.";
 "Bàn thắng" = "Bàn thắng";
 "Bão hoà" = "Bão hoà";
 "Bên phải" = "Bên phải";
@@ -31,6 +34,7 @@
 "Bật nảy" = "Bật nảy";
 "Bật scopes (Program)" = "Bật scopes (Program)";
 "Bật để xoá phông xanh lá / xanh dương" = "Bật để xoá phông xanh lá / xanh dương";
+"Bật: mạng chậm thì tự giảm bitrate (hình mềm hơn nhưng không đứng). Tắt: giữ nét, mạng chậm thì bỏ khung hình." = "Bật: mạng chậm thì tự giảm bitrate (hình mềm hơn nhưng không đứng). Tắt: giữ nét, mạng chậm thì bỏ khung hình.";
 "Bắt đầu" = "Bắt đầu";
 "Bắt đầu sau" = "Bắt đầu sau";
 "Bắt đầu đếm khi bấm LÊN SÓNG" = "Bắt đầu đếm khi bấm LÊN SÓNG";
@@ -137,6 +141,7 @@
 "Dùng cho mọi thẻ" = "Dùng cho mọi thẻ";
 "Dùng làm PiP" = "Dùng làm PiP";
 "Dùng làm chuyển cảnh: cắt PVW lên PGM khi thẻ phủ kín" = "Dùng làm chuyển cảnh: cắt PVW lên PGM khi thẻ phủ kín";
+"Dùng mức này" = "Dùng mức này";
 "Dưới phải" = "Dưới phải";
 "Dưới trái" = "Dưới trái";
 "Dải ngang" = "Dải ngang";
@@ -212,6 +217,7 @@
 "Khung phối cảnh" = "Khung phối cảnh";
 "Khung viền" = "Khung viền";
 "Khung đôi" = "Khung đôi";
+"Khuyến nghị cho %@×%@ %@ fps: %@ Mbps" = "Khuyến nghị cho %@×%@ %@ fps: %@ Mbps";
 "Khôi phục mẫu" = "Khôi phục mẫu";
 "Không" = "Không";
 "Không có tín hiệu" = "Không có tín hiệu";
@@ -302,10 +308,12 @@
 "Màu sắc" = "Màu sắc";
 "Màu, key, PTZ…" = "Màu, key, PTZ…";
 "Máy khác trong mạng (vMix, OBS, TriCaster…) thấy nguồn này. NDI® là thương hiệu của Vizrt NDI AB." = "Máy khác trong mạng (vMix, OBS, TriCaster…) thấy nguồn này. NDI® là thương hiệu của Vizrt NDI AB.";
+"Máy nóng: giảm bitrate còn %@ kbps" = "Máy nóng: giảm bitrate còn %@ kbps";
 "Máy đang nóng — tạm giảm bitrate để hạ nhiệt" = "Máy đang nóng — tạm giảm bitrate để hạ nhiệt";
 "Máy đang nóng — tạm giảm còn %@ hình/giây để hạ nhiệt" = "Máy đang nóng — tạm giảm còn %@ hình/giây để hạ nhiệt";
 "Máy đang nóng — tạm giảm còn %lf hình/giây để hạ nhiệt" = "Máy đang nóng — tạm giảm còn %lf hình/giây để hạ nhiệt";
 "Máy đang nóng — tạm giảm còn %lld hình/giây để hạ nhiệt" = "Máy đang nóng — tạm giảm còn %lld hình/giây để hạ nhiệt";
+"Máy đã nguội: trả lại bitrate đầy đủ" = "Máy đã nguội: trả lại bitrate đầy đủ";
 "Mã HTML" = "Mã HTML";
 "Mạng tải lên không kịp (hàng đợi %@ KB) — tạm bỏ khung hình để bắt kịp" = "Mạng tải lên không kịp (hàng đợi %@ KB) — tạm bỏ khung hình để bắt kịp";
 "Mất gói (2 s gần nhất)" = "Mất gói (2 s gần nhất)";

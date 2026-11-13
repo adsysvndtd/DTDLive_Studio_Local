@@ -11,7 +11,7 @@ enum VideoCodecChoice: String, Codable, CaseIterable, Identifiable {
 
 struct EncoderSettings: Equatable, Codable {
     var codec: VideoCodecChoice = .h264
-    var bitrate = 6_000_000
+    var bitrate = 8_000_000
     /// Adaptive bitrate floor (bps) — the encoder never goes below this under congestion.
     var minBitrate = 1_500_000
     var adaptive = true
@@ -140,6 +140,8 @@ final class VideoEncoder: @unchecked Sendable {
         let fps = self.fps
         let p: [CFString: Any] = [
             kVTCompressionPropertyKey_RealTime: true,
+            // spend the encoder's effort on quality (the hardware encoder is far faster than real time)
+            kVTCompressionPropertyKey_PrioritizeEncodingSpeedOverQuality: false,
             kVTCompressionPropertyKey_ProfileLevel: settings.profile,
             kVTCompressionPropertyKey_AllowFrameReordering: false,
             kVTCompressionPropertyKey_AverageBitRate: liveBitrate,

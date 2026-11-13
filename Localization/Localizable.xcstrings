@@ -6990,6 +6990,86 @@
           }
         }
       }
+    },
+    "Bitrate thích ứng: giảm %@ → %@ kbps (mạng tải lên chậm, trễ %@ s)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adaptive bitrate: down %@ → %@ kbps (slow upload, %@ s behind)"
+          }
+        }
+      }
+    },
+    "Bitrate thích ứng: tăng lại %@ → %@ kbps (trễ %@ s)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adaptive bitrate: back up %@ → %@ kbps (%@ s behind)"
+          }
+        }
+      }
+    },
+    "Máy nóng: giảm bitrate còn %@ kbps": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Device hot: bitrate lowered to %@ kbps"
+          }
+        }
+      }
+    },
+    "Máy đã nguội: trả lại bitrate đầy đủ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Device cooled: full bitrate restored"
+          }
+        }
+      }
+    },
+    "Khuyến nghị cho %@×%@ %@ fps: %@ Mbps": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recommended for %@×%@ %@ fps: %@ Mbps"
+          }
+        }
+      }
+    },
+    "Dùng mức này": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use this"
+          }
+        }
+      }
+    },
+    "Bitrate thấp so với độ phân giải → hình trên YouTube/Facebook sẽ mờ, nhất là cảnh chuyển động.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bitrate is low for this resolution → the picture on YouTube/Facebook will look soft, especially in motion."
+          }
+        }
+      }
+    },
+    "Bật: mạng chậm thì tự giảm bitrate (hình mềm hơn nhưng không đứng). Tắt: giữ nét, mạng chậm thì bỏ khung hình.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "On: lowers bitrate when the network is slow (softer but no freezing). Off: stays sharp, drops frames when the network is slow."
+          }
+        }
+      }
     }
   },
   "version": "1.0"
