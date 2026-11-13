@@ -363,7 +363,8 @@ final class Switcher: @unchecked Sendable {
 
     private func image(from id: UUID?, fitting extent: CGRect) -> CIImage {
         let (store, proc) = locked { (id.flatMap { inputs[$0] }, id.flatMap { processing[$0] }) }
-        guard let pb = store?.latest() else { return Self.slate(extent) }
+        // No source / no signal: the same product slate as FTB (black + DTD Studio logo) on PGM and PVW.
+        guard let pb = store?.latest() else { return productSlate(extent.size).cropped(to: extent) }
         var img = CIImage(cvPixelBuffer: pb)
         if let proc {
             let bg = proc.keyBackgroundID.flatMap { bid in locked { inputs[bid] } }?.latest().map { CIImage(cvPixelBuffer: $0) }
@@ -603,14 +604,6 @@ final class Switcher: @unchecked Sendable {
         guard let pb = store?.latest() else { return nil }
         let img = CIImage(cvPixelBuffer: pb)
         return proc.map { processor.apply($0, to: img, background: nil) } ?? img
-    }
-
-    private static func slate(_ extent: CGRect) -> CIImage {
-        let bars = CIFilter.stripesGenerator()
-        bars.color0 = CIColor(red: 0.12, green: 0.12, blue: 0.14)
-        bars.color1 = CIColor(red: 0.08, green: 0.08, blue: 0.10)
-        bars.width = 60
-        return (bars.outputImage ?? CIImage(color: .black)).cropped(to: extent)
     }
 
     /// Consecutive frames dropped because the pool was exhausted, and how often the pool was rebuilt.
