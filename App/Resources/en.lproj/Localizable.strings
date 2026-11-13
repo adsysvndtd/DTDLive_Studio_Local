@@ -50,6 +50,7 @@
 "Camera mạng (SRT · RTSP · RTMP · DTDLive)" = "Network cameras (SRT · RTSP · RTMP · DTDLive)";
 "Camera trong máy & USB" = "Built-in & USB cameras";
 "Cao" = "Height";
+"Cao hơn = chịu được Wi‑Fi chập chờn (SRT kịp gửi lại gói) nhưng hình trễ hơn. 300 ms cho Wi‑Fi tốt, 500–800 ms cho Wi‑Fi đông. Áp dụng sau khi mở lại app." = "Higher = tolerates unsteady Wi‑Fi (SRT has time to resend) but more delay. 300 ms for good Wi‑Fi, 500–800 ms for busy Wi‑Fi. Applies after reopening the app.";
 "Cho phép DTDLive tìm và ghép nối" = "Let DTDLive find and pair";
 "Chrome xanh" = "Blue chrome";
 "Chuyển cảnh" = "Transitions";
@@ -165,6 +166,8 @@
 "Gán title vào phím Title / Title 2, rồi bấm “Title On” ở cột phải để lên sóng" = "Assign a title to the Title / Title 2 key, then press “Title On” to go on air";
 "Góc" = "Corners";
 "Góc ngắm" = "Viewfinder";
+"Gói bị bỏ (đến trễ)" = "Packets dropped (too late)";
+"Gói đến quá trễ bị bỏ → hình giật. Tăng độ trễ Wi‑Fi (Cài đặt › Kết nối), dùng Wi‑Fi 5 GHz, đặt máy gần router hoặc giảm bitrate trên DTDLive." = "Packets arrive too late and are dropped → stutter. Raise the Wi‑Fi latency (Settings › Connections), use 5 GHz Wi‑Fi, move closer to the router or lower the bitrate in DTDLive.";
 "GẤP" = "FOLD";
 "Gấp" = "Fold";
 "Gọn ở góc" = "Corner";
@@ -205,6 +208,7 @@
 "Khung an toàn" = "Safe area";
 "Khung an toàn trên PVW/PGM" = "Safe area on PVW/PGM";
 "Khung an toàn trên màn hình ngoài" = "Safe area on external display";
+"Khung hình hỏng bị bỏ qua" = "Broken frames skipped";
 "Khung phối cảnh" = "Perspective";
 "Khung viền" = "Window frame";
 "Khung đôi" = "Split frame";
@@ -304,6 +308,7 @@
 "Máy đang nóng — tạm giảm còn %lld hình/giây để hạ nhiệt" = "Device is hot — temporarily %lld fps to cool down";
 "Mã HTML" = "HTML code";
 "Mạng tải lên không kịp (hàng đợi %@ KB) — tạm bỏ khung hình để bắt kịp" = "Upload can't keep up (queue %@ KB) — dropping video frames to catch up";
+"Mất gói (2 s gần nhất)" = "Packet loss (last 2 s)";
 "Mất kết nối — thử lại" = "Connection lost — retrying";
 "Mẫu bố cục" = "Layouts";
 "Mẫu này chưa có lớp nào: đánh dấu khối bằng data-layer=\"tên\" trong HTML." = "This template has no layers yet: mark blocks with data-layer=\"name\" in the HTML.";
@@ -405,6 +410,7 @@
 "Quản lý đích phát (RTMP · SRT · RTSP · YouTube · Facebook)" = "Manage destinations (RTMP · SRT · RTSP · YouTube · Facebook)";
 "RTMP (một cổng, nhiều stream key)" = "RTMP (one port, many stream keys)";
 "RTSP (ANNOUNCE/RECORD, nhiều đường dẫn)" = "RTSP (ANNOUNCE/RECORD, many paths)";
+"RTT" = "RTT";
 "Ra mắt" = "Premiere";
 "Replay" = "Replay";
 "Reset" = "Reset";
@@ -520,6 +526,7 @@
 "Tốc độ" = "Speed";
 "Tốc độ chạy" = "Scroll speed";
 "Tốc độ khung" = "Frame rate";
+"Tốc độ nhận" = "Receive rate";
 "Tối thiểu: %.1f Mbps" = "Minimum: %.1f Mbps";
 "Từ chối" = "Reject";
 "Tự kết nối thiết bị tin cậy" = "Auto-connect trusted devices";
@@ -543,6 +550,7 @@
 "Vệt sáng lướt qua sau khi vào" = "Light sweep after it comes in";
 "Vị trí" = "Position";
 "Vị trí & cỡ" = "Position & size";
+"Wi‑Fi chập chờn: SRT đang gửi lại gói, hình vẫn đủ." = "Wi‑Fi is unsteady: SRT is resending packets, the picture is still complete.";
 "Xanh dương" = "Blue";
 "Xanh lá" = "Green";
 "Xem live" = "Watch live";
@@ -587,6 +595,7 @@
 "publish lỗi: %@" = "publish error: %@";
 "publish lỗi: %lf" = "publish error: %lf";
 "publish lỗi: %lld" = "publish error: %lld";
+"tổng %@" = "total %@";
 "xxxx.apps.googleusercontent.com — Google Cloud › Credentials, bật YouTube Data API v3" = "xxxx.apps.googleusercontent.com — Google Cloud › Credentials, enable YouTube Data API v3";
 "Ánh bạc" = "Chrome";
 "Ánh vàng" = "Gold";
@@ -647,6 +656,8 @@
 "Đăng nhập một lần; ở Đầu ra bấm Tạo live YouTube/Facebook để tự lấy URL + stream key." = "Sign in once; in Outputs tap Create YouTube/Facebook live to get the URL + stream key automatically.";
 "Đăng xuất" = "Sign out";
 "Đưa lên Preview" = "Send to Preview";
+"Đường truyền Wi‑Fi (DTDLive)" = "Wi‑Fi link (DTDLive)";
+"Đường truyền tốt." = "Link is good.";
 "Đầu ra" = "Outputs";
 "Đầu vào" = "Inputs";
 "Đậm %@" = "Weight %@";
@@ -669,6 +680,8 @@
 "Độ trễ SRT %@ ms" = "SRT latency %@ ms";
 "Độ trễ SRT %lf ms" = "SRT latency %lf ms";
 "Độ trễ SRT %lld ms" = "SRT latency %lld ms";
+"Độ trễ SRT / bộ đệm" = "SRT latency / buffer";
+"Độ trễ Wi‑Fi DTDLive %@ ms" = "DTDLive Wi‑Fi latency %@ ms";
 "Độ đậm" = "Opacity";
 "Độ đậm chữ" = "Weight";
 "Độ đậm nền" = "Background opacity";

@@ -116,6 +116,7 @@ struct IngestSettingsRows: View {
     @ObservedObject var ingest: IngestHub
     @State private var draft = IngestHub.Settings()
     @State private var loaded = false
+    @State private var latencyTick = 0     // refreshes the latency label (value lives in UserDefaults)
 
     var body: some View {
         Group {
@@ -131,6 +132,14 @@ struct IngestSettingsRows: View {
             Toggle("RTSP (ANNOUNCE/RECORD, nhiều đường dẫn)", isOn: $draft.rtspEnabled)
             if draft.rtspEnabled { portRow("Cổng RTSP", $draft.rtspPort) }
             Toggle("Cho phép DTDLive tìm và ghép nối", isOn: $draft.dtdLiveEnabled)
+            if draft.dtdLiveEnabled {
+                Stepper(value: Binding(get: { DTDLiveLink.latencyMs }, set: { DTDLiveLink.latencyMs = $0; latencyTick += 1 }),
+                        in: 120...2000, step: 60) {
+                    Text(LF("Độ trễ Wi‑Fi DTDLive %@ ms", "\(DTDLiveLink.latencyMs)")).id(latencyTick)
+                }
+                Text("Cao hơn = chịu được Wi‑Fi chập chờn (SRT kịp gửi lại gói) nhưng hình trễ hơn. 300 ms cho Wi‑Fi tốt, 500–800 ms cho Wi‑Fi đông. Áp dụng sau khi mở lại app.")
+                    .font(.caption2).foregroundStyle(.secondary)
+            }
             if draft != ingest.settings {
                 Button("Áp dụng (khởi động lại máy chủ nhận)") { ingest.settings = draft }
                     .disabled(!draft.srtPassphrase.isEmpty && !(10...79).contains(draft.srtPassphrase.count))

@@ -33,9 +33,13 @@ public:
     bool videoIsHevc() const { return videoType_ == 0x24; }
     /// Accept HEVC video PIDs as well as H.264 (off by default: the camera receiver decodes H.264 only).
     void setAcceptHevc(bool on) { acceptHevc_ = on; }
+    /// TS continuity-counter gaps seen (lost packets) and video access units dropped because of them.
+    /// A dropped AU is signalled to the video sink as a call with count == 0 (decoder: wait for the next IDR).
+    uint64_t ccErrors() const { return ccErrors_; }
+    uint64_t videoDropped() const { return videoDropped_; }
 
 private:
-    struct Pes { std::vector<uint8_t> buf; bool active = false; };
+    struct Pes { std::vector<uint8_t> buf; bool active = false; bool corrupt = false; int lastCc = -1; };
     void handlePacket(const uint8_t* p);
     void parsePat(const uint8_t* sec, size_t len);
     void parsePmt(const uint8_t* sec, size_t len);
@@ -54,6 +58,7 @@ private:
     int opusChannels_ = 2;
     std::map<uint16_t, Pes> pes_;
     std::vector<uint8_t> carry_;
+    uint64_t ccErrors_ = 0, videoDropped_ = 0;
 };
 
 } // namespace srtkit

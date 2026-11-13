@@ -50,6 +50,7 @@
 "Camera mạng (SRT · RTSP · RTMP · DTDLive)" = "Camera mạng (SRT · RTSP · RTMP · DTDLive)";
 "Camera trong máy & USB" = "Camera trong máy & USB";
 "Cao" = "Cao";
+"Cao hơn = chịu được Wi‑Fi chập chờn (SRT kịp gửi lại gói) nhưng hình trễ hơn. 300 ms cho Wi‑Fi tốt, 500–800 ms cho Wi‑Fi đông. Áp dụng sau khi mở lại app." = "Cao hơn = chịu được Wi‑Fi chập chờn (SRT kịp gửi lại gói) nhưng hình trễ hơn. 300 ms cho Wi‑Fi tốt, 500–800 ms cho Wi‑Fi đông. Áp dụng sau khi mở lại app.";
 "Cho phép DTDLive tìm và ghép nối" = "Cho phép DTDLive tìm và ghép nối";
 "Chrome xanh" = "Chrome xanh";
 "Chuyển cảnh" = "Chuyển cảnh";
@@ -165,6 +166,8 @@
 "Gán title vào phím Title / Title 2, rồi bấm “Title On” ở cột phải để lên sóng" = "Gán title vào phím Title / Title 2, rồi bấm “Title On” ở cột phải để lên sóng";
 "Góc" = "Góc";
 "Góc ngắm" = "Góc ngắm";
+"Gói bị bỏ (đến trễ)" = "Gói bị bỏ (đến trễ)";
+"Gói đến quá trễ bị bỏ → hình giật. Tăng độ trễ Wi‑Fi (Cài đặt › Kết nối), dùng Wi‑Fi 5 GHz, đặt máy gần router hoặc giảm bitrate trên DTDLive." = "Gói đến quá trễ bị bỏ → hình giật. Tăng độ trễ Wi‑Fi (Cài đặt › Kết nối), dùng Wi‑Fi 5 GHz, đặt máy gần router hoặc giảm bitrate trên DTDLive.";
 "GẤP" = "GẤP";
 "Gấp" = "Gấp";
 "Gọn ở góc" = "Gọn ở góc";
@@ -205,6 +208,7 @@
 "Khung an toàn" = "Khung an toàn";
 "Khung an toàn trên PVW/PGM" = "Khung an toàn trên PVW/PGM";
 "Khung an toàn trên màn hình ngoài" = "Khung an toàn trên màn hình ngoài";
+"Khung hình hỏng bị bỏ qua" = "Khung hình hỏng bị bỏ qua";
 "Khung phối cảnh" = "Khung phối cảnh";
 "Khung viền" = "Khung viền";
 "Khung đôi" = "Khung đôi";
@@ -304,6 +308,7 @@
 "Máy đang nóng — tạm giảm còn %lld hình/giây để hạ nhiệt" = "Máy đang nóng — tạm giảm còn %lld hình/giây để hạ nhiệt";
 "Mã HTML" = "Mã HTML";
 "Mạng tải lên không kịp (hàng đợi %@ KB) — tạm bỏ khung hình để bắt kịp" = "Mạng tải lên không kịp (hàng đợi %@ KB) — tạm bỏ khung hình để bắt kịp";
+"Mất gói (2 s gần nhất)" = "Mất gói (2 s gần nhất)";
 "Mất kết nối — thử lại" = "Mất kết nối — thử lại";
 "Mẫu bố cục" = "Mẫu bố cục";
 "Mẫu này chưa có lớp nào: đánh dấu khối bằng data-layer=\"tên\" trong HTML." = "Mẫu này chưa có lớp nào: đánh dấu khối bằng data-layer=\"tên\" trong HTML.";
@@ -405,6 +410,7 @@
 "Quản lý đích phát (RTMP · SRT · RTSP · YouTube · Facebook)" = "Quản lý đích phát (RTMP · SRT · RTSP · YouTube · Facebook)";
 "RTMP (một cổng, nhiều stream key)" = "RTMP (một cổng, nhiều stream key)";
 "RTSP (ANNOUNCE/RECORD, nhiều đường dẫn)" = "RTSP (ANNOUNCE/RECORD, nhiều đường dẫn)";
+"RTT" = "RTT";
 "Ra mắt" = "Ra mắt";
 "Replay" = "Replay";
 "Reset" = "Reset";
@@ -520,6 +526,7 @@
 "Tốc độ" = "Tốc độ";
 "Tốc độ chạy" = "Tốc độ chạy";
 "Tốc độ khung" = "Tốc độ khung";
+"Tốc độ nhận" = "Tốc độ nhận";
 "Tối thiểu: %.1f Mbps" = "Tối thiểu: %.1f Mbps";
 "Từ chối" = "Từ chối";
 "Tự kết nối thiết bị tin cậy" = "Tự kết nối thiết bị tin cậy";
@@ -543,6 +550,7 @@
 "Vệt sáng lướt qua sau khi vào" = "Vệt sáng lướt qua sau khi vào";
 "Vị trí" = "Vị trí";
 "Vị trí & cỡ" = "Vị trí & cỡ";
+"Wi‑Fi chập chờn: SRT đang gửi lại gói, hình vẫn đủ." = "Wi‑Fi chập chờn: SRT đang gửi lại gói, hình vẫn đủ.";
 "Xanh dương" = "Xanh dương";
 "Xanh lá" = "Xanh lá";
 "Xem live" = "Xem live";
@@ -587,6 +595,7 @@
 "publish lỗi: %@" = "publish lỗi: %@";
 "publish lỗi: %lf" = "publish lỗi: %lf";
 "publish lỗi: %lld" = "publish lỗi: %lld";
+"tổng %@" = "tổng %@";
 "xxxx.apps.googleusercontent.com — Google Cloud › Credentials, bật YouTube Data API v3" = "xxxx.apps.googleusercontent.com — Google Cloud › Credentials, bật YouTube Data API v3";
 "Ánh bạc" = "Ánh bạc";
 "Ánh vàng" = "Ánh vàng";
@@ -647,6 +656,8 @@
 "Đăng nhập một lần; ở Đầu ra bấm Tạo live YouTube/Facebook để tự lấy URL + stream key." = "Đăng nhập một lần; ở Đầu ra bấm Tạo live YouTube/Facebook để tự lấy URL + stream key.";
 "Đăng xuất" = "Đăng xuất";
 "Đưa lên Preview" = "Đưa lên Preview";
+"Đường truyền Wi‑Fi (DTDLive)" = "Đường truyền Wi‑Fi (DTDLive)";
+"Đường truyền tốt." = "Đường truyền tốt.";
 "Đầu ra" = "Đầu ra";
 "Đầu vào" = "Đầu vào";
 "Đậm %@" = "Đậm %@";
@@ -669,6 +680,8 @@
 "Độ trễ SRT %@ ms" = "Độ trễ SRT %@ ms";
 "Độ trễ SRT %lf ms" = "Độ trễ SRT %lf ms";
 "Độ trễ SRT %lld ms" = "Độ trễ SRT %lld ms";
+"Độ trễ SRT / bộ đệm" = "Độ trễ SRT / bộ đệm";
+"Độ trễ Wi‑Fi DTDLive %@ ms" = "Độ trễ Wi‑Fi DTDLive %@ ms";
 "Độ đậm" = "Độ đậm";
 "Độ đậm chữ" = "Độ đậm chữ";
 "Độ đậm nền" = "Độ đậm nền";

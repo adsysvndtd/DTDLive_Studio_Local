@@ -6860,6 +6860,136 @@
           }
         }
       }
+    },
+    "Đường truyền Wi‑Fi (DTDLive)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wi‑Fi link (DTDLive)"
+          }
+        }
+      }
+    },
+    "Tốc độ nhận": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Receive rate"
+          }
+        }
+      }
+    },
+    "RTT": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RTT"
+          }
+        }
+      }
+    },
+    "Mất gói (2 s gần nhất)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Packet loss (last 2 s)"
+          }
+        }
+      }
+    },
+    "Gói bị bỏ (đến trễ)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Packets dropped (too late)"
+          }
+        }
+      }
+    },
+    "Khung hình hỏng bị bỏ qua": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Broken frames skipped"
+          }
+        }
+      }
+    },
+    "Độ trễ SRT / bộ đệm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SRT latency / buffer"
+          }
+        }
+      }
+    },
+    "tổng %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "total %@"
+          }
+        }
+      }
+    },
+    "Đường truyền tốt.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Link is good."
+          }
+        }
+      }
+    },
+    "Wi‑Fi chập chờn: SRT đang gửi lại gói, hình vẫn đủ.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wi‑Fi is unsteady: SRT is resending packets, the picture is still complete."
+          }
+        }
+      }
+    },
+    "Gói đến quá trễ bị bỏ → hình giật. Tăng độ trễ Wi‑Fi (Cài đặt › Kết nối), dùng Wi‑Fi 5 GHz, đặt máy gần router hoặc giảm bitrate trên DTDLive.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Packets arrive too late and are dropped → stutter. Raise the Wi‑Fi latency (Settings › Connections), use 5 GHz Wi‑Fi, move closer to the router or lower the bitrate in DTDLive."
+          }
+        }
+      }
+    },
+    "Độ trễ Wi‑Fi DTDLive %@ ms": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DTDLive Wi‑Fi latency %@ ms"
+          }
+        }
+      }
+    },
+    "Cao hơn = chịu được Wi‑Fi chập chờn (SRT kịp gửi lại gói) nhưng hình trễ hơn. 300 ms cho Wi‑Fi tốt, 500–800 ms cho Wi‑Fi đông. Áp dụng sau khi mở lại app.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Higher = tolerates unsteady Wi‑Fi (SRT has time to resend) but more delay. 300 ms for good Wi‑Fi, 500–800 ms for busy Wi‑Fi. Applies after reopening the app."
+          }
+        }
+      }
     }
   },
   "version": "1.0"

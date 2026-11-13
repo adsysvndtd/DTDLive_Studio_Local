@@ -37,6 +37,16 @@ public:
     void start();
     void stop();
     ConnState state() const { return state_; }
+
+    /// Receive-side link quality (SRT counters since connect + demuxer losses).
+    struct LinkStats {
+        bool connected = false;
+        int64_t pktRecv = 0, pktLoss = 0, pktDrop = 0, pktRetrans = 0;
+        double rttMs = 0, mbpsRecv = 0, mbpsBandwidth = 0;
+        int msRcvBuf = 0, latencyMs = 0;
+        uint64_t ccErrors = 0, videoDropped = 0;
+    };
+    LinkStats linkStats();
     uint64_t framesReceived() const { return framesIn_; }
     uint64_t framesLate() const { return framesLate_; }
 
@@ -51,6 +61,7 @@ private:
     std::atomic<bool> running_{false};
     std::atomic<ConnState> state_{ConnState::Idle};
     std::atomic<int> sock_{-1};
+    std::atomic<uint64_t> ccErrors_{0}, videoDropped_{0};
     std::thread netTh_, playTh_;
 
     std::mutex qMtx_;

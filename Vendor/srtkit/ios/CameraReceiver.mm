@@ -3,6 +3,7 @@
 
 #include "srtkit/TalkbackReceiver.h"
 #include "srtkit/TsMuxer.h"
+#include <atomic>
 #include <memory>
 #include <arpa/inet.h>
 
@@ -23,9 +24,14 @@ public:
         if (format_) { CFRelease(format_); format_ = nullptr; }
         sps_.clear();
         pps_.clear();
+        waitIdr_ = false;
     }
 
+    std::atomic<uint64_t> errors{0};
+
     void decode(const uint8_t* bytes, size_t count, int64_t pts, void (^onFrame)(CVPixelBufferRef)) {
+        // count == 0: the demuxer dropped an access unit with lost packets → skip until the next IDR
+        if (count == 0) { waitIdr_ = true; return; }
         auto nals = annexb::split(bytes, count);
         bool idr = false, slice = false, changed = false;
         std::vector<uint8_t> avcc;
@@ -52,6 +58,8 @@ public:
             CFRelease(format_); format_ = nullptr;
         }
         if (!slice || (!session_ && (!idr || !open()))) return;
+        // after a loss the following P-frames reference a missing picture: hold the last good frame instead
+        if (waitIdr_) { if (!idr) return; waitIdr_ = false; }
         CMBlockBufferRef block = nullptr;
         if (CMBlockBufferCreateWithMemoryBlock(nullptr, nullptr, avcc.size(), nullptr, nullptr, 0,
                                                avcc.size(), 0, &block) != noErr) return;
@@ -65,7 +73,11 @@ public:
                 ^(OSStatus result, VTDecodeInfoFlags, CVImageBufferRef image, CMTime, CMTime) {
                     if (result == noErr && image) onFrame(image);
                 });
-            if (status != noErr) reset();
+            if (status != noErr) {
+                ++errors;
+                // keep the session (no 1 s black/freeze); only a broken session is rebuilt, on the next IDR
+                if (status == kVTInvalidSessionErr) reset(); else waitIdr_ = true;
+            }
             CFRelease(sample);
         }
         CFRelease(block);
@@ -90,6 +102,7 @@ private:
         return true;
     }
     std::vector<uint8_t> sps_, pps_;
+    bool waitIdr_ = false;
     CMVideoFormatDescriptionRef format_ = nullptr;
     VTDecompressionSessionRef session_ = nullptr;
 };
@@ -102,9 +115,9 @@ private:
 }
 - (instancetype)initWithPassphrase:(NSString*)passphrase onListening:(void (^)(NSInteger))listening
                            onState:(void (^)(SRTKConnectionState, NSString*))state onFrame:(void (^)(CVPixelBufferRef))frame {
-    return [self initWithPassphrase:passphrase audioBufferMs:0 onListening:listening onState:state onFrame:frame onAudio:nil];
+    return [self initWithPassphrase:passphrase latencyMs:120 audioBufferMs:0 onListening:listening onState:state onFrame:frame onAudio:nil];
 }
-- (instancetype)initWithPassphrase:(NSString*)passphrase audioBufferMs:(NSInteger)audioBufferMs
+- (instancetype)initWithPassphrase:(NSString*)passphrase latencyMs:(NSInteger)latencyMs audioBufferMs:(NSInteger)audioBufferMs
                        onListening:(void (^)(NSInteger))listening
                            onState:(void (^)(SRTKConnectionState, NSString*))state onFrame:(void (^)(CVPixelBufferRef))frame
                            onAudio:(void (^)(NSData*, NSData*, NSInteger, NSInteger, int64_t))audio {
@@ -116,7 +129,7 @@ private:
         cfg.srt.port = 0;
         cfg.srt.passphrase = passphrase.UTF8String;
         cfg.srt.pbKeyLen = 16;
-        cfg.srt.latencyMs = 120;
+        cfg.srt.latencyMs = latencyMs > 0 ? (int)latencyMs : 120;
         cfg.reconnectDelayMs = 500;
         cfg.bufferMs = audioBufferMs > 0 ? (int)audioBufferMs : 100;   // audio jitter buffer ≈ the app's video pacer
         TalkbackReceiver::Callbacks cb;
@@ -151,6 +164,13 @@ private:
 }
 - (BOOL)approved { return _allowVideo.load(); }
 - (void)setApproved:(BOOL)value { _allowVideo.store(value); }
+- (NSDictionary<NSString*, NSNumber*>*)linkStats {
+    auto st = _receiver->linkStats();
+    return @{@"connected": @(st.connected), @"recv": @(st.pktRecv), @"lost": @(st.pktLoss), @"dropped": @(st.pktDrop),
+             @"retrans": @(st.pktRetrans), @"rttMs": @(st.rttMs), @"mbps": @(st.mbpsRecv), @"bandwidthMbps": @(st.mbpsBandwidth),
+             @"rcvBufMs": @(st.msRcvBuf), @"latencyMs": @(st.latencyMs), @"ccErrors": @(st.ccErrors),
+             @"videoDropped": @(st.videoDropped), @"decodeErrors": @(_decoder.errors.load())};
+}
 - (void)start { _receiver->start(); }
 - (void)stop { _receiver->stop(); }
 - (void)dealloc { _receiver.reset(); }

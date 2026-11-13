@@ -179,6 +179,44 @@ static void testCameraVideo() {
     CHECK(received == 4);
 }
 
+// A video access unit with a lost TS packet is not decoded; the sink gets a count == 0 "resync" call.
+static void testTsLoss() {
+    TsMuxer::Config config;
+    config.hasAudio = false;
+    TsCapture cap;
+    TsMuxer mux(config, [&](const uint8_t* packet) { cap.add(packet); });
+    mux.setVideoParameterSets({{0x67, 0x42}, {0x68, 0x80}});
+    std::vector<uint8_t> big(1500, 0x11); big[0] = 0; big[1] = 0; big[2] = 1; big[3] = 0x41;
+    std::vector<uint8_t> key = {0, 0, 0, 1, 0x65, 0x81};
+    mux.writeVideo(key.data(), key.size(), 0, 0, true);
+    mux.writeVideo(big.data(), big.size(), 33333, 33333, false);   // several TS packets
+    mux.writeVideo(key.data(), key.size(), 66666, 66666, true);
+    mux.writeVideo(key.data(), key.size(), 99999, 99999, true);
+    // drop the 2nd TS packet of the big access unit
+    std::vector<size_t> starts;
+    for (size_t i = 0; i + 188 <= cap.bytes.size(); i += 188) {
+        const uint8_t* p = cap.bytes.data() + i;
+        if ((p[1] & 0x40) && (((p[1] & 0x1F) << 8) | p[2]) != 0 && p[0] == 0x47) starts.push_back(i);
+    }
+    std::vector<uint8_t> lossy;
+    size_t bigStart = 0; int pesSeen = 0;
+    for (size_t i = 0; i + 188 <= cap.bytes.size(); i += 188) {
+        const uint8_t* p = cap.bytes.data() + i;
+        int pid = ((p[1] & 0x1F) << 8) | p[2];
+        bool pusi = p[1] & 0x40;
+        if (pid == 0x100 && pusi) { ++pesSeen; if (pesSeen == 2) bigStart = i; }
+        if (pesSeen == 2 && bigStart && i == bigStart + 188) continue;   // lost
+        lossy.insert(lossy.end(), p, p + 188);
+    }
+    int good = 0, resync = 0;
+    TsDemuxer demux({}, [&](const uint8_t*, size_t size, int64_t) { if (size == 0) ++resync; else ++good; });
+    demux.feed(lossy.data(), lossy.size());
+    CHECK(resync == 1);
+    CHECK(demux.ccErrors() == 1);
+    CHECK(good == 2);   // first IDR + second IDR (the last AU is still open)
+    std::printf("ts loss ok\n");
+}
+
 static void testSei() {
     for (VideoCodec c : {VideoCodec::H264, VideoCodec::HEVC}) {
         // giá trị có nhiều byte 0 để kiểm tra emulation prevention
@@ -193,6 +231,7 @@ static void testSei() {
 }
 
 int main() {
+    testTsLoss();
     testUrl();
     testAbrLog();
     testAbrLadder();

@@ -182,13 +182,18 @@ FOUNDATION_EXPORT NSString* const SRTKErrorDomain;
                            onState:(void (^)(SRTKConnectionState state, NSString* detail))state
                            onFrame:(void (^)(CVPixelBufferRef frame))frame
     NS_SWIFT_NAME(init(passphrase:onListening:onState:onFrame:));
+/// latencyMs: SRT receive latency (time for retransmissions; Wi-Fi needs ~250–500 ms, the larger end wins).
 - (instancetype)initWithPassphrase:(NSString*)passphrase
+                         latencyMs:(NSInteger)latencyMs
                      audioBufferMs:(NSInteger)audioBufferMs
                        onListening:(void (^)(NSInteger port))listening
                            onState:(void (^)(SRTKConnectionState state, NSString* detail))state
                            onFrame:(void (^)(CVPixelBufferRef frame))frame
                            onAudio:(void (^)(NSData* aac, NSData* asc, NSInteger sampleRate, NSInteger channels, int64_t ptsUs))audio
-    NS_SWIFT_NAME(init(passphrase:audioBufferMs:onListening:onState:onFrame:onAudio:));
+    NS_SWIFT_NAME(init(passphrase:latencyMs:audioBufferMs:onListening:onState:onFrame:onAudio:));
+/// Link quality since connect: recv, lost, dropped (too late), retrans, rttMs, mbps, bandwidthMbps, rcvBufMs,
+/// latencyMs, ccErrors, videoDropped, decodeErrors, connected (0/1). Safe from any thread.
+- (NSDictionary<NSString*, NSNumber*>*)linkStats;
 - (instancetype)init NS_UNAVAILABLE;
 @property (atomic) BOOL approved;
 - (void)start;

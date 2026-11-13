@@ -14,6 +14,7 @@ const int kAacRates[] = {96000, 88200, 64000, 48000, 44100, 32000, 24000, 22050,
 } // namespace
 
 void TsDemuxer::reset() {
+    ccErrors_ = 0; videoDropped_ = 0;
     videoPid_ = -1;
     videoType_ = 0;
     pmtPid_ = -1;
@@ -68,10 +69,18 @@ void TsDemuxer::handlePacket(const uint8_t* p) {
     if (pid != audioPid_ && pid != videoPid_) return;
 
     Pes& pe = pes_[pid];
+    // continuity counter (payload packets): a gap means TS packets were lost in this access unit
+    int cc = p[3] & 0x0F;
+    if (pe.lastCc >= 0 && cc != pe.lastCc && cc != ((pe.lastCc + 1) & 0x0F)) {
+        ++ccErrors_;
+        pe.corrupt = true;
+    }
+    pe.lastCc = cc;
     if (pusi) {
         flushPes(pid);
         pe.buf.clear();
         pe.active = true;
+        pe.corrupt = false;
     }
     // A video PES can be unbounded; discard an incomplete oversized access unit.
     if (pe.buf.size() + plLen > 8 * 1024 * 1024) {
@@ -142,7 +151,11 @@ void TsDemuxer::flushPes(uint16_t pid) {
     size_t esOff = 9 + hdrLen;
     size_t pesLen = (static_cast<size_t>(b[4]) << 8) | b[5];
     size_t esEnd = pesLen ? std::min(pe.buf.size(), pesLen + 6) : pe.buf.size();
-    if (esOff < esEnd) {
+    if (pid == videoPid_ && pe.corrupt) {
+        // incomplete picture: decoding it would smear; tell the decoder to resync on the next IDR
+        ++videoDropped_;
+        videoSink_(b, 0, ptsUs);
+    } else if (esOff < esEnd) {
         if (pid == videoPid_) videoSink_(b + esOff, esEnd - esOff, ptsUs);
         else if (audioCodec_ == AudioCodec::AAC) emitAac(b + esOff, esEnd - esOff, ptsUs);
         else emitOpus(b + esOff, esEnd - esOff, ptsUs);

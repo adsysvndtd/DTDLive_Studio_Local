@@ -65,6 +65,7 @@ int TalkbackReceiver::open(std::string& err) {
     srt_setsockflag(s, SRTO_TRANSTYPE, &tt, sizeof(tt));
     int lat = o.latencyMs;
     srt_setsockflag(s, SRTO_LATENCY, &lat, sizeof(lat));
+    srt_setsockflag(s, SRTO_RCVLATENCY, &lat, sizeof(lat));   // the larger of both ends is used
     int ct = o.connectTimeoutMs;
     srt_setsockflag(s, SRTO_CONNTIMEO, &ct, sizeof(ct));
     if (!o.passphrase.empty()) {
@@ -174,6 +175,7 @@ void TalkbackReceiver::netLoop() {
                 break;
             }
             demux.feed(reinterpret_cast<const uint8_t*>(buf.data()), static_cast<size_t>(n));
+            ccErrors_ = demux.ccErrors(); videoDropped_ = demux.videoDropped();
         }
         srt_close(s);
         sock_ = -1;
@@ -214,4 +216,27 @@ void TalkbackReceiver::playLoop() {
     }
 }
 
+} // namespace srtkit
+
+namespace srtkit {
+TalkbackReceiver::LinkStats TalkbackReceiver::linkStats() {
+    LinkStats st;
+    int s = sock_;
+    st.ccErrors = ccErrors_; st.videoDropped = videoDropped_;
+    if (s < 0 || state_ != ConnState::Connected) return st;
+    SRT_TRACEBSTATS perf{};
+    if (srt_bstats(s, &perf, 0) != 0) return st;
+    st.connected = true;
+    st.pktRecv = perf.pktRecvTotal;
+    st.pktLoss = perf.pktRcvLossTotal;
+    st.pktDrop = perf.pktRcvDropTotal;
+    st.pktRetrans = perf.pktRcvRetrans;
+    st.rttMs = perf.msRTT;
+    st.mbpsRecv = perf.mbpsRecvRate;
+    st.mbpsBandwidth = perf.mbpsBandwidth;
+    st.msRcvBuf = perf.msRcvBuf;
+    int lat = 0, len = sizeof(lat);
+    if (srt_getsockflag(s, SRTO_RCVLATENCY, &lat, &len) == 0) st.latencyMs = lat;
+    return st;
+}
 } // namespace srtkit

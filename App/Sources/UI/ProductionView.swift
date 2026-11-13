@@ -1044,6 +1044,7 @@ final class TransitionPreviewRenderer: @unchecked Sendable {
 struct SourceInfoView: View {
     @ObservedObject var engine: StudioEngine
     let sourceID: UUID
+    @ObservedObject private var linkStats = DTDLiveStats.shared
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -1059,6 +1060,20 @@ struct SourceInfoView: View {
                         LabeledContent("Độ phân giải", value: "Không có tín hiệu")
                     }
                     if let f = s as? FileSource { LabeledContent("Tệp", value: f.url.lastPathComponent) }
+                    if let l = linkStats.lines[s.id] {
+                        Section(header: Text("Đường truyền Wi‑Fi (DTDLive)")) {
+                            LabeledContent("Tốc độ nhận", value: String(format: "%.1f Mbps", l.mbps))
+                            LabeledContent("RTT", value: String(format: "%.0f ms", l.rttMs))
+                            LabeledContent("Mất gói (2 s gần nhất)", value: String(format: "%.1f %%", l.lossPct))
+                            LabeledContent("Gói bị bỏ (đến trễ)", value: "\(l.droppedPkts) · " + LF("tổng %@", "\(l.totalDropped)"))
+                            LabeledContent("Khung hình hỏng bị bỏ qua", value: "\(l.brokenFrames) · " + LF("tổng %@", "\(l.totalBroken)"))
+                            LabeledContent("Độ trễ SRT / bộ đệm", value: "\(l.latencyMs) ms / \(l.bufferMs) ms")
+                            Text(l.grade == 0 ? "Đường truyền tốt." :
+                                 l.grade == 1 ? "Wi‑Fi chập chờn: SRT đang gửi lại gói, hình vẫn đủ." :
+                                 "Gói đến quá trễ bị bỏ → hình giật. Tăng độ trễ Wi‑Fi (Cài đặt › Kết nối), dùng Wi‑Fi 5 GHz, đặt máy gần router hoặc giảm bitrate trên DTDLive.")
+                                .font(.caption).foregroundStyle(l.grade == 2 ? .red : l.grade == 1 ? .orange : .green)
+                        }
+                    }
                     LabeledContent("Trên PGM", value: L(engine.programID == s.id ? "Có" : "Không"))
                     LabeledContent("Yêu thích", value: L(engine.favorites.contains(s.id) ? "Có" : "Không"))
                 }
