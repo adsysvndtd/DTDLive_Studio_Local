@@ -906,11 +906,13 @@ final class StudioEngine: ObservableObject {
     /// and let that destination drop frames instead. Every change is written to the outputs' log.
     private func adaptBitrate() async {
         guard encoder.adaptive, isAnyLive else {
-            if currentBitrate != encoder.bitrate, !thermalThrottled { currentBitrate = encoder.bitrate; videoEncoder.setBitrate(currentBitrate) }
+            let target = isAnyLive ? min(encoder.bitrate, platformCeiling ?? .max) : encoder.bitrate
+            if currentBitrate != target, !thermalThrottled { currentBitrate = target; videoEncoder.setBitrate(currentBitrate) }
             return
         }
         let lag = await outputManager.congestion(fps: Double(format.fps))
-        let ceiling = thermalThrottled ? max(encoder.minBitrate, encoder.bitrate * 2 / 3) : encoder.bitrate
+        var ceiling = thermalThrottled ? max(encoder.minBitrate, encoder.bitrate * 2 / 3) : encoder.bitrate
+        ceiling = min(ceiling, platformCeiling ?? .max)
         let floor = min(ceiling, max(encoder.minBitrate, encoder.bitrate / 2))
         var next = min(currentBitrate, ceiling)
         if lag > 1.5 {
@@ -928,6 +930,61 @@ final class StudioEngine: ObservableObject {
                                 "\(currentBitrate / 1000)", "\(next / 1000)", String(format: "%.1f", lag)))
             currentBitrate = next; videoEncoder.setBitrate(next)
         }
+    }
+
+    /// Facebook rejects / re-compresses harder above its documented maximum, so while a Facebook
+    /// destination is live the shared encoder stays at or under it (logged once per change).
+    private var platformCeiling: Int? {
+        let fb = outputs.contains { $0.proto != .record && outputStatus[$0.id] == .live && Self.isFacebook($0) }
+        let cap = fb ? Self.facebookMax(format) : nil
+        if cap != lastPlatformCeiling {
+            lastPlatformCeiling = cap
+            if let cap, encoder.bitrate > cap {
+                logToLiveOutputs(LF("Facebook: giữ bitrate ở mức tối đa Facebook nhận (%@ kbps)", "\(cap / 1000)"))
+            }
+        }
+        return cap
+    }
+    private var lastPlatformCeiling: Int?
+    static func isFacebook(_ o: OutputConfig) -> Bool {
+        let u = o.url.lowercased()
+        return u.contains("facebook") || u.contains("fbcdn") || u.contains("fb.com")
+    }
+    /// Facebook Live API ranges: 1080p30 3–6, 1080p60 4.5–9, 720p30 1.5–4, 720p60 2.25–6 Mbps.
+    static func facebookMax(_ f: ProgramFormat) -> Int {
+        let px = f.width * f.height, hi = f.fps > 30
+        if px <= 1_000_000 { return hi ? 6_000_000 : 4_000_000 }
+        return hi ? 9_000_000 : 6_000_000
+    }
+    /// Highest sensible bitrate for the destinations: YouTube's recommended H.264 rates, capped by
+    /// Facebook's maximum when a Facebook destination is configured.
+    func bestBitrate() -> Int {
+        let px = format.width * format.height, hi = format.fps > 30
+        var mbps: Double
+        switch px {
+        case ..<1_000_000: mbps = hi ? 8 : 6            // 720p
+        case ..<2_500_000: mbps = hi ? 12 : 10          // 1080p
+        case ..<4_000_000: mbps = hi ? 24 : 15          // 1440p
+        default: mbps = hi ? 35 : 30                    // 4K
+        }
+        if encoder.codec == .hevc { mbps *= 0.75 }
+        var bps = Int(mbps * 1_000_000)
+        if outputs.contains(where: { $0.proto != .record && Self.isFacebook($0) }) { bps = min(bps, Self.facebookMax(format)) }
+        return bps
+    }
+    /// One tap: the best quality the destinations accept (H.264 when Facebook is used, 2 s GOP,
+    /// top bitrate, gentle adaptive floor at 70 %).
+    func optimizeForBestQuality() {
+        var e = encoder
+        if outputs.contains(where: { Self.isFacebook($0) }) { e.codec = .h264 }
+        e.keyframeInterval = 2
+        e.adaptive = true
+        let b = bestBitrate()
+        e.bitrate = b
+        e.minBitrate = max(1_500_000, b * 7 / 10)
+        e.audioBitrate = 128_000
+        encoder = e
+        message = LF("Đã tối ưu: %@ Mbps, %@, GOP 2 s", String(format: "%.1f", Double(b) / 1e6), e.codec.label)
     }
 
     /// Bitrate that keeps 1080p/4K sharp on YouTube / Facebook (H.264; HEVC needs ~30 % less).

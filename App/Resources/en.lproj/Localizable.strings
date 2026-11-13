@@ -151,6 +151,7 @@
 "Dừng nhận" = "Stop";
 "Dừng tất cả" = "Stop all";
 "Facebook › Video trực tiếp › Phần mềm phát trực tiếp › Khoá luồng." = "Facebook › Live video › Streaming software › Stream key.";
+"Facebook: giữ bitrate ở mức tối đa Facebook nhận (%@ kbps)" = "Facebook: bitrate held at Facebook's maximum (%@ kbps)";
 "Facebook: khi app còn ở chế độ phát triển chỉ đọc được bình luận live của chính tài khoản quản trị app; cho mọi người dùng cần Meta duyệt quyền (App Review)." = "Facebook: while the app is in development mode only the app admin's own live comments can be read; for everyone Meta must approve the permission (App Review).";
 "Font" = "Font";
 "Ghi" = "Rec";
@@ -537,6 +538,7 @@
 "Tốc độ khung" = "Frame rate";
 "Tốc độ nhận" = "Receive rate";
 "Tối thiểu: %.1f Mbps" = "Minimum: %.1f Mbps";
+"Tối ưu chất lượng tốt nhất cho các đích phát" = "Optimize for best quality on all destinations";
 "Từ chối" = "Reject";
 "Tự kết nối thiết bị tin cậy" = "Auto-connect trusted devices";
 "Tự động" = "Auto";
@@ -653,6 +655,7 @@
 "Đã nạp logo — bấm Logo ở cột phải để lên PGM" = "Logo loaded — press Logo in the right column to put it on PGM";
 "Đã nạp — bấm SuperFG On ở cột phải" = "Loaded — press SuperFG On in the right column";
 "Đã tạo và đang phát tới" = "Created and streaming to";
+"Đã tối ưu: %@ Mbps, %@, GOP 2 s" = "Optimized: %@ Mbps, %@, 2 s GOP";
 "Đã xuất %@ vào thư viện Video" = "Exported %@ to the Video library";
 "Đã xuất %lf vào thư viện Video" = "Exported %lf to the Video library";
 "Đã xuất %lld vào thư viện Video" = "Exported %lld to the Video library";
@@ -671,6 +674,7 @@
 "Đầu vào" = "Inputs";
 "Đậm %@" = "Weight %@";
 "Đặt MARK IN / MARK OUT rồi bấm Lưu clip" = "Set MARK IN / MARK OUT, then Save clip";
+"Đặt bitrate cao nhất YouTube khuyến nghị (Facebook: không vượt mức tối đa Facebook nhận), GOP 2 s, H.264 nếu có Facebook, bitrate thích ứng không xuống dưới 70 %." = "Sets YouTube's highest recommended bitrate (never above Facebook's maximum when Facebook is used), 2 s GOP, H.264 when Facebook is used, adaptive bitrate floor at 70 %.";
 "Đặt lại" = "Reset";
 "Đặt lại tỉ số 0 - 0" = "Reset score to 0 - 0";
 "Đặt lại đồng hồ" = "Reset clock";

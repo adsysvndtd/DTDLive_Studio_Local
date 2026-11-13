@@ -396,6 +396,7 @@ final class Switcher: @unchecked Sendable {
         var pb: CVPixelBuffer?
         guard CVPixelBufferPoolCreatePixelBuffer(nil, pool, &pb) == kCVReturnSuccess, let pb else { return nil }
         ciContext.render(img, to: pb, bounds: extent, colorSpace: CGColorSpace(name: CGColorSpace.itur_709))
+        Self.tag709(pb)
         return pb
     }
 
@@ -435,7 +436,7 @@ final class Switcher: @unchecked Sendable {
             img = processor.apply(proc, to: img, background: bg)
         }
         let scale = min(extent.width / img.extent.width, extent.height / img.extent.height)
-        let scaled = img.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+        let scaled = Self.scaleSharp(img, scale)
         let dx = (extent.width - scaled.extent.width) / 2 - scaled.extent.minX
         let dy = (extent.height - scaled.extent.height) / 2 - scaled.extent.minY
         return scaled.transformed(by: CGAffineTransform(translationX: dx, y: dy))
@@ -690,6 +691,7 @@ final class Switcher: @unchecked Sendable {
         }
         poolMisses = 0
         ciContext.render(img, to: pb, bounds: extent, colorSpace: CGColorSpace(name: CGColorSpace.itur_709))
+        Self.tag709(pb)
         return pb
     }
 
@@ -705,6 +707,23 @@ final class Switcher: @unchecked Sendable {
         var p: CVPixelBufferPool?
         CVPixelBufferPoolCreate(nil, [kCVPixelBufferPoolMinimumBufferCountKey: 8] as CFDictionary, attrs as CFDictionary, &p)
         pool = p
+    }
+
+    /// Marks a program frame as Rec.709 (primaries, transfer, matrix) so the encoder writes matching
+    /// colour info into the stream; untagged HD video is often decoded as 601 → shifted, washed-out colours.
+    private static func tag709(_ pb: CVPixelBuffer) {
+        CVBufferSetAttachment(pb, kCVImageBufferColorPrimariesKey, kCVImageBufferColorPrimaries_ITU_R_709_2, .shouldPropagate)
+        CVBufferSetAttachment(pb, kCVImageBufferTransferFunctionKey, kCVImageBufferTransferFunction_ITU_R_709_2, .shouldPropagate)
+        CVBufferSetAttachment(pb, kCVImageBufferYCbCrMatrixKey, kCVImageBufferYCbCrMatrix_ITU_R_709_2, .shouldPropagate)
+    }
+
+    /// Resizes a source to the program frame. Lanczos keeps detail (720p cameras upscaled to 1080p,
+    /// 4K cameras downscaled) instead of the soft bilinear default.
+    private static func scaleSharp(_ img: CIImage, _ scale: CGFloat) -> CIImage {
+        guard abs(scale - 1) > 0.01 else { return img }
+        let f = CIFilter.lanczosScaleTransform()
+        f.inputImage = img; f.scale = Float(scale); f.aspectRatio = 1
+        return f.outputImage ?? img.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
     }
 
     @discardableResult

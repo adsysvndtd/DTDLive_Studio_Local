@@ -57,6 +57,11 @@ struct SettingsForm: View {
                         Text("Bitrate thấp so với độ phân giải → hình trên YouTube/Facebook sẽ mờ, nhất là cảnh chuyển động.")
                             .foregroundStyle(.orange)
                     }
+                    Button { engine.optimizeForBestQuality() } label: {
+                        Label("Tối ưu chất lượng tốt nhất cho các đích phát", systemImage: "wand.and.stars")
+                    }
+                    Text("Đặt bitrate cao nhất YouTube khuyến nghị (Facebook: không vượt mức tối đa Facebook nhận), GOP 2 s, H.264 nếu có Facebook, bitrate thích ứng không xuống dưới 70 %.")
+                        .foregroundStyle(.secondary)
                     Toggle("Bitrate thích ứng", isOn: $engine.encoder.adaptive)
                     Text("Bật: mạng chậm thì tự giảm bitrate (hình mềm hơn nhưng không đứng). Tắt: giữ nét, mạng chậm thì bỏ khung hình.")
                         .foregroundStyle(.secondary)

@@ -7086,6 +7086,70 @@
           }
         }
       }
+    },
+    "Tối ưu chất lượng tốt nhất cho các đích phát": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Optimize for best quality on all destinations"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tối ưu chất lượng tốt nhất cho các đích phát"
+          }
+        }
+      }
+    },
+    "Đặt bitrate cao nhất YouTube khuyến nghị (Facebook: không vượt mức tối đa Facebook nhận), GOP 2 s, H.264 nếu có Facebook, bitrate thích ứng không xuống dưới 70 %.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sets YouTube's highest recommended bitrate (never above Facebook's maximum when Facebook is used), 2 s GOP, H.264 when Facebook is used, adaptive bitrate floor at 70 %."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đặt bitrate cao nhất YouTube khuyến nghị (Facebook: không vượt mức tối đa Facebook nhận), GOP 2 s, H.264 nếu có Facebook, bitrate thích ứng không xuống dưới 70 %."
+          }
+        }
+      }
+    },
+    "Đã tối ưu: %@ Mbps, %@, GOP 2 s": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Optimized: %@ Mbps, %@, 2 s GOP"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã tối ưu: %@ Mbps, %@, GOP 2 s"
+          }
+        }
+      }
+    },
+    "Facebook: giữ bitrate ở mức tối đa Facebook nhận (%@ kbps)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Facebook: bitrate held at Facebook's maximum (%@ kbps)"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Facebook: giữ bitrate ở mức tối đa Facebook nhận (%@ kbps)"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

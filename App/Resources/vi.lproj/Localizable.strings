@@ -151,6 +151,7 @@
 "Dừng nhận" = "Dừng nhận";
 "Dừng tất cả" = "Dừng tất cả";
 "Facebook › Video trực tiếp › Phần mềm phát trực tiếp › Khoá luồng." = "Facebook › Video trực tiếp › Phần mềm phát trực tiếp › Khoá luồng.";
+"Facebook: giữ bitrate ở mức tối đa Facebook nhận (%@ kbps)" = "Facebook: giữ bitrate ở mức tối đa Facebook nhận (%@ kbps)";
 "Facebook: khi app còn ở chế độ phát triển chỉ đọc được bình luận live của chính tài khoản quản trị app; cho mọi người dùng cần Meta duyệt quyền (App Review)." = "Facebook: khi app còn ở chế độ phát triển chỉ đọc được bình luận live của chính tài khoản quản trị app; cho mọi người dùng cần Meta duyệt quyền (App Review).";
 "Font" = "Font";
 "Ghi" = "Ghi";
@@ -537,6 +538,7 @@
 "Tốc độ khung" = "Tốc độ khung";
 "Tốc độ nhận" = "Tốc độ nhận";
 "Tối thiểu: %.1f Mbps" = "Tối thiểu: %.1f Mbps";
+"Tối ưu chất lượng tốt nhất cho các đích phát" = "Tối ưu chất lượng tốt nhất cho các đích phát";
 "Từ chối" = "Từ chối";
 "Tự kết nối thiết bị tin cậy" = "Tự kết nối thiết bị tin cậy";
 "Tự động" = "Tự động";
@@ -653,6 +655,7 @@
 "Đã nạp logo — bấm Logo ở cột phải để lên PGM" = "Đã nạp logo — bấm Logo ở cột phải để lên PGM";
 "Đã nạp — bấm SuperFG On ở cột phải" = "Đã nạp — bấm SuperFG On ở cột phải";
 "Đã tạo và đang phát tới" = "Đã tạo và đang phát tới";
+"Đã tối ưu: %@ Mbps, %@, GOP 2 s" = "Đã tối ưu: %@ Mbps, %@, GOP 2 s";
 "Đã xuất %@ vào thư viện Video" = "Đã xuất %@ vào thư viện Video";
 "Đã xuất %lf vào thư viện Video" = "Đã xuất %lf vào thư viện Video";
 "Đã xuất %lld vào thư viện Video" = "Đã xuất %lld vào thư viện Video";
@@ -671,6 +674,7 @@
 "Đầu vào" = "Đầu vào";
 "Đậm %@" = "Đậm %@";
 "Đặt MARK IN / MARK OUT rồi bấm Lưu clip" = "Đặt MARK IN / MARK OUT rồi bấm Lưu clip";
+"Đặt bitrate cao nhất YouTube khuyến nghị (Facebook: không vượt mức tối đa Facebook nhận), GOP 2 s, H.264 nếu có Facebook, bitrate thích ứng không xuống dưới 70 %." = "Đặt bitrate cao nhất YouTube khuyến nghị (Facebook: không vượt mức tối đa Facebook nhận), GOP 2 s, H.264 nếu có Facebook, bitrate thích ứng không xuống dưới 70 %.";
 "Đặt lại" = "Đặt lại";
 "Đặt lại tỉ số 0 - 0" = "Đặt lại tỉ số 0 - 0";
 "Đặt lại đồng hồ" = "Đặt lại đồng hồ";

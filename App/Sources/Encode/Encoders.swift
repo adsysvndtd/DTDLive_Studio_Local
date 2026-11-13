@@ -149,6 +149,10 @@ final class VideoEncoder: @unchecked Sendable {
             kVTCompressionPropertyKey_ExpectedFrameRate: fps,
             kVTCompressionPropertyKey_MaxKeyFrameIntervalDuration: settings.keyframeInterval,
             kVTCompressionPropertyKey_MaxKeyFrameInterval: Int(fps * settings.keyframeInterval),
+            // Rec.709 colour info in the SPS (VUI): players and YouTube/Facebook transcoders read the colours right.
+            kVTCompressionPropertyKey_ColorPrimaries: kCVImageBufferColorPrimaries_ITU_R_709_2,
+            kVTCompressionPropertyKey_TransferFunction: kCVImageBufferTransferFunction_ITU_R_709_2,
+            kVTCompressionPropertyKey_YCbCrMatrix: kCVImageBufferYCbCrMatrix_ITU_R_709_2,
         ]
         VTSessionSetProperties(s, propertyDictionary: p as CFDictionary)
         if settings.codec == .h264 {
