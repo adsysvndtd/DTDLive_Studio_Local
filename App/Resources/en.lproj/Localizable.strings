@@ -1,4 +1,5 @@
 "%.1f Mbps · Âm thanh %.0f dBFS" = "%.1f Mbps · Audio %.0f dBFS";
+"(bản sao)" = "(copy)";
 "(lưu vào Files › DTDStudio)" = "(saved to Files › DTDStudio)";
 "0.25×" = "0.25×";
 "0.5×" = "0.5×";
@@ -69,6 +70,7 @@
 "Chạm một mẫu để nạp (đang trên sóng thì thay ngay); bật/tắt bằng SuperFG On ở cột phải. Sửa chữ, màu cập nhật ngay." = "Tap a template to load it (replaces it live if on air); turn it on/off with SuperFG On. Text and colour update instantly.";
 "Chạm để nạp, bật/tắt bằng phím ở cột phải" = "Tap to load; turn on/off with the keys on the right";
 "Chạm để đưa lên PVW, rồi Cut / chuyển cảnh ở cột phải" = "Tap to send to PVW, then Cut / transition on the right";
+"Chạy hiệu ứng" = "Play animation";
 "Chấp nhận" = "Accept";
 "Chế độ" = "Mode";
 "Chỉ bật khi dùng tai nghe — loa ngoài sẽ hú vào micro." = "Headphones only — the speaker would feed back into the mic.";
@@ -76,6 +78,7 @@
 "Chỉ mình tôi" = "Only me";
 "Chỉnh khung" = "Edit windows";
 "Chọn một nguồn ở hàng PREVIEW để chỉnh" = "Pick a source on PREVIEW to adjust";
+"Chọn từ thư viện Logo" = "Choose from Logo library";
 "Chọn video…" = "Choose video…";
 "Chống rung" = "Stabilization";
 "Chủ repo (owner)" = "Repo owner";
@@ -166,6 +169,7 @@
 "Không" = "No";
 "Không có tín hiệu" = "No signal";
 "Không công khai (có link)" = "Unlisted (link only)";
+"Không dùng" = "None";
 "Không muốn đăng ký app: dùng Đầu ra › Thêm đích › YouTube/Facebook (stream key)." = "No app registration: use Outputs › Add destination › YouTube/Facebook (stream key).";
 "Không mở được micro/bộ trộn âm thanh — đang phát kèm âm thanh câm. Kiểm tra quyền Micro trong Cài đặt iOS." = "Couldn't open the microphone/audio mixer — streaming with silent audio. Check Microphone permission in iOS Settings.";
 "Không mở được tệp: %@" = "Couldn't open file: %@";
@@ -246,6 +250,7 @@
 "Máy đang nóng — tạm giảm còn %@ hình/giây để hạ nhiệt" = "Device is hot — temporarily %@ fps to cool down";
 "Máy đang nóng — tạm giảm còn %lf hình/giây để hạ nhiệt" = "Device is hot — temporarily %lf fps to cool down";
 "Máy đang nóng — tạm giảm còn %lld hình/giây để hạ nhiệt" = "Device is hot — temporarily %lld fps to cool down";
+"Mã HTML" = "HTML code";
 "Mất kết nối — thử lại" = "Connection lost — retrying";
 "Mẫu bố cục" = "Layouts";
 "Mật khẩu SRT (để trống = không mã hoá, 10–79 ký tự)" = "SRT passphrase (empty = unencrypted, 10–79 characters)";
@@ -275,12 +280,15 @@
 "Nhiệt độ màu" = "Colour temperature";
 "Nhà tài trợ" = "Sponsor";
 "Nhánh" = "Branch";
+"Nhân bản" = "Duplicate";
+"Nhân bản để sửa" = "Duplicate to edit";
 "Nhãn" = "Label";
 "Nhạc" = "Music";
 "Nhạc nền" = "Music";
 "Nhạc nền & hiệu ứng" = "Music & effects";
 "Nhận camera (đẩy về DTD Studio)" = "Camera ingest (push to DTD Studio)";
 "Nhận camera: SRT · RTMP · RTSP · DTDLive" = "Camera ingest: SRT · RTMP · RTSP · DTDLive";
+"Nhập HTML" = "Import HTML";
 "Nhập SuperFG" = "Import SuperFG";
 "Nhập hiệu ứng" = "Import effects";
 "Nhập logo" = "Import logo";
@@ -298,6 +306,7 @@
 "Nền thay thế" = "Replacement background";
 "Nền tên" = "Name background";
 "Nền tảng này hiển thị dọc 9:16" = "This platform shows vertical 9:16";
+"Nội dung" = "Content";
 "Nội dung chữ chạy" = "Ticker text";
 "Nửa trái" = "Left half";
 "PHÁT REPLAY" = "PLAY REPLAY";
@@ -315,6 +324,7 @@
 "Phút %lld" = "Minutes %lld";
 "Phơi sáng" = "Exposure";
 "Phản hồi không hợp lệ" = "Invalid response";
+"Phần tử có data-field=\"tên\" sẽ thành ô sửa chữ; biến màu CSS (--accent: #…) thành ô chọn màu." = "Elements with data-field=\"name\" become text fields; CSS colour variables (--accent: #…) become colour pickers.";
 "PiP trên Program" = "PiP on Program";
 "Preset: chạm = gọi, giữ = lưu" = "Presets: tap = recall, hold = store";
 "QUÉT" = "WIPE";
@@ -334,8 +344,10 @@
 "Sắp xếp" = "Arrange";
 "SỌC" = "BARS";
 "Sọc" = "Bars";
+"Sửa" = "Edit";
 "Sửa bảng tỉ số" = "Edit scoreboard";
 "Sửa link" = "Edit link";
+"Sửa mã HTML" = "Edit HTML code";
 "Sửa tên, logo, màu…" = "Edit names, logos, colours…";
 "Sự kiện" = "Event";
 "TIN NÓNG" = "BREAKING NEWS";
@@ -363,6 +375,7 @@
 "Thư mục %@ không có manifest.json" = "Folder %@ has no manifest.json";
 "Thư mục %lf không có manifest.json" = "Folder %lf has no manifest.json";
 "Thư mục %lld không có manifest.json" = "Folder %lld has no manifest.json";
+"Thư mục không có file .html" = "The folder has no .html file";
 "Thư mục đồ hoạ" = "Graphics folder";
 "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTD Studio › Library › %@" = "Library empty — use the import button above. Files live in Files › DTD Studio › Library › %@";
 "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTD Studio › Library › %lf" = "Library empty — use the import button above. Files live in Files › DTD Studio › Library › %lf";
@@ -432,6 +445,7 @@
 "Xanh dương" = "Blue";
 "Xanh lá" = "Green";
 "Xem live" = "Watch live";
+"Xem mã đang sửa" = "Preview edited code";
 "Xem nhật ký" = "Show log";
 "Xoay" = "Rotate";
 "Xoay 180°" = "Rotate 180°";
@@ -503,6 +517,7 @@
 "Đã mới nhất (%@)" = "Up to date (%@)";
 "Đã mới nhất (%lf)" = "Up to date (%lf)";
 "Đã mới nhất (%lld)" = "Up to date (%lld)";
+"Đã nhập: %@" = "Imported: %@";
 "Đã nạp logo — bấm Logo ở cột phải để lên PGM" = "Logo loaded — press Logo in the right column to put it on PGM";
 "Đã nạp — bấm SuperFG On ở cột phải" = "Loaded — press SuperFG On in the right column";
 "Đã tạo và đang phát tới" = "Created and streaming to";
@@ -530,6 +545,7 @@
 "Đồ hoạ HTML5 (tải từ Git)" = "HTML5 graphics (from Git)";
 "Đồng hồ" = "Clock";
 "Đổi bên (tên, tỉ số, logo)" = "Swap sides (names, scores, logos)";
+"Đổi tên" = "Rename";
 "Đổi độ phân giải/fps khi đang phát: các đích tự kết nối lại với thông số mới." = "Changing resolution/fps while live reconnects every destination with the new settings.";
 "Độ dày" = "Thickness";
 "Độ phân giải" = "Resolution";

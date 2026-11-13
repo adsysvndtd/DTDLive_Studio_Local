@@ -5500,6 +5500,166 @@
           }
         }
       }
+    },
+    "Nhập HTML": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import HTML"
+          }
+        }
+      }
+    },
+    "Sửa": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edit"
+          }
+        }
+      }
+    },
+    "Sửa mã HTML": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edit HTML code"
+          }
+        }
+      }
+    },
+    "Nhân bản để sửa": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Duplicate to edit"
+          }
+        }
+      }
+    },
+    "Nhân bản": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Duplicate"
+          }
+        }
+      }
+    },
+    "Đổi tên": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rename"
+          }
+        }
+      }
+    },
+    "Đã nhập: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Imported: %@"
+          }
+        }
+      }
+    },
+    "Không dùng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "None"
+          }
+        }
+      }
+    },
+    "Chọn từ thư viện Logo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose from Logo library"
+          }
+        }
+      }
+    },
+    "Chạy hiệu ứng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Play animation"
+          }
+        }
+      }
+    },
+    "Xem mã đang sửa": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preview edited code"
+          }
+        }
+      }
+    },
+    "Nội dung": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Content"
+          }
+        }
+      }
+    },
+    "Mã HTML": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "HTML code"
+          }
+        }
+      }
+    },
+    "Phần tử có data-field=\"tên\" sẽ thành ô sửa chữ; biến màu CSS (--accent: #…) thành ô chọn màu.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elements with data-field=\"name\" become text fields; CSS colour variables (--accent: #…) become colour pickers."
+          }
+        }
+      }
+    },
+    "Thư mục không có file .html": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The folder has no .html file"
+          }
+        }
+      }
+    },
+    "(bản sao)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "(copy)"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

@@ -45,6 +45,12 @@ final class MediaLibrary: ObservableObject {
 
     func list(_ k: LibraryKind) -> [URL] { items[k] ?? [] }
 
+    /// Direct listing (for views that don't hold the library object).
+    nonisolated static func listFiles(_ k: LibraryKind) -> [URL] {
+        ((try? FileManager.default.contentsOfDirectory(at: directory(k), includingPropertiesForKeys: nil)) ?? [])
+            .filter { !$0.lastPathComponent.hasPrefix(".") }.sorted { $0.lastPathComponent < $1.lastPathComponent }
+    }
+
     /// Copies picked files into the library (security-scoped URLs from the document picker).
     /// Returns an error line for files that could not be copied.
     @discardableResult

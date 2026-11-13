@@ -1,4 +1,5 @@
 "%.1f Mbps · Âm thanh %.0f dBFS" = "%.1f Mbps · Âm thanh %.0f dBFS";
+"(bản sao)" = "(bản sao)";
 "(lưu vào Files › DTDStudio)" = "(lưu vào Files › DTDStudio)";
 "0.25×" = "0.25×";
 "0.5×" = "0.5×";
@@ -69,6 +70,7 @@
 "Chạm một mẫu để nạp (đang trên sóng thì thay ngay); bật/tắt bằng SuperFG On ở cột phải. Sửa chữ, màu cập nhật ngay." = "Chạm một mẫu để nạp (đang trên sóng thì thay ngay); bật/tắt bằng SuperFG On ở cột phải. Sửa chữ, màu cập nhật ngay.";
 "Chạm để nạp, bật/tắt bằng phím ở cột phải" = "Chạm để nạp, bật/tắt bằng phím ở cột phải";
 "Chạm để đưa lên PVW, rồi Cut / chuyển cảnh ở cột phải" = "Chạm để đưa lên PVW, rồi Cut / chuyển cảnh ở cột phải";
+"Chạy hiệu ứng" = "Chạy hiệu ứng";
 "Chấp nhận" = "Chấp nhận";
 "Chế độ" = "Chế độ";
 "Chỉ bật khi dùng tai nghe — loa ngoài sẽ hú vào micro." = "Chỉ bật khi dùng tai nghe — loa ngoài sẽ hú vào micro.";
@@ -76,6 +78,7 @@
 "Chỉ mình tôi" = "Chỉ mình tôi";
 "Chỉnh khung" = "Chỉnh khung";
 "Chọn một nguồn ở hàng PREVIEW để chỉnh" = "Chọn một nguồn ở hàng PREVIEW để chỉnh";
+"Chọn từ thư viện Logo" = "Chọn từ thư viện Logo";
 "Chọn video…" = "Chọn video…";
 "Chống rung" = "Chống rung";
 "Chủ repo (owner)" = "Chủ repo (owner)";
@@ -166,6 +169,7 @@
 "Không" = "Không";
 "Không có tín hiệu" = "Không có tín hiệu";
 "Không công khai (có link)" = "Không công khai (có link)";
+"Không dùng" = "Không dùng";
 "Không muốn đăng ký app: dùng Đầu ra › Thêm đích › YouTube/Facebook (stream key)." = "Không muốn đăng ký app: dùng Đầu ra › Thêm đích › YouTube/Facebook (stream key).";
 "Không mở được micro/bộ trộn âm thanh — đang phát kèm âm thanh câm. Kiểm tra quyền Micro trong Cài đặt iOS." = "Không mở được micro/bộ trộn âm thanh — đang phát kèm âm thanh câm. Kiểm tra quyền Micro trong Cài đặt iOS.";
 "Không mở được tệp: %@" = "Không mở được tệp: %@";
@@ -246,6 +250,7 @@
 "Máy đang nóng — tạm giảm còn %@ hình/giây để hạ nhiệt" = "Máy đang nóng — tạm giảm còn %@ hình/giây để hạ nhiệt";
 "Máy đang nóng — tạm giảm còn %lf hình/giây để hạ nhiệt" = "Máy đang nóng — tạm giảm còn %lf hình/giây để hạ nhiệt";
 "Máy đang nóng — tạm giảm còn %lld hình/giây để hạ nhiệt" = "Máy đang nóng — tạm giảm còn %lld hình/giây để hạ nhiệt";
+"Mã HTML" = "Mã HTML";
 "Mất kết nối — thử lại" = "Mất kết nối — thử lại";
 "Mẫu bố cục" = "Mẫu bố cục";
 "Mật khẩu SRT (để trống = không mã hoá, 10–79 ký tự)" = "Mật khẩu SRT (để trống = không mã hoá, 10–79 ký tự)";
@@ -275,12 +280,15 @@
 "Nhiệt độ màu" = "Nhiệt độ màu";
 "Nhà tài trợ" = "Nhà tài trợ";
 "Nhánh" = "Nhánh";
+"Nhân bản" = "Nhân bản";
+"Nhân bản để sửa" = "Nhân bản để sửa";
 "Nhãn" = "Nhãn";
 "Nhạc" = "Nhạc";
 "Nhạc nền" = "Nhạc nền";
 "Nhạc nền & hiệu ứng" = "Nhạc nền & hiệu ứng";
 "Nhận camera (đẩy về DTD Studio)" = "Nhận camera (đẩy về DTD Studio)";
 "Nhận camera: SRT · RTMP · RTSP · DTDLive" = "Nhận camera: SRT · RTMP · RTSP · DTDLive";
+"Nhập HTML" = "Nhập HTML";
 "Nhập SuperFG" = "Nhập SuperFG";
 "Nhập hiệu ứng" = "Nhập hiệu ứng";
 "Nhập logo" = "Nhập logo";
@@ -298,6 +306,7 @@
 "Nền thay thế" = "Nền thay thế";
 "Nền tên" = "Nền tên";
 "Nền tảng này hiển thị dọc 9:16" = "Nền tảng này hiển thị dọc 9:16";
+"Nội dung" = "Nội dung";
 "Nội dung chữ chạy" = "Nội dung chữ chạy";
 "Nửa trái" = "Nửa trái";
 "PHÁT REPLAY" = "PHÁT REPLAY";
@@ -315,6 +324,7 @@
 "Phút %lld" = "Phút %lld";
 "Phơi sáng" = "Phơi sáng";
 "Phản hồi không hợp lệ" = "Phản hồi không hợp lệ";
+"Phần tử có data-field=\"tên\" sẽ thành ô sửa chữ; biến màu CSS (--accent: #…) thành ô chọn màu." = "Phần tử có data-field=\"tên\" sẽ thành ô sửa chữ; biến màu CSS (--accent: #…) thành ô chọn màu.";
 "PiP trên Program" = "PiP trên Program";
 "Preset: chạm = gọi, giữ = lưu" = "Preset: chạm = gọi, giữ = lưu";
 "QUÉT" = "QUÉT";
@@ -334,8 +344,10 @@
 "Sắp xếp" = "Sắp xếp";
 "SỌC" = "SỌC";
 "Sọc" = "Sọc";
+"Sửa" = "Sửa";
 "Sửa bảng tỉ số" = "Sửa bảng tỉ số";
 "Sửa link" = "Sửa link";
+"Sửa mã HTML" = "Sửa mã HTML";
 "Sửa tên, logo, màu…" = "Sửa tên, logo, màu…";
 "Sự kiện" = "Sự kiện";
 "TIN NÓNG" = "TIN NÓNG";
@@ -363,6 +375,7 @@
 "Thư mục %@ không có manifest.json" = "Thư mục %@ không có manifest.json";
 "Thư mục %lf không có manifest.json" = "Thư mục %lf không có manifest.json";
 "Thư mục %lld không có manifest.json" = "Thư mục %lld không có manifest.json";
+"Thư mục không có file .html" = "Thư mục không có file .html";
 "Thư mục đồ hoạ" = "Thư mục đồ hoạ";
 "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTD Studio › Library › %@" = "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTD Studio › Library › %@";
 "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTD Studio › Library › %lf" = "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTD Studio › Library › %lf";
@@ -432,6 +445,7 @@
 "Xanh dương" = "Xanh dương";
 "Xanh lá" = "Xanh lá";
 "Xem live" = "Xem live";
+"Xem mã đang sửa" = "Xem mã đang sửa";
 "Xem nhật ký" = "Xem nhật ký";
 "Xoay" = "Xoay";
 "Xoay 180°" = "Xoay 180°";
@@ -503,6 +517,7 @@
 "Đã mới nhất (%@)" = "Đã mới nhất (%@)";
 "Đã mới nhất (%lf)" = "Đã mới nhất (%lf)";
 "Đã mới nhất (%lld)" = "Đã mới nhất (%lld)";
+"Đã nhập: %@" = "Đã nhập: %@";
 "Đã nạp logo — bấm Logo ở cột phải để lên PGM" = "Đã nạp logo — bấm Logo ở cột phải để lên PGM";
 "Đã nạp — bấm SuperFG On ở cột phải" = "Đã nạp — bấm SuperFG On ở cột phải";
 "Đã tạo và đang phát tới" = "Đã tạo và đang phát tới";
@@ -530,6 +545,7 @@
 "Đồ hoạ HTML5 (tải từ Git)" = "Đồ hoạ HTML5 (tải từ Git)";
 "Đồng hồ" = "Đồng hồ";
 "Đổi bên (tên, tỉ số, logo)" = "Đổi bên (tên, tỉ số, logo)";
+"Đổi tên" = "Đổi tên";
 "Đổi độ phân giải/fps khi đang phát: các đích tự kết nối lại với thông số mới." = "Đổi độ phân giải/fps khi đang phát: các đích tự kết nối lại với thông số mới.";
 "Độ dày" = "Độ dày";
 "Độ phân giải" = "Độ phân giải";

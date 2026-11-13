@@ -12,11 +12,15 @@ struct HTMLTemplate: Codable, Identifiable, Equatable {
         var `default`: String?
         var type: String?
         var isColor: Bool { type == "color" }
+        var isImage: Bool { type == "image" }
     }
     let id: String
-    let name: String
+    var name: String
     let entry: String
     var fields: [Field]
+    /// Imported / edited by the operator (kept in Documents/GraphicsUser, survives Git sync).
+    var user: Bool? = nil
+    var isUser: Bool { user == true }
 }
 
 struct HTMLManifest: Codable {
@@ -44,6 +48,198 @@ enum HTMLGraphicsStore {
     static func manifest() -> HTMLManifest? {
         guard let d = try? Data(contentsOf: directory.appendingPathComponent("manifest.json")) else { return nil }
         return try? JSONDecoder().decode(HTMLManifest.self, from: d)
+    }
+
+    // MARK: Operator templates (imported HTML files, edited copies)
+
+    static var documents: URL { FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0] }
+
+    static var userDirectory: URL {
+        let d = documents.appendingPathComponent("GraphicsUser", isDirectory: true)
+        try? FileManager.default.createDirectory(at: d, withIntermediateDirectories: true)
+        return d
+    }
+
+    static func userTemplates() -> [HTMLTemplate] {
+        guard let d = try? Data(contentsOf: userDirectory.appendingPathComponent("user.json")),
+              let m = try? JSONDecoder().decode(HTMLManifest.self, from: d) else { return [] }
+        return m.templates.map { var t = $0; t.user = true; return t }
+    }
+
+    static func saveUserTemplates(_ list: [HTMLTemplate]) {
+        let m = HTMLManifest(version: 1, templates: list)
+        let enc = JSONEncoder(); enc.outputFormatting = [.prettyPrinted, .withoutEscapingSlashes]
+        if let d = try? enc.encode(m) { try? d.write(to: userDirectory.appendingPathComponent("user.json")) }
+    }
+
+    static func entryURL(_ t: HTMLTemplate) -> URL {
+        (t.isUser ? userDirectory : directory).appendingPathComponent(t.entry)
+    }
+
+    /// Finds the editable parts of a page:
+    /// 1. `<script type="application/json" id="dtd-fields">[{"id":…,"label":…}]</script>`
+    /// 2. elements with `data-field="key"` (optional `data-label`, `data-default`, `data-type`; `<img>` → image)
+    /// 3. colour CSS variables (`--accent: #f26b1d`) → colour pickers
+    /// 4. if 1–2 found nothing: elements with an `id` that hold plain text.
+    static func detectFields(_ html: String) -> [HTMLTemplate.Field] {
+        var out: [HTMLTemplate.Field] = []
+        func add(_ f: HTMLTemplate.Field) { if !out.contains(where: { $0.id == f.id }) { out.append(f) } }
+        func matches(_ pattern: String) -> [[String]] {
+            guard let re = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive, .dotMatchesLineSeparators]) else { return [] }
+            let ns = html as NSString
+            return re.matches(in: html, range: NSRange(location: 0, length: ns.length)).map { m in
+                (0..<m.numberOfRanges).map { m.range(at: $0).location == NSNotFound ? "" : ns.substring(with: m.range(at: $0)) }
+            }
+        }
+        func attr(_ name: String, in tag: String) -> String? {
+            guard let re = try? NSRegularExpression(pattern: name + #"\s*=\s*["']([^"']*)["']"#, options: .caseInsensitive),
+                  let m = re.firstMatch(in: tag, range: NSRange(location: 0, length: (tag as NSString).length)) else { return nil }
+            return (tag as NSString).substring(with: m.range(at: 1))
+        }
+        func clean(_ s: String) -> String {
+            s.replacingOccurrences(of: "&amp;", with: "&").replacingOccurrences(of: "&nbsp;", with: " ")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+        if let js = matches(#"<script[^>]*id=["']dtd-fields["'][^>]*>(.*?)</script>"#).first?[1],
+           let list = try? JSONDecoder().decode([HTMLTemplate.Field].self, from: Data(js.utf8)) {
+            list.forEach(add)
+        }
+        for m in matches(#"<(\w+)([^>]*\bdata-field\s*=\s*["'][^"']+["'][^>]*)>([^<]*)"#) {
+            let tag = m[2]
+            guard let key = attr("data-field", in: tag) else { continue }
+            let isImg = m[1].lowercased() == "img"
+            add(.init(id: key, label: attr("data-label", in: tag) ?? key,
+                      default: attr("data-default", in: tag) ?? (isImg ? (attr("src", in: tag) ?? "") : clean(m[3])),
+                      type: attr("data-type", in: tag) ?? (isImg ? "image" : nil)))
+        }
+        if out.isEmpty {
+            for m in matches(#"<(\w+)[^>]*\bid\s*=\s*["']([\w-]+)["'][^>]*>([^<]{1,120})</\1>"#) {
+                let tag = m[1].lowercased(), text = clean(m[3])
+                guard !["script", "style", "title"].contains(tag), !text.isEmpty else { continue }
+                add(.init(id: m[2], label: m[2], default: text, type: nil))
+            }
+        }
+        for m in matches(#"(--[\w-]+)\s*:\s*(#[0-9a-fA-F]{3,8})\b"#) {
+            add(.init(id: m[1], label: L("Màu") + " " + String(m[1].dropFirst(2)), default: m[2], type: "color"))
+        }
+        return out
+    }
+
+    /// Copies an .html file, or a folder holding one, into GraphicsUser and registers it.
+    static func importHTML(_ url: URL) throws -> HTMLTemplate {
+        let fm = FileManager.default
+        let scoped = url.startAccessingSecurityScopedResource()
+        defer { if scoped { url.stopAccessingSecurityScopedResource() } }
+        var isDir: ObjCBool = false
+        fm.fileExists(atPath: url.path, isDirectory: &isDir)
+        let base = url.deletingPathExtension().lastPathComponent
+        let slug = base.lowercased().replacingOccurrences(of: #"[^a-z0-9]+"#, with: "-", options: .regularExpression)
+            .trimmingCharacters(in: CharacterSet(charactersIn: "-"))
+        let id = "u-\(slug.isEmpty ? "html" : slug)-\(UUID().uuidString.prefix(4).lowercased())"
+        let folder = userDirectory.appendingPathComponent(id, isDirectory: true)
+        let entry: String
+        if isDir.boolValue {
+            try fm.copyItem(at: url, to: folder)
+            let files = (try? fm.contentsOfDirectory(atPath: folder.path)) ?? []
+            guard let page = files.first(where: { $0.lowercased() == "index.html" })
+                    ?? files.sorted().first(where: { ["html", "htm"].contains(($0 as NSString).pathExtension.lowercased()) }) else {
+                try? fm.removeItem(at: folder)
+                throw NSError(domain: "dtd", code: 2, userInfo: [NSLocalizedDescriptionKey: L("Thư mục không có file .html")])
+            }
+            entry = "\(id)/\(page)"
+        } else {
+            try fm.createDirectory(at: folder, withIntermediateDirectories: true)
+            try fm.copyItem(at: url, to: folder.appendingPathComponent("index.html"))
+            entry = "\(id)/index.html"
+        }
+        let html = (try? String(contentsOf: userDirectory.appendingPathComponent(entry), encoding: .utf8)) ?? ""
+        var name = base
+        if let r = html.range(of: #"(?<=<title>)[^<]+"#, options: [.regularExpression, .caseInsensitive]) {
+            let t = html[r].trimmingCharacters(in: .whitespaces); if !t.isEmpty { name = t }
+        }
+        let t = HTMLTemplate(id: id, name: name, entry: entry, fields: detectFields(html), user: true)
+        saveUserTemplates(userTemplates() + [t])
+        return t
+    }
+
+    /// Makes an editable copy of any template (built-in ones are replaced by Git sync).
+    static func duplicate(_ t: HTMLTemplate) throws -> HTMLTemplate {
+        let fm = FileManager.default
+        let srcFolder = entryURL(t).deletingLastPathComponent()
+        let id = "u-\(t.id.replacingOccurrences(of: "u-", with: ""))-\(UUID().uuidString.prefix(4).lowercased())"
+        let folder = userDirectory.appendingPathComponent(id, isDirectory: true)
+        try fm.copyItem(at: srcFolder, to: folder)
+        let c = HTMLTemplate(id: id, name: t.name + " " + L("(bản sao)"),
+                         entry: "\(id)/\(entryURL(t).lastPathComponent)", fields: t.fields, user: true)
+        saveUserTemplates(userTemplates() + [c])
+        return c
+    }
+
+    static func deleteUser(_ t: HTMLTemplate) {
+        guard t.isUser else { return }
+        try? FileManager.default.removeItem(at: entryURL(t).deletingLastPathComponent())
+        saveUserTemplates(userTemplates().filter { $0.id != t.id })
+    }
+
+    static func updateUser(_ t: HTMLTemplate) {
+        saveUserTemplates(userTemplates().map { $0.id == t.id ? t : $0 })
+    }
+
+    /// Saves edited HTML; fields are re-detected but ones still used by the page are kept.
+    static func saveSource(_ t: HTMLTemplate, html: String) throws -> HTMLTemplate {
+        try html.write(to: entryURL(t), atomically: true, encoding: .utf8)
+        var c = t
+        let found = detectFields(html)
+        var fields = t.fields.filter { f in found.contains(where: { $0.id == f.id }) || html.contains(f.id) || f.id == "accent" }
+        for f in found where !fields.contains(where: { $0.id == f.id }) { fields.append(f) }
+        c.fields = fields
+        updateUser(c)
+        return c
+    }
+
+    /// Fallback API for pages that only mark editable parts (no update/play/stop of their own).
+    static let shimJS = """
+    (function(){
+      function setv(k,v){
+        if(k.indexOf('--')===0){document.documentElement.style.setProperty(k,v);return;}
+        var els=document.querySelectorAll('[data-field="'+k+'"]');
+        if(!els.length){var e=document.getElementById(k);if(e)els=[e];}
+        Array.prototype.forEach.call(els,function(e){
+          if(e.tagName==='IMG'){e.src=v;}else{e.textContent=v;}
+        });
+      }
+      if(typeof window.update!=='function'){window.update=function(d){if(typeof d==='string')d=JSON.parse(d);for(var k in d)setv(k,d[k]);};}
+      if(typeof window.play!=='function'){
+        var st=document.createElement('style');
+        st.textContent='body.dtd-in{animation:dtdIn .45s ease-out both}body.dtd-out{animation:dtdOut .4s ease-in both}@keyframes dtdIn{from{opacity:0;transform:translateY(24px)}}@keyframes dtdOut{to{opacity:0;transform:translateY(24px)}}';
+        document.head.appendChild(st);
+        window.play=function(){document.body.classList.remove('dtd-out');void document.body.offsetWidth;document.body.classList.add('dtd-in');};
+      }
+      if(typeof window.stop!=='function'){window.stop=function(){document.body.classList.remove('dtd-in');document.body.classList.add('dtd-out');};}
+      if(typeof window.next!=='function'){window.next=function(){};}
+    })();
+    """
+
+    static func webConfiguration() -> WKWebViewConfiguration {
+        let cfg = WKWebViewConfiguration()
+        cfg.mediaTypesRequiringUserActionForPlayback = []
+        cfg.allowsInlineMediaPlayback = true
+        cfg.userContentController.addUserScript(WKUserScript(source: shimJS, injectionTime: .atDocumentEnd, forMainFrameOnly: true))
+        return cfg
+    }
+
+    /// Image values are stored as "logo:<file>" (the container path changes between installs).
+    static func resolve(_ v: String, _ f: HTMLTemplate.Field) -> String {
+        guard f.isImage, v.hasPrefix("logo:") else { return v }
+        return MediaLibrary.directory(.logo).appendingPathComponent(String(v.dropFirst(5))).absoluteString
+    }
+
+    /// JS that pushes values to a page (also sets CSS variables directly for pages whose update() ignores them).
+    static func pushJS(_ t: HTMLTemplate, values: [String: String]) -> String? {
+        var d: [String: String] = [:]
+        for f in t.fields { d[f.id] = resolve(values[f.id] ?? f.default ?? "", f) }
+        guard let json = try? JSONSerialization.data(withJSONObject: d), let s = String(data: json, encoding: .utf8) else { return nil }
+        return "(function(d){try{if(typeof update==='function')update(d);}catch(e){}for(var k in d){if(k.indexOf('--')===0)document.documentElement.style.setProperty(k,d[k]);}})(\(s))"
     }
 }
 
@@ -206,9 +402,34 @@ final class HTMLGraphics: NSObject, ObservableObject, WKNavigationDelegate {
     }
 
     func reload() {
-        templates = HTMLGraphicsStore.manifest()?.templates ?? []
-        if let id = loadedID { load(id) }
+        templates = HTMLGraphicsStore.userTemplates() + (HTMLGraphicsStore.manifest()?.templates ?? [])
+        if let id = loadedID {
+            if templates.contains(where: { $0.id == id }) { load(id) } else { if onAir { stop() }; loadedID = nil }
+        }
     }
+
+    // Operator templates
+    @discardableResult
+    func importHTML(_ url: URL) throws -> HTMLTemplate {
+        let t = try HTMLGraphicsStore.importHTML(url); reload(); return t
+    }
+    @discardableResult
+    func duplicate(_ t: HTMLTemplate) throws -> HTMLTemplate {
+        let c = try HTMLGraphicsStore.duplicate(t)
+        values[c.id] = values[t.id]
+        reload(); return c
+    }
+    func delete(_ t: HTMLTemplate) {
+        if loadedID == t.id { if onAir { stop() }; loadedID = nil }
+        HTMLGraphicsStore.deleteUser(t); values[t.id] = nil; reload()
+    }
+    func rename(_ t: HTMLTemplate, _ name: String) {
+        var c = t; c.name = name; HTMLGraphicsStore.updateUser(c); reload()
+    }
+    func saveSource(_ t: HTMLTemplate, html: String) throws {
+        _ = try HTMLGraphicsStore.saveSource(t, html: html); reload()
+    }
+    func values(for t: HTMLTemplate) -> [String: String] { values[t.id] ?? [:] }
 
     func value(_ t: HTMLTemplate, _ f: HTMLTemplate.Field) -> String { values[t.id]?[f.id] ?? f.default ?? "" }
 
@@ -222,9 +443,9 @@ final class HTMLGraphics: NSObject, ObservableObject, WKNavigationDelegate {
         guard let t = templates.first(where: { $0.id == id }) else { return }
         if onAir { stop() }
         let w = ensureWebView()
-        let dir = HTMLGraphicsStore.directory
         pageReady = false
-        w.loadFileURL(dir.appendingPathComponent(t.entry), allowingReadAccessTo: dir)
+        // Read access to all of Documents so pages can show images from the Logo library.
+        w.loadFileURL(HTMLGraphicsStore.entryURL(t), allowingReadAccessTo: HTMLGraphicsStore.documents)
         loadedID = id
     }
 
@@ -255,18 +476,13 @@ final class HTMLGraphics: NSObject, ObservableObject, WKNavigationDelegate {
     }
 
     private func pushData(_ t: HTMLTemplate) {
-        var d: [String: String] = [:]
-        for f in t.fields { d[f.id] = value(t, f) }
-        guard let json = try? JSONSerialization.data(withJSONObject: d), let s = String(data: json, encoding: .utf8) else { return }
-        web?.evaluateJavaScript("typeof update==='function' && update(\(s))")
+        guard let js = HTMLGraphicsStore.pushJS(t, values: values[t.id] ?? [:]) else { return }
+        web?.evaluateJavaScript(js)
     }
 
     private func ensureWebView() -> WKWebView {
         if let w = web { return w }
-        let cfg = WKWebViewConfiguration()
-        cfg.mediaTypesRequiringUserActionForPlayback = []
-        cfg.allowsInlineMediaPlayback = true
-        let w = WKWebView(frame: CGRect(origin: .zero, size: renderSize), configuration: cfg)
+        let w = WKWebView(frame: CGRect(origin: .zero, size: renderSize), configuration: HTMLGraphicsStore.webConfiguration())
         w.isOpaque = false
         w.backgroundColor = .clear
         w.scrollView.backgroundColor = .clear
