@@ -1069,6 +1069,11 @@ struct SourceInfoView: View {
                     LabeledContent("Trạng thái", value: String(describing: s.status))
                     if let pb = s.frames.latest() {
                         LabeledContent("Độ phân giải", value: "\(CVPixelBufferGetWidth(pb))×\(CVPixelBufferGetHeight(pb))")
+                        if CVPixelBufferGetHeight(pb) < min(engine.format.height, engine.format.width) * 9 / 10 {
+                            Text(LF("Nguồn nhỏ hơn chương trình (%@×%@): hình bị phóng to nên mềm trên YouTube/Facebook. Đặt camera/DTDLive cùng độ phân giải với chương trình.",
+                                    "\(engine.format.width)", "\(engine.format.height)"))
+                                .font(.caption).foregroundStyle(.orange)
+                        }
                     } else {
                         LabeledContent("Độ phân giải", value: "Không có tín hiệu")
                     }
@@ -1081,6 +1086,13 @@ struct SourceInfoView: View {
                             LabeledContent("Gói bị bỏ (đến trễ)", value: "\(l.droppedPkts) · " + LF("tổng %@", "\(l.totalDropped)"))
                             LabeledContent("Khung hình hỏng bị bỏ qua", value: "\(l.brokenFrames) · " + LF("tổng %@", "\(l.totalBroken)"))
                             LabeledContent("Độ trễ SRT / bộ đệm", value: "\(l.latencyMs) ms / \(l.bufferMs) ms")
+                            // The camera feed is decoded and encoded again for the platforms: below ~1.5× the
+                            // output bitrate the PGM inherits the camera's compression on top of its own.
+                            if l.mbps > 0.3, l.mbps < Double(engine.encoder.bitrate) / 1e6 * 1.5 {
+                                Text(LF("Camera gửi %@ Mbps — thấp so với bitrate phát %@ Mbps: hình bị nén hai lần nên mờ. Cập nhật DTDLive (tự gửi ~12 Mbps cho 1080p30 qua Wi‑Fi) hoặc tăng bitrate trên DTDLive.",
+                                        String(format: "%.1f", l.mbps), String(format: "%.1f", Double(engine.encoder.bitrate) / 1e6)))
+                                    .font(.caption).foregroundStyle(.orange)
+                            }
                             Text(l.grade == 0 ? "Đường truyền tốt." :
                                  l.grade == 1 ? "Wi‑Fi chập chờn: SRT đang gửi lại gói, hình vẫn đủ." :
                                  "Gói đến quá trễ bị bỏ → hình giật. Tăng độ trễ Wi‑Fi (Cài đặt › Kết nối), dùng Wi‑Fi 5 GHz, đặt máy gần router hoặc giảm bitrate trên DTDLive.")

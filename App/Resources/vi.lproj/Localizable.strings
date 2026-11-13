@@ -55,6 +55,7 @@
 "Bộ đệm replay (Program)" = "Bộ đệm replay (Program)";
 "Bộ đệm trống — replay ghi lại tín hiệu Program khi app đang mã hoá (đang phát hoặc ghi)." = "Bộ đệm trống — replay ghi lại tín hiệu Program khi app đang mã hoá (đang phát hoặc ghi).";
 "Camera" = "Camera";
+"Camera gửi %@ Mbps — thấp so với bitrate phát %@ Mbps: hình bị nén hai lần nên mờ. Cập nhật DTDLive (tự gửi ~12 Mbps cho 1080p30 qua Wi‑Fi) hoặc tăng bitrate trên DTDLive." = "Camera gửi %@ Mbps — thấp so với bitrate phát %@ Mbps: hình bị nén hai lần nên mờ. Cập nhật DTDLive (tự gửi ~12 Mbps cho 1080p30 qua Wi‑Fi) hoặc tăng bitrate trên DTDLive.";
 "Camera mạng (SRT · RTSP · RTMP · DTDLive)" = "Camera mạng (SRT · RTSP · RTMP · DTDLive)";
 "Camera trong máy & USB" = "Camera trong máy & USB";
 "Cao" = "Cao";
@@ -346,6 +347,7 @@
 "Nghe Program (tai nghe)" = "Nghe Program (tai nghe)";
 "Nghe nhạc, hiệu ứng, video trên loa máy" = "Nghe nhạc, hiệu ứng, video trên loa máy";
 "Nguồn" = "Nguồn";
+"Nguồn nhỏ hơn chương trình (%@×%@): hình bị phóng to nên mềm trên YouTube/Facebook. Đặt camera/DTDLive cùng độ phân giải với chương trình." = "Nguồn nhỏ hơn chương trình (%@×%@): hình bị phóng to nên mềm trên YouTube/Facebook. Đặt camera/DTDLive cùng độ phân giải với chương trình.";
 "Nguồn tham gia" = "Nguồn tham gia";
 "Nguồn đang chỉnh" = "Nguồn đang chỉnh";
 "Ngôn ngữ" = "Ngôn ngữ";
