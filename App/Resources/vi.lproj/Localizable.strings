@@ -11,6 +11,7 @@
 "AFV1" = "AFV1";
 "AFV2" = "AFV2";
 "Ai được xem" = "Ai được xem";
+"B-frame" = "B-frame";
 "Ba khung ngang" = "Ba khung ngang";
 "Bitrate thích ứng" = "Bitrate thích ứng";
 "Bitrate thích ứng: giảm %@ → %@ kbps (mạng tải lên chậm, trễ %@ s)" = "Bitrate thích ứng: giảm %@ → %@ kbps (mạng tải lên chậm, trễ %@ s)";
@@ -34,6 +35,7 @@
 "Bật nảy" = "Bật nảy";
 "Bật scopes (Program)" = "Bật scopes (Program)";
 "Bật để xoá phông xanh lá / xanh dương" = "Bật để xoá phông xanh lá / xanh dương";
+"Bật: hình nét hơn ~10–15 % ở cùng bitrate (YouTube khuyến nghị), trễ thêm ~2 khung. Tắt: trễ thấp nhất, tương thích mọi máy chủ. Đổi khi đang phát: các đích tự kết nối lại." = "Bật: hình nét hơn ~10–15 % ở cùng bitrate (YouTube khuyến nghị), trễ thêm ~2 khung. Tắt: trễ thấp nhất, tương thích mọi máy chủ. Đổi khi đang phát: các đích tự kết nối lại.";
 "Bật: mạng chậm thì tự giảm bitrate (hình mềm hơn nhưng không đứng). Tắt: giữ nét, mạng chậm thì bỏ khung hình." = "Bật: mạng chậm thì tự giảm bitrate (hình mềm hơn nhưng không đứng). Tắt: giữ nét, mạng chậm thì bỏ khung hình.";
 "Bắt đầu" = "Bắt đầu";
 "Bắt đầu sau" = "Bắt đầu sau";

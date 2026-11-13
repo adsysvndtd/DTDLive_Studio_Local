@@ -7150,6 +7150,38 @@
           }
         }
       }
+    },
+    "B-frame": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "B-frames"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "B-frame"
+          }
+        }
+      }
+    },
+    "Bật: hình nét hơn ~10–15 % ở cùng bitrate (YouTube khuyến nghị), trễ thêm ~2 khung. Tắt: trễ thấp nhất, tương thích mọi máy chủ. Đổi khi đang phát: các đích tự kết nối lại.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "On: ~10–15 % sharper at the same bitrate (recommended by YouTube), ~2 frames more latency. Off: lowest latency, works with every server. Changing it while live reconnects the destinations."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bật: hình nét hơn ~10–15 % ở cùng bitrate (YouTube khuyến nghị), trễ thêm ~2 khung. Tắt: trễ thấp nhất, tương thích mọi máy chủ. Đổi khi đang phát: các đích tự kết nối lại."
+          }
+        }
+      }
     }
   },
   "version": "1.0"

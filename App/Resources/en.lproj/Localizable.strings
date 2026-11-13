@@ -11,6 +11,7 @@
 "AFV1" = "AFV1";
 "AFV2" = "AFV2";
 "Ai được xem" = "Who can watch";
+"B-frame" = "B-frames";
 "Ba khung ngang" = "Three across";
 "Bitrate thích ứng" = "Adaptive bitrate";
 "Bitrate thích ứng: giảm %@ → %@ kbps (mạng tải lên chậm, trễ %@ s)" = "Adaptive bitrate: down %@ → %@ kbps (slow upload, %@ s behind)";
@@ -34,6 +35,7 @@
 "Bật nảy" = "Pop";
 "Bật scopes (Program)" = "Show scopes (Program)";
 "Bật để xoá phông xanh lá / xanh dương" = "Turn on to remove a green / blue screen";
+"Bật: hình nét hơn ~10–15 % ở cùng bitrate (YouTube khuyến nghị), trễ thêm ~2 khung. Tắt: trễ thấp nhất, tương thích mọi máy chủ. Đổi khi đang phát: các đích tự kết nối lại." = "On: ~10–15 % sharper at the same bitrate (recommended by YouTube), ~2 frames more latency. Off: lowest latency, works with every server. Changing it while live reconnects the destinations.";
 "Bật: mạng chậm thì tự giảm bitrate (hình mềm hơn nhưng không đứng). Tắt: giữ nét, mạng chậm thì bỏ khung hình." = "On: lowers bitrate when the network is slow (softer but no freezing). Off: stays sharp, drops frames when the network is slow.";
 "Bắt đầu" = "Game starts";
 "Bắt đầu sau" = "Starts in";

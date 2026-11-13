@@ -67,7 +67,8 @@ final class ReplayEditor: ObservableObject {
         }
         message = nil
         basePTS = first.presentationTimeStamp.seconds
-        duration = max(0, last.presentationTimeStamp.seconds - basePTS)
+        let maxPTS = snapshot.map { $0.presentationTimeStamp.seconds }.max() ?? last.presentationTimeStamp.seconds
+        duration = max(0, maxPTS - basePTS)
         if snapshot.count > 1 { frameDuration = max(1.0 / 120, duration / Double(snapshot.count - 1)) }
         resetMarks(playheadAtEnd: true)
         buildThumbnails()
@@ -188,7 +189,7 @@ final class ReplayEditor: ObservableObject {
         if material == .buffer {
             let inPTS = basePTS + r.lowerBound, outPTS = basePTS + r.upperBound
             let start = snapshot.lastIndex { $0.isKeyframe && $0.presentationTimeStamp.seconds <= inPTS } ?? 0
-            c.samples = snapshot[start...].filter { $0.presentationTimeStamp.seconds <= outPTS }
+            c.samples = snapshot[start...].filter { $0.presentationTimeStamp.seconds <= outPTS + 0.25 } // B-frame refs
             c.basePTS = basePTS
         }
         clips.insert(c, at: 0)
@@ -230,12 +231,16 @@ final class ReplayEditor: ObservableObject {
         guard let k = samples.lastIndex(where: { $0.isKeyframe && $0.presentationTimeStamp.seconds <= pts + 0.0005 }),
               let fd = samples[k].formatDescription else { return nil }
         let decoder = FrameDecoder(format: fd)
-        var last: CVPixelBuffer?
+        // Decode order ≠ display order with B-frames: decode a little past the target and keep the
+        // frame with the latest PTS at or before it.
+        var best: (pts: Double, pb: CVPixelBuffer)?
         for sb in samples[k...] {
-            if sb.presentationTimeStamp.seconds > pts + 0.0005 { break }
-            if let pb = decoder.decode(sb) { last = pb }
+            let t = sb.presentationTimeStamp.seconds
+            if t > pts + 0.25 { break }
+            guard let pb = decoder.decode(sb), t <= pts + 0.0005 else { continue }
+            if best == nil || t > best!.pts { best = (t, pb) }
         }
-        return last.flatMap { image($0, maxWidth: maxWidth) }
+        return best.flatMap { image($0.pb, maxWidth: maxWidth) }
     }
 
     nonisolated static func image(_ pb: CVPixelBuffer, maxWidth: CGFloat) -> UIImage? {

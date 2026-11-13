@@ -20,10 +20,28 @@ struct EncoderSettings: Equatable, Codable {
         codec == .h264 ? kVTProfileLevel_H264_High_AutoLevel as String : kVTProfileLevel_HEVC_Main_AutoLevel as String
     }
     var audioBitrate = 128_000
+    /// B-frames (frame reordering): ~10–15 % better picture at the same bitrate, ~2 frames more latency.
+    var bFrames = false
+}
+
+extension EncoderSettings {
+    // Tolerant decoding: settings saved by older builds (missing keys) keep their values.
+    init(from d: Decoder) throws {
+        self.init()
+        let c = try d.container(keyedBy: CodingKeys.self)
+        codec = (try? c.decodeIfPresent(VideoCodecChoice.self, forKey: .codec)) ?? codec
+        bitrate = (try? c.decodeIfPresent(Int.self, forKey: .bitrate)) ?? bitrate
+        minBitrate = (try? c.decodeIfPresent(Int.self, forKey: .minBitrate)) ?? minBitrate
+        adaptive = (try? c.decodeIfPresent(Bool.self, forKey: .adaptive)) ?? adaptive
+        keyframeInterval = (try? c.decodeIfPresent(Double.self, forKey: .keyframeInterval)) ?? keyframeInterval
+        audioBitrate = (try? c.decodeIfPresent(Int.self, forKey: .audioBitrate)) ?? audioBitrate
+        bFrames = (try? c.decodeIfPresent(Bool.self, forKey: .bFrames)) ?? bFrames
+    }
 }
 
 /// One shared H.264 encoder for all destinations (encode once, fan out).
-/// No B-frames, so PTS == DTS — keeps RTMP/SRT/RTSP timestamping simple.
+/// B-frames are optional (EncoderSettings.bFrames): outputs carry DTS (RTMP composition time, TS DTS,
+/// RTP uses PTS), replay decoding reorders frames by PTS.
 final class VideoEncoder: @unchecked Sendable {
     typealias Handler = @Sendable (CMSampleBuffer) -> Void
     private var session: VTCompressionSession?
@@ -102,7 +120,7 @@ final class VideoEncoder: @unchecked Sendable {
 
     func update(_ s: EncoderSettings) {
         lock.lock(); defer { lock.unlock() }
-        let codecChanged = s.codec != settings.codec
+        let codecChanged = s.codec != settings.codec || s.bFrames != settings.bFrames
         settings = s
         if codecChanged { invalidate(); forceKeyframe = true; return } // new session on next frame
         setBitrate(s.bitrate)
@@ -143,7 +161,7 @@ final class VideoEncoder: @unchecked Sendable {
             // spend the encoder's effort on quality (the hardware encoder is far faster than real time)
             kVTCompressionPropertyKey_PrioritizeEncodingSpeedOverQuality: false,
             kVTCompressionPropertyKey_ProfileLevel: settings.profile,
-            kVTCompressionPropertyKey_AllowFrameReordering: false,
+            kVTCompressionPropertyKey_AllowFrameReordering: settings.bFrames,
             kVTCompressionPropertyKey_AverageBitRate: liveBitrate,
             kVTCompressionPropertyKey_DataRateLimits: [Double(liveBitrate) * 1.5 / 8, 1.0],
             kVTCompressionPropertyKey_ExpectedFrameRate: fps,

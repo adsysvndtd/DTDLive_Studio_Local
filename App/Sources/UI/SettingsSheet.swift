@@ -62,6 +62,9 @@ struct SettingsForm: View {
                     }
                     Text("Đặt bitrate cao nhất YouTube khuyến nghị (Facebook: không vượt mức tối đa Facebook nhận), GOP 2 s, H.264 nếu có Facebook, bitrate thích ứng không xuống dưới 70 %.")
                         .foregroundStyle(.secondary)
+                    Toggle("B-frame", isOn: $engine.encoder.bFrames)
+                    Text("Bật: hình nét hơn ~10–15 % ở cùng bitrate (YouTube khuyến nghị), trễ thêm ~2 khung. Tắt: trễ thấp nhất, tương thích mọi máy chủ. Đổi khi đang phát: các đích tự kết nối lại.")
+                        .foregroundStyle(.secondary)
                     Toggle("Bitrate thích ứng", isOn: $engine.encoder.adaptive)
                     Text("Bật: mạng chậm thì tự giảm bitrate (hình mềm hơn nhưng không đứng). Tắt: giữ nét, mạng chậm thì bỏ khung hình.")
                         .foregroundStyle(.secondary)

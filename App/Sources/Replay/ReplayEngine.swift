@@ -73,14 +73,19 @@ final class ReplaySource: VideoSource {
         let store = frames, speed = speed
         task = Task.detached(priority: .userInitiated) { [weak self] in
             let decoder = FrameDecoder(format: fd)
+            var reorder = ReorderBuffer()
             var previousPTS: Double?
+            func show(_ f: (pts: Double, pb: CVPixelBuffer)) async {
+                if let p = previousPTS { try? await Task.sleep(nanoseconds: UInt64(max(0, (f.pts - p) / speed) * 1e9)) }
+                previousPTS = f.pts
+                store.put(f.pb)
+            }
             for sb in clip {
                 if Task.isCancelled { break }
-                let pts = sb.presentationTimeStamp.seconds
-                if let p = previousPTS { try? await Task.sleep(nanoseconds: UInt64(max(0, (pts - p) / speed) * 1e9)) }
-                previousPTS = pts
-                if let pb = decoder.decode(sb) { store.put(pb) }
+                guard let pb = decoder.decode(sb) else { continue }
+                if let f = reorder.push(sb.presentationTimeStamp.seconds, pb) { await show(f) }
             }
+            for f in reorder.drain() where !Task.isCancelled { await show(f) }
             await MainActor.run { self?.finish() }
         }
     }
@@ -91,22 +96,27 @@ final class ReplaySource: VideoSource {
         cancel()
         guard let fd = samples.first?.formatDescription else { return }
         let startIdx = samples.lastIndex { $0.isKeyframe && $0.presentationTimeStamp.seconds <= inPTS } ?? 0
-        let clip = Array(samples[startIdx...]).filter { $0.presentationTimeStamp.seconds <= outPTS }
+        // a little past outPTS: with B-frames the last shown frames reference a later P-frame
+        let clip = Array(samples[startIdx...]).filter { $0.presentationTimeStamp.seconds <= outPTS + 0.25 }
         isPlaying = true
         let store = frames
         task = Task.detached(priority: .userInitiated) { [weak self] in
             repeat {
                 let decoder = FrameDecoder(format: fd)
+                var reorder = ReorderBuffer()
                 var previousPTS: Double?
+                func show(_ f: (pts: Double, pb: CVPixelBuffer)) async {
+                    if f.pts < inPTS || f.pts > outPTS + 0.0005 { return } // pre-roll / decode-only tail
+                    if let p = previousPTS { try? await Task.sleep(nanoseconds: UInt64(max(0, (f.pts - p) / speed) * 1e9)) }
+                    previousPTS = f.pts
+                    store.put(f.pb)
+                }
                 for sb in clip {
                     if Task.isCancelled { break }
-                    let pts = sb.presentationTimeStamp.seconds
                     guard let pb = decoder.decode(sb) else { continue }
-                    if pts < inPTS { continue } // pre-roll from the keyframe
-                    if let p = previousPTS { try? await Task.sleep(nanoseconds: UInt64(max(0, (pts - p) / speed) * 1e9)) }
-                    previousPTS = pts
-                    store.put(pb)
+                    if let f = reorder.push(sb.presentationTimeStamp.seconds, pb) { await show(f) }
                 }
+                for f in reorder.drain() where !Task.isCancelled { await show(f) }
             } while loop && !Task.isCancelled
             await MainActor.run { self?.finish() }
         }
@@ -121,7 +131,20 @@ final class ReplaySource: VideoSource {
     }
 }
 
-/// Synchronous VideoToolbox H.264 decoder (one frame in, one frame out; no B-frames in our stream).
+/// Decoded frames arrive in decode order; with B-frames that is not display order.
+/// Holds a few frames and releases them sorted by presentation time.
+struct ReorderBuffer {
+    private var held: [(pts: Double, pb: CVPixelBuffer)] = []
+    var depth = 4
+    mutating func push(_ pts: Double, _ pb: CVPixelBuffer) -> (pts: Double, pb: CVPixelBuffer)? {
+        let i = held.firstIndex { $0.pts > pts } ?? held.count
+        held.insert((pts, pb), at: i)
+        return held.count > depth ? held.removeFirst() : nil
+    }
+    mutating func drain() -> [(pts: Double, pb: CVPixelBuffer)] { defer { held = [] }; return held }
+}
+
+/// Synchronous VideoToolbox decoder (one frame in, one frame out, in decode order — see ReorderBuffer).
 final class FrameDecoder: @unchecked Sendable {
     private var session: VTDecompressionSession?
 
