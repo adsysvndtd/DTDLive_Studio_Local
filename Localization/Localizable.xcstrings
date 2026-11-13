@@ -4356,7 +4356,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Rotate"
+            "value": "Spin"
           }
         }
       }
@@ -5947,6 +5947,156 @@
           "stringUnit": {
             "state": "translated",
             "value": "Reset to the style's colours"
+          }
+        }
+      }
+    },
+    "SuperFG của bạn: ảnh PNG/JPG chạy như thẻ có hiệu ứng · video .mov có kênh alpha": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your SuperFG: PNG/JPG pictures play as cards with a transition · .mov video with alpha"
+          }
+        }
+      }
+    },
+    "Hiệu ứng cho ảnh của bạn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transition for your picture"
+          }
+        }
+      }
+    },
+    "Chạm một thẻ hoặc ảnh trong thư viện bên dưới để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap a card or a picture in the library below to load it; SuperFG On plays its in-animation, then it leaves by itself (or holds until switched off). The small icon shows the transition type."
+          }
+        }
+      }
+    },
+    "Quét chéo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diagonal wipe"
+          }
+        }
+      }
+    },
+    "Trượt từ trái": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slide from left"
+          }
+        }
+      }
+    },
+    "Trượt từ phải": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slide from right"
+          }
+        }
+      }
+    },
+    "Mở dọc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open vertical"
+          }
+        }
+      }
+    },
+    "Mở ngang": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open horizontal"
+          }
+        }
+      }
+    },
+    "Phóng to": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zoom"
+          }
+        }
+      }
+    },
+    "Trồi lên": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rise"
+          }
+        }
+      }
+    },
+    "Rơi xuống": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drop"
+          }
+        }
+      }
+    },
+    "Rèm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blinds"
+          }
+        }
+      }
+    },
+    "Chớp sáng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Flash"
+          }
+        }
+      }
+    },
+    "Vòng tròn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Iris"
+          }
+        }
+      }
+    },
+    "Mờ dần": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fade"
           }
         }
       }

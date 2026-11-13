@@ -324,7 +324,7 @@ struct CategoryContent: View {
             transitionContent
         case .overlay:
             SuperFGPanel(engine: engine, compact: compact)
-            sectionHeader("SuperFG của bạn (PNG trong suốt · video có kênh alpha .mov)")
+            sectionHeader("SuperFG của bạn: ảnh PNG/JPG chạy như thẻ có hiệu ứng · video .mov có kênh alpha")
             libraryGrid(.overlay, selected: engine.currentForegroundURL) { engine.useForeground($0) }
         case .title:
             HTMLGraphicsPanel(html: engine.html, repo: engine.graphicsRepo, compact: true).padding(.bottom, 2)

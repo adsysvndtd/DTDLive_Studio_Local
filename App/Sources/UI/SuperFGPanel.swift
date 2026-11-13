@@ -21,19 +21,18 @@ struct SuperFGPanel: View {
                         .buttonStyle(.bordered).font(DS.fBody)
                 }
             }
-            if let t = selected, engine.superFGActiveTemplate == t.id {
-                VStack(spacing: 6) {
-                    HStack(spacing: 8) {
-                        field("Dòng 1", text: line(t, 0))
-                        field("Dòng 2 (để trống = 1 dòng)", text: line(t, 1))
-                        ColorPicker("", selection: Binding(get: { Color(engine.superFG.accent(t)) },
-                                                           set: { engine.superFG.accents[t.id] = UIColor($0).hexString }),
-                                    supportsOpacity: false).labelsHidden()
-                        Button {
-                            engine.superFG.texts[t.id] = nil; engine.superFG.accents[t.id] = nil
-                        } label: { Image(systemName: "arrow.uturn.backward") }
-                            .buttonStyle(.bordered).font(DS.fBody)
+            if engine.libraryCardURL != nil {
+                HStack(spacing: 8) {
+                    Text("Hiệu ứng cho ảnh của bạn").font(DS.fBody).foregroundStyle(DS.text2)
+                    Picker("", selection: $engine.superFG.libraryMotion) {
+                        ForEach(SuperFGMotion.allCases) { m in Label(m.label, systemImage: Self.icon(m)).tag(m.rawValue) }
                     }
+                    .pickerStyle(.menu)
+                    Spacer(minLength: 0)
+                }
+            }
+            if engine.libraryCardURL != nil || engine.superFGActiveTemplate != nil {
+                VStack(spacing: 6) {
                     HStack(spacing: 10) {
                         Picker("", selection: $engine.superFG.playOnce) {
                             Text("Chạy một lần").tag(true)
@@ -50,6 +49,21 @@ struct SuperFGPanel: View {
                     }
                     Toggle(isOn: $engine.superFG.takeOnCover) {
                         Text("Dùng làm chuyển cảnh: cắt PVW lên PGM khi thẻ phủ kín").font(DS.fBody).foregroundStyle(DS.text2)
+                    }
+                }
+            }
+            if let t = selected, engine.superFGActiveTemplate == t.id {
+                VStack(spacing: 6) {
+                    HStack(spacing: 8) {
+                        field("Dòng 1", text: line(t, 0))
+                        field("Dòng 2 (để trống = 1 dòng)", text: line(t, 1))
+                        ColorPicker("", selection: Binding(get: { Color(engine.superFG.accent(t)) },
+                                                           set: { engine.superFG.accents[t.id] = UIColor($0).hexString }),
+                                    supportsOpacity: false).labelsHidden()
+                        Button {
+                            engine.superFG.texts[t.id] = nil; engine.superFG.accents[t.id] = nil
+                        } label: { Image(systemName: "arrow.uturn.backward") }
+                            .buttonStyle(.bordered).font(DS.fBody)
                     }
                 }
             }
@@ -73,7 +87,7 @@ struct SuperFGPanel: View {
                     .buttonStyle(.plain)
                 }
             }
-            Text("Chạm một thẻ để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh.")
+            Text("Chạm một thẻ hoặc ảnh trong thư viện bên dưới để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh.")
                 .font(.caption2).foregroundStyle(DS.text3)
         }
     }

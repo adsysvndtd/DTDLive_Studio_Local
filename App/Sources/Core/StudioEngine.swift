@@ -79,12 +79,14 @@ final class StudioEngine: ObservableObject {
     @Published var foregroundOn = false {
         didSet {
             foreground?.visible = foregroundOn
-            guard oldValue != foregroundOn, superFGActiveTemplate != nil else { return }
+            guard oldValue != foregroundOn, superFGActiveTemplate != nil || libraryCardURL != nil else { return }
             foregroundOn ? playSuperFGCard() : switcher.hideCard()
         }
     }
     /// SuperFG key can be pressed: a card or a library foreground is loaded.
-    var superFGArmed: Bool { foreground != nil || superFGActiveTemplate != nil }
+    var superFGArmed: Bool { foreground != nil || superFGActiveTemplate != nil || libraryCardURL != nil }
+    /// A still picture from the SuperFG library loaded as an animated card (plays with SuperFGConfig.libraryMotion).
+    @Published private(set) var libraryCardURL: URL?
     @Published var armedTitleID: UUID?
     /// Title assigned to the "Title 2 On" key (default: first title other than the armed one).
     @Published var armedTitle2ID: UUID?
@@ -443,26 +445,44 @@ final class StudioEngine: ObservableObject {
     func useForeground(_ url: URL) {
         checkpoint()
         stopForegroundVideo()
+        if superFGActiveTemplate != nil || libraryCardURL != nil {
+            if foregroundOn { switcher.hideCard() }
+            superFGActiveTemplate = nil; libraryCardURL = nil; superFGCard = nil
+        }
         if ["mov", "mp4", "m4v"].contains(url.pathExtension.lowercased()) {
+            // Video with alpha: its own animation, keyed as a layer.
             let v = FileSource(name: "SuperFG", url: url)      // muted: no onAudio, not listed as an input
             switcher.register(v.id, store: v.frames)
             Task { await v.start() }
             foregroundVideo = v
             foreground = OverlayLayer(pipSourceID: v.id, rect: CGRect(x: 0, y: 0, width: 1, height: 1))
+            foreground?.visible = foregroundOn       // armed; SuperFG On key puts it on air
         } else {
+            // Picture: played as a card with a transition, like the built-in cards.
             guard let img = UIImage(contentsOfFile: url.path)?.normalized(), let ci = CIImage(image: img) else {
                 message = LF("Không đọc được %@", "\(url.lastPathComponent)"); return
             }
-            foreground = OverlayLayer(image: ci, rect: CGRect(x: 0, y: 0, width: 1, height: 1))
+            foreground = nil
+            libraryCardURL = url
+            superFGCard = (Self.fillFrame(ci, CGSize(width: format.width, height: format.height)), nil, superFG.libraryMotionValue)
+            if foregroundOn { playSuperFGCard() }
         }
-        if superFGActiveTemplate != nil { switcher.hideCard(); superFGActiveTemplate = nil; superFGCard = nil }
-        foreground?.visible = foregroundOn       // armed; SuperFG On key puts it on air
         currentForegroundURL = url
+    }
+
+    /// Scales a picture to cover the program frame (centre crop), origin at zero.
+    private static func fillFrame(_ img: CIImage, _ size: CGSize) -> CIImage {
+        let e = img.extent
+        guard e.width > 0, e.height > 0 else { return img }
+        let k = max(size.width / e.width, size.height / e.height)
+        let s = img.transformed(by: CGAffineTransform(translationX: -e.minX, y: -e.minY)).transformed(by: CGAffineTransform(scaleX: k, y: k))
+        let dx = (s.extent.width - size.width) / 2, dy = (s.extent.height - size.height) / 2
+        return s.transformed(by: CGAffineTransform(translationX: -dx, y: -dy)).cropped(to: CGRect(origin: .zero, size: size))
     }
 
     func clearForeground() {
         foregroundOn = false; stopForegroundVideo()
-        foreground = nil; currentForegroundURL = nil; superFGActiveTemplate = nil; superFGCard = nil
+        foreground = nil; currentForegroundURL = nil; superFGActiveTemplate = nil; superFGCard = nil; libraryCardURL = nil
     }
 
     private var foregroundVideo: FileSource?
@@ -479,6 +499,9 @@ final class StudioEngine: ObservableObject {
         didSet {
             if let d = try? JSONEncoder().encode(superFG) { UserDefaults.standard.set(d, forKey: "dtd.superfg.v1") }
             // Text / colour edits update the card on screen without restarting its animation.
+            if libraryCardURL != nil, oldValue.libraryMotion != superFG.libraryMotion, let c = superFGCard {
+                superFGCard = (c.bg, c.text, superFG.libraryMotionValue)
+            }
             if superFGActiveTemplate != nil, oldValue.texts != superFG.texts || oldValue.accents != superFG.accents {
                 renderSuperFGCard()
                 if foregroundOn, let c = superFGCard { switcher.updateCard(background: c.bg, text: c.text, motion: c.motion) }
@@ -493,7 +516,7 @@ final class StudioEngine: ObservableObject {
     func applySuperFG(_ templateID: String) {
         guard SuperFGTemplate.all.contains(where: { $0.id == templateID }) else { return }
         stopForegroundVideo()
-        foreground = nil; currentForegroundURL = nil
+        foreground = nil; currentForegroundURL = nil; libraryCardURL = nil
         if superFG.templateID != templateID { superFG.templateID = templateID }
         superFGActiveTemplate = templateID
         renderSuperFGCard()

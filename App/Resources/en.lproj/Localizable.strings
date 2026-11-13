@@ -71,6 +71,7 @@
 "Chưa tích hợp SDK" = "SDK not integrated";
 "Chương trình (Program)" = "Program";
 "Chạm một mẫu để nạp (đang trên sóng thì thay ngay); bật/tắt bằng SuperFG On ở cột phải. Sửa chữ, màu cập nhật ngay." = "Tap a template to load it (replaces it live if on air); turn it on/off with SuperFG On. Text and colour update instantly.";
+"Chạm một thẻ hoặc ảnh trong thư viện bên dưới để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh." = "Tap a card or a picture in the library below to load it; SuperFG On plays its in-animation, then it leaves by itself (or holds until switched off). The small icon shows the transition type.";
 "Chạm một thẻ để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh." = "Tap a card to load it; SuperFG On plays its in-animation, then it leaves by itself (or holds until switched off). The small icon shows the transition type.";
 "Chạm để nạp, bật/tắt bằng phím ở cột phải" = "Tap to load; turn on/off with the keys on the right";
 "Chạm để đưa lên PVW, rồi Cut / chuyển cảnh ở cột phải" = "Tap to send to PVW, then Cut / transition on the right";
@@ -86,6 +87,7 @@
 "Chọn từ thư viện Logo" = "Choose from Logo library";
 "Chọn video…" = "Choose video…";
 "Chống rung" = "Stabilization";
+"Chớp sáng" = "Flash";
 "Chủ repo (owner)" = "Repo owner";
 "Chức danh" = "Title";
 "Chữ chạy" = "Ticker";
@@ -161,6 +163,7 @@
 "Hai khung ngang" = "Two across";
 "Hiệp (vd H1, Q2)" = "Period (e.g. H1, Q2)";
 "Hiệu ứng" = "Effects";
+"Hiệu ứng cho ảnh của bạn" = "Transition for your picture";
 "Hiệu ứng âm thanh" = "Sound effects";
 "Hoà trộn" = "Dissolve";
 "Hoàn tác" = "Undo";
@@ -277,7 +280,10 @@
 "Mỗi %lld giây" = "Every %lld s";
 "Mỗi giao thức dùng chung một cổng; mỗi camera đặt một stream key riêng (cam1, cam2…) và tự hiện thành một nguồn." = "One port per protocol; each camera uses its own stream key (cam1, cam2…) and appears as a source.";
 "Một khung giữa" = "Single centre";
+"Mờ dần" = "Fade";
 "Mở DTDLive (hoặc app hỗ trợ DTD pairing) trên cùng mạng Wi-Fi → chọn DTD Studio → so ID xác nhận → Chấp nhận. Không cần nhập mã." = "Open DTDLive on the same Wi-Fi → pick DTD Studio → compare the confirmation ID → Accept. No code to type.";
+"Mở dọc" = "Open vertical";
+"Mở ngang" = "Open horizontal";
 "Mở trang xem live" = "Open live page";
 "Mở trong Replay (mark in/out)" = "Open in Replay (mark in/out)";
 "NDI® trong mạng" = "NDI® on the network";
@@ -339,6 +345,7 @@
 "Phát lại từ đầu" = "Restart";
 "Phát trực tiếp" = "Streaming";
 "Phát tất cả" = "Start all";
+"Phóng to" = "Zoom";
 "Phút %@" = "Minutes %@";
 "Phút %lf" = "Minutes %lf";
 "Phút %lld" = "Minutes %lld";
@@ -349,6 +356,7 @@
 "Preset: chạm = gọi, giữ = lưu" = "Presets: tap = recall, hold = store";
 "QUÉT" = "WIPE";
 "Quét" = "Wipe";
+"Quét chéo" = "Diagonal wipe";
 "Quên mọi DTDLive đã ghép" = "Forget all paired DTDLive";
 "Quản lý đích phát (RTMP · SRT · RTSP · YouTube · Facebook)" = "Manage destinations (RTMP · SRT · RTSP · YouTube · Facebook)";
 "RTMP (một cổng, nhiều stream key)" = "RTMP (one port, many stream keys)";
@@ -356,11 +364,14 @@
 "Ra mắt" = "Premiere";
 "Replay" = "Replay";
 "Reset" = "Reset";
+"Rèm" = "Blinds";
+"Rơi xuống" = "Drop";
 "Rộng" = "Width";
 "SRT (một cổng, nhiều streamid)" = "SRT (one port, many streamids)";
 "Server URL (rtmp:// hoặc rtmps://)" = "Server URL (rtmp:// or rtmps://)";
 "Show đã lưu (Files › DTD Studio › Shows)" = "Saved shows (Files › DTD Studio › Shows)";
 "SuperFG của bạn (PNG trong suốt · video có kênh alpha .mov)" = "Your SuperFG (transparent PNG · alpha video .mov)";
+"SuperFG của bạn: ảnh PNG/JPG chạy như thẻ có hiệu ứng · video .mov có kênh alpha" = "Your SuperFG: PNG/JPG pictures play as cards with a transition · .mov video with alpha";
 "SuperFG đang trên PGM" = "SuperFG on PGM";
 "Sân vận động" = "Arena";
 "Sắp phát sóng" = "Stream starting";
@@ -425,10 +436,13 @@
 "Trên PGM" = "On PGM";
 "Trên phải" = "Top right";
 "Trên trái" = "Top left";
+"Trượt từ phải" = "Slide from right";
+"Trượt từ trái" = "Slide from left";
 "Trạng thái" = "Status";
 "Trễ âm thanh Mic/Line: %@ ms" = "Mic/Line audio delay: %@ ms";
 "Trễ âm thanh Mic/Line: %lf ms" = "Mic/Line audio delay: %lf ms";
 "Trễ âm thanh Mic/Line: %lld ms" = "Mic/Line audio delay: %lld ms";
+"Trồi lên" = "Rise";
 "Trực tiếp từ Hà Nội" = "Live from Hanoi";
 "Tuyệt vời" = "Perfect";
 "Twitch › Creator Dashboard › Settings › Stream › Primary Stream key." = "Twitch › Creator Dashboard › Settings › Stream › Primary Stream key.";
@@ -465,6 +479,7 @@
 "Vuốt PVW → PGM để chuyển" = "Swipe PVW → PGM to switch";
 "Vào trận" = "Game on";
 "Vát góc" = "Angled";
+"Vòng tròn" = "Iris";
 "Vẽ" = "Draw";
 "Về màu mặc định của kiểu" = "Reset to the style's colours";
 "Vị trí" = "Position";
@@ -474,7 +489,7 @@
 "Xem live" = "Watch live";
 "Xem mã đang sửa" = "Preview edited code";
 "Xem nhật ký" = "Show log";
-"Xoay" = "Rotate";
+"Xoay" = "Spin";
 "Xoay 180°" = "Rotate 180°";
 "Xoay 180° nguồn PVW" = "Rotate PVW source 180°";
 "Xoay nguồn PVW 90°" = "Rotate PVW source 90°";

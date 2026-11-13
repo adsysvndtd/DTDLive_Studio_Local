@@ -14,6 +14,9 @@ struct SuperFGConfig: Codable, Equatable {
     var hold: Double = 3
     /// Cut preview to program while the card covers the screen (stinger transition).
     var takeOnCover = false
+    /// Transition for pictures from the SuperFG library.
+    var libraryMotion = SuperFGMotion.zoom.rawValue
+    var libraryMotionValue: SuperFGMotion { SuperFGMotion(rawValue: libraryMotion) ?? .zoom }
 
     init() {}
     init(from d: Decoder) throws {
@@ -24,6 +27,7 @@ struct SuperFGConfig: Codable, Equatable {
         playOnce = (try? c.decodeIfPresent(Bool.self, forKey: .playOnce)) ?? true
         hold = (try? c.decodeIfPresent(Double.self, forKey: .hold)) ?? 3
         takeOnCover = (try? c.decodeIfPresent(Bool.self, forKey: .takeOnCover)) ?? false
+        libraryMotion = (try? c.decodeIfPresent(String.self, forKey: .libraryMotion)) ?? SuperFGMotion.zoom.rawValue
         if SuperFGTemplate.all.first(where: { $0.id == templateID }) == nil { templateID = "ready" }
     }
 
@@ -33,8 +37,26 @@ struct SuperFGConfig: Codable, Equatable {
 }
 
 /// How a card enters and leaves (out is the reverse).
-enum SuperFGMotion: String, CaseIterable {
+enum SuperFGMotion: String, CaseIterable, Identifiable {
     case wipe, slide, slideRight, split, splitH, zoom, spin, rise, drop, blinds, flash, iris, fade
+    var id: String { rawValue }
+    var label: String {
+        switch self {
+        case .wipe: return L("Quét chéo")
+        case .slide: return L("Trượt từ trái")
+        case .slideRight: return L("Trượt từ phải")
+        case .split: return L("Mở dọc")
+        case .splitH: return L("Mở ngang")
+        case .zoom: return L("Phóng to")
+        case .spin: return L("Xoay")
+        case .rise: return L("Trồi lên")
+        case .drop: return L("Rơi xuống")
+        case .blinds: return L("Rèm")
+        case .flash: return L("Chớp sáng")
+        case .iris: return L("Vòng tròn")
+        case .fade: return L("Mờ dần")
+        }
+    }
 }
 
 struct SuperFGTemplate: Identifiable {
