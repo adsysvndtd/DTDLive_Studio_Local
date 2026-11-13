@@ -3,15 +3,28 @@ import UIKit
 
 /// Program (or multiview) full-screen on an HDMI adapter or AirPlay screen mirroring target.
 /// Uses the non-interactive external display scene role, so the iPad keeps its own UI.
+@objc(ExternalDisplaySceneDelegate)   // plain class name, referenced from Info.plist (UISceneConfigurations)
 final class ExternalDisplaySceneDelegate: NSObject, UIWindowSceneDelegate {
     var window: UIWindow?
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options: UIScene.ConnectionOptions) {
-        guard let ws = scene as? UIWindowScene, let engine = StudioEngine.shared else { return }
+        guard let ws = scene as? UIWindowScene else { return }
         let w = UIWindow(windowScene: ws)
-        w.rootViewController = UIHostingController(rootView: ExternalProgramView(engine: engine))
+        w.backgroundColor = .black
+        w.rootViewController = UIViewController()
+        w.rootViewController?.view.backgroundColor = .black
         w.isHidden = false
         window = w
+        attach(ws, attempt: 0)
+    }
+
+    /// The HDMI screen can connect before the engine exists (cable in at launch): wait for it.
+    private func attach(_ ws: UIWindowScene, attempt: Int) {
+        guard let engine = StudioEngine.shared else {
+            if attempt < 40 { DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { [weak self] in self?.attach(ws, attempt: attempt + 1) } }
+            return
+        }
+        window?.rootViewController = UIHostingController(rootView: ExternalProgramView(engine: engine))
         Task { @MainActor in engine.externalDisplayConnected = true }
     }
 

@@ -73,6 +73,11 @@ targets:
         DTDFacebookConfigID: "1596868605545622"
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: true
+          # HDMI / USB-C display gets its own scene (clean PGM) instead of mirroring the iPad screen.
+          UISceneConfigurations:
+            UIWindowSceneSessionRoleExternalDisplayNonInteractive:
+              - UISceneConfigurationName: External
+                UISceneDelegateClassName: ExternalDisplaySceneDelegate
     # --- NDI (optional) ---------------------------------------------------
     # Install "NDI SDK for Apple", run scripts/ndi-setup.sh; build-local.sh then generates
     # from project.ndi.yml (this spec + NDI_SDK flag, include/library paths, -lndi_ios).
