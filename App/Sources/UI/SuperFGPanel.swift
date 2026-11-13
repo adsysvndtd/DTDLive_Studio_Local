@@ -47,6 +47,9 @@ struct SuperFGPanel: View {
                         }
                         Spacer(minLength: 0)
                     }
+                    Toggle(isOn: $engine.superFG.asTransition) {
+                        Text("Dùng SuperFG làm hiệu ứng chuyển cảnh (CUT / AUTO / T-bar)").font(DS.fBody).foregroundStyle(DS.text2)
+                    }
                     Toggle(isOn: $engine.superFG.takeOnCover) {
                         Text("Dùng làm chuyển cảnh: cắt PVW lên PGM khi thẻ phủ kín").font(DS.fBody).foregroundStyle(DS.text2)
                     }

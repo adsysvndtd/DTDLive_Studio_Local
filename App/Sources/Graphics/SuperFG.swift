@@ -14,6 +14,8 @@ struct SuperFGConfig: Codable, Equatable {
     var hold: Double = 3
     /// Cut preview to program while the card covers the screen (stinger transition).
     var takeOnCover = false
+    /// A selected card replaces the transition: CUT / AUTO / T-bar switch cameras behind it.
+    var asTransition = true
     /// Transition for pictures from the SuperFG library.
     var libraryMotion = SuperFGMotion.zoom.rawValue
     /// Text animation per card id (missing = follows the card).
@@ -30,6 +32,7 @@ struct SuperFGConfig: Codable, Equatable {
         playOnce = (try? c.decodeIfPresent(Bool.self, forKey: .playOnce)) ?? true
         hold = (try? c.decodeIfPresent(Double.self, forKey: .hold)) ?? 3
         takeOnCover = (try? c.decodeIfPresent(Bool.self, forKey: .takeOnCover)) ?? false
+        asTransition = (try? c.decodeIfPresent(Bool.self, forKey: .asTransition)) ?? true
         libraryMotion = (try? c.decodeIfPresent(String.self, forKey: .libraryMotion)) ?? SuperFGMotion.zoom.rawValue
         textMotions = (try? c.decodeIfPresent([String: String].self, forKey: .textMotions)) ?? [:]
         if SuperFGTemplate.all.first(where: { $0.id == templateID }) == nil { templateID = "ready" }

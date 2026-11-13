@@ -135,15 +135,65 @@ final class Switcher: @unchecked Sendable {
         var textMotion: SuperFGTextMotion? = nil
         var inAt: CFTimeInterval
         var outAt: CFTimeInterval?
+        /// Held progress 0…1 set by the T-bar (stinger); nil = timed in/out.
+        var manual: CGFloat? = nil
     }
     static let cardIn: CFTimeInterval = 0.75
     static let cardOut: CFTimeInterval = 0.6
     private var card: Card?
+    // SuperFG stinger (card used as the transition): timed (Auto / Cut) and manual (T-bar).
+    private var stingerTo: UUID?
+    private var stingerHold: CFTimeInterval = 0.3
+    private var stingerOutAt: CFTimeInterval?
+    private var stingerManual: (from: UUID?, to: UUID)?
+    var stingerBusy: Bool { locked { stingerTo != nil || stingerOutAt != nil || stingerManual != nil } }
+
+    /// Auto / Cut with a SuperFG card: the card plays in, PVW→PGM switches while it covers the
+    /// screen, the card stays `hold` seconds, then plays out.
+    func stingerAuto(background: CIImage, text: CIImage?, motion: SuperFGMotion, textMotion: SuperFGTextMotion?, hold: CFTimeInterval) {
+        let now = HostClock.now
+        locked {
+            guard let to = previewID, to != programID, transition == nil,
+                  stingerTo == nil, stingerOutAt == nil, stingerManual == nil else { return }
+            card = Card(background: background, text: text, motion: motion, textMotion: textMotion, inAt: now, outAt: nil)
+            stingerTo = to; stingerHold = max(0.05, hold)
+        }
+    }
+
+    /// T-bar with a SuperFG card: 0…0.5 the card comes in, the cameras switch at the middle
+    /// (behind the card), 0.5…1 the card leaves. Fully reversible until the end of the stroke.
+    /// Returns true when program/preview changed.
+    @discardableResult
+    func stingerManual(_ progress: Double, background: CIImage, text: CIImage?, motion: SuperFGMotion, textMotion: SuperFGTextMotion?) -> Bool {
+        let p = max(0, min(1, progress))
+        let now = HostClock.now
+        return locked { () -> Bool in
+            let before = (programID, previewID)
+            if stingerManual == nil {
+                guard p > 0.001, p < 0.999, let to = previewID, to != programID, transition == nil,
+                      stingerTo == nil, stingerOutAt == nil else { return false }
+                stingerManual = (programID, to)
+                card = Card(background: background, text: text, motion: motion, textMotion: textMotion, inAt: now, outAt: nil, manual: 0)
+            }
+            guard let m = stingerManual else { return false }
+            if p >= 0.999 || p <= 0.001 {
+                // End of the stroke: finished (B on air) or pulled back (A stays).
+                if p >= 0.999 { programID = m.to; previewID = m.from } else { programID = m.from; previewID = m.to }
+                card = nil; stingerManual = nil
+            } else {
+                if p >= 0.5 { programID = m.to; previewID = m.from } else { programID = m.from; previewID = m.to }
+                card?.manual = CGFloat(p < 0.5 ? p * 2 : (1 - p) * 2)
+            }
+            return before != (programID, previewID)
+        }
+    }
+
+    private func clearStinger() { stingerTo = nil; stingerOutAt = nil; stingerManual = nil }
 
     /// Starts a card's in-animation (replaces any card on screen).
     func showCard(background: CIImage, text: CIImage?, motion: SuperFGMotion, textMotion: SuperFGTextMotion? = nil) {
         let now = HostClock.now
-        locked { card = Card(background: background, text: text, motion: motion, textMotion: textMotion, inAt: now, outAt: nil) }
+        locked { clearStinger(); card = Card(background: background, text: text, motion: motion, textMotion: textMotion, inAt: now, outAt: nil) }
     }
     /// Swaps the artwork of the card on screen without restarting its animation (text edits).
     func updateCard(background: CIImage, text: CIImage?, motion: SuperFGMotion, textMotion: SuperFGTextMotion? = nil) {
@@ -156,7 +206,9 @@ final class Switcher: @unchecked Sendable {
     func hideCard() {
         let now = HostClock.now
         locked {
+            clearStinger()
             guard let c = card, c.outAt == nil else { return }
+            if c.manual != nil { card = nil; return }
             // Leaving during the in-animation: start out from the current position.
             let p = min(1, (now - c.inAt) / Self.cardIn)
             card?.outAt = now - (1 - p) * Self.cardOut
@@ -174,6 +226,8 @@ final class Switcher: @unchecked Sendable {
             programID = previewID
             previewID = p
             transition = nil
+            if stingerManual != nil { card = nil }
+            clearStinger()
         }
     }
 
@@ -203,7 +257,7 @@ final class Switcher: @unchecked Sendable {
     }
 
     /// Hot-punch a source straight to program (multiview double-tap).
-    func take(_ id: UUID) { locked { previewID = programID; programID = id; transition = nil } }
+    func take(_ id: UUID) { locked { previewID = programID; programID = id; transition = nil; if stingerManual != nil { card = nil }; clearStinger() } }
 
     // MARK: Render clock
 
@@ -240,6 +294,15 @@ final class Switcher: @unchecked Sendable {
             return (programID, previewID, tr, overlays, ftb, format)
         }
         let cardSnap: Card? = locked {
+            // Stinger: switch behind the card once it covers the screen, then play it out after the hold.
+            if let to = stingerTo, let c = card, c.manual == nil, now - c.inAt >= Self.cardIn {
+                previewID = programID; programID = to; stingerTo = nil
+                stingerOutAt = now + stingerHold
+            }
+            if let t = stingerOutAt, now >= t {
+                if card?.outAt == nil { card?.outAt = now }
+                stingerOutAt = nil
+            }
             if let c = card, let o = c.outAt, now - o >= Self.cardOut { card = nil }
             return card
         }
@@ -474,6 +537,7 @@ final class Switcher: @unchecked Sendable {
     private static func cardFrame(_ c: Card, now: CFTimeInterval, over base: CIImage, extent: CGRect) -> CIImage {
         var raw = min(1, CGFloat((now - c.inAt) / cardIn))
         if let o = c.outAt { raw = min(raw, 1 - min(1, CGFloat((now - o) / cardOut))) }
+        if let m = c.manual { raw = max(0, min(1, m)) }
         let p = easeInOut(max(0, raw))
         let tp = max(0, min(1, (raw - 0.3) / 0.7))           // text progress, lags the background
         let held = CGFloat(now - c.inAt)

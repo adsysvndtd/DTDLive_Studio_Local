@@ -331,14 +331,41 @@ final class StudioEngine: ObservableObject {
 
     func select(_ id: UUID) { switcher.setPreview(id); syncState() }
     func take(_ id: UUID) { switcher.take(id); syncState() }
-    func cut() { switcher.cut(); syncState() }
+    func cut() {
+        if superFGStingerReady { stinger(hold: 0.1); return }
+        switcher.cut(); syncState()
+    }
     func autoTransition() {
+        if superFGStingerReady { stinger(hold: max(0.15, transitionDuration * 0.4)); return }
         switcher.auto(transition, duration: transitionDuration)
         DispatchQueue.main.asyncAfter(deadline: .now() + transitionDuration + 0.05) { [weak self] in self?.syncState() }
     }
 
     /// T-bar position 0...1; releasing at the end completes the transition.
-    func tbar(_ p: Double) { switcher.setManual(p, style: transition); if p >= 0.999 || p <= 0.001 { syncState() } }
+    func tbar(_ p: Double) {
+        if superFGStingerReady || switcher.stingerBusy, let c = stingerArt() {
+            if switcher.stingerManual(p, background: c.bg, text: c.text, motion: c.motion, textMotion: superFGTextMotion) { syncState() }
+            return
+        }
+        switcher.setManual(p, style: transition); if p >= 0.999 || p <= 0.001 { syncState() }
+    }
+
+    /// A SuperFG card is selected and set to act as the transition (and is not already on air as a key).
+    var superFGStingerReady: Bool {
+        superFG.asTransition && !foregroundOn && (superFGActiveTemplate != nil || libraryCardURL != nil)
+    }
+    private func stingerArt() -> (bg: CIImage, text: CIImage?, motion: SuperFGMotion)? {
+        if superFGCard == nil { renderSuperFGCard() }
+        return superFGCard
+    }
+    /// CUT / AUTO through the SuperFG card: it covers, cameras switch behind it, it plays out.
+    private func stinger(hold: Double) {
+        guard !switcher.stingerBusy, let c = stingerArt() else { return }
+        switcher.stingerAuto(background: c.bg, text: c.text, motion: c.motion, textMotion: superFGTextMotion, hold: hold)
+        let t = Switcher.cardIn
+        DispatchQueue.main.asyncAfter(deadline: .now() + t + 0.06) { [weak self] in self?.syncState() }
+        DispatchQueue.main.asyncAfter(deadline: .now() + t + hold + Switcher.cardOut + 0.1) { [weak self] in self?.syncState() }
+    }
 
     private func syncState() {
         let s = switcher.state
@@ -467,6 +494,7 @@ final class StudioEngine: ObservableObject {
             }
             foreground = nil
             libraryCardURL = url
+            if !superFG.asTransition { superFG.asTransition = true }
             superFGCard = (Self.fillFrame(ci, CGSize(width: format.width, height: format.height)), nil, superFG.libraryMotionValue)
             if foregroundOn { playSuperFGCard() }
         }
@@ -528,6 +556,7 @@ final class StudioEngine: ObservableObject {
         foreground = nil; currentForegroundURL = nil; libraryCardURL = nil
         if superFG.templateID != templateID { superFG.templateID = templateID }
         superFGActiveTemplate = templateID
+        if !superFG.asTransition { superFG.asTransition = true }     // picking a card makes it the transition
         renderSuperFGCard()
         if foregroundOn { playSuperFGCard() }
     }

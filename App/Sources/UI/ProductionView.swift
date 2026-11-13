@@ -611,17 +611,17 @@ struct CategoryContent: View {
         LabeledSlider(title: "Thời gian chuyển cảnh", value: $engine.transitionDuration, range: 0.2...3) { String(format: "%.1f s", $0) }
         LazyVGrid(columns: [GridItem(.adaptive(minimum: compact ? 130 : 200), spacing: compact ? 6 : 10)], spacing: compact ? 6 : 10) {
             ForEach(Array(TransitionStyle.allCases.filter { $0 != .cut }.enumerated()), id: \.element) { i, t in
-                Button { engine.transition = t } label: {
+                Button { engine.transition = t; engine.superFG.asTransition = false } label: {
                     VStack(spacing: 0) {
-                        TransitionPreviewView(style: t, animate: engine.transition == t)
+                        TransitionPreviewView(style: t, animate: (engine.transition == t && !engine.superFGStingerReady))
                             .aspectRatio(16 / 9, contentMode: .fit)
                         Text("\(i + 1): \(t.label)").font(DS.fBodyBold)
                             .frame(maxWidth: .infinity, minHeight: 26)
-                            .foregroundStyle(engine.transition == t ? Color.black : .white)
-                            .background(engine.transition == t ? DS.accent : DS.surface)
+                            .foregroundStyle((engine.transition == t && !engine.superFGStingerReady) ? Color.black : .white)
+                            .background((engine.transition == t && !engine.superFGStingerReady) ? DS.accent : DS.surface)
                     }
                     .clipShape(Rectangle())
-                    .overlay(Rectangle().stroke(engine.transition == t ? DS.accent : DS.stroke, lineWidth: engine.transition == t ? 3 : 1))
+                    .overlay(Rectangle().stroke((engine.transition == t && !engine.superFGStingerReady) ? DS.accent : DS.stroke, lineWidth: (engine.transition == t && !engine.superFGStingerReady) ? 3 : 1))
                 }
                 .buttonStyle(.plain)
             }
@@ -865,7 +865,20 @@ struct TransitionColumn: View {
                 }
                 key("PiP Trans", enabled: engine.layoutSlots.count > 0) { engine.layoutTransition() }
                 // AUTO key named after the selected transition (Dissolve, Wipe…)
-                key(engine.transition.label, color: DS.accent, text: .black) { engine.autoTransition() }.keyboardShortcut(.return, modifiers: [])
+                if engine.superFGStingerReady {
+                    // A selected SuperFG card is the transition: tap to go back to the normal one.
+                    Button { engine.superFG.asTransition = false } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: "sparkles.rectangle.stack").font(.caption2)
+                            Text("SuperFG").font(.caption2.weight(.bold))
+                            Image(systemName: "xmark").font(.system(size: 8, weight: .bold))
+                        }
+                        .foregroundStyle(.black).frame(maxWidth: .infinity, minHeight: 22)
+                        .background(Color.orange, in: RoundedRectangle(cornerRadius: DS.radius))
+                    }
+                    .buttonStyle(.plain)
+                }
+                key(engine.superFGStingerReady ? "SUPERFG" : engine.transition.label, color: engine.superFGStingerReady ? .orange : DS.accent, text: .black) { engine.autoTransition() }.keyboardShortcut(.return, modifiers: [])
                 key("Cut") { engine.cut() }.keyboardShortcut(.space, modifiers: [])
                 HStack(spacing: 6) {
                     TBarLEDs(value: tbarValue, pip: pipTBar)

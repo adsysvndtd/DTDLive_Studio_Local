@@ -138,6 +138,7 @@
 "Dòng 2 (để trống = 1 dòng)" = "Line 2 (empty = one line)";
 "Dòng chữ dưới (vd LIVE MATCH DAY)" = "Ribbon text (e.g. LIVE MATCH DAY)";
 "Dòng phụ (tuỳ chọn)" = "Sub line (optional)";
+"Dùng SuperFG làm hiệu ứng chuyển cảnh (CUT / AUTO / T-bar)" = "Use SuperFG as the transition (CUT / AUTO / T-bar)";
 "Dùng cho mọi thẻ" = "Use for all cards";
 "Dùng làm PiP" = "Use as PiP";
 "Dùng làm chuyển cảnh: cắt PVW lên PGM khi thẻ phủ kín" = "Use as transition: cut PVW to PGM while the card covers the screen";

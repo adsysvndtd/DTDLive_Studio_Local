@@ -7070,6 +7070,22 @@
           }
         }
       }
+    },
+    "Dùng SuperFG làm hiệu ứng chuyển cảnh (CUT / AUTO / T-bar)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use SuperFG as the transition (CUT / AUTO / T-bar)"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dùng SuperFG làm hiệu ứng chuyển cảnh (CUT / AUTO / T-bar)"
+          }
+        }
+      }
     }
   },
   "version": "1.0"
