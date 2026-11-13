@@ -477,45 +477,41 @@ struct ReplayPanel: View {
 struct ReplayEditorView: View {
     @ObservedObject var engine: StudioEngine
     @ObservedObject var editor: ReplayEditor
+    @ObservedObject var library: MediaLibrary
     @State private var pickFile = false
+
+    init(engine: StudioEngine, editor: ReplayEditor) {
+        self.engine = engine; self.editor = editor; self.library = engine.library
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: DS.gap) {
-            HStack(spacing: 8) {
-                Menu {
-                    Button { editor.loadBuffer(engine.replayBuffer) } label: { Label("Bộ đệm replay (Program)", systemImage: "dot.radiowaves.left.and.right") }
-                    Section("Video đã ghi / thư viện") {
-                        ForEach(engine.library.list(.movie), id: \.self) { u in
-                            Button(u.deletingPathExtension().lastPathComponent) { editor.loadFile(u) }
-                        }
+            // Preview (smaller) + list of recordings to the right
+            HStack(alignment: .top, spacing: 10) {
+                VStack(alignment: .leading, spacing: 6) {
+                    ZStack {
+                        Color.black
+                        if let img = editor.preview { Image(uiImage: img).resizable().scaledToFit() }
+                        else { Text(editor.duration > 0 ? "Đang giải mã…" : "Chưa có hình").font(DS.fBody).foregroundStyle(DS.text3) }
                     }
-                } label: {
-                    Label(editor.material.label, systemImage: editor.material == .buffer ? "gobackward" : "film")
-                        .font(DS.fBodyBold)
+                    .aspectRatio(16 / 9, contentMode: .fit)
+                    .clipShape(Rectangle())
+                    .overlay(alignment: .bottomLeading) {
+                        Text(timeLabel(editor.playhead)).font(.system(size: 11, weight: .bold, design: .monospaced))
+                            .padding(4).background(.black.opacity(0.65), in: Rectangle()).padding(5)
+                    }
+                    .overlay(alignment: .topLeading) {
+                        Text(verbatim: editor.material.label).font(.system(size: 10, weight: .bold)).lineLimit(1)
+                            .padding(.horizontal, 5).padding(.vertical, 2).background(.black.opacity(0.65), in: Rectangle()).padding(5)
+                    }
                 }
-                Spacer()
-                if editor.material == .buffer {
-                    Button { editor.loadBuffer(engine.replayBuffer) } label: { Label("Lấy mới", systemImage: "arrow.clockwise") }
-                        .buttonStyle(.bordered).font(DS.fBody)
-                }
+                .frame(maxWidth: 420)
+                recordingsList
+                    .frame(maxWidth: .infinity, maxHeight: 236)
             }
-
-            // Frame preview
-            ZStack {
-                Color.black
-                if let img = editor.preview { Image(uiImage: img).resizable().scaledToFit() }
-                else { Text(editor.duration > 0 ? "Đang giải mã…" : "Chưa có hình").font(DS.fBody).foregroundStyle(DS.text3) }
-            }
-            .aspectRatio(16 / 9, contentMode: .fit)
-            .clipShape(Rectangle())
-            .overlay(alignment: .bottomLeading) {
-                Text(timeLabel(editor.playhead)).font(.system(size: 12, weight: .bold, design: .monospaced))
-                    .padding(5).background(.black.opacity(0.65), in: Rectangle()).padding(6)
-            }
-            .frame(maxWidth: 640)
 
             // Thumbnail strip with in/out and playhead; drag to scrub
-            TimelineStrip(editor: editor).frame(height: 54)
+            TimelineStrip(editor: editor).frame(height: 50)
 
             // Transport + marks
             HStack(spacing: 6) {
@@ -531,27 +527,29 @@ struct ReplayEditorView: View {
 
             HStack(spacing: 10) {
                 Picker("Tốc độ", selection: $editor.speed) {
-                    Text("0.25×").tag(0.25); Text("0.5×").tag(0.5); Text("0.75×").tag(0.75); Text("1×").tag(1.0)
+                    Text(verbatim: "0.25×").tag(0.25); Text(verbatim: "0.5×").tag(0.5); Text(verbatim: "0.75×").tag(0.75); Text(verbatim: "1×").tag(1.0)
                 }
-                .pickerStyle(.segmented).frame(maxWidth: 260)
+                .pickerStyle(.segmented).frame(maxWidth: 240)
                 Toggle("Lặp", isOn: $editor.loop).fixedSize()
                 Spacer()
                 let r = editor.effectiveRange
-                Text(String(format: L("Đoạn %.1f s"), r.upperBound - r.lowerBound)).font(.caption.monospacedDigit()).foregroundStyle(DS.text2)
+                Text(String(format: L("Đoạn %.1f s"), r.upperBound - r.lowerBound)).font(DS.fSmall.monospacedDigit()).foregroundStyle(DS.text2)
             }
 
-            HStack(spacing: 8) {
-                Button { engine.playEditorRange(toAir: true) } label: {
-                    Label("PHÁT REPLAY", systemImage: "play.fill").font(.subheadline.weight(.heavy))
-                        .frame(maxWidth: .infinity, minHeight: 40)
+            HStack(spacing: 6) {
+                // PLAY REPLAY ⇄ STOP: shows the on-air state, stop returns to the previous source
+                Button { engine.replayOnAir ? engine.stopReplay() : engine.playEditorRange(toAir: true) } label: {
+                    Label(engine.replayOnAir ? "ĐANG REPLAY · DỪNG" : "PHÁT REPLAY",
+                          systemImage: engine.replayOnAir ? "stop.fill" : "play.fill")
+                        .font(.system(size: 12, weight: .heavy))
+                        .padding(.horizontal, 12).frame(height: 30)
+                        .foregroundStyle(engine.replayOnAir ? .white : .black)
+                        .background(engine.replayOnAir ? DS.pgm : DS.accent, in: Rectangle())
                 }
-                .buttonStyle(.borderedProminent).tint(DS.accent)
-                Button { engine.playEditorRange(toAir: false) } label: { Label("Lên Preview", systemImage: "rectangle.on.rectangle").frame(minHeight: 40) }
-                    .buttonStyle(.bordered)
-                Button { engine.stopReplay() } label: { Image(systemName: "stop.fill").frame(minWidth: 30, minHeight: 40) }
-                    .buttonStyle(.bordered)
-                Button { editor.saveClip() } label: { Label("Lưu clip", systemImage: "plus.rectangle.on.rectangle").frame(minHeight: 40) }
-                    .buttonStyle(.bordered)
+                .buttonStyle(.plain)
+                smallButton("Lên Preview", "rectangle.on.rectangle") { engine.playEditorRange(toAir: false) }
+                smallButton("Lưu clip", "plus.rectangle.on.rectangle") { editor.saveClip() }
+                Spacer()
             }
 
             if let m = editor.message { Text(m).font(DS.fBody).foregroundStyle(DS.text2) }
@@ -559,25 +557,78 @@ struct ReplayEditorView: View {
             SectionCard("Clip đã lưu", systemImage: "film.stack") {
                 if editor.clips.isEmpty { Text("Đặt MARK IN / MARK OUT rồi bấm Lưu clip").font(DS.fBody).foregroundStyle(DS.text3) }
                 ForEach(editor.clips) { c in
-                    HStack(spacing: 8) {
+                    HStack(spacing: 6) {
                         Image(systemName: c.material == .buffer ? "gobackward" : "film").foregroundStyle(DS.accent)
                         VStack(alignment: .leading, spacing: 1) {
-                            Text(c.name).font(DS.fBodyBold)
-                            Text("\(c.material.label) · \(timeLabel(c.inT)) → \(timeLabel(c.outT)) · \(String(format: "%.1f s", c.duration))")
+                            Text(verbatim: c.name).font(DS.fBodyBold)
+                            Text(verbatim: "\(c.material.label) · \(timeLabel(c.inT)) → \(timeLabel(c.outT)) · \(String(format: "%.1f s", c.duration))")
                                 .font(.caption2.monospacedDigit()).foregroundStyle(DS.text3).lineLimit(1)
                         }
                         Spacer()
-                        Button { engine.playClip(c) } label: { Image(systemName: "play.fill") }.buttonStyle(.borderedProminent).tint(DS.accent)
-                        Menu {
-                            Button { engine.playClip(c, toAir: false) } label: { Label("Lên Preview", systemImage: "rectangle.on.rectangle") }
-                            Button { editor.export(c, library: engine.library) } label: { Label("Xuất MP4 vào thư viện", systemImage: "square.and.arrow.down") }
-                            Button(role: .destructive) { editor.deleteClip(c) } label: { Label("Xoá", systemImage: "trash") }
-                        } label: { Image(systemName: "ellipsis.circle").font(.title3).foregroundStyle(DS.text2) }
+                        iconKey("play.fill", "Phát lên PGM", tint: DS.accent) { engine.playClip(c) }
+                        iconKey("rectangle.on.rectangle", "Lên Preview") { engine.playClip(c, toAir: false) }
+                        iconKey("square.and.arrow.down", "Xuất MP4 vào thư viện") { editor.export(c, library: engine.library) }
+                        iconKey("trash", "Xoá", tint: DS.pgm) { editor.deleteClip(c) }
                     }
                 }
             }
         }
         .onAppear { if editor.duration == 0 && editor.material == .buffer { editor.loadBuffer(engine.replayBuffer) } }
+    }
+
+    /// Replay buffer + recorded / imported videos; tap to load into the preview and frame strip.
+    private var recordingsList: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("Bản ghi").textCase(.uppercase).font(DS.fHeader).foregroundStyle(DS.text2)
+            ScrollView {
+                VStack(spacing: 3) {
+                    recordRow(icon: "dot.radiowaves.left.and.right", title: L("Bộ đệm replay (Program)"),
+                              selected: editor.material == .buffer) { editor.loadBuffer(engine.replayBuffer) }
+                    ForEach(library.list(.movie), id: \.self) { u in
+                        recordRow(icon: "film", title: u.deletingPathExtension().lastPathComponent,
+                                  selected: editor.material == .file(u)) { editor.loadFile(u) }
+                    }
+                }
+            }
+        }
+        .padding(6)
+        .background(DS.surface, in: Rectangle())
+        .overlay(Rectangle().stroke(DS.stroke))
+    }
+
+    private func recordRow(icon: String, title: String, selected: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 6) {
+                Image(systemName: icon).font(.system(size: 11)).frame(width: 14)
+                Text(verbatim: title).font(.system(size: 12, weight: .semibold)).lineLimit(1)
+                Spacer(minLength: 0)
+            }
+            .padding(.horizontal, 6).frame(height: 26)
+            .foregroundStyle(selected ? .black : .white)
+            .background(selected ? DS.accent : DS.surface2, in: Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func smallButton(_ title: String, _ icon: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Label(LocalizedStringKey(title), systemImage: icon).font(.system(size: 12, weight: .semibold))
+                .padding(.horizontal, 10).frame(height: 30)
+                .foregroundStyle(.white).background(DS.surface2, in: Rectangle())
+                .overlay(Rectangle().stroke(DS.stroke))
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func iconKey(_ icon: String, _ help: String, tint: Color = DS.surface2, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: icon).font(.system(size: 12, weight: .semibold))
+                .frame(width: 30, height: 26)
+                .foregroundStyle(tint == DS.surface2 ? .white : .black)
+                .background(tint, in: Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(Text(LocalizedStringKey(help)))
     }
 
     private func timeLabel(_ t: Double) -> String {
@@ -586,8 +637,11 @@ struct ReplayEditorView: View {
     }
 
     private func transport(_ icon: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) { Image(systemName: icon).frame(width: 34, height: 32) }
-            .buttonStyle(.bordered)
+        Button(action: action) {
+            Image(systemName: icon).font(.system(size: 12)).frame(width: 30, height: 28)
+                .foregroundStyle(.white).background(DS.surface2, in: Rectangle())
+        }
+        .buttonStyle(.plain)
     }
 
     private func markKey(_ title: String, value: Double?, color: Color, action: @escaping () -> Void) -> some View {
@@ -596,7 +650,7 @@ struct ReplayEditorView: View {
                 Text(LocalizedStringKey(title)).font(.system(size: 11, weight: .heavy))
                 Text(value.map(timeLabel) ?? "--:--:--").font(.system(size: 10, design: .monospaced))
             }
-            .frame(width: 86, height: 38)
+            .frame(width: 78, height: 32)
             .foregroundStyle(value != nil ? .black : .white)
             .background(value != nil ? color : DS.surface2, in: Rectangle())
         }

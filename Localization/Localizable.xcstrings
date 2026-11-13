@@ -161,6 +161,16 @@
         }
       }
     },
+    "Bản ghi": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recordings"
+          }
+        }
+      }
+    },
     "Bản tin": {
       "localizations": {
         "en": {
@@ -3001,6 +3011,16 @@
         }
       }
     },
+    "Phát lên PGM": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Play to PGM"
+          }
+        }
+      }
+    },
     "Phát lại từ đầu": {
       "localizations": {
         "en": {
@@ -4617,6 +4637,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Score box"
+          }
+        }
+      }
+    },
+    "ĐANG REPLAY · DỪNG": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "REPLAY ON AIR · STOP"
           }
         }
       }

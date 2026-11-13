@@ -14,6 +14,7 @@
 "Bitrate thích ứng" = "Adaptive bitrate";
 "Bão hoà" = "Saturation";
 "Bù phơi sáng" = "Exposure compensation";
+"Bản ghi" = "Recordings";
 "Bản tin" = "Newscast";
 "Bảng tỉ số" = "Scoreboard";
 "Bấm Phát ở đích vừa tạo; sau 10–20 giây trang xem mới có hình." = "The picture appears on the live page 10–20 s after streaming starts.";
@@ -298,6 +299,7 @@
 "PTZ nguồn PVW" = "PVW source PTZ";
 "Phiên bản" = "Version";
 "Phát" = "Go live";
+"Phát lên PGM" = "Play to PGM";
 "Phát lại từ đầu" = "Restart";
 "Phát trực tiếp" = "Streaming";
 "Phát tất cả" = "Start all";
@@ -460,6 +462,7 @@
 "Âm lượng" = "Volume";
 "Âm thanh" = "Audio";
 "Ô tỉ số" = "Score box";
+"ĐANG REPLAY · DỪNG" = "REPLAY ON AIR · STOP";
 "Đang dùng: %.1f Mbps" = "Current: %.1f Mbps";
 "Đang giải mã…" = "Decoding…";
 "Đang kiểm tra %@/%@…" = "Checking %@/%@…";

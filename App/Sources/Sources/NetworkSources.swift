@@ -188,6 +188,9 @@ final class FileSource: VideoSource {
     private var lastFrame: CVPixelBuffer?
 
     /// Plays [inT, outT] (seconds in the file) at `rate`; loops or pauses at the out point.
+    /// Called when a non-looping playRange reaches its OUT point (replay of a recording ended).
+    var onRangeEnd: (() -> Void)?
+
     func playRange(in inT: Double, out outT: Double, rate: Float, loop: Bool) {
         if let b = boundary { player.removeTimeObserver(b); boundary = nil }
         let inTime = CMTime(seconds: inT, preferredTimescale: 600), outTime = CMTime(seconds: outT, preferredTimescale: 600)
@@ -195,7 +198,10 @@ final class FileSource: VideoSource {
         boundary = player.addBoundaryTimeObserver(forTimes: [NSValue(time: outTime)], queue: .main) { [weak self] in
             MainActor.assumeIsolated {
                 guard let self else { return }
-                if loop { self.player.seek(to: inTime, toleranceBefore: .zero, toleranceAfter: .zero) } else { self.player.pause(); self.isPlaying = false }
+                if loop { self.player.seek(to: inTime, toleranceBefore: .zero, toleranceAfter: .zero) } else {
+                    self.player.pause(); self.isPlaying = false
+                    self.onRangeEnd?()
+                }
             }
         }
         player.rate = rate

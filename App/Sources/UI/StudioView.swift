@@ -43,7 +43,7 @@ struct StudioView: View {
                     }
                     Divider().overlay(DS.stroke)
                     TransitionColumn(engine: engine, tbarValue: $tbarValue, compact: true)
-                        .frame(width: 92)
+                        .frame(width: 80)
                 }
             } else {
                 VStack(spacing: 0) {
@@ -59,7 +59,7 @@ struct StudioView: View {
                                         compact: false, showAddSource: $showAddSource)
                         Divider().overlay(DS.stroke)
                         TransitionColumn(engine: engine, tbarValue: $tbarValue, compact: false)
-                            .frame(width: 150)
+                            .frame(width: 128)
                     }
                 }
             }

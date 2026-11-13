@@ -1050,7 +1050,33 @@ final class StudioEngine: ObservableObject {
         autoTransition()
     }
 
-    func stopReplay() { replay.cancel() }
+    /// True while a replay is on PGM (drives the PLAY REPLAY / STOP button).
+    @Published private(set) var replayOnAir = false
+    /// Program source before the replay was taken to air; restored when the replay ends or is stopped.
+    private var preReplayProgram: UUID?
+    private var replayFileID: UUID?
+
+    func stopReplay() {
+        replay.cancel()
+        if let id = replayFileID, let f = sources.first(where: { $0.id == id }) as? FileSource { f.pause() }
+        returnFromReplay()
+    }
+
+    /// Takes the previous source back to air (if the replay is still on PGM) and clears the replay state.
+    private func returnFromReplay() {
+        let onAir = programID == replay.id || (replayFileID != nil && programID == replayFileID)
+        if onAir, let back = preReplayProgram, sources.contains(where: { $0.id == back }) {
+            switcher.setPreview(back); syncState()
+            autoTransition()
+        }
+        replayOnAir = false; preReplayProgram = nil; replayFileID = nil
+    }
+
+    private func beginReplayOnAir(_ id: UUID) {
+        if programID != id { preReplayProgram = programID }
+        replayOnAir = true
+        autoTransition()
+    }
 
     private func ensureReplaySource() {
         if !sources.contains(where: { $0.id == replay.id }) {
@@ -1073,12 +1099,14 @@ final class StudioEngine: ObservableObject {
         case .file(let url):
             cueMovie(url)
             if let f = sources.first(where: { ($0 as? FileSource)?.url == url }) as? FileSource {
+                f.onRangeEnd = { [weak self] in self?.returnFromReplay() }
                 f.playRange(in: ed.effectiveRange.lowerBound, out: ed.effectiveRange.upperBound, rate: Float(ed.speed), loop: ed.loop)
                 switcher.setPreview(f.id)
+                if toAir { replayFileID = f.id }
             }
         }
         syncState()
-        if toAir { autoTransition() }
+        if toAir { beginReplayOnAir(previewID ?? replay.id) }
     }
 
     func playClip(_ c: ReplayClip, toAir: Bool = true) {
@@ -1091,12 +1119,14 @@ final class StudioEngine: ObservableObject {
         case .file(let url):
             cueMovie(url)
             if let f = sources.first(where: { ($0 as? FileSource)?.url == url }) as? FileSource {
+                f.onRangeEnd = { [weak self] in self?.returnFromReplay() }
                 f.playRange(in: c.inT, out: c.outT, rate: Float(ed.speed), loop: ed.loop)
                 switcher.setPreview(f.id)
+                if toAir { replayFileID = f.id }
             }
         }
         syncState()
-        if toAir { autoTransition() }
+        if toAir { beginReplayOnAir(previewID ?? replay.id) }
     }
 
     func openInReplay(_ url: URL) {
@@ -1105,8 +1135,8 @@ final class StudioEngine: ObservableObject {
     }
 
     private func replayFinished() {
-        // Return to the previous program source.
-        if programID == replay.id { autoTransition() }
+        // Replay ended: go back to the source that was on air before it.
+        if replayOnAir || programID == replay.id { returnFromReplay() }
     }
 
     // MARK: PTZ

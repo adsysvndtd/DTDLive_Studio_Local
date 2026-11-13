@@ -839,9 +839,9 @@ struct TransitionColumn: View {
                 VStack(spacing: 2) {
                     Text(String(format: L("Thời gian %.1fs"), engine.transitionDuration)).font(.caption2).foregroundStyle(DS.text2)
                     HStack(spacing: 0) {
-                        Button { engine.transitionDuration = max(0.2, engine.transitionDuration - 0.1) } label: { Image(systemName: "minus").frame(maxWidth: .infinity, minHeight: 28) }
+                        Button { engine.transitionDuration = max(0.2, engine.transitionDuration - 0.1) } label: { Image(systemName: "minus").frame(maxWidth: .infinity, minHeight: 24) }
                         Divider().frame(height: 18)
-                        Button { engine.transitionDuration = min(3, engine.transitionDuration + 0.1) } label: { Image(systemName: "plus").frame(maxWidth: .infinity, minHeight: 28) }
+                        Button { engine.transitionDuration = min(3, engine.transitionDuration + 0.1) } label: { Image(systemName: "plus").frame(maxWidth: .infinity, minHeight: 24) }
                     }
                     .buttonStyle(.plain)
                     .background(DS.surface2, in: Rectangle())
@@ -853,7 +853,7 @@ struct TransitionColumn: View {
                 HStack(spacing: 6) {
                     TBarLEDs(value: tbarValue, pip: pipTBar)
                     TBar(value: $tbarValue) { v in if pipTBar { pipT(v) } else { engine.tbar(v) } }
-                        .frame(width: compact ? 34 : 46, height: compact ? 100 : 150)
+                        .frame(width: compact ? 30 : 38, height: compact ? 86 : 124)
                 }
                 .padding(.vertical, 4)
                 onKey("SuperFG", on: engine.foregroundOn, enabled: engine.foreground != nil) { engine.foregroundOn.toggle() }
@@ -873,8 +873,8 @@ struct TransitionColumn: View {
     /// Layer keys styled like hardware: "<name> On", lit white while the layer is on air.
     private func onKey(_ t: String, on: Bool, enabled: Bool = true, suffix: Bool = true, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Text(LocalizedStringKey(suffix ? "\(t) On" : t)).font(.system(size: compact ? 13 : 15, weight: .semibold)).lineLimit(1).minimumScaleFactor(0.7)
-                .frame(maxWidth: .infinity, minHeight: compact ? 34 : 44)
+            Text(LocalizedStringKey(suffix ? "\(t) On" : t)).font(.system(size: compact ? 11 : 13, weight: .semibold)).lineLimit(1).minimumScaleFactor(0.7)
+                .frame(maxWidth: .infinity, minHeight: compact ? 29 : 37)
                 .foregroundStyle(on ? .black : DS.text2)
                 .background(on ? Color.white : DS.surface2, in: RoundedRectangle(cornerRadius: 4))
                 .overlay(RoundedRectangle(cornerRadius: 4).stroke(Color.white.opacity(on ? 0 : 0.12)))
@@ -892,8 +892,8 @@ struct TransitionColumn: View {
 
     private func key(_ t: String, color: Color = DS.surface2, text: Color = .white, enabled: Bool = true, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Text(LocalizedStringKey(Self.keyCase(t))).font(.system(size: compact ? 13 : 15, weight: .semibold)).lineLimit(1).minimumScaleFactor(0.7)
-                .frame(maxWidth: .infinity, minHeight: compact ? 34 : 44)
+            Text(LocalizedStringKey(Self.keyCase(t))).font(.system(size: compact ? 11 : 13, weight: .semibold)).lineLimit(1).minimumScaleFactor(0.7)
+                .frame(maxWidth: .infinity, minHeight: compact ? 29 : 37)
                 .foregroundStyle(text)
                 .background(color, in: RoundedRectangle(cornerRadius: 4))
                 .overlay(RoundedRectangle(cornerRadius: 4).stroke(Color.white.opacity(0.1)))
@@ -906,9 +906,9 @@ struct TransitionColumn: View {
         Button(action: action) {
             HStack(spacing: 4) {
                 Circle().fill(on ? onColor : DS.text3).frame(width: 7, height: 7)
-                Text(LocalizedStringKey(t)).font(.system(size: compact ? 10 : 12, weight: .bold)).lineLimit(1).minimumScaleFactor(0.7)
+                Text(LocalizedStringKey(t)).font(.system(size: compact ? 9 : 10, weight: .bold)).lineLimit(1).minimumScaleFactor(0.7)
             }
-            .frame(maxWidth: .infinity, minHeight: compact ? 30 : 36)
+            .frame(maxWidth: .infinity, minHeight: compact ? 26 : 31)
             .foregroundStyle(on ? .white : DS.text2)
             .background(on ? onColor.opacity(0.28) : DS.surface2, in: RoundedRectangle(cornerRadius: 4))
             .overlay(RoundedRectangle(cornerRadius: 4).stroke(on ? onColor : Color.clear))

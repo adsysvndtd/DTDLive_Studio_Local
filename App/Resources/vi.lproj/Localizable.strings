@@ -14,6 +14,7 @@
 "Bitrate thích ứng" = "Bitrate thích ứng";
 "Bão hoà" = "Bão hoà";
 "Bù phơi sáng" = "Bù phơi sáng";
+"Bản ghi" = "Bản ghi";
 "Bản tin" = "Bản tin";
 "Bảng tỉ số" = "Bảng tỉ số";
 "Bấm Phát ở đích vừa tạo; sau 10–20 giây trang xem mới có hình." = "Bấm Phát ở đích vừa tạo; sau 10–20 giây trang xem mới có hình.";
@@ -298,6 +299,7 @@
 "PTZ nguồn PVW" = "PTZ nguồn PVW";
 "Phiên bản" = "Phiên bản";
 "Phát" = "Phát";
+"Phát lên PGM" = "Phát lên PGM";
 "Phát lại từ đầu" = "Phát lại từ đầu";
 "Phát trực tiếp" = "Phát trực tiếp";
 "Phát tất cả" = "Phát tất cả";
@@ -460,6 +462,7 @@
 "Âm lượng" = "Âm lượng";
 "Âm thanh" = "Âm thanh";
 "Ô tỉ số" = "Ô tỉ số";
+"ĐANG REPLAY · DỪNG" = "ĐANG REPLAY · DỪNG";
 "Đang dùng: %.1f Mbps" = "Đang dùng: %.1f Mbps";
 "Đang giải mã…" = "Đang giải mã…";
 "Đang kiểm tra %@/%@…" = "Đang kiểm tra %@/%@…";
