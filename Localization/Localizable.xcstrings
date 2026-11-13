@@ -6590,6 +6590,16 @@
           }
         }
       }
+    },
+    "Xem trước": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preview"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

@@ -327,7 +327,9 @@ struct CategoryContent: View {
             sectionHeader("SuperFG của bạn: ảnh PNG/JPG chạy như thẻ có hiệu ứng · video .mov có kênh alpha")
             libraryGrid(.overlay, selected: engine.currentForegroundURL) { engine.useForeground($0) }
         case .title:
-            HTMLGraphicsPanel(html: engine.html, repo: engine.graphicsRepo, compact: true).padding(.bottom, 2)
+            HTMLGraphicsPanel(html: engine.html, repo: engine.graphicsRepo, compact: true,
+                              background: engine.switcher.previewMonitor,
+                              aspect: CGFloat(engine.format.width) / CGFloat(max(engine.format.height, 1))).padding(.bottom, 2)
             ScoreboardControl(engine: engine, compact: true).padding(.bottom, 2)
             TitlesPanel(engine: engine)
         case .logo:

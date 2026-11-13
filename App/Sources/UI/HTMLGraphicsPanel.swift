@@ -8,6 +8,9 @@ struct HTMLGraphicsPanel: View {
     @ObservedObject var html: HTMLGraphics
     @ObservedObject var repo: GraphicsRepo
     var compact = false
+    /// Picture under the Design preview (PVW) and the program aspect, so the preview matches PGM.
+    var background: FrameStore? = nil
+    var aspect: CGFloat = 16 / 9
     @AppStorage("ui.htmlPanelOpen") private var open = true
     @State private var pickHTML = false
     @State private var editing: HTMLTemplate?
@@ -61,7 +64,7 @@ struct HTMLGraphicsPanel: View {
                 }
             }
             if let t = html.templates.first(where: { $0.id == html.loadedID }) {
-                HTMLFieldRows(html: html, template: t, compact: compact)
+                HTMLFieldRows(html: html, template: t, compact: compact, background: background, aspect: aspect)
             }
           }
         }
@@ -108,11 +111,13 @@ struct HTMLFieldRows: View {
     @ObservedObject var html: HTMLGraphics
     let template: HTMLTemplate
     var compact = false
+    var background: FrameStore? = nil
+    var aspect: CGFloat = 16 / 9
     static let presets = ["#5172BE", "#3E5068", "#D98A2B", "#C84B33", "#2E9E6A", "#7A4FC2", "#111418"]
 
     var body: some View {
         let t = template
-        HTMLResizeRows(html: html, template: t, compact: compact)
+        HTMLResizeRows(html: html, template: t, compact: compact, background: background, aspect: aspect)
         ForEach(t.fields) { f in
             if f.isColor {
                 HStack(spacing: 6) {
@@ -163,6 +168,8 @@ struct HTMLResizeRows: View {
     @ObservedObject var html: HTMLGraphics
     let template: HTMLTemplate
     var compact = false
+    var background: FrameStore? = nil
+    var aspect: CGFloat = 16 / 9
     @State private var open = false
     @State private var tab = 0
     @State private var layerKey: String?
@@ -186,6 +193,7 @@ struct HTMLResizeRows: View {
                 }
             }
             if open {
+                HTMLLivePreview(html: html, background: background, aspect: aspect)
                 Picker("", selection: $tab) {
                     Text("Bố cục").tag(0)
                     Text("Lớp").tag(1)
@@ -361,7 +369,7 @@ struct HTMLResizeRows: View {
             .fixedSize()
             Spacer()
             Button { html.replay() } label: { Label("Chạy lại", systemImage: "play.fill") }
-                .font(DS.fBody).buttonStyle(.bordered).disabled(!html.onAir)
+                .font(DS.fBody).buttonStyle(.bordered)
         }
         Text("Hiệu ứng chạy cùng chuyển động sẵn có của mẫu; ra bằng hiệu ứng ngược lại.").font(.caption2).foregroundStyle(DS.text3)
     }
@@ -394,6 +402,40 @@ struct HTMLResizeRows: View {
             Spacer(minLength: 0)
         }
         .frame(height: 30)
+    }
+}
+
+/// Exactly the frames that go to PGM (same renderer, same scaling: full width, bottom-aligned), over PVW,
+/// at the program's aspect ratio. Shown while the Design panel is open; the graphic plays here without going on air.
+struct HTMLLivePreview: View {
+    @ObservedObject var html: HTMLGraphics
+    var background: FrameStore?
+    var aspect: CGFloat
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            if let background { MonitorView(store: background, maxFPS: 10) } else { Color(white: 0.3) }
+            if let img = html.previewImage {
+                Image(uiImage: img).resizable().aspectRatio(img.size.width / max(img.size.height, 1), contentMode: .fit)
+                    .frame(maxWidth: .infinity)
+            }
+            // title-safe guide (90 %)
+            GeometryReader { g in
+                Rectangle().stroke(Color.white.opacity(0.25), style: StrokeStyle(lineWidth: 1, dash: [4, 4]))
+                    .frame(width: g.size.width * 0.9, height: g.size.height * 0.9)
+                    .position(x: g.size.width / 2, y: g.size.height / 2)
+            }
+        }
+        .aspectRatio(aspect, contentMode: .fit)
+        .frame(maxWidth: 520)
+        .clipShape(RoundedRectangle(cornerRadius: DS.radius))
+        .overlay(alignment: .topLeading) {
+            Text(html.onAir ? "PGM" : "Xem trước").font(.system(size: 10, weight: .bold))
+                .padding(.horizontal, 6).padding(.vertical, 2)
+                .background(html.onAir ? DS.pgm : Color.black.opacity(0.6), in: RoundedRectangle(cornerRadius: 3)).padding(4)
+        }
+        .onAppear { html.beginPreview() }
+        .onDisappear { html.endPreview() }
     }
 }
 

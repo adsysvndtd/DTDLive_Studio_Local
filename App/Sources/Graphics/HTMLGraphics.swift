@@ -798,8 +798,8 @@ final class HTMLGraphics: NSObject, ObservableObject, WKNavigationDelegate {
 
     /// Plays the graphic's in-effect on air again (to check a new effect).
     func replay() {
-        guard onAir else { return }
-        web?.evaluateJavaScript("window.dtdPlay?dtdPlay():play()")
+        guard onAir || previewers > 0 else { return }
+        replayPreview()
     }
 
     func value(_ t: HTMLTemplate, _ f: HTMLTemplate.Field) -> String { values[t.id]?[f.id] ?? f.default ?? "" }
@@ -843,6 +843,9 @@ final class HTMLGraphics: NSObject, ObservableObject, WKNavigationDelegate {
         Task { @MainActor in
             self.pageReady = true
             if let t = self.templates.first(where: { $0.id == self.loadedID }) { self.pushData(t) }
+            if self.previewers > 0, !self.onAir {
+                self.web?.evaluateJavaScript("window.dtdPlay?dtdPlay():play()"); self.previewPlaying = true
+            }
         }
     }
 
@@ -883,9 +886,15 @@ final class HTMLGraphics: NSObject, ObservableObject, WKNavigationDelegate {
 
     @objc private func tick() {
         if let d = stopDeadline, Date() > d {
-            link?.invalidate(); link = nil; stopDeadline = nil
+            stopDeadline = nil
             HTMLFrameBox.shared.set(nil)
-            return
+            if previewers > 0 {
+                // still designing: bring it back for the preview (not on air)
+                web?.evaluateJavaScript("window.dtdPlay?dtdPlay():play()"); previewPlaying = true
+            } else {
+                link?.invalidate(); link = nil
+                return
+            }
         }
         guard !capturing, let w = web else { return }
         capturing = true
@@ -893,10 +902,49 @@ final class HTMLGraphics: NSObject, ObservableObject, WKNavigationDelegate {
         cfg.afterScreenUpdates = false
         w.takeSnapshot(with: cfg) { [weak self] img, _ in
             Task { @MainActor in
-                self?.capturing = false
+                guard let self else { return }
+                self.capturing = false
                 guard let img, let cg = img.cgImage else { return }
-                HTMLFrameBox.shared.set(CIImage(cgImage: cg))
+                // the picture that goes to PGM (only while on air / playing out)
+                if self.onAir || self.stopDeadline != nil { HTMLFrameBox.shared.set(CIImage(cgImage: cg)) }
+                // the same picture for the Design preview (~12 fps)
+                let now = CACurrentMediaTime()
+                if self.previewers > 0, now - self.lastPreviewPublish > 0.08 {
+                    self.lastPreviewPublish = now
+                    self.previewImage = img
+                }
             }
         }
+    }
+
+    // MARK: Design preview: the exact frames the PGM gets, shown while editing (without going on air)
+
+    @Published private(set) var previewImage: UIImage?
+    private var previewers = 0
+    private var previewPlaying = false
+    private var lastPreviewPublish: CFTimeInterval = 0
+
+    func beginPreview() {
+        previewers += 1
+        guard previewers == 1 else { return }
+        if !onAir, pageReady, loadedID != nil {
+            web?.evaluateJavaScript("window.dtdPlay?dtdPlay():play()"); previewPlaying = true
+        }
+        startCapture()
+    }
+
+    func endPreview() {
+        previewers = max(0, previewers - 1)
+        guard previewers == 0 else { return }
+        previewImage = nil
+        if previewPlaying, !onAir { web?.evaluateJavaScript("window.dtdStop?dtdStop():stop()") }
+        previewPlaying = false
+        if !onAir, stopDeadline == nil { link?.invalidate(); link = nil }
+    }
+
+    /// Plays the in-animation again in the preview (or on air).
+    func replayPreview() {
+        web?.evaluateJavaScript("window.dtdPlay?dtdPlay():play()")
+        if !onAir { previewPlaying = true }
     }
 }
