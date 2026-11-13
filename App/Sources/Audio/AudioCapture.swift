@@ -174,6 +174,11 @@ final class AudioCapture: @unchecked Sendable {
         }
     }
 
+    func renameChannel(_ id: UUID, to name: String) {
+        os_unfair_lock_lock(&lock); defer { os_unfair_lock_unlock(&lock) }
+        states[id]?.name = name
+    }
+
     func removeChannel(_ id: UUID) {
         DispatchQueue.main.async { [self] in
             players[id].map { $0.stop(); engine.detach($0) }

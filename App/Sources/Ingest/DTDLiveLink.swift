@@ -93,9 +93,16 @@ final class DTDLiveLink: NSObject, NetServiceDelegate {
 
     private func authorize(request: String, bond: String, peer: String) {
         pairing?.removeExternal(dtdLiveRequest: request)
-        if let cam = cameras[bond], cam.port > 0 {
-            // known camera reconnecting: same receiver, same input
-            control?.mediaReady(request, port: cam.port)
+        if let cam = cameras[bond] {
+            let name = Self.pretty(peer)
+            if cam.source.name != name, let engine {
+                cam.source.name = name
+                router.sink(cam.source.ingestKey)?.onAudio = engine.audioFeed(sourceID: cam.source.id, name: name)
+                engine.renameCameraAudio(cam.source.id, to: name)
+                engine.objectWillChange.send()
+            }
+            if cam.port > 0 { control?.mediaReady(request, port: cam.port) }
+            else { pendingMedia[bond] = request }
             return
         }
         guard let engine else { return }
@@ -174,6 +181,8 @@ final class DTDLiveLink: NSObject, NetServiceDelegate {
 
     /// "iPhone-DTDLive-1A2B3C4D" -> "DTDLive 1A2B"
     static func pretty(_ peer: String) -> String {
+        if let alias = WiFiSourceName.display(peer) { return alias }
+        if peer == "DTDLive-Screen" { return "DTDLive Screen" }
         let tail = peer.split(separator: "-").last.map(String.init) ?? peer
         return "DTDLive " + tail.prefix(4)
     }

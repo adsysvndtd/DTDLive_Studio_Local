@@ -1163,6 +1163,8 @@ final class StudioEngine: ObservableObject {
         message = L("Không mở được micro/bộ trộn âm thanh — đang phát kèm âm thanh câm. Kiểm tra quyền Micro trong Cài đặt iOS.")
     }
 
+    func renameCameraAudio(_ id: UUID, to name: String) { audio.renameChannel(id, to: name) }
+
     /// PCM from a pushed camera (ingest server thread) into its own mixer channel.
     nonisolated func audioFeed(sourceID: UUID, name: String) -> @Sendable (AVAudioPCMBuffer) -> Void {
         let a = audio
