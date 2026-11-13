@@ -102,6 +102,12 @@ private:
 }
 - (instancetype)initWithPassphrase:(NSString*)passphrase onListening:(void (^)(NSInteger))listening
                            onState:(void (^)(SRTKConnectionState, NSString*))state onFrame:(void (^)(CVPixelBufferRef))frame {
+    return [self initWithPassphrase:passphrase audioBufferMs:0 onListening:listening onState:state onFrame:frame onAudio:nil];
+}
+- (instancetype)initWithPassphrase:(NSString*)passphrase audioBufferMs:(NSInteger)audioBufferMs
+                       onListening:(void (^)(NSInteger))listening
+                           onState:(void (^)(SRTKConnectionState, NSString*))state onFrame:(void (^)(CVPixelBufferRef))frame
+                           onAudio:(void (^)(NSData*, NSData*, NSInteger, NSInteger, int64_t))audio {
     if ((self = [super init])) {
         _allowVideo = false;
         TalkbackReceiver::Config cfg;
@@ -112,6 +118,7 @@ private:
         cfg.srt.pbKeyLen = 16;
         cfg.srt.latencyMs = 120;
         cfg.reconnectDelayMs = 500;
+        cfg.bufferMs = audioBufferMs > 0 ? (int)audioBufferMs : 100;   // audio jitter buffer ≈ the app's video pacer
         TalkbackReceiver::Callbacks cb;
         cb.onListening = [listening](int port) { listening(port); };
         // The owner joins the receive thread in stop before releasing the receiver.
@@ -128,6 +135,16 @@ private:
                 if (approved->load()) decoder->decode(bytes, count, pts, frame);
             }
         };
+        if (audio) {
+            cb.onAudio = [approved, audio](const DemuxedAudioFrame& f) {
+                @autoreleasepool {
+                    if (!approved->load() || f.codec != AudioCodec::AAC || f.data.empty()) return;
+                    audio([NSData dataWithBytes:f.data.data() length:f.data.size()],
+                          [NSData dataWithBytes:f.asc.data() length:f.asc.size()],
+                          f.sampleRate, f.channels, f.ptsUs);
+                }
+            };
+        }
         _receiver = std::make_unique<TalkbackReceiver>(cfg, std::move(cb));
     }
     return self;

@@ -174,13 +174,21 @@ FOUNDATION_EXPORT NSString* const SRTKErrorDomain;
 @end
 
 // ---------------------------------------------------------------------------
-/// Encrypted, video-only SRT input for a paired LAN camera. Callbacks run on the receive thread.
+/// Encrypted SRT input for a paired LAN camera (DTDLive): H.264 video + AAC audio. Callbacks run on receive threads.
+/// Audio is delivered at its PTS pace after `audioBufferMs` (raw AAC AU + AudioSpecificConfig), only once approved.
 @interface SRTKCameraReceiver : NSObject
 - (instancetype)initWithPassphrase:(NSString*)passphrase
                        onListening:(void (^)(NSInteger port))listening
                            onState:(void (^)(SRTKConnectionState state, NSString* detail))state
                            onFrame:(void (^)(CVPixelBufferRef frame))frame
     NS_SWIFT_NAME(init(passphrase:onListening:onState:onFrame:));
+- (instancetype)initWithPassphrase:(NSString*)passphrase
+                     audioBufferMs:(NSInteger)audioBufferMs
+                       onListening:(void (^)(NSInteger port))listening
+                           onState:(void (^)(SRTKConnectionState state, NSString* detail))state
+                           onFrame:(void (^)(CVPixelBufferRef frame))frame
+                           onAudio:(void (^)(NSData* aac, NSData* asc, NSInteger sampleRate, NSInteger channels, int64_t ptsUs))audio
+    NS_SWIFT_NAME(init(passphrase:audioBufferMs:onListening:onState:onFrame:onAudio:));
 - (instancetype)init NS_UNAVAILABLE;
 @property (atomic) BOOL approved;
 - (void)start;

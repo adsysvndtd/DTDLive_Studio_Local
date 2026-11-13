@@ -95,14 +95,15 @@ final class DTDLiveLink: NSObject, NetServiceDelegate {
         guard let engine else { return }
         let key = "dtdlive:" + bond.prefix(12)
         let source = IngestSource(name: Self.pretty(peer), kind: .srt, ingestKey: key)
-        let sink = IngestRouter.Sink(frames: source.frames, onAudio: nil)
+        // Audio from the phone's mic: AAC in the same SRT stream → decoder → its own mixer channel.
+        let sink = IngestRouter.Sink(frames: source.frames, onAudio: engine.audioFeed(sourceID: source.id, name: source.name))
         router.set(key, sink)
         pendingMedia[bond] = request
         let frames = source.frames
         // Wi-Fi delivers frames in bursts: play them on an even beat (~0.1 s buffer) instead of on arrival.
         let pacer = FramePacer(store: frames)
         pacer.delay = 0.1
-        let rx = SRTKCameraReceiver(passphrase: String(bond.suffix(32)), onListening: { [weak self] port in
+        let rx = SRTKCameraReceiver(passphrase: String(bond.suffix(32)), audioBufferMs: 100, onListening: { [weak self] port in
             DispatchQueue.main.async {
                 guard let self, var cam = self.cameras[bond] else { return }
                 cam.port = port; self.cameras[bond] = cam
@@ -112,7 +113,9 @@ final class DTDLiveLink: NSObject, NetServiceDelegate {
         }, onState: { state, _ in
             if state != .connected { frames.clear() }
             DispatchQueue.main.async { source.setOnline(state == .connected) }
-        }, onFrame: { pb in pacer.pushArrival(pb) })
+        }, onFrame: { pb in pacer.pushArrival(pb) }, onAudio: { aac, asc, rate, channels, _ in
+            sink.aac([UInt8](aac), asc: [UInt8](asc), sampleRate: rate, channels: channels)
+        })
         cameras[bond] = Camera(receiver: rx, port: 0, source: source)
         engine.add(source)
         rx.approved = true
