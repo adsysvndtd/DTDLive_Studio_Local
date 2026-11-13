@@ -182,34 +182,86 @@ enum HTMLGraphicsStore {
         return d
     }
 
-    /// Copies the templates shipped in the app (Graphics/ folder) so it works before any sync,
-    /// and merges in bundled templates that a later app version added.
+    /// Copies the templates shipped in the app (Graphics/ folder) so it works before any sync.
+    /// When a new app build ships changed templates, they replace the local copies (keeping the operator's
+    /// saved design block) and new templates are added to the manifest.
     static func seedIfNeeded() {
         let fm = FileManager.default
         let dst = directory
         guard let src = Bundle.main.url(forResource: "Graphics", withExtension: nil) else { return }
         let mURL = dst.appendingPathComponent("manifest.json")
+        let stamp = fingerprint(src)
         guard fm.fileExists(atPath: mURL.path), var local = manifest() else {
             for name in (try? fm.contentsOfDirectory(atPath: src.path)) ?? [] {
                 try? fm.removeItem(at: dst.appendingPathComponent(name))
                 try? fm.copyItem(at: src.appendingPathComponent(name), to: dst.appendingPathComponent(name))
             }
+            UserDefaults.standard.set(stamp, forKey: "dtd.graphics.bundleStamp")
             return
         }
         guard let d = try? Data(contentsOf: src.appendingPathComponent("manifest.json")),
               let bundled = try? JSONDecoder().decode(HTMLManifest.self, from: d) else { return }
-        var changed = false
-        for t in bundled.templates where !local.templates.contains(where: { $0.id == t.id }) {
-            let folder = (t.entry as NSString).pathComponents.first ?? ""
-            if !folder.isEmpty, !fm.fileExists(atPath: dst.appendingPathComponent(folder).path) {
-                try? fm.copyItem(at: src.appendingPathComponent(folder), to: dst.appendingPathComponent(folder))
-            }
-            local.templates.append(t); changed = true
-        }
+        let changed = UserDefaults.standard.string(forKey: "dtd.graphics.bundleStamp") != stamp
         if changed {
-            let enc = JSONEncoder(); enc.outputFormatting = [.prettyPrinted, .withoutEscapingSlashes]
-            try? enc.encode(local).write(to: mURL)
+            // refresh every bundled folder / file
+            for name in (try? fm.contentsOfDirectory(atPath: src.path)) ?? [] where name != "manifest.json" {
+                refresh(src.appendingPathComponent(name), into: dst.appendingPathComponent(name))
+            }
+            // bundled entries replace local ones with the same id; operator-added entries stay
+            for t in bundled.templates {
+                if let i = local.templates.firstIndex(where: { $0.id == t.id }) { local.templates[i] = t } else { local.templates.append(t) }
+            }
+        } else {
+            for t in bundled.templates where !local.templates.contains(where: { $0.id == t.id }) {
+                let folder = (t.entry as NSString).pathComponents.first ?? ""
+                if !folder.isEmpty, !fm.fileExists(atPath: dst.appendingPathComponent(folder).path) {
+                    try? fm.copyItem(at: src.appendingPathComponent(folder), to: dst.appendingPathComponent(folder))
+                }
+                local.templates.append(t)
+            }
         }
+        let enc = JSONEncoder(); enc.outputFormatting = [.prettyPrinted, .withoutEscapingSlashes]
+        try? enc.encode(local).write(to: mURL)
+        UserDefaults.standard.set(stamp, forKey: "dtd.graphics.bundleStamp")
+    }
+
+    /// Copies a bundled file/folder over the local one; HTML pages keep their saved <style id="dtd-layout"> block.
+    private static func refresh(_ from: URL, into to: URL) {
+        let fm = FileManager.default
+        var isDir: ObjCBool = false
+        fm.fileExists(atPath: from.path, isDirectory: &isDir)
+        if isDir.boolValue {
+            try? fm.createDirectory(at: to, withIntermediateDirectories: true)
+            for name in (try? fm.contentsOfDirectory(atPath: from.path)) ?? [] {
+                refresh(from.appendingPathComponent(name), into: to.appendingPathComponent(name))
+            }
+            return
+        }
+        if ["html", "htm"].contains(from.pathExtension.lowercased()),
+           let old = try? String(contentsOf: to, encoding: .utf8),
+           let r = old.range(of: #"<style id="dtd-layout">[\s\S]*?</style>\n?"#, options: .regularExpression),
+           var fresh = try? String(contentsOf: from, encoding: .utf8) {
+            let block = String(old[r])
+            if let h = fresh.range(of: "</head>", options: .caseInsensitive) { fresh.insert(contentsOf: block, at: h.lowerBound) }
+            else { fresh = block + fresh }
+            try? fresh.write(to: to, atomically: true, encoding: .utf8)
+            return
+        }
+        try? fm.removeItem(at: to)
+        try? fm.copyItem(at: from, to: to)
+    }
+
+    /// Stable fingerprint (FNV-1a) of the bundled Graphics folder.
+    private static func fingerprint(_ dir: URL) -> String {
+        var h: UInt64 = 0xcbf29ce484222325
+        func mix(_ bytes: Data) { for b in bytes { h ^= UInt64(b); h = h &* 0x100000001b3 } }
+        let files = (FileManager.default.enumerator(at: dir, includingPropertiesForKeys: nil)?.allObjects as? [URL] ?? [])
+            .map { $0.path }.sorted()
+        for f in files {
+            mix(Data(f.replacingOccurrences(of: dir.path, with: "").utf8))
+            if let d = FileManager.default.contents(atPath: f) { mix(d) }
+        }
+        return String(h, radix: 16)
     }
 
     static func manifest() -> HTMLManifest? {
