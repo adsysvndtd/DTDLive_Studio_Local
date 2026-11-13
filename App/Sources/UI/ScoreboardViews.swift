@@ -109,7 +109,7 @@ struct ScoreboardControl: View {
 
     private func assign(_ t: String, on: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Text(t).font(.caption.weight(.bold)).padding(.horizontal, 9).padding(.vertical, 5)
+            Text(t).font(DS.fBodyBold).padding(.horizontal, 9).padding(.vertical, 5)
                 .foregroundStyle(on ? .black : DS.text2)
                 .background(on ? Color.white : DS.surface2, in: Rectangle())
         }.buttonStyle(.plain)

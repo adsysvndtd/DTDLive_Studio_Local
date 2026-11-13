@@ -1121,6 +1121,16 @@
         }
       }
     },
+    "Không đọc được video từ Thư viện ảnh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not read the video from Photos"
+          }
+        }
+      }
+    },
     "Kick › Dashboard › Settings › Stream key: dán Stream URL (rtmps://…) và Stream key.": {
       "localizations": {
         "en": {

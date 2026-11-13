@@ -53,23 +53,23 @@ struct CategoryList: View {
 
     var body: some View {
         ScrollView(showsIndicators: false) {
-            VStack(spacing: compact ? 4 : 6) {
+            VStack(spacing: compact ? 3 : 4) {
                 ForEach(ProdCategory.allCases) { c in
                     Button { selection = c } label: {
                         Group {
                             if compact {
                                 VStack(spacing: 2) {
-                                    Image(systemName: c.icon).font(.system(size: 14, weight: .semibold))
+                                    Image(systemName: c.icon).font(.system(size: 12, weight: .semibold))
                                     Text(LocalizedStringKey(c.label)).font(.system(size: 9, weight: .semibold)).lineLimit(1).minimumScaleFactor(0.7)
                                 }
-                                .frame(maxWidth: .infinity, minHeight: 40)
+                                .frame(maxWidth: .infinity, minHeight: 34)
                             } else {
                                 HStack(spacing: 8) {
-                                    Image(systemName: c.icon).font(.system(size: 14, weight: .semibold)).frame(width: 18)
-                                    Text(LocalizedStringKey(c.label)).font(.subheadline.weight(.semibold)).lineLimit(1).minimumScaleFactor(0.75)
+                                    Image(systemName: c.icon).font(.system(size: 12, weight: .semibold)).frame(width: 16)
+                                    Text(LocalizedStringKey(c.label)).font(.system(size: 13, weight: .semibold)).lineLimit(1).minimumScaleFactor(0.75)
                                     Spacer(minLength: 0)
                                 }
-                                .padding(.horizontal, 10).frame(height: 38)
+                                .padding(.horizontal, 8).frame(height: 30)
                             }
                         }
                         .foregroundStyle(selection == c ? Color.black : DS.text2)
@@ -78,7 +78,7 @@ struct CategoryList: View {
                     .buttonStyle(.plain)
                 }
             }
-            .padding(compact ? 6 : 10)
+            .padding(compact ? 4 : 8)
         }
         .background(DS.surface)
     }
@@ -98,6 +98,8 @@ struct CategoryContent: View {
     /// Library the open picker imports into — kept separately so dismissing the picker
     /// (which clears photoKind / importing) never sends a Logo into Ảnh or vice versa.
     @State private var photoTarget: LibraryKind = .picture
+    @State private var videoPick = false
+    @State private var videoItem: PhotosPickerItem?
     @State private var fileTarget: LibraryKind = .picture
     /// Background picture for PiP layouts, picked straight from Photos / Files and applied at once.
     @State private var bgPhoto: PhotosPickerItem?
@@ -117,6 +119,8 @@ struct CategoryContent: View {
                         if hasToolbar { header }
                         content
                     }
+                    .font(DS.fBody)              // one text size for every category page
+                    .controlSize(.small)
                     .padding(compact ? 8 : 12)
                 }
             }
@@ -147,6 +151,19 @@ struct CategoryContent: View {
         }
         .photosPicker(isPresented: Binding(get: { photoKind != nil }, set: { if !$0 { photoKind = nil } }),
                       selection: $photoItems, matching: .images)
+        .photosPicker(isPresented: $videoPick, selection: $videoItem, matching: .videos)
+        .onChange(of: videoItem) { _, item in
+            guard let item else { return }
+            Task {
+                if let mv = try? await item.loadTransferable(type: PickedMovie.self) {
+                    if let err = library.importFiles([mv.url], into: .movie) { engine.message = err }
+                    try? FileManager.default.removeItem(at: mv.url)
+                } else {
+                    engine.message = L("Không đọc được video từ Thư viện ảnh")
+                }
+                videoItem = nil
+            }
+        }
         .onChange(of: photoItems) { _, items in
             guard !items.isEmpty else { return }
             let k = photoTarget
@@ -189,7 +206,10 @@ struct CategoryContent: View {
                 }
                 headerButton("Thêm nguồn", "plus") { showAddSource = true }
             case .movie:
-                headerButton("Nhập video", "square.and.arrow.down") { fileTarget = .movie; importing = .movie }
+                Menu {
+                    Button { videoPick = true } label: { Label("Thư viện ảnh", systemImage: "photo.on.rectangle") }
+                    Button { fileTarget = .movie; importing = .movie } label: { Label("Tệp", systemImage: "folder") }
+                } label: { toolbarLabel("Nhập video", "square.and.arrow.down") }
             case .picture, .overlay, .logo:
                 importImageMenu(category == .picture ? .picture : category == .overlay ? .overlay : .logo)
             case .audio:
@@ -214,8 +234,8 @@ struct CategoryContent: View {
 
     private func toolbarLabel(_ title: String, _ icon: String) -> some View {
         Label(LocalizedStringKey(title), systemImage: icon)
-            .font(.system(size: compact ? 12 : 14, weight: .semibold)).lineLimit(1)
-            .padding(.horizontal, compact ? 8 : 12).frame(height: compact ? 28 : 34)
+            .font(.system(size: compact ? 11 : 12, weight: .semibold)).lineLimit(1)
+            .padding(.horizontal, compact ? 6 : 8).frame(height: compact ? 24 : 28)
             .foregroundStyle(.white)
             .background(DS.surface2, in: Rectangle())
             .overlay(Rectangle().stroke(DS.stroke))
@@ -239,8 +259,8 @@ struct CategoryContent: View {
     private func headerButton(_ title: String, _ icon: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Label(LocalizedStringKey(title), systemImage: icon)
-                .font(.system(size: compact ? 12 : 14, weight: .semibold)).lineLimit(1)
-                .padding(.horizontal, compact ? 8 : 12).frame(height: compact ? 28 : 34)
+                .font(.system(size: compact ? 11 : 12, weight: .semibold)).lineLimit(1)
+                .padding(.horizontal, compact ? 6 : 8).frame(height: compact ? 24 : 28)
                 .foregroundStyle(.white)
                 .background(DS.surface2, in: Rectangle())
                 .overlay(Rectangle().stroke(DS.stroke))
@@ -302,7 +322,7 @@ struct CategoryContent: View {
         case .logo:
             HStack {
                 Label(engine.logo == nil ? "Chưa nạp logo" : (engine.logoOn ? "Logo đang trên PGM" : "Logo đã nạp — bấm Logo On"),
-                      systemImage: "seal").font(.caption).foregroundStyle(engine.logoOn ? DS.pgm : DS.text2)
+                      systemImage: "seal").font(DS.fBody).foregroundStyle(engine.logoOn ? DS.pgm : DS.text2)
                 Spacer()
                 Picker("Vị trí", selection: $engine.logoCorner) { ForEach(StudioEngine.Corner.allCases) { Text($0.label).tag($0) } }
                     .pickerStyle(.segmented).frame(maxWidth: 380)
@@ -328,12 +348,12 @@ struct CategoryContent: View {
     }
 
     private func sectionHeader(_ t: String) -> some View {
-        Text(t.uppercased()).font(.caption.weight(.bold)).foregroundStyle(DS.text3)
+        Text(LocalizedStringKey(t)).textCase(.uppercase).font(DS.fHeader).foregroundStyle(DS.text2).tracking(0.6)
             .frame(maxWidth: .infinity, alignment: .leading).padding(.top, 6)
     }
 
     private func emptyHint(_ t: String) -> some View {
-        Text(LocalizedStringKey(t)).font(.caption).foregroundStyle(DS.text3).frame(maxWidth: .infinity, alignment: .leading).padding(.vertical, 6)
+        Text(LocalizedStringKey(t)).font(DS.fBody).foregroundStyle(DS.text3).frame(maxWidth: .infinity, alignment: .leading).padding(.vertical, 6)
     }
 
     // MARK: Sources
@@ -358,10 +378,10 @@ struct CategoryContent: View {
             ColorPicker("Màu nền", selection: Binding(
                 get: { if case .color(let h) = bg { return Color(UIColor(hex: h)) } else { return Color(white: 0.05) } },
                 set: { engine.layoutBackground = .color(UIColor($0).hexString) }), supportsOpacity: false)
-                .font(.caption.weight(.semibold)).fixedSize()
+                .font(DS.fBodyBold).fixedSize()
             if !isColor {
                 Button("Bỏ ảnh nền") { engine.layoutBackground = .color("#0A0D12") }
-                    .font(.caption.weight(.semibold)).buttonStyle(.bordered)
+                    .font(DS.fBodyBold).buttonStyle(.bordered)
             }
             Spacer()
             PhotosPicker(selection: $bgPhoto, matching: .images) { toolbarLabel("Ảnh nền từ Thư viện", "photo.on.rectangle") }
@@ -410,7 +430,7 @@ struct CategoryContent: View {
                 ForEach(live, id: \.id) { s in Button(s.name) { engine.layoutBackground = .source(s.id) } }
             } label: {
                 let cur: String = { if case .source(let id) = bg { return engine.sources.first { $0.id == id }?.name ?? "—" }; return L("chọn nguồn") }()
-                Label("Nền là nguồn video (làm mờ): \(cur)", systemImage: "camera.filters").font(.caption.weight(.semibold))
+                Label("Nền là nguồn video (làm mờ): \(cur)", systemImage: "camera.filters").font(DS.fBodyBold)
             }
         }
     }
@@ -466,7 +486,7 @@ struct CategoryContent: View {
                 }
                 Spacer()
             }
-            .font(.caption.weight(.semibold))
+            .font(DS.fBodyBold)
             LabeledSlider(title: "Độ dày", value: $engine.layoutFrame.thickness, range: 0.004...0.04) { String(format: "%.1f%%", $0 * 100) }
                 .frame(maxWidth: 420)
         }
@@ -512,7 +532,7 @@ struct CategoryContent: View {
                     let sel = engine.layoutSelectedSlot == i
                     Button { engine.layoutSelectedSlot = i } label: {
                         Text("Khung \(i + 1): \(engine.sources.first { $0.id == engine.layoutSlots[i] }?.name ?? "trống")")
-                            .font(.caption.weight(.semibold)).lineLimit(1)
+                            .font(DS.fBodyBold).lineLimit(1)
                             .padding(.horizontal, 10).padding(.vertical, 6)
                             .foregroundStyle(sel ? .black : .white)
                             .background(sel ? DS.accent : DS.surface2, in: Rectangle())
@@ -578,7 +598,7 @@ struct CategoryContent: View {
                     VStack(spacing: 0) {
                         TransitionPreviewView(style: t, animate: engine.transition == t)
                             .aspectRatio(16 / 9, contentMode: .fit)
-                        Text("\(i + 1): \(t.label)").font(.caption.weight(.bold))
+                        Text("\(i + 1): \(t.label)").font(DS.fBodyBold)
                             .frame(maxWidth: .infinity, minHeight: 26)
                             .foregroundStyle(engine.transition == t ? Color.black : .white)
                             .background(engine.transition == t ? DS.accent : DS.surface)
@@ -623,7 +643,7 @@ struct CategoryContent: View {
                     Button { engine.playEffect(url) } label: {
                         VStack(spacing: 4) {
                             Image(systemName: "speaker.wave.2.circle.fill").font(.title2)
-                            Text(url.deletingPathExtension().lastPathComponent).font(.caption.weight(.semibold)).lineLimit(2)
+                            Text(url.deletingPathExtension().lastPathComponent).font(DS.fBodyBold).lineLimit(2)
                                 .multilineTextAlignment(.center)
                         }
                         .frame(maxWidth: .infinity, minHeight: compact ? 56 : 70)
@@ -647,7 +667,7 @@ struct CategoryContent: View {
                     Text(url.deletingPathExtension().lastPathComponent).lineLimit(1)
                     Spacer()
                     Button(engine.nowPlayingMusic == url ? "Dừng" : "Phát") { engine.toggleMusic(url) }
-                        .buttonStyle(.bordered).font(.caption)
+                        .buttonStyle(.bordered).font(DS.fBody)
                 }
                 .contextMenu { Button("Xoá", role: .destructive) { library.delete(url) } }
             }
@@ -676,7 +696,7 @@ struct SourceCell: View {
                     } else if source.status == .connecting {
                         Text("Đang kết nối…").font(.caption2.weight(.semibold)).padding(6).background(.black.opacity(0.7), in: Rectangle())
                     } else if source.frames.latest() == nil {
-                        Text("Không có tín hiệu").font(.caption.weight(.bold)).padding(.horizontal, 10).padding(.vertical, 5)
+                        Text("Không có tín hiệu").font(DS.fBodyBold).padding(.horizontal, 10).padding(.vertical, 5)
                             .background(.black.opacity(0.6), in: Rectangle())
                             .overlay(Capsule().stroke(.white, lineWidth: 1.5))
                     }
@@ -685,7 +705,7 @@ struct SourceCell: View {
             HStack(spacing: 6) {
                 Text("\(index)").font(.caption2.weight(.heavy)).frame(width: 18, height: 18)
                     .background(pgm ? DS.pgm : pvw ? DS.pvw : DS.surface2, in: Rectangle())
-                Text(source.name).font(.caption.weight(.semibold)).lineLimit(1)
+                Text(source.name).font(DS.fBodyBold).lineLimit(1)
                 Spacer(minLength: 2)
                 Button { engine.toggleFavorite(source.id) } label: {
                     Image(systemName: engine.favorites.contains(source.id) ? "heart.fill" : "heart")
@@ -845,7 +865,7 @@ struct TransitionColumn: View {
                 onKey("PiP T-Bar", on: pipTBar, enabled: engine.pip != nil, suffix: false) { pipTBar.toggle() }
                 toggleKey("FTB", on: engine.fadeToBlack, onColor: DS.pgm) { engine.fadeToBlack.toggle() }
             }
-            .padding(compact ? 6 : 10)
+            .padding(compact ? 4 : 8)
         }
         .background(DS.surface)
     }
@@ -1097,5 +1117,19 @@ struct LayoutEditor: View {
                 }
                 .onEnded { _ in startRect = nil })
             .onTapGesture { engine.layoutSelectedSlot = i }
+    }
+}
+
+
+/// A video picked from Photos, copied to a temp file the library then imports.
+struct PickedMovie: Transferable {
+    let url: URL
+    static var transferRepresentation: some TransferRepresentation {
+        FileRepresentation(contentType: .movie) { m in SentTransferredFile(m.url) } importing: { r in
+            let dst = FileManager.default.temporaryDirectory.appendingPathComponent(r.file.lastPathComponent)
+            try? FileManager.default.removeItem(at: dst)
+            try FileManager.default.copyItem(at: r.file, to: dst)
+            return PickedMovie(url: dst)
+        }
     }
 }

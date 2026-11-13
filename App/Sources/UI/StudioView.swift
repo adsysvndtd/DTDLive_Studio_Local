@@ -35,7 +35,7 @@ struct StudioView: View {
                         Divider().overlay(DS.stroke)
                         HStack(spacing: 0) {
                             CategoryList(selection: $category, compact: true)
-                                .frame(width: 64)
+                                .frame(width: 56)
                             Divider().overlay(DS.stroke)
                             CategoryContent(engine: engine, library: engine.library, category: category,
                                             compact: true, showAddSource: $showAddSource)
@@ -53,7 +53,7 @@ struct StudioView: View {
                     Divider().overlay(DS.stroke)
                     HStack(spacing: 0) {
                         CategoryList(selection: $category, compact: false)
-                            .frame(width: 168)
+                            .frame(width: 140)
                         Divider().overlay(DS.stroke)
                         CategoryContent(engine: engine, library: engine.library, category: category,
                                         compact: false, showAddSource: $showAddSource)
@@ -512,7 +512,8 @@ struct OutputsSheet: View {
         NavigationStack {
             Form {
                 Section("Đích phát (chạy song song, encode 1 lần)") {
-                    ForEach($engine.outputs) { $o in
+                    // Iterate values, not $bindings: a binding into the array crashes when the last row is deleted.
+                    ForEach(engine.outputs) { o in
                         let st = engine.outputStatus[o.id] ?? .idle
                         HStack {
                             VStack(alignment: .leading) {
@@ -525,7 +526,10 @@ struct OutputsSheet: View {
                                 if o.proto == .rtmp { OutputLogView(id: o.id) }
                             }
                             Spacer()
-                            Toggle("", isOn: $o.enabled).labelsHidden()
+                            Toggle("", isOn: Binding(
+                                get: { engine.outputs.first { $0.id == o.id }?.enabled ?? false },
+                                set: { v in if let i = engine.outputs.firstIndex(where: { $0.id == o.id }) { engine.outputs[i].enabled = v } }))
+                                .labelsHidden()
                             if st == .idle || { if case .error = st { return true }; return false }() {
                                 Button("Phát") { engine.startOutput(o) }.buttonStyle(.borderedProminent)
                             } else {
@@ -533,7 +537,7 @@ struct OutputsSheet: View {
                             }
                         }
                     }
-                    .onDelete { engine.outputs.remove(atOffsets: $0) }
+                    .onDelete { engine.deleteOutputs(at: $0) }
                 }
                 Section("Tạo phiên live tự động") {
                     TextField("Tiêu đề buổi live", text: $liveTitle)

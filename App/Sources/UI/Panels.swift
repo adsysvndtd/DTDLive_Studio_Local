@@ -213,12 +213,12 @@ struct AudioPanel: View {
         VStack(alignment: .leading, spacing: DS.gap) {
             SectionCard("Kênh âm thanh", systemImage: "slider.horizontal.3") {
                 if engine.audioChannels.isEmpty {
-                    Text("Chưa có kênh nào").font(.caption).foregroundStyle(DS.text3)
+                    Text("Chưa có kênh nào").font(DS.fBody).foregroundStyle(DS.text3)
                 }
                 ForEach(engine.audioChannels) { c in
                     VStack(alignment: .leading, spacing: 6) {
                         HStack(spacing: 6) {
-                            Text(c.name).font(.subheadline.weight(.semibold)).lineLimit(1)
+                            Text(c.name).font(DS.fBodyBold).lineLimit(1)
                             Spacer()
                             chip("AFV", on: c.followVideo) { var n = c; n.followVideo.toggle(); engine.updateAudioChannel(n) }
                             chip(c.muted ? "TẮT" : "BẬT", on: !c.muted, onColor: DS.pvw) { var n = c; n.muted.toggle(); engine.updateAudioChannel(n) }
@@ -237,7 +237,7 @@ struct AudioPanel: View {
                     Button { engine.stopMusic() } label: { Label("Dừng", systemImage: "stop.fill") }
                     Button { pickEffect = true } label: { Label("Hiệu ứng", systemImage: "sparkles") }
                 }
-                .buttonStyle(.bordered).font(.caption)
+                .buttonStyle(.bordered).font(DS.fBody)
             }
         }
         .fileImporter(isPresented: $pickMusic, allowedContentTypes: [.audio]) { r in
@@ -282,21 +282,21 @@ struct SourcePanel: View {
             if let id {
                 let p = engine.processingFor(id)
                 SectionCard("Màu sắc", systemImage: "camera.filters",
-                            trailing: AnyView(Button("Đặt lại") { engine.setProcessing(id, SourceProcessing()) }.font(.caption))) {
+                            trailing: AnyView(Button("Đặt lại") { engine.setProcessing(id, SourceProcessing()) }.font(DS.fBody))) {
                     slider(id, "Phơi sáng", Double(p.exposure), -2...2, { String(format: "%+.1f EV", $0) }) { var n = p; n.exposure = Float($0); return n }
                     slider(id, "Tương phản", Double(p.contrast), 0.5...1.5, { String(format: "%.2f", $0) }) { var n = p; n.contrast = Float($0); return n }
                     slider(id, "Bão hoà", Double(p.saturation), 0...2, { String(format: "%.2f", $0) }) { var n = p; n.saturation = Float($0); return n }
                     slider(id, "Nhiệt độ màu", Double(p.temperature), 3000...10000, { "\(Int($0)) K" }) { var n = p; n.temperature = Float($0); return n }
                     slider(id, "Tint", Double(p.tint), -100...100, { "\(Int($0))" }) { var n = p; n.tint = Float($0); return n }
                     HStack {
-                        Text("LUT").font(.caption).foregroundStyle(DS.text2)
+                        Text("LUT").font(DS.fBody).foregroundStyle(DS.text2)
                         Picker("LUT", selection: Binding(get: { p.lutName }, set: { var n = p; n.lutName = $0; engine.setProcessing(id, n) })) {
                             Text("Không").tag(String?.none)
                             ForEach(ProcessingRenderer.availableLUTs(), id: \.self) { Text($0).tag(Optional($0)) }
                         }
                         .pickerStyle(.menu)
                         Spacer()
-                        Button("Nạp .cube") { importLUT = true }.font(.caption)
+                        Button("Nạp .cube") { importLUT = true }.font(DS.fBody)
                     }
                 }
                 SectionCard("Chroma key", systemImage: "person.crop.rectangle",
@@ -308,7 +308,7 @@ struct SourcePanel: View {
                         slider(id, "Dung sai", Double(p.keyTolerance), 5...80, { "\(Int($0))°" }) { var n = p; n.keyTolerance = Float($0); return n }
                         slider(id, "Mềm biên", Double(p.keySoftness), 0...40, { "\(Int($0))°" }) { var n = p; n.keySoftness = Float($0); return n }
                         HStack {
-                            Text("Nền thay thế").font(.caption).foregroundStyle(DS.text2)
+                            Text("Nền thay thế").font(DS.fBody).foregroundStyle(DS.text2)
                             Spacer()
                             Picker("Nền", selection: Binding(get: { p.keyBackgroundID }, set: { var n = p; n.keyBackgroundID = $0; engine.setProcessing(id, n) })) {
                                 Text("Trong suốt").tag(UUID?.none)
@@ -317,14 +317,14 @@ struct SourcePanel: View {
                             .pickerStyle(.menu)
                         }
                     } else {
-                        Text("Bật để xoá phông xanh lá / xanh dương").font(.caption).foregroundStyle(DS.text3)
+                        Text("Bật để xoá phông xanh lá / xanh dương").font(DS.fBody).foregroundStyle(DS.text3)
                     }
                 }
                 SectionCard("Hình học", systemImage: "crop.rotate") {
                     Toggle("Lật gương", isOn: Binding(get: { p.mirror }, set: { var n = p; n.mirror = $0; engine.setProcessing(id, n) }))
                     Toggle("Xoay 180°", isOn: Binding(get: { p.rotate180 }, set: { var n = p; n.rotate180 = $0; engine.setProcessing(id, n) }))
                 }
-                .font(.subheadline)
+                .font(DS.fBody)
                 if let cam = engine.sources.first(where: { $0.id == id }) as? CameraSource {
                     CameraControlCard(camera: cam)
                 }
@@ -332,7 +332,7 @@ struct SourcePanel: View {
                     PTZPanel(engine: engine, sourceID: id)
                 }
             } else {
-                Text("Chọn một nguồn ở hàng PREVIEW để chỉnh").font(.caption).foregroundStyle(DS.text3)
+                Text("Chọn một nguồn ở hàng PREVIEW để chỉnh").font(DS.fBody).foregroundStyle(DS.text3)
             }
         }
         .fileImporter(isPresented: $importLUT, allowedContentTypes: [UTType(filenameExtension: "cube") ?? .data]) { r in
@@ -356,7 +356,7 @@ struct PTZPanel: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text("VISCA over IP").font(.caption).foregroundStyle(DS.text3)
+            Text("VISCA over IP").font(DS.fBody).foregroundStyle(DS.text3)
             if engine.ptz[sourceID] == nil {
                 HStack {
                     TextField("IP camera", text: $host).textFieldStyle(.roundedBorder).keyboardType(.numbersAndPunctuation)
@@ -389,7 +389,7 @@ struct PTZPanel: View {
                             .onLongPressGesture { engine.ptzPreset(sourceID, n, store: true) }
                     }
                 }
-                Button("Ngắt PTZ", role: .destructive) { engine.setPTZ(sourceID, nil) }.font(.caption)
+                Button("Ngắt PTZ", role: .destructive) { engine.setPTZ(sourceID, nil) }.font(DS.fBody)
             }
         }
     }
@@ -448,7 +448,7 @@ struct AutoPanel: View {
             if auto.mode != .audio {
                 Stepper("Mỗi \(Int(auto.interval)) giây", value: $auto.interval, in: 2...120)
             }
-            Text("Nguồn tham gia").font(.caption.bold())
+            Text("Nguồn tham gia").font(DS.fBodyBold)
             ForEach(engine.sources, id: \.id) { s in
                 Toggle(s.name, isOn: Binding(
                     get: { auto.inputs.contains(s.id) },
@@ -465,8 +465,8 @@ struct ReplayPanel: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Toggle("Bật bộ đệm replay (60 giây gần nhất)", isOn: $engine.replayArmed)
-                .font(.subheadline.weight(.semibold))
-            Text("Tắt khi không dùng replay để đỡ nóng máy và tiết kiệm pin.").font(.caption).foregroundStyle(DS.text3)
+                .font(DS.fBodyBold)
+            Text("Tắt khi không dùng replay để đỡ nóng máy và tiết kiệm pin.").font(DS.fBody).foregroundStyle(DS.text3)
             ReplayEditorView(engine: engine, editor: engine.replayEditor)
         }
     }
@@ -491,12 +491,12 @@ struct ReplayEditorView: View {
                     }
                 } label: {
                     Label(editor.material.label, systemImage: editor.material == .buffer ? "gobackward" : "film")
-                        .font(.subheadline.weight(.semibold))
+                        .font(DS.fBodyBold)
                 }
                 Spacer()
                 if editor.material == .buffer {
                     Button { editor.loadBuffer(engine.replayBuffer) } label: { Label("Lấy mới", systemImage: "arrow.clockwise") }
-                        .buttonStyle(.bordered).font(.caption)
+                        .buttonStyle(.bordered).font(DS.fBody)
                 }
             }
 
@@ -504,7 +504,7 @@ struct ReplayEditorView: View {
             ZStack {
                 Color.black
                 if let img = editor.preview { Image(uiImage: img).resizable().scaledToFit() }
-                else { Text(editor.duration > 0 ? "Đang giải mã…" : "Chưa có hình").font(.caption).foregroundStyle(DS.text3) }
+                else { Text(editor.duration > 0 ? "Đang giải mã…" : "Chưa có hình").font(DS.fBody).foregroundStyle(DS.text3) }
             }
             .aspectRatio(16 / 9, contentMode: .fit)
             .clipShape(Rectangle())
@@ -554,15 +554,15 @@ struct ReplayEditorView: View {
                     .buttonStyle(.bordered)
             }
 
-            if let m = editor.message { Text(m).font(.caption).foregroundStyle(DS.text2) }
+            if let m = editor.message { Text(m).font(DS.fBody).foregroundStyle(DS.text2) }
 
             SectionCard("Clip đã lưu", systemImage: "film.stack") {
-                if editor.clips.isEmpty { Text("Đặt MARK IN / MARK OUT rồi bấm Lưu clip").font(.caption).foregroundStyle(DS.text3) }
+                if editor.clips.isEmpty { Text("Đặt MARK IN / MARK OUT rồi bấm Lưu clip").font(DS.fBody).foregroundStyle(DS.text3) }
                 ForEach(editor.clips) { c in
                     HStack(spacing: 8) {
                         Image(systemName: c.material == .buffer ? "gobackward" : "film").foregroundStyle(DS.accent)
                         VStack(alignment: .leading, spacing: 1) {
-                            Text(c.name).font(.subheadline.weight(.semibold))
+                            Text(c.name).font(DS.fBodyBold)
                             Text("\(c.material.label) · \(timeLabel(c.inT)) → \(timeLabel(c.outT)) · \(String(format: "%.1f s", c.duration))")
                                 .font(.caption2.monospacedDigit()).foregroundStyle(DS.text3).lineLimit(1)
                         }
@@ -668,7 +668,7 @@ struct CameraControlCard: View {
                 Toggle("Đèn", isOn: Binding(get: { c.torch }, set: { c.torch = $0; camera.setTorch($0) }))
             }
         }
-        .font(.subheadline)
+        .font(DS.fBody)
         .onAppear { camera.refreshControls(); c = camera.controls }
     }
 }

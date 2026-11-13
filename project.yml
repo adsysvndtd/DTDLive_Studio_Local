@@ -64,7 +64,8 @@ targets:
         NSCameraUsageDescription: Dùng camera làm nguồn hình cho bàn trộn.
         NSMicrophoneUsageDescription: Thu âm thanh cho chương trình phát trực tiếp.
         NSLocalNetworkUsageDescription: Nhận/phát luồng SRT, RTMP, RTSP trong mạng nội bộ.
-        NSPhotoLibraryUsageDescription: Chọn logo để chèn lên hình.
+        NSPhotoLibraryUsageDescription: Chọn ảnh, video, logo và ảnh nền từ Thư viện ảnh để dùng trong chương trình.
+        NSPhotoLibraryAddUsageDescription: Lưu video đã ghi và clip replay vào Thư viện ảnh.
         NSBonjourServices: [_dtdstudio._tcp, _dtd-pair._tcp, _http._tcp, _ndi._tcp]
         # Optional: enable "YouTube Live" / "Facebook Live" buttons (see docs/PLATFORMS.md)
         DTDGoogleClientID: "1007472905780-3b4d6gl65igcggb8su86kr4g6p2o8bib.apps.googleusercontent.com"

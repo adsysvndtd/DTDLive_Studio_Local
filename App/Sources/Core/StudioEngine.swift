@@ -1099,6 +1099,20 @@ final class StudioEngine: ObservableObject {
 
     func startOutput(_ c: OutputConfig) { outputManager.start(c); outputStatus[c.id] = .connecting; updateEncodeGate() }
     func stopOutput(_ c: OutputConfig) { outputManager.stop(c.id); outputStatus[c.id] = .idle }
+
+    /// Stops the destinations first, then removes them (deleting a live row must not leave a slot running).
+    func deleteOutputs(at offsets: IndexSet) {
+        let gone = offsets.compactMap { outputs.indices.contains($0) ? outputs[$0] : nil }
+        for c in gone {
+            outputManager.stop(c.id)
+            outputStatus[c.id] = nil
+            outputRates[c.id] = nil
+            OutputLog.shared.clear(c.id)
+        }
+        let ids = Set(gone.map(\.id))
+        outputs.removeAll { ids.contains($0.id) }
+        updateEncodeGate()
+    }
     func startAll() { outputs.filter { $0.enabled && $0.proto != .record }.forEach(startOutput) }
     func stopAll() { outputs.filter { $0.proto != .record }.forEach(stopOutput) }
     var isAnyLive: Bool { outputs.contains { $0.proto != .record && outputStatus[$0.id] == .live } }

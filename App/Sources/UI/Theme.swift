@@ -7,6 +7,11 @@ import SwiftUI
 enum DS {
     /// One text size for every row and header in Cài đặt.
     static let settingsFont = Font.system(size: 15)
+    /// Panel typography — one scale for every category page (headers, rows, hints).
+    static let fHeader = Font.system(size: 12, weight: .bold)
+    static let fBody = Font.system(size: 14)
+    static let fBodyBold = Font.system(size: 14, weight: .semibold)
+    static let fSmall = Font.system(size: 12)
     static let bg = Color(red: 0.055, green: 0.06, blue: 0.075)
     static let surface = Color(red: 0.10, green: 0.105, blue: 0.125)
     static let surface2 = Color(red: 0.145, green: 0.15, blue: 0.175)
@@ -35,14 +40,15 @@ struct SectionCard<Content: View>: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 6) {
-                if let systemImage { Image(systemName: systemImage).foregroundStyle(DS.accent) }
-                Text(LocalizedStringKey(title)).textCase(.uppercase).font(.caption.weight(.bold)).foregroundStyle(DS.text2).tracking(0.6)
+                if let systemImage { Image(systemName: systemImage).font(DS.fHeader).foregroundStyle(DS.accent) }
+                Text(LocalizedStringKey(title)).textCase(.uppercase).font(DS.fHeader).foregroundStyle(DS.text2).tracking(0.6)
                 Spacer()
                 trailing
             }
             content
         }
-        .padding(12)
+        .font(DS.fBody)
+        .padding(10)
         .background(DS.surface, in: Rectangle())
         .overlay(Rectangle().stroke(DS.stroke))
     }

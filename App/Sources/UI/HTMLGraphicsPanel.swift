@@ -11,7 +11,7 @@ struct HTMLGraphicsPanel: View {
     var body: some View {
         SectionCard("Đồ hoạ HTML5", systemImage: "chevron.left.forwardslash.chevron.right",
                     trailing: AnyView(Button { open.toggle() } label: {
-                        Image(systemName: open ? "chevron.up" : "chevron.down").font(.caption.weight(.bold))
+                        Image(systemName: open ? "chevron.up" : "chevron.down").font(DS.fBodyBold)
                             .frame(width: 28, height: 22).foregroundStyle(DS.text2)
                     }.buttonStyle(.plain))) {
           if open {
@@ -30,7 +30,7 @@ struct HTMLGraphicsPanel: View {
                 Spacer()
                 if html.loadedID != nil {
                     Button { html.next() } label: {
-                        Label("Next", systemImage: "forward.frame").font(.caption.weight(.semibold))
+                        Label("Next", systemImage: "forward.frame").font(DS.fBodyBold)
                             .padding(.horizontal, 10).frame(height: compact ? 28 : 32)
                             .foregroundStyle(.white).background(DS.surface2, in: Rectangle())
                     }
@@ -57,7 +57,7 @@ struct HTMLGraphicsPanel: View {
                         ColorPicker(f.label, selection: Binding(get: { Color(UIColor(hex: html.value(t, f))) },
                                                                 set: { html.setValue(t, f, UIColor($0).hexString) }),
                                     supportsOpacity: false)
-                            .font(.caption.weight(.semibold)).foregroundStyle(DS.text2)
+                            .font(DS.fBodyBold).foregroundStyle(DS.text2)
                     } else {
                         TextField(f.label, text: Binding(get: { html.value(t, f) }, set: { html.setValue(t, f, $0) }))
                             .font(.system(size: compact ? 12 : 14, weight: .semibold))

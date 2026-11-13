@@ -13,11 +13,11 @@ struct SuperFGPanel: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 10) {
                 Label(engine.foreground == nil ? "Chưa nạp SuperFG" : (engine.foregroundOn ? "SuperFG đang trên PGM" : "Đã nạp — bấm SuperFG On ở cột phải"),
-                      systemImage: "square.3.layers.3d").font(.caption).foregroundStyle(engine.foregroundOn ? DS.pgm : DS.text2)
+                      systemImage: "square.3.layers.3d").font(DS.fBody).foregroundStyle(engine.foregroundOn ? DS.pgm : DS.text2)
                 Spacer()
                 if engine.foreground != nil {
                     Button("Bỏ SuperFG") { engine.clearForeground() }
-                        .buttonStyle(.bordered).font(.caption)
+                        .buttonStyle(.bordered).font(DS.fBody)
                 }
             }
             VStack(spacing: 6) {
@@ -26,7 +26,7 @@ struct SuperFGPanel: View {
                     ColorPicker("Màu", selection: Binding(get: { Color(UIColor(hex: engine.superFG.accentHex)) },
                                                           set: { engine.superFG.accentHex = UIColor($0).hexString }),
                                 supportsOpacity: false)
-                        .font(.caption).foregroundStyle(DS.text2).fixedSize()
+                        .font(DS.fBody).foregroundStyle(DS.text2).fixedSize()
                 }
                 field("Dòng 2", text: Binding(get: { engine.superFG.line2 }, set: { engine.superFG.line2 = $0 }))
             }
@@ -40,7 +40,7 @@ struct SuperFGPanel: View {
                                 Image(uiImage: SuperFGThumbs.image(t, engine.superFG)).resizable().scaledToFit()
                             }
                             .aspectRatio(16 / 9, contentMode: .fit)
-                            Text(t.name).font(.caption.weight(.semibold)).lineLimit(1)
+                            Text(t.name).font(DS.fBodyBold).lineLimit(1)
                                 .frame(maxWidth: .infinity, minHeight: 24).background(DS.surface)
                         }
                         .clipShape(Rectangle())

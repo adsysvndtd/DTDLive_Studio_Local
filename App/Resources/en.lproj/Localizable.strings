@@ -110,6 +110,7 @@
 "Không công khai (có link)" = "Unlisted (link only)";
 "Không muốn đăng ký app: dùng Đầu ra › Thêm đích › YouTube/Facebook (stream key)." = "No app registration: use Outputs › Add destination › YouTube/Facebook (stream key).";
 "Không đọc được logo" = "Could not read logo";
+"Không đọc được video từ Thư viện ảnh" = "Could not read the video from Photos";
 "Kick › Dashboard › Settings › Stream key: dán Stream URL (rtmps://…) và Stream key." = "Kick › Dashboard › Settings › Stream key: paste Stream URL (rtmps://…) and Stream key.";
 "Kiểu" = "Style";
 "Kéo cho tiếng khớp với hình khi camera mạng bị trễ." = "Delays the sound to match late network-camera video.";
