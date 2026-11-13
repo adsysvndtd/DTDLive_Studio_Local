@@ -1,46 +1,46 @@
 <!doctype html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=1920,height=1080">
-<!-- DTD Studio · nhãn LIVE + giờ, góc trên phải. -->
+<title>Nhãn LIVE + giờ</title>
+<!-- DTD Studio · nhãn LIVE + giờ, góc trên phải. Màu: biến --accent. -->
 <style>
-  html,body{margin:0;width:1920px;height:1080px;background:transparent;overflow:hidden;font-family:"Montserrat","Avenir Next","Helvetica Neue",-apple-system,sans-serif}
-  :root{--accent:#C9472F;--paper:#fff}
-  .badge{position:absolute;right:80px;top:64px;width:300px;height:150px}
-  .back{position:absolute;left:0;top:34px;width:300px;height:76px;background:var(--accent);
-        clip-path:polygon(12% 0,100% 0,88% 100%,0 100%);transform:scaleX(0)}
-  .face{position:absolute;left:44px;top:0;width:212px;height:104px;background:var(--paper);
-        clip-path:polygon(14% 0,100% 0,86% 100%,0 100%);display:flex;align-items:center;justify-content:center;gap:10px;padding-left:18px;box-sizing:border-box;
-        transform:scale(.3);opacity:0;box-shadow:0 6px 18px rgba(0,0,0,.25)}
-  .dot{width:16px;height:16px;border-radius:50%;background:var(--accent);animation:blink 1.2s infinite}
-  .label{color:var(--accent);font-weight:900;font-size:58px;letter-spacing:2px}
-  .time{position:absolute;left:96px;top:104px;width:108px;height:40px;line-height:40px;background:var(--paper);text-align:center;
-        clip-path:polygon(10% 0,100% 0,90% 100%,0 100%);color:var(--accent);font-weight:800;font-size:24px;opacity:0;transform:translateY(-20px)}
-  .on .back{animation:wipe .4s cubic-bezier(.7,0,.2,1) forwards}
-  .on .face{animation:pop .5s .15s cubic-bezier(.2,1.5,.4,1) forwards}
-  .on .time{animation:down .35s .45s ease-out forwards}
-  .off .back{transform:none}.off .face,.off .time{opacity:1;transform:none}
-  .off .badge{animation:out .4s ease-in forwards}
+  html,body{margin:0;width:1920px;height:1080px;background:transparent;overflow:hidden;
+    font-family:"Montserrat","Avenir Next","Helvetica Neue",-apple-system,sans-serif}
+  :root{--accent:#5172BE;--paper:#ffffff}
+  .pg{position:absolute}
+  .live{position:absolute;right:60px;top:56px;width:450px;height:240px}
+  .band{left:0;top:56px;width:450px;height:152px;background:var(--accent);
+        clip-path:polygon(60px 0,100% 0,calc(100% - 60px) 100%,0 100%);transform:scaleX(0)}
+  .face{left:72px;top:0;width:346px;height:160px;background:var(--paper);
+        clip-path:polygon(68px 0,100% 0,278px 100%,0 100%);display:flex;align-items:center;justify-content:center;
+        opacity:0;transform:scale(.4)}
+  .face span{color:var(--accent);font-weight:800;font-size:90px;letter-spacing:1px;text-transform:uppercase;margin-left:-4px}
+  .ltime{left:118px;top:182px;width:162px;height:58px;line-height:58px;background:var(--paper);text-align:center;color:var(--accent);
+         font-weight:700;font-size:33px;clip-path:polygon(22px 0,100% 0,calc(100% - 22px) 100%,0 100%);opacity:0;transform:translateY(24px)}
+  .on .band{animation:wipe .5s cubic-bezier(.7,0,.2,1) forwards}
+  .on .face{animation:pop .5s .2s cubic-bezier(.2,1.4,.4,1) forwards}
+  .on .ltime{animation:show .4s .45s ease-out forwards}
+  .off .band{transform:none}.off .face,.off .ltime{opacity:1;transform:none}
+  .off .live{animation:out .45s cubic-bezier(.7,0,.8,.4) forwards}
   @keyframes wipe{to{transform:none}}
   @keyframes pop{to{transform:none;opacity:1}}
-  @keyframes down{to{transform:none;opacity:1}}
-  @keyframes out{to{opacity:0;transform:translateY(-40px)}}
-  @keyframes blink{50%{opacity:.15}}
-  .hide{display:none}
+  @keyframes show{to{transform:none;opacity:1}}
+  @keyframes out{to{transform:translateX(60%);opacity:0}}
+  .hide{display:none!important}
 </style></head>
-<body><div id="root"><div class="badge">
-  <div class="back"></div>
-  <div class="face"><span class="dot"></span><span class="label" data-field="label" data-label="Nhãn">LIVE</span></div>
-  <div class="time" data-field="clock" data-label="Giờ (để trống = giờ thực, '-' = ẩn)"></div>
+<body><div id="root"><div class="live">
+  <div class="pg band"></div>
+  <div class="pg face"><span data-field="label" data-label="Nhãn">LIVE</span></div>
+  <div class="pg ltime" data-field="clock" data-label="Giờ (trống = giờ thực, - = ẩn)"></div>
 </div></div>
 <script>
   const root=document.getElementById('root');let manual='';
-  function tick(){const t=document.querySelector('.time');t.classList.toggle('hide',manual==='-');
-    if(manual){t.textContent=manual;return;}const d=new Date();
-    t.textContent=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}
+  function hhmm(){const d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}
+  function tick(){const t=document.querySelector('.ltime');t.classList.toggle('hide',manual==='-');t.textContent=manual&&manual!=='-'?manual:hhmm();}
   function update(d){if(typeof d==='string')d=JSON.parse(d);
-    for(const k in d){
-      if(k==='accent'||k.startsWith('--')){document.documentElement.style.setProperty(k==='accent'?'--accent':k,d[k]);continue;}
-      if(k==='clock'){manual=(d[k]||'').trim();tick();continue;}
-      document.querySelectorAll('[data-field="'+k+'"]').forEach(e=>e.textContent=d[k]);}}
+    for(const k in d){const v=String(d[k]??'');
+      if(k==='accent'||k.startsWith('--')){document.documentElement.style.setProperty(k==='accent'?'--accent':k,v);continue;}
+      if(k==='clock'){manual=v.trim();tick();continue;}
+      document.querySelectorAll('[data-field="'+k+'"]').forEach(e=>e.textContent=v);}}
   function play(){root.className='';void root.offsetWidth;root.className='on';}
   function stop(){root.className='off';}
   function next(){}

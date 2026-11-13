@@ -3,7 +3,7 @@
   "templates": [
     {
       "id": "lt-news",
-      "name": "Tin tức + LIVE",
+      "name": "Tin tức · Xanh dương",
       "entry": "lt-news/index.html",
       "fields": [
         {
@@ -37,11 +37,6 @@
           "default": ""
         },
         {
-          "id": "live",
-          "label": "Nhãn LIVE (trống = ẩn)",
-          "default": "LIVE"
-        },
-        {
           "id": "accent",
           "label": "Màu nhấn",
           "default": "#5172BE",
@@ -50,8 +45,137 @@
       ]
     },
     {
+      "id": "lt-news-slate",
+      "name": "Tin tức · Xanh đá",
+      "entry": "lt-news/index.html",
+      "fields": [
+        {
+          "id": "title",
+          "label": "Tiêu đề chính",
+          "default": "TIÊU ĐỀ BẢN TIN"
+        },
+        {
+          "id": "tag1",
+          "label": "Nhãn dòng 1",
+          "default": "DTD"
+        },
+        {
+          "id": "tag2",
+          "label": "Nhãn dòng 2",
+          "default": "STUDIO"
+        },
+        {
+          "id": "desc",
+          "label": "Dòng mô tả",
+          "default": "Thông tin bổ sung cho bản tin"
+        },
+        {
+          "id": "loc",
+          "label": "Địa điểm",
+          "default": "Hà Nội"
+        },
+        {
+          "id": "clock",
+          "label": "Giờ (trống = giờ thực)",
+          "default": ""
+        },
+        {
+          "id": "accent",
+          "label": "Màu nhấn",
+          "default": "#3E5068",
+          "type": "color"
+        }
+      ]
+    },
+    {
+      "id": "lt-news-orange",
+      "name": "Tin tức · Cam",
+      "entry": "lt-news/index.html",
+      "fields": [
+        {
+          "id": "title",
+          "label": "Tiêu đề chính",
+          "default": "TIÊU ĐỀ BẢN TIN"
+        },
+        {
+          "id": "tag1",
+          "label": "Nhãn dòng 1",
+          "default": "DTD"
+        },
+        {
+          "id": "tag2",
+          "label": "Nhãn dòng 2",
+          "default": "STUDIO"
+        },
+        {
+          "id": "desc",
+          "label": "Dòng mô tả",
+          "default": "Thông tin bổ sung cho bản tin"
+        },
+        {
+          "id": "loc",
+          "label": "Địa điểm",
+          "default": "Hà Nội"
+        },
+        {
+          "id": "clock",
+          "label": "Giờ (trống = giờ thực)",
+          "default": ""
+        },
+        {
+          "id": "accent",
+          "label": "Màu nhấn",
+          "default": "#D98A2B",
+          "type": "color"
+        }
+      ]
+    },
+    {
+      "id": "lt-news-red",
+      "name": "Tin tức · Đỏ",
+      "entry": "lt-news/index.html",
+      "fields": [
+        {
+          "id": "title",
+          "label": "Tiêu đề chính",
+          "default": "TIÊU ĐỀ BẢN TIN"
+        },
+        {
+          "id": "tag1",
+          "label": "Nhãn dòng 1",
+          "default": "DTD"
+        },
+        {
+          "id": "tag2",
+          "label": "Nhãn dòng 2",
+          "default": "STUDIO"
+        },
+        {
+          "id": "desc",
+          "label": "Dòng mô tả",
+          "default": "Thông tin bổ sung cho bản tin"
+        },
+        {
+          "id": "loc",
+          "label": "Địa điểm",
+          "default": "Hà Nội"
+        },
+        {
+          "id": "clock",
+          "label": "Giờ (trống = giờ thực)",
+          "default": ""
+        },
+        {
+          "id": "accent",
+          "label": "Màu nhấn",
+          "default": "#C84B33",
+          "type": "color"
+        }
+      ]
+    },
+    {
       "id": "live-badge",
-      "name": "Nhãn LIVE + giờ",
+      "name": "LIVE · Xanh dương",
       "entry": "live-badge/index.html",
       "fields": [
         {
@@ -67,7 +191,76 @@
         {
           "id": "accent",
           "label": "Màu nhấn",
-          "default": "#C9472F",
+          "default": "#5172BE",
+          "type": "color"
+        }
+      ]
+    },
+    {
+      "id": "live-badge-slate",
+      "name": "LIVE · Xanh đá",
+      "entry": "live-badge/index.html",
+      "fields": [
+        {
+          "id": "label",
+          "label": "Nhãn",
+          "default": "LIVE"
+        },
+        {
+          "id": "clock",
+          "label": "Giờ (trống = giờ thực, - = ẩn)",
+          "default": ""
+        },
+        {
+          "id": "accent",
+          "label": "Màu nhấn",
+          "default": "#3E5068",
+          "type": "color"
+        }
+      ]
+    },
+    {
+      "id": "live-badge-orange",
+      "name": "LIVE · Cam",
+      "entry": "live-badge/index.html",
+      "fields": [
+        {
+          "id": "label",
+          "label": "Nhãn",
+          "default": "LIVE"
+        },
+        {
+          "id": "clock",
+          "label": "Giờ (trống = giờ thực, - = ẩn)",
+          "default": ""
+        },
+        {
+          "id": "accent",
+          "label": "Màu nhấn",
+          "default": "#D98A2B",
+          "type": "color"
+        }
+      ]
+    },
+    {
+      "id": "live-badge-red",
+      "name": "LIVE · Đỏ",
+      "entry": "live-badge/index.html",
+      "fields": [
+        {
+          "id": "label",
+          "label": "Nhãn",
+          "default": "LIVE"
+        },
+        {
+          "id": "clock",
+          "label": "Giờ (trống = giờ thực, - = ẩn)",
+          "default": ""
+        },
+        {
+          "id": "accent",
+          "label": "Màu nhấn",
+          "default": "#C84B33",
           "type": "color"
         }
       ]
