@@ -173,7 +173,7 @@ struct HTMLEditorSheet: View {
         NavigationStack {
             VStack(spacing: 8) {
                 ZStack {
-                    CheckerBackground()
+                    HTMLCheckerBackground()
                     HTMLPreviewView(template: current, source: previewSource, values: html.values(for: current), playToken: playToken)
                 }
                 .aspectRatio(16 / 9, contentMode: .fit)
@@ -220,7 +220,7 @@ struct HTMLEditorSheet: View {
     }
 }
 
-private struct CheckerBackground: View {
+private struct HTMLCheckerBackground: View {
     var body: some View {
         Canvas { ctx, size in
             let s: CGFloat = 12
