@@ -33,8 +33,8 @@ struct SuperFGConfig: Codable, Equatable {
 }
 
 /// How a card enters and leaves (out is the reverse).
-enum SuperFGMotion: String {
-    case wipe, slide, zoom, split, rise
+enum SuperFGMotion: String, CaseIterable {
+    case wipe, slide, slideRight, split, splitH, zoom, spin, rise, drop, blinds, flash, iris, fade
 }
 
 struct SuperFGTemplate: Identifiable {
@@ -202,7 +202,7 @@ struct SuperFGTemplate: Identifiable {
             g.fill(CGRect(x: s.width * 0.1, y: band.minY - 6 * k, width: s.width * 0.8, height: 4 * k))
             g.fill(CGRect(x: s.width * 0.1, y: band.maxY + 2 * k, width: s.width * 0.8, height: 4 * k))
         },
-        SuperFGTemplate(id: "perfect", name: L("Tuyệt vời"), motion: .zoom, defaultLines: ["PERFECT"], defaultAccent: "#E2C04E") { g, s, a in
+        SuperFGTemplate(id: "perfect", name: L("Tuyệt vời"), motion: .spin, defaultLines: ["PERFECT"], defaultAccent: "#E2C04E") { g, s, a in
             a.setFill(); g.fill(CGRect(origin: .zero, size: s))
             let c = CGPoint(x: s.width / 2, y: s.height / 2), k = s.height / 1080
             poly(g, hexagon(c, s.height * 0.62), UIColor(white: 0.17, alpha: 1))
@@ -213,7 +213,7 @@ struct SuperFGTemplate: Identifiable {
             }
             poly(g, hexagon(c, s.height * 0.18), a)
         },
-        SuperFGTemplate(id: "gameon", name: L("Vào trận"), motion: .slide, defaultLines: ["GAME ON"], defaultAccent: "#38C6FF") { g, s, a in
+        SuperFGTemplate(id: "gameon", name: L("Vào trận"), motion: .slideRight, defaultLines: ["GAME ON"], defaultAccent: "#38C6FF") { g, s, a in
             linear(g, [UIColor(hex: "#0B1C8C"), UIColor(hex: "#050C4A")], from: CGPoint(x: 0, y: 0), to: CGPoint(x: 0, y: s.height))
             let r = rng(21), k = s.height / 1080
             for i in 0..<14 {
@@ -237,7 +237,7 @@ struct SuperFGTemplate: Identifiable {
             g.move(to: CGPoint(x: 0, y: s.height * 0.86)); g.addCurve(to: CGPoint(x: s.width, y: s.height * 0.78),
                 control1: CGPoint(x: s.width * 0.3, y: s.height * 0.7), control2: CGPoint(x: s.width * 0.7, y: s.height * 0.95)); g.strokePath()
         },
-        SuperFGTemplate(id: "stream", name: L("Sắp phát sóng"), motion: .wipe, defaultLines: ["STREAM", "STARTING"], defaultAccent: "#5E8FE6") { g, s, a in
+        SuperFGTemplate(id: "stream", name: L("Sắp phát sóng"), motion: .blinds, defaultLines: ["STREAM", "STARTING"], defaultAccent: "#5E8FE6") { g, s, a in
             UIColor(hex: "#2C4A86").setFill(); g.fill(CGRect(origin: .zero, size: s))
             poly(g, [CGPoint(x: 0, y: s.height * 0.05), CGPoint(x: s.width, y: s.height * 0.3), CGPoint(x: 0, y: s.height * 0.62)], a)
             poly(g, [CGPoint(x: s.width, y: s.height * 0.3), CGPoint(x: 0, y: s.height * 0.62), CGPoint(x: s.width, y: s.height * 0.8)],
@@ -245,7 +245,7 @@ struct SuperFGTemplate: Identifiable {
             poly(g, [CGPoint(x: 0, y: s.height * 0.62), CGPoint(x: s.width, y: s.height * 0.8), CGPoint(x: s.width, y: s.height), CGPoint(x: 0, y: s.height)],
                  UIColor(hex: "#BFD3F5"))
         },
-        SuperFGTemplate(id: "onair", name: L("Lên sóng"), motion: .zoom, defaultLines: ["ON AIR"], defaultAccent: "#EC4D8F", look: .gradient) { g, s, a in
+        SuperFGTemplate(id: "onair", name: L("Lên sóng"), motion: .flash, defaultLines: ["ON AIR"], defaultAccent: "#EC4D8F", look: .gradient) { g, s, a in
             UIColor.black.setFill(); g.fill(CGRect(origin: .zero, size: s))
             let c = CGPoint(x: s.width / 2, y: s.height / 2)
             for i in 0..<36 {
@@ -256,20 +256,32 @@ struct SuperFGTemplate: Identifiable {
             }
             radial(g, [UIColor.black.withAlphaComponent(0), UIColor.black.withAlphaComponent(0.85)], center: c, radius: s.width * 0.6)
         },
+        SuperFGTemplate(id: "itsonair", name: L("Đang lên sóng"), motion: .iris, defaultLines: ["IT'S", "ON AIR"], defaultAccent: "#8B5CF6", look: .gradient) { g, s, a in
+            UIColor(hex: "#07060D").setFill(); g.fill(CGRect(origin: .zero, size: s))
+            let c = CGPoint(x: s.width / 2, y: s.height * 0.55)
+            for i in 0..<48 {
+                let ang = CGFloat(i) / 48 * .pi * 2, w: CGFloat = i % 3 == 0 ? 0.02 : 0.008
+                poly(g, [c, CGPoint(x: c.x + cos(ang - w) * s.width, y: c.y + sin(ang - w) * s.width),
+                         CGPoint(x: c.x + cos(ang + w) * s.width, y: c.y + sin(ang + w) * s.width)],
+                     UIColor(white: 1, alpha: i % 3 == 0 ? 0.10 : 0.05))
+            }
+            radial(g, [a.withAlphaComponent(0.35), a.withAlphaComponent(0)], center: c, radius: s.width * 0.35)
+            radial(g, [UIColor.black.withAlphaComponent(0), UIColor.black.withAlphaComponent(0.8)], center: c, radius: s.width * 0.65)
+        },
         SuperFGTemplate(id: "goal", name: L("Bàn thắng"), motion: .zoom, defaultLines: ["GOAL!"], defaultAccent: "#E0782A") { g, s, a in
             navyPanels(g, s, seed: 3); goldStripe(g, s, x: s.width * 0.08, accent: a)
         },
-        SuperFGTemplate(id: "replay", name: L("Phát lại"), motion: .slide, defaultLines: ["REPLAY"], defaultAccent: "#E0782A") { g, s, a in
+        SuperFGTemplate(id: "replay", name: L("Phát lại"), motion: .splitH, defaultLines: ["REPLAY"], defaultAccent: "#E0782A") { g, s, a in
             navyPanels(g, s, seed: 11); goldStripe(g, s, x: s.width * 0.45, accent: a)
             poly(g, [CGPoint(x: s.width * 0.82, y: s.height), CGPoint(x: s.width * 0.86, y: s.height * 0.9), CGPoint(x: s.width * 0.9, y: s.height)],
                  UIColor(hex: "#2BB3A3"))
         },
-        SuperFGTemplate(id: "break", name: L("Giải lao"), motion: .rise, defaultLines: ["GIẢI LAO"], defaultAccent: "#F2B233") { g, s, a in
+        SuperFGTemplate(id: "break", name: L("Giải lao"), motion: .drop, defaultLines: ["GIẢI LAO"], defaultAccent: "#F2B233") { g, s, a in
             navyPanels(g, s, seed: 29)
             poly(g, [CGPoint(x: s.width, y: s.height * 0.78), CGPoint(x: s.width, y: s.height), CGPoint(x: s.width * 0.94, y: s.height)], a)
             poly(g, [CGPoint(x: 0, y: 0), CGPoint(x: s.width * 0.05, y: 0), CGPoint(x: 0, y: s.height * 0.12)], a)
         },
-        SuperFGTemplate(id: "thanks", name: L("Cảm ơn"), motion: .wipe, defaultLines: ["CẢM ƠN", "ĐÃ THEO DÕI"], defaultAccent: "#1FA88E", look: .gold) { g, s, a in
+        SuperFGTemplate(id: "thanks", name: L("Cảm ơn"), motion: .fade, defaultLines: ["CẢM ƠN", "ĐÃ THEO DÕI"], defaultAccent: "#1FA88E", look: .gold) { g, s, a in
             linear(g, [UIColor(hex: "#0C2A2E"), a.withAlphaComponent(1)], from: CGPoint(x: 0, y: 0), to: CGPoint(x: s.width, y: s.height))
             let r = rng(42), k = s.height / 1080
             for _ in 0..<14 {

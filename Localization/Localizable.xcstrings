@@ -5830,6 +5830,16 @@
           }
         }
       }
+    },
+    "Đang lên sóng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "It's on air"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

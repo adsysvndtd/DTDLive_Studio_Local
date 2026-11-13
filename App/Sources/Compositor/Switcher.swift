@@ -422,21 +422,58 @@ final class Switcher: @unchecked Sendable {
         var bg = scaled(fit(c.background), 1 + 0.04 * min(held / 10, 1), extent: extent).cropped(to: extent)
         var tx = c.text.map(fit)
         if var t = tx {
+            let e = easeInOut(tp)
             switch c.motion {
-            case .zoom: t = scaled(t, 0.4 + 0.6 * easeOutBack(tp), extent: extent)
-            case .slide: t = t.transformed(by: CGAffineTransform(translationX: w * 0.35 * (1 - easeInOut(tp)), y: 0))
-            case .rise: t = t.transformed(by: CGAffineTransform(translationX: 0, y: -h * 0.25 * (1 - easeInOut(tp))))
-            case .wipe, .split: t = scaled(t, 1.25 - 0.25 * easeInOut(tp), extent: extent)
+            case .zoom, .spin: t = scaled(t, 0.4 + 0.6 * easeOutBack(tp), extent: extent)
+            case .slide: t = t.transformed(by: CGAffineTransform(translationX: w * 0.35 * (1 - e), y: 0))
+            case .slideRight: t = t.transformed(by: CGAffineTransform(translationX: -w * 0.35 * (1 - e), y: 0))
+            case .rise: t = t.transformed(by: CGAffineTransform(translationX: 0, y: -h * 0.25 * (1 - e)))
+            case .drop: t = t.transformed(by: CGAffineTransform(translationX: 0, y: h * 0.25 * (1 - e)))
+            case .flash, .iris: t = scaled(t, 0.85 + 0.15 * easeOutBack(tp), extent: extent)
+            case .fade: t = scaled(t, 1.08 - 0.08 * e, extent: extent)
+            case .wipe, .split, .splitH, .blinds: t = scaled(t, 1.25 - 0.25 * e, extent: extent)
             }
             tx = fade(t, tp)
         }
+        var mask: CIImage?
         switch c.motion {
         case .slide: bg = bg.transformed(by: CGAffineTransform(translationX: -w * (1 - p), y: 0))
+        case .slideRight: bg = bg.transformed(by: CGAffineTransform(translationX: w * (1 - p), y: 0))
         case .rise: bg = bg.transformed(by: CGAffineTransform(translationX: 0, y: -h * (1 - p)))
+        case .drop: bg = bg.transformed(by: CGAffineTransform(translationX: 0, y: h * (1 - p)))
         case .zoom: bg = fade(scaled(bg, 1.3 - 0.3 * p, extent: extent), p)
+        case .fade: bg = fade(scaled(bg, 1.06 - 0.06 * p, extent: extent), p)
+        case .spin:
+            let t = CGAffineTransform(translationX: extent.midX, y: extent.midY)
+                .rotated(by: -(1 - p) * .pi * 0.6).scaledBy(x: 0.2 + 0.8 * p, y: 0.2 + 0.8 * p)
+                .translatedBy(x: -extent.midX, y: -extent.midY)
+            bg = fade(bg.transformed(by: t), min(1, p * 1.6))
         case .split:
             let open = h * p
             bg = bg.cropped(to: CGRect(x: 0, y: (h - open) / 2, width: w, height: open))
+        case .splitH:
+            let open = w * p
+            bg = bg.cropped(to: CGRect(x: (w - open) / 2, y: 0, width: open, height: h))
+        case .blinds:
+            // Eight bands opening one after another, top to bottom.
+            let n = 8, bh = h / CGFloat(n)
+            var out = CIImage.empty()
+            for i in 0..<n {
+                let local = max(0, min(1, p * 1.6 - CGFloat(i) * 0.6 / CGFloat(n - 1)))
+                let y = h - CGFloat(i + 1) * bh
+                out = bg.cropped(to: CGRect(x: 0, y: y + bh * (1 - local) / 2, width: w, height: bh * local)).composited(over: out)
+            }
+            bg = out
+        case .flash:
+            bg = fade(bg, p)
+            let white = CIImage(color: CIColor(red: 1, green: 1, blue: 1, alpha: 1)).cropped(to: extent)
+            let f = sin(min(1, raw * 1.4) * .pi) * 0.85
+            if f > 0.01 { bg = fade(white, f).composited(over: bg) }
+        case .iris:
+            let r = hypot(w, h) / 2 * p
+            mask = CIFilter(name: "CIRadialGradient", parameters: [
+                "inputCenter": CIVector(x: extent.midX, y: extent.midY), "inputRadius0": max(0, r - 30), "inputRadius1": r + 1,
+                "inputColor0": CIColor.white, "inputColor1": CIColor.black])?.outputImage?.cropped(to: extent)
         case .wipe: break
         }
         var cardImg = bg
@@ -447,13 +484,13 @@ final class Switcher: @unchecked Sendable {
             let v = CGVector(dx: 0.94, dy: -0.34), L = w + h
             let cx = extent.midX + v.dx * (p * 2 - 1) * L * 0.62, cy = extent.midY + v.dy * (p * 2 - 1) * L * 0.62
             let soft: CGFloat = 40
-            let mask = CIFilter(name: "CILinearGradient", parameters: [
+            mask = CIFilter(name: "CILinearGradient", parameters: [
                 "inputPoint0": CIVector(x: cx - v.dx * soft, y: cy - v.dy * soft), "inputColor0": CIColor.white,
                 "inputPoint1": CIVector(x: cx + v.dx * soft, y: cy + v.dy * soft), "inputColor1": CIColor.black])?.outputImage?.cropped(to: extent)
-            if let mask {
-                return cardImg.applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: base, kCIInputMaskImageKey: mask])
-                    .cropped(to: extent)
-            }
+        }
+        if let mask {
+            return cardImg.applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: base, kCIInputMaskImageKey: mask])
+                .cropped(to: extent)
         }
         return cardImg.composited(over: base).cropped(to: extent)
     }

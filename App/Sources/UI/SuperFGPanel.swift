@@ -82,9 +82,17 @@ struct SuperFGPanel: View {
         switch m {
         case .wipe: return "line.diagonal"
         case .slide: return "arrow.right"
-        case .zoom: return "arrow.up.left.and.arrow.down.right"
+        case .slideRight: return "arrow.left"
         case .split: return "arrow.up.and.down"
+        case .splitH: return "arrow.left.and.right"
+        case .zoom: return "arrow.up.left.and.arrow.down.right"
+        case .spin: return "arrow.triangle.2.circlepath"
         case .rise: return "arrow.up"
+        case .drop: return "arrow.down"
+        case .blinds: return "line.3.horizontal"
+        case .flash: return "bolt.fill"
+        case .iris: return "circle.dashed"
+        case .fade: return "circle.lefthalf.filled"
         }
     }
 
