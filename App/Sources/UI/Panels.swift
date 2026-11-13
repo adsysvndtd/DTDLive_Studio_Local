@@ -157,7 +157,7 @@ struct TitleEditorSheet: View {
                         ForEach(TitleStyle.allCases.filter { $0 != .scoreBug }) { Text($0.label).tag($0) }
                     }
                     if item.style != .clock {
-                        TextField(item.style == .ticker ? "Nội dung chữ chạy" : item.style == .countdown ? "Nhãn" : "Dòng 1", text: $item.line1)
+                        TextField(LocalizedStringKey(item.style == .ticker ? "Nội dung chữ chạy" : item.style == .countdown ? "Nhãn" : "Dòng 1"), text: $item.line1)
                     }
                     if [.lowerThird, .nameStrap, .fullScreen].contains(item.style) {
                         TextField("Dòng 2", text: $item.line2)
@@ -537,7 +537,7 @@ struct ReplayEditorView: View {
                 Toggle("Lặp", isOn: $editor.loop).fixedSize()
                 Spacer()
                 let r = editor.effectiveRange
-                Text(String(format: "Đoạn %.1f s", r.upperBound - r.lowerBound)).font(.caption.monospacedDigit()).foregroundStyle(DS.text2)
+                Text(String(format: L("Đoạn %.1f s"), r.upperBound - r.lowerBound)).font(.caption.monospacedDigit()).foregroundStyle(DS.text2)
             }
 
             HStack(spacing: 8) {

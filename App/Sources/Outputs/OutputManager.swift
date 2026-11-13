@@ -100,10 +100,10 @@ actor OutputSlot {
                     try? await Task.sleep(nanoseconds: 1_000_000_000)
                 }
             } catch {
-                OutputLog.shared.add(target.config.id, "Lỗi: \(error)")
+                OutputLog.shared.add(target.config.id, LF("Lỗi: %@", "\(error)"))
                 set(.error(String(describing: error).prefix(80).description))
             }
-            if running { OutputLog.shared.add(target.config.id, "Mất kết nối — thử lại") }
+            if running { OutputLog.shared.add(target.config.id, L("Mất kết nối — thử lại")) }
             await target.disconnect()
             guard running else { return }
             attempt += 1

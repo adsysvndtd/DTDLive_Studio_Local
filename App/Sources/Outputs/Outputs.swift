@@ -34,8 +34,8 @@ enum OutputStatus: Equatable {
         case .idle: return L("Dừng")
         case .connecting: return L("Đang kết nối")
         case .live: return "LIVE"
-        case .reconnecting(let n): return "Kết nối lại (\(n))"
-        case .error(let e): return "Lỗi: \(e)"
+        case .reconnecting(let n): return L("Kết nối lại") + " (\(n))"
+        case .error(let e): return L("Lỗi") + ": \(e)"
         }
     }
 }
@@ -46,6 +46,8 @@ struct OutputConfig: Identifiable, Codable, Equatable {
     var proto: OutputProtocol
     var url: String
     var enabled = true
+    /// Viewer page for lives created by sign-in (YouTube watch / Facebook post), kept with the destination.
+    var watchURL: String?
 }
 
 /// Context a destination needs to start: parameter sets for RTSP SDP / MP4 header.
@@ -114,7 +116,7 @@ final class RTMPOutput: OutputTarget, @unchecked Sendable {
         guard let url = URL(string: config.url) else { throw URLError(.badURL) }
         let (app, key) = RTMPURL.split(url)
         let masked = key.count > 6 ? String(key.prefix(4)) + "…" + String(key.suffix(2)) : "…"
-        log("Kết nối \(app)  key \(masked)")
+        log(LF("Kết nối %@  key %@", "\(app)", "\(masked)"))
         let c = RTMPConnection()
         // fcPublishName → FMLE sequence (releaseStream / FCPublish / FCUnpublish) like OBS & Larix;
         // YouTube, Facebook and most CDN ingests expect it.
@@ -131,11 +133,11 @@ final class RTMPOutput: OutputTarget, @unchecked Sendable {
         do {
             let r = try await c.connect(app)
             log("connect → \(r.status?.code ?? "ok")")
-        } catch { log("connect lỗi: \(error)"); throw error }
+        } catch { log(LF("connect lỗi: %@", "\(error)")); throw error }
         do {
             let r = try await s.publish(key)
             log("publish → \(r.status?.code ?? "ok")")
-        } catch { log("publish lỗi: \(error)"); throw error }
+        } catch { log(LF("publish lỗi: %@", "\(error)")); throw error }
         // HaishinKit builds onMetaData from its own capture/encoder; with pre-encoded passthrough it would
         // send an empty one, and strict ingests (Facebook) then never see a video track. Send a full one.
         let dims = CMVideoFormatDescriptionGetDimensions(desc.videoFormat)
@@ -160,7 +162,7 @@ final class RTMPOutput: OutputTarget, @unchecked Sendable {
     }
 
     func disconnect() async {
-        if stream != nil { log("Ngắt kết nối (video \(sentVideo), audio \(sentAudio) gói)") }
+        if stream != nil { log(LF("Ngắt kết nối (video %@, audio %@ gói)", "\(sentVideo)", "\(sentAudio)")) }
         watchers.forEach { $0.cancel() }; watchers = []
         _ = try? await stream?.close()
         try? await connection?.close()
@@ -169,12 +171,12 @@ final class RTMPOutput: OutputTarget, @unchecked Sendable {
 
     func isHealthy() async -> Bool { await connection?.connected ?? false }
     func send(video: CMSampleBuffer) async {
-        if sentVideo == 0 { log("Gửi khung hình đầu (keyframe: \(video.isKeyframe))") }
+        if sentVideo == 0 { log(LF("Gửi khung hình đầu (keyframe: %@)", "\(video.isKeyframe)")) }
         sentVideo += 1
         await stream?.append(video)
     }
     func send(audio: AVAudioCompressedBuffer, when: AVAudioTime) async {
-        if sentAudio == 0 { log("Gửi gói âm thanh đầu (\(audio.byteLength) byte)") }
+        if sentAudio == 0 { log(LF("Gửi gói âm thanh đầu (%@ byte)", "\(audio.byteLength)")) }
         sentAudio += 1
         await stream?.append(audio, when: when)
     }

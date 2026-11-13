@@ -7,7 +7,7 @@ final class AutoSwitcher: ObservableObject {
     enum Mode: String, CaseIterable, Identifiable {
         case sequence, random, audio
         var id: String { rawValue }
-        var label: String { self == .sequence ? "Lần lượt" : self == .random ? "Ngẫu nhiên" : "Theo âm thanh" }
+        var label: String { L(self == .sequence ? "Lần lượt" : self == .random ? "Ngẫu nhiên" : "Theo âm thanh") }
     }
 
     @Published var enabled = false { didSet { enabled ? start() : stop() } }

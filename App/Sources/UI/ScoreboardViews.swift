@@ -109,7 +109,7 @@ struct ScoreboardControl: View {
 
     private func assign(_ t: String, on: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Text(t).font(DS.fBodyBold).padding(.horizontal, 9).padding(.vertical, 5)
+            Text(LocalizedStringKey(t)).font(DS.fBodyBold).padding(.horizontal, 9).padding(.vertical, 5)
                 .foregroundStyle(on ? .black : DS.text2)
                 .background(on ? Color.white : DS.surface2, in: Rectangle())
         }.buttonStyle(.plain)
@@ -168,7 +168,7 @@ struct ScoreboardControl: View {
                     }
                 }
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Cỡ \(Int(engine.scoreboardFraction(t).width * 100))% bề rộng").font(.caption2).foregroundStyle(DS.text3)
+                    Text(verbatim: LF("Cỡ %@%% bề rộng", "\(Int(engine.scoreboardFraction(t).width * 100))")).font(.caption2).foregroundStyle(DS.text3)
                     HStack(spacing: 6) {
                         Button { engine.setScoreboardScale(t.scale - 0.05) } label: { Image(systemName: "minus").frame(width: 26, height: 26) }
                         Slider(value: Binding(get: { Double(t.scale) }, set: { engine.setScoreboardScale(CGFloat($0)) }), in: 0.3...1.6)

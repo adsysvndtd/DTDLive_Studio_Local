@@ -17,23 +17,24 @@ struct LayoutTemplate: Identifiable, Equatable {
     let slots: [Slot]
     var background = CIColor(red: 0.04, green: 0.05, blue: 0.07)
 
-    static let all: [LayoutTemplate] = {
+    /// Computed so names follow a live language switch.
+    static var all: [LayoutTemplate] {
         func r(_ x: CGFloat, _ y: CGFloat, _ w: CGFloat, _ h: CGFloat) -> Slot { Slot(rect: CGRect(x: x, y: y, width: w, height: h)) }
         let g: CGFloat = 0.012
         return [
-            LayoutTemplate(id: 1, name: "Một khung giữa", slots: [r(0.1, 0.1, 0.8, 0.8)]),
-            LayoutTemplate(id: 2, name: "Hai khung ngang", slots: [r(g, 0.25, 0.5 - 1.5 * g, 0.5), r(0.5 + g / 2, 0.25, 0.5 - 1.5 * g, 0.5)]),
-            LayoutTemplate(id: 3, name: "Ba khung ngang", slots: (0..<3).map { i in r(g + CGFloat(i) * (1 - g) / 3, 0.3, (1 - g) / 3 - g, 0.4) }),
-            LayoutTemplate(id: 4, name: "Chính + phụ phải", slots: [r(g, 0.15, 0.64, 0.7), r(0.66, 0.15, 0.33, 0.7)]),
-            LayoutTemplate(id: 5, name: "Chính + 2 phụ xếp dọc", slots: [r(g, 0.15, 0.64, 0.7), r(0.66, 0.15, 0.33, 0.345), r(0.66, 0.505, 0.33, 0.345)]),
-            LayoutTemplate(id: 6, name: "Chính + 2 phụ hàng ngang", slots: [r(g, 0.2, 0.6, 0.6), r(0.62, 0.2, 0.18, 0.6), r(0.81, 0.2, 0.18, 0.6)]),
-            LayoutTemplate(id: 7, name: "Chính + 3 phụ xếp dọc", slots: [r(g, 0.08, 0.66, 0.84), r(0.68, 0.08, 0.31, 0.27), r(0.68, 0.365, 0.31, 0.27), r(0.68, 0.65, 0.31, 0.27)]),
-            LayoutTemplate(id: 8, name: "Bốn khung ngang", slots: (0..<4).map { i in r(CGFloat(i) * 0.25 + g / 2, 0.15, 0.25 - g, 0.7) }),
-            LayoutTemplate(id: 9, name: "Khung phối cảnh", slots: [Slot(rect: CGRect(x: 0.2, y: 0.12, width: 0.6, height: 0.76), perspective: true)]),
-            LayoutTemplate(id: 10, name: "Lưới 2×2", slots: [r(g, g, 0.5 - 1.5 * g, 0.5 - 1.5 * g), r(0.5 + g / 2, g, 0.5 - 1.5 * g, 0.5 - 1.5 * g),
+            LayoutTemplate(id: 1, name: L("Một khung giữa"), slots: [r(0.1, 0.1, 0.8, 0.8)]),
+            LayoutTemplate(id: 2, name: L("Hai khung ngang"), slots: [r(g, 0.25, 0.5 - 1.5 * g, 0.5), r(0.5 + g / 2, 0.25, 0.5 - 1.5 * g, 0.5)]),
+            LayoutTemplate(id: 3, name: L("Ba khung ngang"), slots: (0..<3).map { i in r(g + CGFloat(i) * (1 - g) / 3, 0.3, (1 - g) / 3 - g, 0.4) }),
+            LayoutTemplate(id: 4, name: L("Chính + phụ phải"), slots: [r(g, 0.15, 0.64, 0.7), r(0.66, 0.15, 0.33, 0.7)]),
+            LayoutTemplate(id: 5, name: L("Chính + 2 phụ xếp dọc"), slots: [r(g, 0.15, 0.64, 0.7), r(0.66, 0.15, 0.33, 0.345), r(0.66, 0.505, 0.33, 0.345)]),
+            LayoutTemplate(id: 6, name: L("Chính + 2 phụ hàng ngang"), slots: [r(g, 0.2, 0.6, 0.6), r(0.62, 0.2, 0.18, 0.6), r(0.81, 0.2, 0.18, 0.6)]),
+            LayoutTemplate(id: 7, name: L("Chính + 3 phụ xếp dọc"), slots: [r(g, 0.08, 0.66, 0.84), r(0.68, 0.08, 0.31, 0.27), r(0.68, 0.365, 0.31, 0.27), r(0.68, 0.65, 0.31, 0.27)]),
+            LayoutTemplate(id: 8, name: L("Bốn khung ngang"), slots: (0..<4).map { i in r(CGFloat(i) * 0.25 + g / 2, 0.15, 0.25 - g, 0.7) }),
+            LayoutTemplate(id: 9, name: L("Khung phối cảnh"), slots: [Slot(rect: CGRect(x: 0.2, y: 0.12, width: 0.6, height: 0.76), perspective: true)]),
+            LayoutTemplate(id: 10, name: L("Lưới 2×2"), slots: [r(g, g, 0.5 - 1.5 * g, 0.5 - 1.5 * g), r(0.5 + g / 2, g, 0.5 - 1.5 * g, 0.5 - 1.5 * g),
                                                             r(g, 0.5 + g / 2, 0.5 - 1.5 * g, 0.5 - 1.5 * g), r(0.5 + g / 2, 0.5 + g / 2, 0.5 - 1.5 * g, 0.5 - 1.5 * g)])
         ]
-    }()
+    }
 }
 
 /// Decorative frame drawn around every layout window (own vector designs, or a user PNG).

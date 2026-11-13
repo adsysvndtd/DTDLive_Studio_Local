@@ -118,7 +118,7 @@ struct SettingsForm: View {
                     LabeledContent("Ứng dụng", value: "DTD Studio")
                     LabeledContent("Phiên bản", value: "\(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0") (\(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "1"))")
                     LabeledContent("Bundle ID", value: Bundle.main.bundleIdentifier ?? "")
-                    LabeledContent("NDI", value: NDIAvailability.isAvailable ? "Có" : "Chưa tích hợp SDK")
+                    LabeledContent("NDI", value: L(NDIAvailability.isAvailable ? "Có" : "Chưa tích hợp SDK"))
                 }
             }
             .font(DS.settingsFont)

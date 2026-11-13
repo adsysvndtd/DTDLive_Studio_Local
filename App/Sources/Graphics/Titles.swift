@@ -168,7 +168,7 @@ final class TitleRenderer: @unchecked Sendable {
             return ScoreboardRenderer.render(t)
         case .countdown:
             let r = remaining ?? (t.scoreA * 60 + t.scoreB)
-            let label = attr(t.line1.isEmpty ? "Bắt đầu sau" : t.line1, small)
+            let label = attr(t.line1.isEmpty ? L("Bắt đầu sau") : t.line1, small)
             let time = attr(String(format: "%02d:%02d", r / 60, r % 60), UIFont.monospacedDigitSystemFont(ofSize: 64 * k, weight: .heavy),
                             r <= 10 ? UIColor.systemRed : .white)
             let w = max(label.size().width, time.size().width) + 60 * k, h = label.size().height + time.size().height + 30 * k

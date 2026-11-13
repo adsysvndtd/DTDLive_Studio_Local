@@ -27,7 +27,7 @@ struct ArrangeOverlay: View {
             Rectangle().strokeBorder(color, style: StrokeStyle(lineWidth: 2, dash: [6, 4]))
                 .background(color.opacity(0.12))
                 .overlay(alignment: .topLeading) {
-                    Text(label).font(.caption2.weight(.heavy)).padding(.horizontal, 5).padding(.vertical, 2)
+                    Text(LocalizedStringKey(label)).font(.caption2.weight(.heavy)).padding(.horizontal, 5).padding(.vertical, 2)
                         .background(color, in: Rectangle()).foregroundStyle(.black).padding(3)
                 }
                 .gesture(DragGesture().onChanged { v in

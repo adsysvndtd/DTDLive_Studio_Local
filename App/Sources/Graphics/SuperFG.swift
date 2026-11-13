@@ -23,8 +23,9 @@ struct SuperFGTemplate: Identifiable {
 
     // MARK: Built-in designs
 
-    static let all: [SuperFGTemplate] = [
-        SuperFGTemplate(id: "news", name: "Bản tin") { g, s, c in
+    /// Computed so names follow a live language switch.
+    static var all: [SuperFGTemplate] { [
+        SuperFGTemplate(id: "news", name: L("Bản tin")) { g, s, c in
             let k = s.height / 1080, accent = UIColor(hex: c.accentHex)
             let band = CGRect(x: 0, y: s.height - 190 * k, width: s.width, height: 130 * k)
             UIColor(white: 0.06, alpha: 0.88).setFill(); g.fill(band)
@@ -35,7 +36,7 @@ struct SuperFGTemplate: Identifiable {
                  color: UIColor(white: 0.85, alpha: 1))
             accent.setFill(); g.fill(CGRect(x: 0, y: band.maxY, width: s.width, height: 8 * k))
         },
-        SuperFGTemplate(id: "live", name: "Khung LIVE") { g, s, c in
+        SuperFGTemplate(id: "live", name: L("Khung LIVE")) { g, s, c in
             let k = s.height / 1080, accent = UIColor(hex: c.accentHex)
             g.setStrokeColor(accent.cgColor); g.setLineWidth(10 * k)
             g.stroke(CGRect(origin: .zero, size: s).insetBy(dx: 5 * k, dy: 5 * k))
@@ -47,7 +48,7 @@ struct SuperFGTemplate: Identifiable {
             UIColor(white: 0, alpha: 0.6).setFill(); UIBezierPath(roundedRect: tag, cornerRadius: 10 * k).fill()
             SuperFGTemplate.text(c.line1, in: tag.insetBy(dx: 24 * k, dy: 0), size: 36 * k, weight: .bold, align: .right)
         },
-        SuperFGTemplate(id: "breaking", name: "Tin nóng") { g, s, c in
+        SuperFGTemplate(id: "breaking", name: L("Tin nóng")) { g, s, c in
             let k = s.height / 1080, accent = UIColor(hex: c.accentHex)
             let y = s.height - 250 * k
             let tag = UIBezierPath()
@@ -61,7 +62,7 @@ struct SuperFGTemplate: Identifiable {
             UIColor(white: 0.08, alpha: 0.9).setFill(); g.fill(CGRect(x: 0, y: bar.maxY, width: s.width, height: 50 * k))
             SuperFGTemplate.text(c.line2, in: CGRect(x: 40 * k, y: bar.maxY, width: s.width - 80 * k, height: 50 * k), size: 28 * k, weight: .semibold)
         },
-        SuperFGTemplate(id: "corners", name: "Góc ngắm") { g, s, c in
+        SuperFGTemplate(id: "corners", name: L("Góc ngắm")) { g, s, c in
             let k = s.height / 1080, accent = UIColor(hex: c.accentHex)
             let m = 70 * k, l = 120 * k
             g.setStrokeColor(UIColor.white.withAlphaComponent(0.9).cgColor); g.setLineWidth(8 * k); g.setLineCap(.square)
@@ -74,7 +75,7 @@ struct SuperFGTemplate: Identifiable {
             SuperFGTemplate.text("REC", in: CGRect(x: m + 66 * k, y: m + 20 * k, width: 200 * k, height: 46 * k), size: 36 * k, weight: .bold)
             SuperFGTemplate.text(c.line1, in: CGRect(x: 0, y: s.height - m - 90 * k, width: s.width, height: 60 * k), size: 44 * k, weight: .bold, align: .center)
         },
-        SuperFGTemplate(id: "event", name: "Sự kiện") { g, s, c in
+        SuperFGTemplate(id: "event", name: L("Sự kiện")) { g, s, c in
             let k = s.height / 1080, accent = UIColor(hex: c.accentHex)
             let pill = CGRect(x: 60 * k, y: 50 * k, width: 820 * k, height: 96 * k)
             UIColor(white: 0.05, alpha: 0.75).setFill(); UIBezierPath(roundedRect: pill, cornerRadius: 48 * k).fill()
@@ -85,7 +86,7 @@ struct SuperFGTemplate: Identifiable {
                  color: UIColor(white: 0.85, alpha: 1))
             accent.setFill(); g.fill(CGRect(x: 0, y: s.height - 12 * k, width: s.width, height: 12 * k))
         },
-        SuperFGTemplate(id: "sponsor", name: "Nhà tài trợ") { g, s, c in
+        SuperFGTemplate(id: "sponsor", name: L("Nhà tài trợ")) { g, s, c in
             let k = s.height / 1080, accent = UIColor(hex: c.accentHex)
             let box = CGRect(x: s.width - 620 * k, y: s.height - 240 * k, width: 560 * k, height: 170 * k)
             UIColor.white.withAlphaComponent(0.94).setFill(); UIBezierPath(roundedRect: box, cornerRadius: 16 * k).fill()
@@ -97,14 +98,14 @@ struct SuperFGTemplate: Identifiable {
             SuperFGTemplate.text(c.line2, in: CGRect(x: box.minX + 20 * k, y: box.minY + 116 * k, width: box.width - 40 * k, height: 40 * k), size: 26 * k, weight: .medium,
                  color: UIColor(white: 0.3, alpha: 1), align: .center)
         },
-        SuperFGTemplate(id: "letterbox", name: "Điện ảnh") { g, s, c in
+        SuperFGTemplate(id: "letterbox", name: L("Điện ảnh")) { g, s, c in
             let k = s.height / 1080, h = 130 * k
             UIColor.black.setFill(); g.fill(CGRect(x: 0, y: 0, width: s.width, height: h)); g.fill(CGRect(x: 0, y: s.height - h, width: s.width, height: h))
             SuperFGTemplate.text(c.line1, in: CGRect(x: 80 * k, y: s.height - h, width: s.width - 160 * k, height: h * 0.6), size: 40 * k, weight: .semibold)
             SuperFGTemplate.text(c.line2, in: CGRect(x: 80 * k, y: s.height - h * 0.45, width: s.width - 160 * k, height: h * 0.4), size: 26 * k, weight: .regular,
                  color: UIColor(white: 0.75, alpha: 1))
         },
-        SuperFGTemplate(id: "split", name: "Khung đôi") { g, s, c in
+        SuperFGTemplate(id: "split", name: L("Khung đôi")) { g, s, c in
             let k = s.height / 1080, accent = UIColor(hex: c.accentHex)
             g.setStrokeColor(accent.cgColor); g.setLineWidth(8 * k)
             g.move(to: CGPoint(x: s.width / 2, y: 140 * k)); g.addLine(to: CGPoint(x: s.width / 2, y: s.height - 140 * k)); g.strokePath()
@@ -115,7 +116,7 @@ struct SuperFGTemplate: Identifiable {
                 SuperFGTemplate.text(t, in: r.insetBy(dx: 30 * k, dy: 0), size: 36 * k, weight: .bold)
             }
         }
-    ]
+    ] }
 
     private static func text(_ s: String, in r: CGRect, size: CGFloat, weight: UIFont.Weight, color: UIColor = .white,
                              align: NSTextAlignment = .left) {

@@ -72,7 +72,7 @@ struct AudioMixerView: View {
 
     private func modeKey(_ t: String, on: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Text(t).font(.system(size: compact ? 12 : 14, weight: .bold))
+            Text(LocalizedStringKey(t)).font(.system(size: compact ? 12 : 14, weight: .bold))
                 .padding(.horizontal, compact ? 10 : 14).frame(height: compact ? 28 : 32)
                 .foregroundStyle(on ? .black : .white)
                 .background(on ? Color.white : Color.clear, in: Rectangle())

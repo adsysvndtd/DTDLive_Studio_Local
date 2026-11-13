@@ -20,8 +20,8 @@ final class PlatformLive: NSObject, ObservableObject, ASWebAuthenticationPresent
             switch self {
             case .notConfigured(let k):
                 return k == PlatformLive.googleKey
-                    ? "Chưa nhập Google OAuth Client ID (iOS) — vào Cài đặt › Phát trực tiếp, hoặc dùng 'Thêm đích' với stream key YouTube"
-                    : "Chưa nhập Facebook App ID — vào Cài đặt › Phát trực tiếp, hoặc dùng 'Thêm đích' với stream key Facebook"
+                    ? L("Chưa nhập Google OAuth Client ID (iOS) — vào Cài đặt › Phát trực tiếp, hoặc dùng 'Thêm đích' với stream key YouTube")
+                    : L("Chưa nhập Facebook App ID — vào Cài đặt › Phát trực tiếp, hoặc dùng 'Thêm đích' với stream key Facebook")
             case .cancelled: return L("Đã huỷ đăng nhập")
             case .http(let c, let m): return "HTTP \(c): \(m)"
             case .badResponse: return L("Phản hồi không hợp lệ")

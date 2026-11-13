@@ -86,10 +86,10 @@ final class GraphicsRepo: ObservableObject {
         syncing = true; defer { syncing = false }
         let s = settings
         do {
-            status = "Đang kiểm tra \(s.owner)/\(s.repo)…"
+            status = LF("Đang kiểm tra %@/%@…", "\(s.owner)", "\(s.repo)")
             let head: Commit = try await get("https://api.github.com/repos/\(s.owner)/\(s.repo)/commits/\(s.branch)")
             if !force, head.sha == lastCommit, HTMLGraphicsStore.manifest() != nil {
-                status = "Đã mới nhất (\(head.sha.prefix(7)))"
+                status = LF("Đã mới nhất (%@)", "\(head.sha.prefix(7))")
                 return
             }
             let tmp = FileManager.default.temporaryDirectory.appendingPathComponent("graphics-\(UUID().uuidString)", isDirectory: true)
@@ -97,17 +97,17 @@ final class GraphicsRepo: ObservableObject {
             var count = 0
             try await download(path: s.path, ref: head.sha, into: tmp, root: s.path, count: &count)
             guard FileManager.default.fileExists(atPath: tmp.appendingPathComponent("manifest.json").path) else {
-                throw NSError(domain: "dtd", code: 1, userInfo: [NSLocalizedDescriptionKey: "Thư mục \(s.path) không có manifest.json"])
+                throw NSError(domain: "dtd", code: 1, userInfo: [NSLocalizedDescriptionKey: LF("Thư mục %@ không có manifest.json", s.path)])
             }
             let dst = HTMLGraphicsStore.directory
             try? FileManager.default.removeItem(at: dst)
             try FileManager.default.moveItem(at: tmp, to: dst)
             lastCommit = head.sha
             UserDefaults.standard.set(head.sha, forKey: "dtd.graphicsrepo.sha")
-            status = "Đã cập nhật \(count) tệp (\(head.sha.prefix(7)))"
+            status = LF("Đã cập nhật %@ tệp (%@)", "\(count)", "\(head.sha.prefix(7))")
             onUpdated?()
         } catch {
-            status = "Lỗi: \(error.localizedDescription)"
+            status = LF("Lỗi: %@", "\(error.localizedDescription)")
         }
     }
 
@@ -141,7 +141,7 @@ final class GraphicsRepo: ObservableObject {
         let (data, resp) = try await URLSession.shared.data(for: req)
         let code = (resp as? HTTPURLResponse)?.statusCode ?? 0
         guard code == 200 else {
-            let msg = code == 404 ? "không tìm thấy repo/nhánh/thư mục (repo private cần token)" : code == 403 ? "GitHub giới hạn lượt gọi, thử lại sau" : "HTTP \(code)"
+            let msg = code == 404 ? L("không tìm thấy repo/nhánh/thư mục (repo private cần token)") : code == 403 ? L("GitHub giới hạn lượt gọi, thử lại sau") : "HTTP \(code)"
             throw NSError(domain: "dtd", code: code, userInfo: [NSLocalizedDescriptionKey: msg])
         }
         return try JSONDecoder().decode(T.self, from: data)

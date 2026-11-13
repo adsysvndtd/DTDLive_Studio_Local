@@ -176,7 +176,7 @@ struct CategoryContent: View {
             NavigationStack {
                 ScrollView { SourceAdjustView(engine: engine, sourceID: box.id).padding() }
                     .background(DS.bg)
-                    .navigationTitle(engine.sources.first { $0.id == box.id }?.name ?? "Nguồn")
+                    .navigationTitle(engine.sources.first { $0.id == box.id }?.name ?? L("Nguồn"))
                     .toolbar { Button("Xong") { adjustingSource = nil } }
             }
             .presentationDetents([.medium, .large])
@@ -584,7 +584,7 @@ struct CategoryContent: View {
         (0..<t.slots.count).map { i in
             if t.id == engine.layoutTemplateID, i < engine.layoutSlots.count,
                let n = engine.sources.first(where: { $0.id == engine.layoutSlots[i] })?.name { return n }
-            return i == 0 ? "Chính" : "Cam \(i + 1)"
+            return i == 0 ? L("Chính") : "Cam \(i + 1)"
         }
     }
 
@@ -837,7 +837,7 @@ struct TransitionColumn: View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: compact ? 6 : 8) {
                 VStack(spacing: 2) {
-                    Text(String(format: "Thời gian %.1fs", engine.transitionDuration)).font(.caption2).foregroundStyle(DS.text2)
+                    Text(String(format: L("Thời gian %.1fs"), engine.transitionDuration)).font(.caption2).foregroundStyle(DS.text2)
                     HStack(spacing: 0) {
                         Button { engine.transitionDuration = max(0.2, engine.transitionDuration - 0.1) } label: { Image(systemName: "minus").frame(maxWidth: .infinity, minHeight: 28) }
                         Divider().frame(height: 18)
@@ -1042,8 +1042,8 @@ struct SourceInfoView: View {
                         LabeledContent("Độ phân giải", value: "Không có tín hiệu")
                     }
                     if let f = s as? FileSource { LabeledContent("Tệp", value: f.url.lastPathComponent) }
-                    LabeledContent("Trên PGM", value: engine.programID == s.id ? "Có" : "Không")
-                    LabeledContent("Yêu thích", value: engine.favorites.contains(s.id) ? "Có" : "Không")
+                    LabeledContent("Trên PGM", value: L(engine.programID == s.id ? "Có" : "Không"))
+                    LabeledContent("Yêu thích", value: L(engine.favorites.contains(s.id) ? "Có" : "Không"))
                 }
             }
             .navigationTitle("Thông tin nguồn")

@@ -128,7 +128,7 @@ struct StudioView: View {
                 } label: { barLabel("tv", "Màn ngoài") }
             }
             Button { showOutputs = true } label: {
-                Label(engine.isAnyLive ? "Đang phát" : (compact ? "Phát" : "Phát trực tiếp"), systemImage: "dot.radiowaves.left.and.right")
+                Label(LocalizedStringKey(engine.isAnyLive ? "Đang phát" : (compact ? "Phát" : "Phát trực tiếp")), systemImage: "dot.radiowaves.left.and.right")
                     .font(.caption.weight(.bold)).lineLimit(1).fixedSize()
                     .padding(.horizontal, 10).frame(height: compact ? 28 : 32)
                     .foregroundStyle(.white)
@@ -266,7 +266,7 @@ struct StudioView: View {
             .aspectRatio(CGFloat(engine.format.width) / CGFloat(engine.format.height), contentMode: .fit)
             .overlay(alignment: .topTrailing) {
                 // PVW / PGM tag flush in the top-right corner of the card
-                Text(title).font(.system(size: compact ? 10 : 12, weight: .heavy)).foregroundStyle(.white)
+                Text(LocalizedStringKey(title)).font(.system(size: compact ? 10 : 12, weight: .heavy)).foregroundStyle(.white)
                     .padding(.horizontal, compact ? 6 : 8).padding(.vertical, compact ? 2 : 3)
                     .background(color, in: Rectangle())
                     .allowsHitTesting(false)
@@ -278,7 +278,7 @@ struct StudioView: View {
 
     private func monitorChip(_ t: String, on: Bool, onColor: Color = DS.accent, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Text(t).font(.system(size: compact ? 9 : 11, weight: .bold)).lineLimit(1).fixedSize()
+            Text(LocalizedStringKey(t)).font(.system(size: compact ? 9 : 11, weight: .bold)).lineLimit(1).fixedSize()
                 .padding(.horizontal, 7).padding(.vertical, 3)
                 .foregroundStyle(on ? .white : DS.text2)
                 .background(on ? onColor.opacity(0.85) : DS.surface2, in: Rectangle())
@@ -289,7 +289,7 @@ struct StudioView: View {
     private var monitorInfo: some View {
         VStack(alignment: .leading, spacing: 1) {
             Text("\(engine.format.width)×\(engine.format.height) · \(engine.format.fps) fps · \(engine.encoder.codec.label)")
-            Text(String(format: "%.1f Mbps · Âm thanh %.0f dBFS", Double(engine.currentBitrate) / 1e6, engine.audioLevel))
+            Text(String(format: L("%.1f Mbps · Âm thanh %.0f dBFS"), Double(engine.currentBitrate) / 1e6, engine.audioLevel))
         }
         .font(.system(size: 10, weight: .semibold, design: .monospaced))
         .padding(5).background(Color.black.opacity(0.55), in: Rectangle())
@@ -362,7 +362,7 @@ struct ToolButtonLabel: View {
     var body: some View {
         VStack(spacing: 2) {
             Image(systemName: systemImage).font(.system(size: 16, weight: .semibold))
-            Text(title).font(.system(size: 10, weight: .medium)).lineLimit(1).minimumScaleFactor(0.7)
+            Text(LocalizedStringKey(title)).font(.system(size: 10, weight: .medium)).lineLimit(1).minimumScaleFactor(0.7)
         }
         .frame(width: 58, height: 40)
         .foregroundStyle(active ? .black : .white)
@@ -523,6 +523,13 @@ struct OutputsSheet: View {
                                 if st == .live, let r = engine.outputRates[o.id] {
                                     Text(verbatim: r).font(.caption2.monospacedDigit()).foregroundStyle(.secondary)
                                 }
+                                if let w = o.watchURL, let u = URL(string: w) {
+                                    HStack(spacing: 12) {
+                                        Link(destination: u) { Label("Xem live", systemImage: "play.tv") }
+                                        Button { UIPasteboard.general.url = u } label: { Label("Copy link", systemImage: "doc.on.doc") }
+                                    }
+                                    .font(.caption).buttonStyle(.borderless)
+                                }
                                 if o.proto == .rtmp { OutputLogView(id: o.id) }
                             }
                             Spacer()
@@ -632,8 +639,8 @@ struct OutputsSheet: View {
                     Stepper(String(format: "Bitrate: %.1f Mbps", Double(engine.encoder.bitrate) / 1e6), value: $engine.encoder.bitrate, in: 1_000_000...20_000_000, step: 500_000)
                     Toggle("Bitrate thích ứng", isOn: $engine.encoder.adaptive)
                     if engine.encoder.adaptive {
-                        Stepper(String(format: "Tối thiểu: %.1f Mbps", Double(engine.encoder.minBitrate) / 1e6), value: $engine.encoder.minBitrate, in: 500_000...10_000_000, step: 250_000)
-                        Text(String(format: "Đang dùng: %.1f Mbps", Double(engine.currentBitrate) / 1e6)).font(.caption)
+                        Stepper(String(format: L("Tối thiểu: %.1f Mbps"), Double(engine.encoder.minBitrate) / 1e6), value: $engine.encoder.minBitrate, in: 500_000...10_000_000, step: 250_000)
+                        Text(String(format: L("Đang dùng: %.1f Mbps"), Double(engine.currentBitrate) / 1e6)).font(.caption)
                     }
                     Picker("Độ phân giải", selection: Binding(
                         get: { engine.format.resolutionID },
@@ -669,6 +676,7 @@ extension OutputsSheet {
                     : try await platform.createFacebook(title: liveTitle,
                                                         privacy: livePrivacy == "public" ? "EVERYONE" : livePrivacy == "unlisted" ? "ALL_FRIENDS" : "SELF")
                 var cfg = OutputConfig(name: d.name, proto: .rtmp, url: d.url)
+                cfg.watchURL = d.watchURL
                 cfg.enabled = true
                 engine.outputs.append(cfg)
                 engine.startOutput(cfg)          // push right away: the platform shows the live as soon as video arrives

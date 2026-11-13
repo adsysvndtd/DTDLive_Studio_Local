@@ -345,7 +345,7 @@ final class StudioEngine: ObservableObject {
     /// Adds (or reuses) a movie as an input and puts it on preview.
     func cueMovie(_ url: URL) {
         if let s = sources.first(where: { ($0 as? FileSource)?.url == url }) { select(s.id); (s as? FileSource)?.restart(); return }
-        guard FileManager.default.isReadableFile(atPath: url.path) else { message = "Không đọc được video \(url.lastPathComponent)"; return }
+        guard FileManager.default.isReadableFile(atPath: url.path) else { message = LF("Không đọc được video %@", "\(url.lastPathComponent)"); return }
         let s = FileSource(name: url.deletingPathExtension().lastPathComponent, url: url)
         add(s); select(s.id)
     }
@@ -354,7 +354,7 @@ final class StudioEngine: ObservableObject {
 
     func cuePicture(_ url: URL) {
         if let s = sources.first(where: { ($0 as? ImageSource)?.url == url }) { select(s.id); return }
-        guard UIImage(contentsOfFile: url.path) != nil else { message = "Không đọc được ảnh \(url.lastPathComponent)"; return }
+        guard UIImage(contentsOfFile: url.path) != nil else { message = LF("Không đọc được ảnh %@", "\(url.lastPathComponent)"); return }
         let s = ImageSource(url: url)
         add(s); select(s.id)
     }
@@ -431,7 +431,7 @@ final class StudioEngine: ObservableObject {
             foreground = OverlayLayer(pipSourceID: v.id, rect: CGRect(x: 0, y: 0, width: 1, height: 1))
         } else {
             guard let img = UIImage(contentsOfFile: url.path)?.normalized(), let ci = CIImage(image: img) else {
-                message = "Không đọc được \(url.lastPathComponent)"; return
+                message = LF("Không đọc được %@", "\(url.lastPathComponent)"); return
             }
             foreground = OverlayLayer(image: ci, rect: CGRect(x: 0, y: 0, width: 1, height: 1))
         }
@@ -477,7 +477,7 @@ final class StudioEngine: ObservableObject {
 
     func toggleMusic(_ url: URL) {
         if nowPlayingMusic == url { stopMusic(); nowPlayingMusic = nil; return }
-        do { try audio.playMusic(url); nowPlayingMusic = url } catch { message = "Không phát được nhạc: \(error.localizedDescription)" }
+        do { try audio.playMusic(url); nowPlayingMusic = url } catch { message = LF("Không phát được nhạc: %@", "\(error.localizedDescription)") }
     }
 
     private func applyPiPPreset() { pip?.rect = pipPreset.rect }
@@ -883,7 +883,7 @@ final class StudioEngine: ObservableObject {
         var f = format; f.fps = fps
         switcher.setFormat(f)
         videoEncoder.fps = Double(fps)
-        if hot { message = "Máy đang nóng — tạm giảm còn \(fps) hình/giây để hạ nhiệt" }
+        if hot { message = LF("Máy đang nóng — tạm giảm còn %@ hình/giây để hạ nhiệt", "\(fps)") }
     }
 
     private var silenceTimer: DispatchSourceTimer?
@@ -899,7 +899,7 @@ final class StudioEngine: ObservableObject {
         }
         t.resume()
         silenceTimer = t
-        message = "Không mở được micro/bộ trộn âm thanh — đang phát kèm âm thanh câm. Kiểm tra quyền Micro trong Cài đặt iOS."
+        message = L("Không mở được micro/bộ trộn âm thanh — đang phát kèm âm thanh câm. Kiểm tra quyền Micro trong Cài đặt iOS.")
     }
 
     /// PCM from a pushed camera (ingest server thread) into its own mixer channel.
@@ -995,7 +995,7 @@ final class StudioEngine: ObservableObject {
         set { audio.monitorProgram = newValue; objectWillChange.send() }
     }
     func playMusic(_ url: URL) {
-        do { try audio.playMusic(url) } catch { message = "Không phát được nhạc: \(error.localizedDescription)" }
+        do { try audio.playMusic(url) } catch { message = LF("Không phát được nhạc: %@", "\(error.localizedDescription)") }
     }
     var speakerMonitor: Bool {
         get { audio.speakerMonitor }

@@ -62,7 +62,7 @@ final class ReplayEditor: ObservableObject {
         asset = nil
         guard let first = snapshot.first, let last = snapshot.last else {
             duration = 0; preview = nil; thumbnails = []
-            message = "Bộ đệm trống — replay ghi lại tín hiệu Program khi app đang mã hoá (đang phát hoặc ghi)."
+            message = L("Bộ đệm trống — replay ghi lại tín hiệu Program khi app đang mã hoá (đang phát hoặc ghi).")
             return
         }
         message = nil
@@ -183,7 +183,7 @@ final class ReplayEditor: ObservableObject {
 
     func saveClip() {
         let r = effectiveRange
-        guard r.upperBound - r.lowerBound > 0.05 else { message = "Đoạn quá ngắn — đặt MARK IN và MARK OUT"; return }
+        guard r.upperBound - r.lowerBound > 0.05 else { message = L("Đoạn quá ngắn — đặt MARK IN và MARK OUT"); return }
         var c = ReplayClip(name: "Clip \(clips.count + 1)", material: material, inT: r.lowerBound, outT: r.upperBound)
         if material == .buffer {
             let inPTS = basePTS + r.lowerBound, outPTS = basePTS + r.upperBound
@@ -192,7 +192,7 @@ final class ReplayEditor: ObservableObject {
             c.basePTS = basePTS
         }
         clips.insert(c, at: 0)
-        message = "Đã lưu \(c.name) (\(String(format: "%.1f", c.duration)) s)"
+        message = LF("Đã lưu %@ (%@ s)", c.name, String(format: "%.1f", c.duration))
     }
 
     func deleteClip(_ c: ReplayClip) { clips.removeAll { $0.id == c.id } }
@@ -217,9 +217,9 @@ final class ReplayEditor: ObservableObject {
                     if let e = s.error { throw e }
                 }
                 library.refresh()
-                message = "Đã xuất \(url.lastPathComponent) vào thư viện Video"
+                message = LF("Đã xuất %@ vào thư viện Video", "\(url.lastPathComponent)")
             } catch {
-                message = "Xuất thất bại: \(error.localizedDescription)"
+                message = LF("Xuất thất bại: %@", "\(error.localizedDescription)")
             }
         }
     }

@@ -1,6 +1,16 @@
 {
   "sourceLanguage": "vi",
   "strings": {
+    "%.1f Mbps · Âm thanh %.0f dBFS": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%.1f Mbps · Audio %.0f dBFS"
+          }
+        }
+      }
+    },
     "(lưu vào Files › DTDStudio)": {
       "localizations": {
         "en": {
@@ -41,12 +51,32 @@
         }
       }
     },
+    "1080×1920 (dọc)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1080×1920 (vertical)"
+          }
+        }
+      }
+    },
     "1×": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "1×"
+          }
+        }
+      }
+    },
+    "720×1280 (dọc)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "720×1280 (vertical)"
           }
         }
       }
@@ -91,6 +121,16 @@
         }
       }
     },
+    "Ba khung ngang": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Three across"
+          }
+        }
+      }
+    },
     "Bitrate thích ứng": {
       "localizations": {
         "en": {
@@ -101,12 +141,32 @@
         }
       }
     },
+    "Bão hoà": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saturation"
+          }
+        }
+      }
+    },
     "Bù phơi sáng": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Exposure compensation"
+          }
+        }
+      }
+    },
+    "Bản tin": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Newscast"
           }
         }
       }
@@ -141,6 +201,16 @@
         }
       }
     },
+    "BẬT": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ON"
+          }
+        }
+      }
+    },
     "Bật bộ đệm replay (60 giây gần nhất)": {
       "localizations": {
         "en": {
@@ -167,6 +237,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Turn on to remove a green / blue screen"
+          }
+        }
+      }
+    },
+    "Bắt đầu sau": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Starts in"
           }
         }
       }
@@ -211,12 +291,62 @@
         }
       }
     },
+    "BỐ CỤC": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LAYOUT"
+          }
+        }
+      }
+    },
+    "BỐ CỤC %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LAYOUT %@"
+          }
+        }
+      }
+    },
+    "BỐ CỤC %lf": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LAYOUT %lf"
+          }
+        }
+      }
+    },
+    "BỐ CỤC %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LAYOUT %lld"
+          }
+        }
+      }
+    },
     "Bố cục": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Layout"
+          }
+        }
+      }
+    },
+    "Bốn khung ngang": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Four across"
           }
         }
       }
@@ -237,6 +367,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Replay buffer (Program)"
+          }
+        }
+      }
+    },
+    "Bộ đệm trống — replay ghi lại tín hiệu Program khi app đang mã hoá (đang phát hoặc ghi).": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buffer empty — replay records Program while the app is encoding (streaming or recording)."
           }
         }
       }
@@ -311,6 +451,66 @@
         }
       }
     },
+    "Chính": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Main"
+          }
+        }
+      }
+    },
+    "Chính + 2 phụ hàng ngang": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Main + 2 side by side"
+          }
+        }
+      }
+    },
+    "Chính + 2 phụ xếp dọc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Main + 2 stacked"
+          }
+        }
+      }
+    },
+    "Chính + 3 phụ xếp dọc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Main + 3 stacked"
+          }
+        }
+      }
+    },
+    "Chính + phụ phải": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Main + right"
+          }
+        }
+      }
+    },
+    "Chưa có Wi-Fi": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Wi-Fi"
+          }
+        }
+      }
+    },
     "Chưa có camera mạng": {
       "localizations": {
         "en": {
@@ -327,6 +527,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "No cameras — tap Add source"
+          }
+        }
+      }
+    },
+    "Chưa có hình": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No picture"
           }
         }
       }
@@ -387,6 +597,56 @@
           "stringUnit": {
             "state": "translated",
             "value": "No pictures — import in Pictures"
+          }
+        }
+      }
+    },
+    "Chưa nhập Facebook App ID — vào Cài đặt › Phát trực tiếp, hoặc dùng 'Thêm đích' với stream key Facebook": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Facebook App ID — set it in Settings › Live, or use 'Add destination' with a Facebook stream key"
+          }
+        }
+      }
+    },
+    "Chưa nhập Google OAuth Client ID (iOS) — vào Cài đặt › Phát trực tiếp, hoặc dùng 'Thêm đích' với stream key YouTube": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Google OAuth Client ID (iOS) — set it in Settings › Live, or use 'Add destination' with a YouTube stream key"
+          }
+        }
+      }
+    },
+    "Chưa nạp SuperFG": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No SuperFG loaded"
+          }
+        }
+      }
+    },
+    "Chưa nạp logo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No logo loaded"
+          }
+        }
+      }
+    },
+    "Chưa tích hợp SDK": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SDK not integrated"
           }
         }
       }
@@ -531,12 +791,32 @@
         }
       }
     },
+    "Chức danh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Title"
+          }
+        }
+      }
+    },
     "Chữ chạy": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Ticker"
+          }
+        }
+      }
+    },
+    "Chữ tên": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Name text"
           }
         }
       }
@@ -581,6 +861,16 @@
         }
       }
     },
+    "Có": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yes"
+          }
+        }
+      }
+    },
     "Công khai": {
       "localizations": {
         "en": {
@@ -617,6 +907,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Classic"
+          }
+        }
+      }
+    },
+    "Cổng RTMP": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RTMP port"
+          }
+        }
+      }
+    },
+    "Cổng RTSP": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RTSP port"
+          }
+        }
+      }
+    },
+    "Cổng SRT": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SRT port"
+          }
+        }
+      }
+    },
+    "Cỡ %@%% bề rộng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Size %@%% of width"
           }
         }
       }
@@ -781,6 +1111,16 @@
         }
       }
     },
+    "Ghi": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rec"
+          }
+        }
+      }
+    },
     "Ghép nối camera": {
       "localizations": {
         "en": {
@@ -811,6 +1151,46 @@
         }
       }
     },
+    "GitHub giới hạn lượt gọi, thử lại sau": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHub rate limit reached, try again later"
+          }
+        }
+      }
+    },
+    "Giây %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seconds %@"
+          }
+        }
+      }
+    },
+    "Giây %lf": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seconds %lf"
+          }
+        }
+      }
+    },
+    "Giây %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seconds %lld"
+          }
+        }
+      }
+    },
     "Giới thiệu": {
       "localizations": {
         "en": {
@@ -827,6 +1207,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Clock"
+          }
+        }
+      }
+    },
+    "Google OAuth Client ID (loại iOS)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google OAuth Client ID (iOS type)"
           }
         }
       }
@@ -857,6 +1247,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Corners"
+          }
+        }
+      }
+    },
+    "Góc ngắm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Viewfinder"
           }
         }
       }
@@ -921,12 +1321,92 @@
         }
       }
     },
+    "Gửi gói âm thanh đầu (%@ byte)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "First audio packet sent (%@ bytes)"
+          }
+        }
+      }
+    },
+    "Gửi gói âm thanh đầu (%lf byte)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "First audio packet sent (%lf bytes)"
+          }
+        }
+      }
+    },
+    "Gửi gói âm thanh đầu (%lld byte)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "First audio packet sent (%lld bytes)"
+          }
+        }
+      }
+    },
+    "Gửi khung hình đầu (keyframe: %@)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "First video frame sent (keyframe: %@)"
+          }
+        }
+      }
+    },
+    "Gửi khung hình đầu (keyframe: %lf)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "First video frame sent (keyframe: %lf)"
+          }
+        }
+      }
+    },
+    "Gửi khung hình đầu (keyframe: %lld)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "First video frame sent (keyframe: %lld)"
+          }
+        }
+      }
+    },
+    "Gửi tới máy khác": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Send to another device"
+          }
+        }
+      }
+    },
     "HEVC: YouTube/RTMP cần máy chủ hỗ trợ Enhanced RTMP; Facebook chỉ nhận H.264. SRT/RTSP/ghi file dùng được.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "HEVC: YouTube/RTMP needs an Enhanced-RTMP server; Facebook takes H.264 only. SRT/RTSP/recording are fine."
+          }
+        }
+      }
+    },
+    "Hai khung ngang": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Two across"
           }
         }
       }
@@ -971,12 +1451,52 @@
         }
       }
     },
+    "Hoàn tác": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Undo"
+          }
+        }
+      }
+    },
     "Huỷ": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Cancel"
+          }
+        }
+      }
+    },
+    "Hình %@/s · Tiếng %@/s": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video %@/s · Audio %@/s"
+          }
+        }
+      }
+    },
+    "Hình %lf/s · Tiếng %lf/s": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video %lf/s · Audio %lf/s"
+          }
+        }
+      }
+    },
+    "Hình %lld/s · Tiếng %lld/s": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video %lld/s · Audio %lld/s"
           }
         }
       }
@@ -1007,6 +1527,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Lock white balance"
+          }
+        }
+      }
+    },
+    "Khung LIVE": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LIVE frame"
           }
         }
       }
@@ -1051,12 +1581,32 @@
         }
       }
     },
+    "Khung phối cảnh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Perspective"
+          }
+        }
+      }
+    },
     "Khung viền": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Window frame"
+          }
+        }
+      }
+    },
+    "Khung đôi": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Split frame"
           }
         }
       }
@@ -1111,6 +1661,116 @@
         }
       }
     },
+    "Không mở được micro/bộ trộn âm thanh — đang phát kèm âm thanh câm. Kiểm tra quyền Micro trong Cài đặt iOS.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't open the microphone/audio mixer — streaming with silent audio. Check Microphone permission in iOS Settings."
+          }
+        }
+      }
+    },
+    "Không mở được tệp: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't open file: %@"
+          }
+        }
+      }
+    },
+    "Không mở được tệp: %lf": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't open file: %lf"
+          }
+        }
+      }
+    },
+    "Không mở được tệp: %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't open file: %lld"
+          }
+        }
+      }
+    },
+    "Không nhập được: ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't import: "
+          }
+        }
+      }
+    },
+    "Không phát được nhạc: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't play music: %@"
+          }
+        }
+      }
+    },
+    "Không phát được nhạc: %lf": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't play music: %lf"
+          }
+        }
+      }
+    },
+    "Không phát được nhạc: %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't play music: %lld"
+          }
+        }
+      }
+    },
+    "Không đọc được %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't read %@"
+          }
+        }
+      }
+    },
+    "Không đọc được %lf": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't read %lf"
+          }
+        }
+      }
+    },
+    "Không đọc được %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't read %lld"
+          }
+        }
+      }
+    },
     "Không đọc được logo": {
       "localizations": {
         "en": {
@@ -1121,12 +1781,82 @@
         }
       }
     },
+    "Không đọc được video %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't read video %@"
+          }
+        }
+      }
+    },
+    "Không đọc được video %lf": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't read video %lf"
+          }
+        }
+      }
+    },
+    "Không đọc được video %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't read video %lld"
+          }
+        }
+      }
+    },
     "Không đọc được video từ Thư viện ảnh": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Could not read the video from Photos"
+          }
+        }
+      }
+    },
+    "Không đọc được ảnh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't read the image"
+          }
+        }
+      }
+    },
+    "Không đọc được ảnh %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't read image %@"
+          }
+        }
+      }
+    },
+    "Không đọc được ảnh %lf": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't read image %lf"
+          }
+        }
+      }
+    },
+    "Không đọc được ảnh %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't read image %lld"
           }
         }
       }
@@ -1191,6 +1921,46 @@
         }
       }
     },
+    "Kết nối %@  key %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connecting %@  key %@"
+          }
+        }
+      }
+    },
+    "Kết nối %lf  key %lf": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connecting %lf  key %lf"
+          }
+        }
+      }
+    },
+    "Kết nối %lld  key %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connecting %lld  key %lld"
+          }
+        }
+      }
+    },
+    "Kết nối lại": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reconnecting"
+          }
+        }
+      }
+    },
     "Logo": {
       "localizations": {
         "en": {
@@ -1201,12 +1971,42 @@
         }
       }
     },
+    "Logo đang trên PGM": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logo is on PGM"
+          }
+        }
+      }
+    },
+    "Logo đã nạp — bấm Logo On": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logo loaded — press Logo On"
+          }
+        }
+      }
+    },
     "Loại": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Type"
+          }
+        }
+      }
+    },
+    "Làm lại": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Redo"
           }
         }
       }
@@ -1261,6 +2061,16 @@
         }
       }
     },
+    "Lưới 2×2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "2×2 grid"
+          }
+        }
+      }
+    },
     "Lấy mới": {
       "localizations": {
         "en": {
@@ -1287,6 +2097,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Autofocus"
+          }
+        }
+      }
+    },
+    "Lần lượt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In turn"
           }
         }
       }
@@ -1327,6 +2147,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Loop"
+          }
+        }
+      }
+    },
+    "Lỗi": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Error"
+          }
+        }
+      }
+    },
+    "Lỗi: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Error: %@"
+          }
+        }
+      }
+    },
+    "Lỗi: %lf": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Error: %lf"
+          }
+        }
+      }
+    },
+    "Lỗi: %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Error: %lld"
           }
         }
       }
@@ -1441,6 +2301,26 @@
         }
       }
     },
+    "Màu dải": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Strip colour"
+          }
+        }
+      }
+    },
+    "Màu nguồn PVW": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PVW source colour"
+          }
+        }
+      }
+    },
     "Màu nhấn": {
       "localizations": {
         "en": {
@@ -1481,6 +2361,46 @@
         }
       }
     },
+    "Máy đang nóng — tạm giảm còn %@ hình/giây để hạ nhiệt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Device is hot — temporarily %@ fps to cool down"
+          }
+        }
+      }
+    },
+    "Máy đang nóng — tạm giảm còn %lf hình/giây để hạ nhiệt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Device is hot — temporarily %lf fps to cool down"
+          }
+        }
+      }
+    },
+    "Máy đang nóng — tạm giảm còn %lld hình/giây để hạ nhiệt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Device is hot — temporarily %lld fps to cool down"
+          }
+        }
+      }
+    },
+    "Mất kết nối — thử lại": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connection lost — retrying"
+          }
+        }
+      }
+    },
     "Mẫu bố cục": {
       "localizations": {
         "en": {
@@ -1511,12 +2431,62 @@
         }
       }
     },
+    "Mềm biên": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edge softness"
+          }
+        }
+      }
+    },
+    "Mỗi %@ giây": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Every %@ s"
+          }
+        }
+      }
+    },
+    "Mỗi %lf giây": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Every %lf s"
+          }
+        }
+      }
+    },
+    "Mỗi %lld giây": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Every %lld s"
+          }
+        }
+      }
+    },
     "Mỗi giao thức dùng chung một cổng; mỗi camera đặt một stream key riêng (cam1, cam2…) và tự hiện thành một nguồn.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "One port per protocol; each camera uses its own stream key (cam1, cam2…) and appears as a source."
+          }
+        }
+      }
+    },
+    "Một khung giữa": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Single centre"
           }
         }
       }
@@ -1621,12 +2591,72 @@
         }
       }
     },
+    "Ngẫu nhiên": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Random"
+          }
+        }
+      }
+    },
     "Ngắt PTZ": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Disconnect PTZ"
+          }
+        }
+      }
+    },
+    "Ngắt kết nối (video %@, audio %@ gói)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Disconnected (video %@, audio %@ packets)"
+          }
+        }
+      }
+    },
+    "Ngắt kết nối (video %lf, audio %lf gói)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Disconnected (video %lf, audio %lf packets)"
+          }
+        }
+      }
+    },
+    "Ngắt kết nối (video %lld, audio %lld gói)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Disconnected (video %lld, audio %lld packets)"
+          }
+        }
+      }
+    },
+    "Nhiệt độ màu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Colour temperature"
+          }
+        }
+      }
+    },
+    "Nhà tài trợ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sponsor"
           }
         }
       }
@@ -1771,6 +2801,16 @@
         }
       }
     },
+    "Nạp show sẽ dừng phát và thay toàn bộ nguồn, đầu ra, title.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loading a show stops streaming and replaces all sources, outputs and titles."
+          }
+        }
+      }
+    },
     "Nền": {
       "localizations": {
         "en": {
@@ -1791,12 +2831,52 @@
         }
       }
     },
+    "Nền là nguồn video (làm mờ): %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Background is a video source (blurred): %@"
+          }
+        }
+      }
+    },
+    "Nền là nguồn video (làm mờ): %lf": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Background is a video source (blurred): %lf"
+          }
+        }
+      }
+    },
+    "Nền là nguồn video (làm mờ): %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Background is a video source (blurred): %lld"
+          }
+        }
+      }
+    },
     "Nền thay thế": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Replacement background"
+          }
+        }
+      }
+    },
+    "Nền tên": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Name background"
           }
         }
       }
@@ -1851,6 +2931,16 @@
         }
       }
     },
+    "PTZ nguồn PVW": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PVW source PTZ"
+          }
+        }
+      }
+    },
     "Phiên bản": {
       "localizations": {
         "en": {
@@ -1897,6 +2987,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "Start all"
+          }
+        }
+      }
+    },
+    "Phút %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Minutes %@"
+          }
+        }
+      }
+    },
+    "Phút %lf": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Minutes %lf"
+          }
+        }
+      }
+    },
+    "Phút %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Minutes %lld"
+          }
+        }
+      }
+    },
+    "Phơi sáng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exposure"
           }
         }
       }
@@ -2001,6 +3131,16 @@
         }
       }
     },
+    "Reset": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset"
+          }
+        }
+      }
+    },
     "SRT (một cổng, nhiều streamid)": {
       "localizations": {
         "en": {
@@ -2037,6 +3177,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Your SuperFG (transparent PNG · alpha video .mov)"
+          }
+        }
+      }
+    },
+    "SuperFG đang trên PGM": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SuperFG is on PGM"
           }
         }
       }
@@ -2101,6 +3251,36 @@
         }
       }
     },
+    "Sự kiện": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Event"
+          }
+        }
+      }
+    },
+    "TIN NÓNG": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BREAKING NEWS"
+          }
+        }
+      }
+    },
+    "TIN TỨC": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "NEWS"
+          }
+        }
+      }
+    },
     "TRÊN SÓNG": {
       "localizations": {
         "en": {
@@ -2127,6 +3307,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Gestures"
+          }
+        }
+      }
+    },
+    "Theo âm thanh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "By audio"
           }
         }
       }
@@ -2167,6 +3357,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Add %@"
+          }
+        }
+      }
+    },
+    "Thêm %lf": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add %lf"
+          }
+        }
+      }
+    },
+    "Thêm %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add %lld"
           }
         }
       }
@@ -2251,12 +3461,82 @@
         }
       }
     },
+    "Thông tin nguồn PVW": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PVW source info"
+          }
+        }
+      }
+    },
+    "Thư mục %@ không có manifest.json": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Folder %@ has no manifest.json"
+          }
+        }
+      }
+    },
+    "Thư mục %lf không có manifest.json": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Folder %lf has no manifest.json"
+          }
+        }
+      }
+    },
+    "Thư mục %lld không có manifest.json": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Folder %lld has no manifest.json"
+          }
+        }
+      }
+    },
     "Thư mục đồ hoạ": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Graphics folder"
+          }
+        }
+      }
+    },
+    "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTD Studio › Library › %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Library empty — use the import button above. Files live in Files › DTD Studio › Library › %@"
+          }
+        }
+      }
+    },
+    "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTD Studio › Library › %lf": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Library empty — use the import button above. Files live in Files › DTD Studio › Library › %lf"
+          }
+        }
+      }
+    },
+    "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTD Studio › Library › %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Library empty — use the import button above. Files live in Files › DTD Studio › Library › %lld"
           }
         }
       }
@@ -2281,6 +3561,16 @@
         }
       }
     },
+    "Thời gian %.1fs": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Duration %.1fs"
+          }
+        }
+      }
+    },
     "Thời gian chuyển cảnh": {
       "localizations": {
         "en": {
@@ -2291,12 +3581,62 @@
         }
       }
     },
+    "Thời lượng %@ phút": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Length %@ min"
+          }
+        }
+      }
+    },
+    "Thời lượng %lf phút": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Length %lf min"
+          }
+        }
+      }
+    },
+    "Thời lượng %lld phút": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Length %lld min"
+          }
+        }
+      }
+    },
     "TikTok LIVE Center / LIVE Studio › Khoá luồng: dán Server URL và Stream key (mỗi phiên một server; tài khoản cần được TikTok cấp quyền phát bằng khoá).": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "TikTok LIVE Center / LIVE Studio › Stream key: paste Server URL and Stream key (a new server each session; the account needs TikTok's stream-key permission)."
+          }
+        }
+      }
+    },
+    "Tin nhanh: nhập nội dung chữ chạy tại đây": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Breaking: type the ticker text here"
+          }
+        }
+      }
+    },
+    "Tin nóng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Breaking news"
           }
         }
       }
@@ -2317,6 +3657,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Live title"
+          }
+        }
+      }
+    },
+    "Tiếng Việt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tiếng Việt"
           }
         }
       }
@@ -2391,6 +3741,46 @@
         }
       }
     },
+    "Trễ âm thanh Mic/Line: %@ ms": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mic/Line audio delay: %@ ms"
+          }
+        }
+      }
+    },
+    "Trễ âm thanh Mic/Line: %lf ms": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mic/Line audio delay: %lf ms"
+          }
+        }
+      }
+    },
+    "Trễ âm thanh Mic/Line: %lld ms": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mic/Line audio delay: %lld ms"
+          }
+        }
+      }
+    },
+    "Trực tiếp từ Hà Nội": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Live from Hanoi"
+          }
+        }
+      }
+    },
     "Twitch › Creator Dashboard › Settings › Stream › Primary Stream key.": {
       "localizations": {
         "en": {
@@ -2431,6 +3821,16 @@
         }
       }
     },
+    "Tên khách mời": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guest name"
+          }
+        }
+      }
+    },
     "Tên show": {
       "localizations": {
         "en": {
@@ -2451,6 +3851,36 @@
         }
       }
     },
+    "Tương phản": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Contrast"
+          }
+        }
+      }
+    },
+    "Tạm dừng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause"
+          }
+        }
+      }
+    },
+    "Tạo live": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Create live"
+          }
+        }
+      }
+    },
     "Tạo phiên live YouTube / Facebook": {
       "localizations": {
         "en": {
@@ -2467,6 +3897,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Create live event"
+          }
+        }
+      }
+    },
+    "TẮT": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OFF"
           }
         }
       }
@@ -2527,6 +3967,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Frame rate"
+          }
+        }
+      }
+    },
+    "Tối thiểu: %.1f Mbps": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Minimum: %.1f Mbps"
           }
         }
       }
@@ -2691,6 +4141,16 @@
         }
       }
     },
+    "Xem live": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Watch live"
+          }
+        }
+      }
+    },
     "Xem nhật ký": {
       "localizations": {
         "en": {
@@ -2707,6 +4167,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Rotate 180°"
+          }
+        }
+      }
+    },
+    "Xoay 180° nguồn PVW": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rotate PVW source 180°"
           }
         }
       }
@@ -2737,6 +4207,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Delete scoreboard"
+          }
+        }
+      }
+    },
+    "Xoá khung %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove window %@"
+          }
+        }
+      }
+    },
+    "Xoá khung %lf": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove window %lf"
           }
         }
       }
@@ -2801,6 +4291,36 @@
         }
       }
     },
+    "Xuất thất bại: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Export failed: %@"
+          }
+        }
+      }
+    },
+    "Xuất thất bại: %lf": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Export failed: %lf"
+          }
+        }
+      }
+    },
+    "Xuất thất bại: %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Export failed: %lld"
+          }
+        }
+      }
+    },
     "YouTube Studio › Phát trực tiếp › Khoá luồng.": {
       "localizations": {
         "en": {
@@ -2821,12 +4341,72 @@
         }
       }
     },
+    "bộ trộn âm thanh chưa chạy (kiểm tra quyền micro)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "audio mixer not running (check microphone permission)"
+          }
+        }
+      }
+    },
     "chọn nguồn": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "select source"
+          }
+        }
+      }
+    },
+    "chờ camera kết nối lại": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "waiting for camera to reconnect"
+          }
+        }
+      }
+    },
+    "connect lỗi: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "connect error: %@"
+          }
+        }
+      }
+    },
+    "connect lỗi: %lf": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "connect error: %lf"
+          }
+        }
+      }
+    },
+    "connect lỗi: %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "connect error: %lld"
+          }
+        }
+      }
+    },
+    "developers.facebook.com › App › quyền publish_video": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "developers.facebook.com › App › publish_video permission"
           }
         }
       }
@@ -2841,12 +4421,92 @@
         }
       }
     },
+    "không tìm thấy repo/nhánh/thư mục (repo private cần token)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "repo/branch/folder not found (private repos need a token)"
+          }
+        }
+      }
+    },
     "lỗi cổng": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "port error"
+          }
+        }
+      }
+    },
+    "mất kết nối, thử lại (%@)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "connection lost, retrying (%@)"
+          }
+        }
+      }
+    },
+    "mất kết nối, thử lại (%lf)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "connection lost, retrying (%lf)"
+          }
+        }
+      }
+    },
+    "mất kết nối, thử lại (%lld)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "connection lost, retrying (%lld)"
+          }
+        }
+      }
+    },
+    "publish lỗi: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "publish error: %@"
+          }
+        }
+      }
+    },
+    "publish lỗi: %lf": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "publish error: %lf"
+          }
+        }
+      }
+    },
+    "publish lỗi: %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "publish error: %lld"
+          }
+        }
+      }
+    },
+    "xxxx.apps.googleusercontent.com — Google Cloud › Credentials, bật YouTube Data API v3": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "xxxx.apps.googleusercontent.com — Google Cloud › Credentials, enable YouTube Data API v3"
           }
         }
       }
@@ -2881,6 +4541,66 @@
         }
       }
     },
+    "Ô tỉ số": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Score box"
+          }
+        }
+      }
+    },
+    "Đang dùng: %.1f Mbps": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Current: %.1f Mbps"
+          }
+        }
+      }
+    },
+    "Đang giải mã…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Decoding…"
+          }
+        }
+      }
+    },
+    "Đang kiểm tra %@/%@…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Checking %@/%@…"
+          }
+        }
+      }
+    },
+    "Đang kiểm tra %lf/%lf…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Checking %lf/%lf…"
+          }
+        }
+      }
+    },
+    "Đang kiểm tra %lld/%lld…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Checking %lld/%lld…"
+          }
+        }
+      }
+    },
     "Đang kết nối": {
       "localizations": {
         "en": {
@@ -2897,6 +4617,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Connecting…"
+          }
+        }
+      }
+    },
+    "Đang phát": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Live"
           }
         }
       }
@@ -2961,12 +4691,132 @@
         }
       }
     },
+    "Điện ảnh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cinema"
+          }
+        }
+      }
+    },
+    "Đoạn %.1f s": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clip %.1f s"
+          }
+        }
+      }
+    },
+    "Đoạn quá ngắn — đặt MARK IN và MARK OUT": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clip too short — set MARK IN and MARK OUT"
+          }
+        }
+      }
+    },
+    "Đã cập nhật %@ tệp (%@)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Updated %@ files (%@)"
+          }
+        }
+      }
+    },
+    "Đã cập nhật %lf tệp (%lf)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Updated %lf files (%lf)"
+          }
+        }
+      }
+    },
+    "Đã cập nhật %lld tệp (%lld)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Updated %lld files (%lld)"
+          }
+        }
+      }
+    },
     "Đã huỷ đăng nhập": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Sign-in cancelled"
+          }
+        }
+      }
+    },
+    "Đã lưu %@ (%@ s)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saved %@ (%@ s)"
+          }
+        }
+      }
+    },
+    "Đã lưu %lf (%lf s)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saved %lf (%lf s)"
+          }
+        }
+      }
+    },
+    "Đã lưu %lld (%lld s)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saved %lld (%lld s)"
+          }
+        }
+      }
+    },
+    "Đã mới nhất (%@)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Up to date (%@)"
+          }
+        }
+      }
+    },
+    "Đã mới nhất (%lf)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Up to date (%lf)"
+          }
+        }
+      }
+    },
+    "Đã mới nhất (%lld)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Up to date (%lld)"
           }
         }
       }
@@ -2981,12 +4831,52 @@
         }
       }
     },
+    "Đã nạp — bấm SuperFG On ở cột phải": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loaded — press SuperFG On in the right column"
+          }
+        }
+      }
+    },
     "Đã tạo và đang phát tới": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Created and streaming to"
+          }
+        }
+      }
+    },
+    "Đã xuất %@ vào thư viện Video": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exported %@ to the Video library"
+          }
+        }
+      }
+    },
+    "Đã xuất %lf vào thư viện Video": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exported %lf to the Video library"
+          }
+        }
+      }
+    },
+    "Đã xuất %lld vào thư viện Video": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exported %lld to the Video library"
           }
         }
       }
@@ -3151,6 +5041,16 @@
         }
       }
     },
+    "ĐỒNG HÀNH CÙNG CHƯƠNG TRÌNH": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PROUDLY SUPPORTED BY"
+          }
+        }
+      }
+    },
     "Đồ hoạ HTML5": {
       "localizations": {
         "en": {
@@ -3227,6 +5127,76 @@
           "stringUnit": {
             "state": "translated",
             "value": "Opacity"
+          }
+        }
+      }
+    },
+    "Độ trễ SRT %@ ms": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SRT latency %@ ms"
+          }
+        }
+      }
+    },
+    "Độ trễ SRT %lf ms": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SRT latency %lf ms"
+          }
+        }
+      }
+    },
+    "Độ trễ SRT %lld ms": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SRT latency %lld ms"
+          }
+        }
+      }
+    },
+    "Đội A": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Team A"
+          }
+        }
+      }
+    },
+    "Đội B": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Team B"
+          }
+        }
+      }
+    },
+    "Đội khách": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Away"
+          }
+        }
+      }
+    },
+    "Đội nhà": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Home"
           }
         }
       }

@@ -12,11 +12,11 @@ enum LibraryKind: String, CaseIterable, Identifiable {
     var folder: String {
         switch self {
         case .movie: return "Video"
-        case .picture: return "Ảnh"
-        case .overlay: return "Lớp phủ"
+        case .picture: return L("Ảnh")
+        case .overlay: return L("Lớp phủ")
         case .logo: return "Logo"
-        case .music: return "Nhạc"
-        case .sound: return "Hiệu ứng âm thanh"
+        case .music: return L("Nhạc")
+        case .sound: return L("Hiệu ứng âm thanh")
         }
     }
 }
