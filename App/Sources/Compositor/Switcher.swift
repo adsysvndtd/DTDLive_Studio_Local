@@ -287,12 +287,17 @@ final class Switcher: @unchecked Sendable {
 
     /// Encoder timestamps on an exact frame grid (the timer fires a few ms early/late; jittered PTS makes
     /// players stutter). Re-anchors to the host clock if it drifts more than two frames, so audio stays in sync.
+    private var lastPTS: CFTimeInterval = 0
+
     private func cadencePTS(_ now: CFTimeInterval, fps: Double) -> CFTimeInterval {
         if fps != ptsFPS { ptsFPS = fps; ptsBase = now; ptsIndex = 0 }
         let ideal = ptsBase + Double(ptsIndex) / fps
         if abs(now - ideal) > 2 / fps { ptsBase = now; ptsIndex = 0 }
-        let pts = ptsBase + Double(ptsIndex) / fps
+        // Never go backwards (or repeat): VideoToolbox rejects a decreasing PTS and the session has to be rebuilt.
+        let pts = max(ptsBase + Double(ptsIndex) / fps, lastPTS + 0.25 / fps)
+        if pts != ptsBase + Double(ptsIndex) / fps { ptsBase = pts; ptsIndex = 0 }
         ptsIndex += 1
+        lastPTS = pts
         return pts
     }
 

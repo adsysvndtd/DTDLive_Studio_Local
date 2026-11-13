@@ -106,7 +106,7 @@ final class IngestHub: ObservableObject {
                 if connected { _ = router.ensure("srt:" + key) }
                 Task { @MainActor in self?.streamChanged(proto: "srt", key: key, connected: connected, peer: peer) }
             },
-            onFrame: { key, pb in router.sink("srt:" + key)?.frames.put(pb) },
+            onFrame: { key, pb in router.sink("srt:" + key)?.pacer.pushArrival(pb) },
             onAudio: { key, aac, asc, rate, channels, _ in
                 router.sink("srt:" + key)?.aac([UInt8](aac), asc: [UInt8](asc), sampleRate: rate, channels: channels)
             })

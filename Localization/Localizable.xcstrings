@@ -6100,6 +6100,36 @@
           }
         }
       }
+    },
+    "Mạng tải lên không kịp (hàng đợi %@ KB) — tạm bỏ khung hình để bắt kịp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Upload can't keep up (queue %@ KB) — dropping video frames to catch up"
+          }
+        }
+      }
+    },
+    "Đã bắt kịp — gửi lại hình (bỏ %@ khung)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Caught up — sending video again (%@ frames dropped)"
+          }
+        }
+      }
+    },
+    "Tải lên %@ kbps · hàng đợi %@ KB": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Upload %@ kbps · queue %@ KB"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

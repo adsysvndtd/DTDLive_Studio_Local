@@ -270,6 +270,7 @@
 "Máy đang nóng — tạm giảm còn %lf hình/giây để hạ nhiệt" = "Máy đang nóng — tạm giảm còn %lf hình/giây để hạ nhiệt";
 "Máy đang nóng — tạm giảm còn %lld hình/giây để hạ nhiệt" = "Máy đang nóng — tạm giảm còn %lld hình/giây để hạ nhiệt";
 "Mã HTML" = "Mã HTML";
+"Mạng tải lên không kịp (hàng đợi %@ KB) — tạm bỏ khung hình để bắt kịp" = "Mạng tải lên không kịp (hàng đợi %@ KB) — tạm bỏ khung hình để bắt kịp";
 "Mất kết nối — thử lại" = "Mất kết nối — thử lại";
 "Mẫu bố cục" = "Mẫu bố cục";
 "Mật khẩu SRT (để trống = không mã hoá, 10–79 ký tự)" = "Mật khẩu SRT (để trống = không mã hoá, 10–79 ký tự)";
@@ -459,6 +460,7 @@
 "Tạo live" = "Tạo live";
 "Tạo phiên live YouTube / Facebook" = "Tạo phiên live YouTube / Facebook";
 "Tạo phiên live tự động" = "Tạo phiên live tự động";
+"Tải lên %@ kbps · hàng đợi %@ KB" = "Tải lên %@ kbps · hàng đợi %@ KB";
 "TẮT" = "TẮT";
 "Tắt khi không dùng replay để đỡ nóng máy và tiết kiệm pin." = "Tắt khi không dùng replay để đỡ nóng máy và tiết kiệm pin.";
 "Tệp" = "Tệp";
@@ -550,6 +552,7 @@
 "Điện ảnh" = "Điện ảnh";
 "Đoạn %.1f s" = "Đoạn %.1f s";
 "Đoạn quá ngắn — đặt MARK IN và MARK OUT" = "Đoạn quá ngắn — đặt MARK IN và MARK OUT";
+"Đã bắt kịp — gửi lại hình (bỏ %@ khung)" = "Đã bắt kịp — gửi lại hình (bỏ %@ khung)";
 "Đã cập nhật %@ tệp (%@)" = "Đã cập nhật %@ tệp (%@)";
 "Đã cập nhật %lf tệp (%lf)" = "Đã cập nhật %lf tệp (%lf)";
 "Đã cập nhật %lld tệp (%lld)" = "Đã cập nhật %lld tệp (%lld)";

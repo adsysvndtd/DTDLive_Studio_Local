@@ -64,15 +64,28 @@ final class VideoEncoder: @unchecked Sendable {
                 // Session died (interruption, memory pressure, media services reset): rebuild on the next frame.
                 // never tear the session down from inside its own callback — flag it, encode() rebuilds
                 self.lock.lock(); self.needsRebuild = true; self.lock.unlock()
-                self.onProblem?("VideoToolbox lỗi \(status) — tạo lại bộ mã hoá")
+                self.onProblem?("VideoToolbox lỗi \(status) \(Self.explain(status)) — tạo lại bộ mã hoá")
                 return
             }
             self.framesOut.add(1)
             self.onEncoded?(sample)
         }
         if st != noErr {
-            onProblem?("VideoToolbox lỗi \(st) — tạo lại bộ mã hoá")
+            onProblem?("VideoToolbox lỗi \(st) \(Self.explain(st)) — tạo lại bộ mã hoá")
             invalidate(); forceKeyframe = true
+        }
+    }
+
+    /// Short reason for the common VideoToolbox codes (shown in the output log).
+    static func explain(_ st: OSStatus) -> String {
+        switch st {
+        case -12902: return "(tham số/thời gian khung không hợp lệ)"
+        case -12903: return "(phiên mã hoá mất hiệu lực — app vào nền / bị gián đoạn)"
+        case -12904: return "(không tạo được bộ mã hoá)"
+        case -12911: return "(bộ mã hoá phần cứng lỗi / quá tải)"
+        case -12915: return "(phần cứng mã hoá đang bận)"
+        case -16991, -16990: return "(hết bộ nhớ đệm)"
+        default: return ""
         }
     }
 

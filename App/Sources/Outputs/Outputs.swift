@@ -100,6 +100,55 @@ extension OutputTarget {
     func pendingBytes() async -> Int { 0 }
 }
 
+// MARK: - Upload queue probe (HaishinKit network monitor)
+
+/// Receives HaishinKit's per-second network reports (queued bytes, upload rate). HaishinKit queues
+/// outgoing data without limit, so on a slow uplink delay grows until viewers buffer; this exposes the
+/// queue to adaptive bitrate and lets the output drop video until the queue drains.
+final class UploadProbe: StreamBitRateStrategy, @unchecked Sendable {
+    let mamimumVideoBitRate = 0
+    let mamimumAudioBitRate = 0
+    private let lock = NSLock()
+    private var queued = 0, rate = 0, insufficient = false
+    var queueBytes: Int { lock.lock(); defer { lock.unlock() }; return queued }
+    var bytesPerSecond: Int { lock.lock(); defer { lock.unlock() }; return rate }
+    var lowBandwidth: Bool { lock.lock(); defer { lock.unlock() }; return insufficient }
+    func reset() { lock.lock(); queued = 0; rate = 0; insufficient = false; lock.unlock() }
+
+    func adjustBitrate(_ event: NetworkMonitorEvent, stream: some StreamConvertible) async {
+        lock.lock(); defer { lock.unlock() }
+        switch event {
+        case .status(let r): queued = r.currentQueueBytesOut; rate = r.currentBytesOutPerSecond; insufficient = false
+        case .publishInsufficientBWOccured(let r): queued = r.currentQueueBytesOut; rate = r.currentBytesOutPerSecond; insufficient = true
+        case .reset: queued = 0; rate = 0; insufficient = false
+        }
+    }
+
+    /// Bytes of queue that equal `seconds` of video at the current bitrate.
+    static func bytes(seconds: Double) -> Int { Int(Double(max(StreamStats.bitrateKbps, 500)) * 1000 / 8 * seconds) }
+}
+
+/// Video gate for a destination whose uplink can't keep up: stop sending video (audio continues) when the
+/// queue holds more than ~2.5 s, resume on the next keyframe once it is under ~0.5 s.
+struct CongestionGate {
+    private(set) var dropping = false
+    private(set) var dropped = 0
+    /// Returns true when the frame should be sent.
+    mutating func allow(keyframe: Bool, queueBytes: Int, log: (String) -> Void) -> Bool {
+        if !dropping, queueBytes > UploadProbe.bytes(seconds: 2.5) {
+            dropping = true; dropped = 0
+            log(LF("Mạng tải lên không kịp (hàng đợi %@ KB) — tạm bỏ khung hình để bắt kịp", "\(queueBytes / 1024)"))
+        }
+        if dropping {
+            if keyframe, queueBytes < UploadProbe.bytes(seconds: 0.5) {
+                dropping = false
+                log(LF("Đã bắt kịp — gửi lại hình (bỏ %@ khung)", "\(dropped)"))
+            } else { dropped += 1; return false }
+        }
+        return true
+    }
+}
+
 // MARK: - RTMP (HaishinKit)
 
 final class RTMPOutput: OutputTarget, @unchecked Sendable {
@@ -108,9 +157,13 @@ final class RTMPOutput: OutputTarget, @unchecked Sendable {
     private var stream: RTMPStream?
     private var watchers: [Task<Void, Never>] = []
     private var sentVideo = 0, sentAudio = 0
+    private let probe = UploadProbe()
+    private var gate = CongestionGate()
+    private var lastRateLog: Double = 0
 
     init(config: OutputConfig) { self.config = config }
     private func log(_ t: String) { OutputLog.shared.add(config.id, t) }
+    func pendingBytes() async -> Int { probe.queueBytes }
 
     func connect(_ desc: StreamDescription) async throws {
         guard let url = URL(string: config.url) else { throw URLError(.badURL) }
@@ -122,6 +175,8 @@ final class RTMPOutput: OutputTarget, @unchecked Sendable {
         // YouTube, Facebook and most CDN ingests expect it.
         let s = RTMPStream(connection: c, fcPublishName: key)
         connection = c; stream = s; sentVideo = 0; sentAudio = 0
+        probe.reset(); gate = CongestionGate()
+        await s.setBitRateStrategy(probe)
         // RTMPStream registers itself with the connection in a background task; give it a moment so the
         // stream is created during connect (otherwise publish can race createStream and go to stream id 0).
         try? await Task.sleep(nanoseconds: 150_000_000)
@@ -172,8 +227,14 @@ final class RTMPOutput: OutputTarget, @unchecked Sendable {
     func isHealthy() async -> Bool { await connection?.connected ?? false }
     func send(video: CMSampleBuffer) async {
         if sentVideo == 0 { log(LF("Gửi khung hình đầu (keyframe: %@)", "\(video.isKeyframe)")) }
+        guard gate.allow(keyframe: video.isKeyframe, queueBytes: probe.queueBytes, log: log) else { return }
         sentVideo += 1
         await stream?.append(video)
+        let now = HostClock.now
+        if now - lastRateLog >= 10 {
+            lastRateLog = now
+            log(LF("Tải lên %@ kbps · hàng đợi %@ KB", "\(probe.bytesPerSecond * 8 / 1000)", "\(probe.queueBytes / 1024)"))
+        }
     }
     func send(audio: AVAudioCompressedBuffer, when: AVAudioTime) async {
         if sentAudio == 0 { log(LF("Gửi gói âm thanh đầu (%@ byte)", "\(audio.byteLength)")) }
@@ -188,6 +249,9 @@ final class SRTOutput: OutputTarget, @unchecked Sendable {
     let config: OutputConfig
     private var connection: SRTConnection?
     private var stream: SRTStream?
+    private let probe = UploadProbe()
+    private var gate = CongestionGate()
+    func pendingBytes() async -> Int { probe.queueBytes }
 
     init(config: OutputConfig) { self.config = config }
 
@@ -196,6 +260,8 @@ final class SRTOutput: OutputTarget, @unchecked Sendable {
         let c = SRTConnection()
         let s = SRTStream(connection: c)
         connection = c; stream = s
+        probe.reset(); gate = CongestionGate()
+        await s.setBitRateStrategy(probe)
         await s.setExpectedMedias(desc.hasAudio ? [.video, .audio] : [.video])
         try await c.connect(url)
         await s.publish()
@@ -208,7 +274,10 @@ final class SRTOutput: OutputTarget, @unchecked Sendable {
     }
 
     func isHealthy() async -> Bool { await connection?.connected ?? false }
-    func send(video: CMSampleBuffer) async { await stream?.append(video) }
+    func send(video: CMSampleBuffer) async {
+        guard gate.allow(keyframe: video.isKeyframe, queueBytes: probe.queueBytes, log: { OutputLog.shared.add(self.config.id, $0) }) else { return }
+        await stream?.append(video)
+    }
     func send(audio: AVAudioCompressedBuffer, when: AVAudioTime) async { await stream?.append(audio, when: when) }
 }
 

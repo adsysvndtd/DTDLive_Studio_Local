@@ -270,6 +270,7 @@
 "Máy đang nóng — tạm giảm còn %lf hình/giây để hạ nhiệt" = "Device is hot — temporarily %lf fps to cool down";
 "Máy đang nóng — tạm giảm còn %lld hình/giây để hạ nhiệt" = "Device is hot — temporarily %lld fps to cool down";
 "Mã HTML" = "HTML code";
+"Mạng tải lên không kịp (hàng đợi %@ KB) — tạm bỏ khung hình để bắt kịp" = "Upload can't keep up (queue %@ KB) — dropping video frames to catch up";
 "Mất kết nối — thử lại" = "Connection lost — retrying";
 "Mẫu bố cục" = "Layouts";
 "Mật khẩu SRT (để trống = không mã hoá, 10–79 ký tự)" = "SRT passphrase (empty = unencrypted, 10–79 characters)";
@@ -459,6 +460,7 @@
 "Tạo live" = "Create live";
 "Tạo phiên live YouTube / Facebook" = "Create YouTube / Facebook live";
 "Tạo phiên live tự động" = "Create live event";
+"Tải lên %@ kbps · hàng đợi %@ KB" = "Upload %@ kbps · queue %@ KB";
 "TẮT" = "OFF";
 "Tắt khi không dùng replay để đỡ nóng máy và tiết kiệm pin." = "Turn off when not using replay to keep the device cool and save battery.";
 "Tệp" = "Files";
@@ -550,6 +552,7 @@
 "Điện ảnh" = "Cinema";
 "Đoạn %.1f s" = "Clip %.1f s";
 "Đoạn quá ngắn — đặt MARK IN và MARK OUT" = "Clip too short — set MARK IN and MARK OUT";
+"Đã bắt kịp — gửi lại hình (bỏ %@ khung)" = "Caught up — sending video again (%@ frames dropped)";
 "Đã cập nhật %@ tệp (%@)" = "Updated %@ files (%@)";
 "Đã cập nhật %lf tệp (%lf)" = "Updated %lf files (%lf)";
 "Đã cập nhật %lld tệp (%lld)" = "Updated %lld files (%lld)";

@@ -81,10 +81,42 @@ final class FramePacer: @unchecked Sendable {
 
     init(store: FrameStore) { self.store = store }
 
+    // Sources without timestamps (DTDLive / SRT callbacks): a steady clock rebuilt from arrival times.
+    private var lastArrival: Double = 0
+    private var synthMedia: Double = 0
+    private var interval: Double = 1.0 / 30
+    private var synthAnchorHost: Double = 0
+
+    /// For frames that arrive without a stream timestamp: estimates the camera's frame interval from the
+    /// average spacing of arrivals and plays frames on that even beat (a slow loop keeps it locked to the
+    /// real arrival rate), so Wi-Fi bursts don't show as stutter.
+    func pushArrival(_ pb: CVPixelBuffer) {
+        let now = HostClock.now
+        queue.async { [self] in
+            let d = now - lastArrival
+            if lastArrival == 0 || d > 1.0 {
+                synthMedia = 0; synthAnchorHost = now
+            } else {
+                if d > 0.004, d < 0.2 { interval = interval * 0.97 + d * 0.03 }
+                interval = min(1.0 / 12, max(1.0 / 61, interval))
+                synthMedia += interval
+                // phase-lock: nudge the synthetic clock toward real arrival time (1 % per frame)
+                let err = (now - synthAnchorHost) - synthMedia
+                synthMedia += err * 0.01
+            }
+            lastArrival = now
+            schedule(pb, media: synthMedia, arrived: now)
+        }
+    }
+
     /// `media` = stream time in seconds.
     func push(_ pb: CVPixelBuffer, media: Double) {
         let now = HostClock.now
-        queue.async { [self] in
+        queue.async { [self] in schedule(pb, media: media, arrived: now) }
+    }
+
+    private func schedule(_ pb: CVPixelBuffer, media: Double, arrived now: Double) {
+        do {
             // new stream / backwards / big jump → re-anchor on this frame
             if anchorHost == nil || media < lastMedia || media - lastMedia > 1.0 {
                 anchorHost = now; anchorMedia = media
@@ -94,7 +126,7 @@ final class FramePacer: @unchecked Sendable {
             if due < now - 0.25 {           // fell behind (decoder stall): pull the clock in
                 anchorHost = now - (media - anchorMedia); due = now + delay
             }
-            let wait = due - now
+            let wait = due - HostClock.now
             if wait <= 0.002 { store.put(pb) }
             else { queue.asyncAfter(deadline: .now() + wait) { [store] in store.put(pb) } }
         }

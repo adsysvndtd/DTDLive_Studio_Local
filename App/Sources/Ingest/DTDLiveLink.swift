@@ -99,6 +99,9 @@ final class DTDLiveLink: NSObject, NetServiceDelegate {
         router.set(key, sink)
         pendingMedia[bond] = request
         let frames = source.frames
+        // Wi-Fi delivers frames in bursts: play them on an even beat (~0.1 s buffer) instead of on arrival.
+        let pacer = FramePacer(store: frames)
+        pacer.delay = 0.1
         let rx = SRTKCameraReceiver(passphrase: String(bond.suffix(32)), onListening: { [weak self] port in
             DispatchQueue.main.async {
                 guard let self, var cam = self.cameras[bond] else { return }
@@ -109,7 +112,7 @@ final class DTDLiveLink: NSObject, NetServiceDelegate {
         }, onState: { state, _ in
             if state != .connected { frames.clear() }
             DispatchQueue.main.async { source.setOnline(state == .connected) }
-        }, onFrame: { pb in frames.put(pb) })
+        }, onFrame: { pb in pacer.pushArrival(pb) })
         cameras[bond] = Camera(receiver: rx, port: 0, source: source)
         engine.add(source)
         rx.approved = true

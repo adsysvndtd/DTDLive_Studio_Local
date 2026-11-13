@@ -64,7 +64,7 @@ actor OutputSlot {
     func congestionSeconds(fps: Double) async -> Double {
         guard status == .live else { return 0 }
         let pending = await target.pendingBytes()
-        return Double(backlog.value) / fps + Double(pending) * 8 / 6_000_000
+        return Double(backlog.value) / fps + Double(pending) * 8 / Double(max(StreamStats.bitrateKbps, 500) * 1000)
     }
 
     private func resync() { waitingForIDR = true; requestKeyframe() }
