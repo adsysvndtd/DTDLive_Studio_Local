@@ -207,7 +207,7 @@ struct SuperFGTemplate: Identifiable {
             linear(g, [UIColor(hex: "#3FA2F7"), a], from: .zero, to: CGPoint(x: s.width, y: 0))
             radial(g, [UIColor(white: 1, alpha: 0.18), UIColor(white: 1, alpha: 0)], center: CGPoint(x: s.width * 0.5, y: s.height * 0.42), radius: s.width * 0.45)
         },
-        SuperFGTemplate(id: "breaking", name: L("Tin nóng"), motion: .split, defaultLines: ["TIN NÓNG", "BREAKING NEWS"], defaultAccent: "#E0242B") { g, s, a in
+        SuperFGTemplate(id: "breaking", name: L("Tin nóng"), motion: .split, defaultLines: ["BREAKING", "NEWS"], defaultAccent: "#E0242B") { g, s, a in
             radial(g, [UIColor(hex: "#2F6FD6"), UIColor(hex: "#0B1E4D")], center: CGPoint(x: s.width / 2, y: s.height * 0.55), radius: s.width * 0.7)
             let k = s.height / 1080
             for i in 0..<9 {
