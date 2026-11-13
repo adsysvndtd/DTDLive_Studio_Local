@@ -347,13 +347,23 @@ final class Switcher: @unchecked Sendable {
         return (bars.outputImage ?? CIImage(color: .black)).cropped(to: extent)
     }
 
+    /// Consecutive frames dropped because the pool was exhausted, and how often the pool was rebuilt.
+    private var poolMisses = 0
+    private(set) var poolRebuilds = 0
+    var onPoolRebuilt: (() -> Void)?
+
     private func render(_ img: CIImage, extent: CGRect) -> CVPixelBuffer? {
         guard let pool else { return nil }
         var pb: CVPixelBuffer?
-        let attrs = [kCVPixelBufferPoolAllocationThresholdKey: 12] as CFDictionary
+        let attrs = [kCVPixelBufferPoolAllocationThresholdKey: 24] as CFDictionary
         guard CVPixelBufferPoolCreatePixelBufferWithAuxAttributes(nil, pool, attrs, &pb) == kCVReturnSuccess, let pb else {
-            return nil // pool exhausted: encoder/network is behind, drop this frame
+            // Pool exhausted: buffers are held downstream (encoder stalled / leaked). Dropping a few frames is
+            // fine, but never freeze for good — after ~0.5 s start a fresh pool; the old buffers free as holders let go.
+            poolMisses += 1
+            if poolMisses >= 15 { poolMisses = 0; poolRebuilds += 1; makePool(); onPoolRebuilt?() }
+            return nil
         }
+        poolMisses = 0
         ciContext.render(img, to: pb, bounds: extent, colorSpace: CGColorSpace(name: CGColorSpace.itur_709))
         return pb
     }
@@ -368,7 +378,7 @@ final class Switcher: @unchecked Sendable {
             kCVPixelBufferMetalCompatibilityKey as String: true
         ]
         var p: CVPixelBufferPool?
-        CVPixelBufferPoolCreate(nil, [kCVPixelBufferPoolMinimumBufferCountKey: 6] as CFDictionary, attrs as CFDictionary, &p)
+        CVPixelBufferPoolCreate(nil, [kCVPixelBufferPoolMinimumBufferCountKey: 8] as CFDictionary, attrs as CFDictionary, &p)
         pool = p
     }
 

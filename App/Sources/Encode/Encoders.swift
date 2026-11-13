@@ -30,6 +30,7 @@ final class VideoEncoder: @unchecked Sendable {
     private var settings: EncoderSettings
     private var size: (Int32, Int32) = (0, 0)
     private var forceKeyframe = false
+    private var needsRebuild = false
     private var liveBitrate: Int
     /// Program frame rate; changing it rebuilds the session on the next frame.
     var fps: Double = 30 { didSet { if fps != oldValue { invalidate(); forceKeyframe = true } } }
@@ -37,12 +38,16 @@ final class VideoEncoder: @unchecked Sendable {
     /// the main thread and output actors. One recursive lock serialises all session access.
     private let lock = NSRecursiveLock()
     var onEncoded: Handler?
+    /// Frames submitted / emitted (lock-free reads for the stall watchdog).
+    let framesIn = Counter(), framesOut = Counter()
+    var onProblem: (@Sendable (String) -> Void)?
 
     init(settings: EncoderSettings) { self.settings = settings; liveBitrate = settings.bitrate }
 
     func encode(_ pb: CVPixelBuffer, pts: CFTimeInterval) {
         lock.lock(); defer { lock.unlock() }
         let w = Int32(CVPixelBufferGetWidth(pb)), h = Int32(CVPixelBufferGetHeight(pb))
+        if needsRebuild { needsRebuild = false; invalidate(); forceKeyframe = true }
         if session == nil || size != (w, h) { makeSession(w, h) }
         guard let session else { return }
         var props: CFDictionary?
@@ -51,15 +56,36 @@ final class VideoEncoder: @unchecked Sendable {
             forceKeyframe = false
         }
         let time = CMTime(seconds: pts, preferredTimescale: 90_000)
-        VTCompressionSessionEncodeFrame(session, imageBuffer: pb, presentationTimeStamp: time, duration: .invalid,
-                                        frameProperties: props, infoFlagsOut: nil) { [weak self] status, _, sample in
-            guard status == noErr, let sample else { return }
-            self?.onEncoded?(sample)
+        framesIn.add(1)
+        let st = VTCompressionSessionEncodeFrame(session, imageBuffer: pb, presentationTimeStamp: time, duration: .invalid,
+                                                 frameProperties: props, infoFlagsOut: nil) { [weak self] status, _, sample in
+            guard let self else { return }
+            guard status == noErr, let sample else {
+                // Session died (interruption, memory pressure, media services reset): rebuild on the next frame.
+                // never tear the session down from inside its own callback — flag it, encode() rebuilds
+                self.lock.lock(); self.needsRebuild = true; self.lock.unlock()
+                self.onProblem?("VideoToolbox lỗi \(status) — tạo lại bộ mã hoá")
+                return
+            }
+            self.framesOut.add(1)
+            self.onEncoded?(sample)
+        }
+        if st != noErr {
+            onProblem?("VideoToolbox lỗi \(st) — tạo lại bộ mã hoá")
+            invalidate(); forceKeyframe = true
         }
     }
 
     /// Called when a destination (re)connects so it can start on an IDR.
     func requestKeyframe() { lock.lock(); forceKeyframe = true; lock.unlock() }
+
+    /// Watchdog: frames go in but nothing comes out → drop the session and start a new one.
+    func restartIfStalled(_ inSinceLast: Int, _ outSinceLast: Int) -> Bool {
+        guard inSinceLast >= 20, outSinceLast == 0 else { return false }
+        onProblem?("Bộ mã hoá không ra hình (\(inSinceLast) khung vào, 0 ra) — khởi động lại")
+        lock.lock(); needsRebuild = true; lock.unlock()
+        return true
+    }
 
     func update(_ s: EncoderSettings) {
         lock.lock(); defer { lock.unlock() }

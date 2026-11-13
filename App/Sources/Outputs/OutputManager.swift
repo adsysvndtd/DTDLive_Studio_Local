@@ -56,6 +56,7 @@ actor OutputSlot {
     func reconnect(_ d: StreamDescription) async {
         desc = d
         guard running else { return }
+        OutputLog.shared.add(target.config.id, "Bộ mã hoá đổi thông số (SPS/PPS) — kết nối lại")
         waitingForIDR = true
         await target.disconnect() // supervisor notices !isHealthy and reconnects with `desc`
     }

@@ -237,6 +237,7 @@
 "Màu nền" = "Background colour";
 "Màu sắc" = "Colour";
 "Màu, key, PTZ…" = "Colour, key, PTZ…";
+"Máy đang nóng — tạm giảm bitrate để hạ nhiệt" = "Device is hot — bitrate lowered to cool down";
 "Máy đang nóng — tạm giảm còn %@ hình/giây để hạ nhiệt" = "Device is hot — temporarily %@ fps to cool down";
 "Máy đang nóng — tạm giảm còn %lf hình/giây để hạ nhiệt" = "Device is hot — temporarily %lf fps to cool down";
 "Máy đang nóng — tạm giảm còn %lld hình/giây để hạ nhiệt" = "Device is hot — temporarily %lld fps to cool down";

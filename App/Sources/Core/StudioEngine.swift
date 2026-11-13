@@ -195,6 +195,10 @@ final class StudioEngine: ObservableObject {
         let gate = encodeGate
         switcher.onProgramFrame = { pb, t in if encodeOn && gate.value > 0 { ve.encode(pb, pts: t) } }
         ve.onEncoded = { sb in om.video(sb); rb.append(sb) }
+        ve.onProblem = { [weak self] text in Task { @MainActor in self?.logToLiveOutputs(text) } }
+        switcher.onPoolRebuilt = { [weak self] in
+            Task { @MainActor in self?.logToLiveOutputs("Hết bộ đệm khung hình — đã tạo lại (khung bị giữ ở bộ mã hoá)") }
+        }
         audio.onBuffer = { pcm, when in ae.append(pcm, when: when) }
         ae.onEncoded = { buf, when in om.audio(buf, when: when) }
         // audio always flows: the mixer, or silence when the mixer could not start (see startSilentAudio)
@@ -258,6 +262,7 @@ final class StudioEngine: ObservableObject {
                 guard let self else { return }
                 StreamStats.bitrateKbps = self.currentBitrate / 1000
                 StreamStats.fps = self.format.fps
+                self.encoderWatchdog()
                 await self.adaptBitrate()
                 self.updateOutputRates()
                 self.updateEncodeGate()
@@ -873,12 +878,34 @@ final class StudioEngine: ObservableObject {
         if r != outputRates { outputRates = r }
     }
 
+    /// Writes a line into the diagnostic log of every destination that is running.
+    func logToLiveOutputs(_ text: String) {
+        for o in outputs where (outputStatus[o.id] ?? .idle) != .idle { OutputLog.shared.add(o.id, text) }
+    }
+
+    private var lastEncIn = 0, lastEncOut = 0
+    /// Every second: if frames go into the encoder but none come out, rebuild it (keeps a live stream from freezing).
+    private func encoderWatchdog() {
+        let i = videoEncoder.framesIn.value, o = videoEncoder.framesOut.value
+        defer { lastEncIn = i; lastEncOut = o }
+        guard encodeGate.value > 0 else { return }
+        _ = videoEncoder.restartIfStalled(i - lastEncIn, o - lastEncOut)
+    }
+
     /// Heat: lower the program frame rate when iOS reports the device getting hot, restore when it cools.
     @Published private(set) var thermalThrottled = false
     private func applyThermalState() {
         let hot = ProcessInfo.processInfo.thermalState.rawValue >= ProcessInfo.ThermalState.serious.rawValue
         guard hot != thermalThrottled else { return }
         thermalThrottled = hot
+        if isAnyLive || isRecording {
+            // While on air, changing fps rebuilds the encoder and forces every destination to reconnect;
+            // cut the bitrate instead (less encoder + radio work), restore when it cools.
+            let target = hot ? max(encoder.minBitrate, encoder.bitrate * 2 / 3) : encoder.bitrate
+            currentBitrate = target; videoEncoder.setBitrate(target)
+            if hot { message = L("Máy đang nóng — tạm giảm bitrate để hạ nhiệt") }
+            return
+        }
         let fps = hot ? min(format.fps, 25) : format.fps
         var f = format; f.fps = fps
         switcher.setFormat(f)

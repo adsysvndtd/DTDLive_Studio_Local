@@ -2391,6 +2391,16 @@
         }
       }
     },
+    "Máy đang nóng — tạm giảm bitrate để hạ nhiệt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Device is hot — bitrate lowered to cool down"
+          }
+        }
+      }
+    },
     "Máy đang nóng — tạm giảm còn %@ hình/giây để hạ nhiệt": {
       "localizations": {
         "en": {
