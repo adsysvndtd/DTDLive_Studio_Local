@@ -1961,6 +1961,36 @@
         }
       }
     },
+    "Link xem (tuỳ chọn)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Watch link (optional)"
+          }
+        }
+      }
+    },
+    "Link xem (tuỳ chọn, vd https://youtube.com/@kenh/live)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Watch link (optional, e.g. https://youtube.com/@channel/live)"
+          }
+        }
+      }
+    },
+    "Link xem live": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Live watch link"
+          }
+        }
+      }
+    },
     "Logo": {
       "localizations": {
         "en": {
@@ -3241,6 +3271,16 @@
         }
       }
     },
+    "Sửa link": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edit link"
+          }
+        }
+      }
+    },
     "Sửa tên, logo, màu…": {
       "localizations": {
         "en": {
@@ -3397,6 +3437,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Add window"
+          }
+        }
+      }
+    },
+    "Thêm link xem": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add watch link"
           }
         }
       }
@@ -3687,6 +3737,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Full screen"
+          }
+        }
+      }
+    },
+    "Trang người xem mở để xem buổi live (YouTube: youtube.com/@kenh/live · Facebook: link bài live).": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The page viewers open to watch (YouTube: youtube.com/@channel/live · Facebook: the live post link)."
           }
         }
       }

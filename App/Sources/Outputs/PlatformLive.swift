@@ -64,8 +64,10 @@ final class PlatformLive: NSObject, ObservableObject, ASWebAuthenticationPresent
             googleToken = nil; googleExpiry = .distantPast
             let t = try await googleAccessToken(interactive: true)
             let j = try await api("https://www.googleapis.com/youtube/v3/channels?part=snippet&mine=true", token: t, body: nil, method: "GET")
-            let name = ((j["items"] as? [[String: Any]])?.first?["snippet"] as? [String: Any])?["title"] as? String ?? "YouTube"
+            let first = (j["items"] as? [[String: Any]])?.first
+            let name = (first?["snippet"] as? [String: Any])?["title"] as? String ?? "YouTube"
             youtubeAccount = name; UserDefaults.standard.set(name, forKey: "dtd.youtube.account")
+            if let cid = first?["id"] as? String { UserDefaults.standard.set(cid, forKey: "dtd.youtube.channel") }
         case .facebook:
             facebookToken = nil
             let t = try await facebookAccessToken()
@@ -74,6 +76,11 @@ final class PlatformLive: NSObject, ObservableObject, ASWebAuthenticationPresent
             let name = (try? await send(req))?["name"] as? String ?? "Facebook"
             facebookAccount = name; UserDefaults.standard.set(name, forKey: "dtd.facebook.account")
         }
+    }
+
+    /// Channel live page (always shows the channel's current live) — used as the watch link for stream-key outputs.
+    static var youtubeChannelLiveURL: String? {
+        UserDefaults.standard.string(forKey: "dtd.youtube.channel").map { "https://www.youtube.com/channel/\($0)/live" }
     }
 
     func signOut(_ p: Platform) {

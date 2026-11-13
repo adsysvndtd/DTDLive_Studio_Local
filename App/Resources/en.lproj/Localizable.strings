@@ -194,6 +194,9 @@
 "Kết nối %lf  key %lf" = "Connecting %lf  key %lf";
 "Kết nối %lld  key %lld" = "Connecting %lld  key %lld";
 "Kết nối lại" = "Reconnecting";
+"Link xem (tuỳ chọn)" = "Watch link (optional)";
+"Link xem (tuỳ chọn, vd https://youtube.com/@kenh/live)" = "Watch link (optional, e.g. https://youtube.com/@channel/live)";
+"Link xem live" = "Live watch link";
 "Logo" = "Logo";
 "Logo đang trên PGM" = "Logo is on PGM";
 "Logo đã nạp — bấm Logo On" = "Logo loaded — press Logo On";
@@ -322,6 +325,7 @@
 "SỌC" = "BARS";
 "Sọc" = "Bars";
 "Sửa bảng tỉ số" = "Edit scoreboard";
+"Sửa link" = "Edit link";
 "Sửa tên, logo, màu…" = "Edit names, logos, colours…";
 "Sự kiện" = "Event";
 "TIN NÓNG" = "BREAKING NEWS";
@@ -338,6 +342,7 @@
 "Thêm %lld" = "Add %lld";
 "Thêm bảng tỉ số" = "Add scoreboard";
 "Thêm khung" = "Add window";
+"Thêm link xem" = "Add watch link";
 "Thêm nguồn" = "Add source";
 "Thêm title" = "Add title";
 "Thêm đích" = "Add destination";
@@ -367,6 +372,7 @@
 "Tiếng Việt" = "Tiếng Việt";
 "Token (chỉ cần cho repo private)" = "Token (private repos only)";
 "Toàn màn hình" = "Full screen";
+"Trang người xem mở để xem buổi live (YouTube: youtube.com/@kenh/live · Facebook: link bài live)." = "The page viewers open to watch (YouTube: youtube.com/@channel/live · Facebook: the live post link).";
 "Trong suốt" = "Transparent";
 "Trên PGM" = "On PGM";
 "Trên phải" = "Top right";

@@ -194,6 +194,9 @@
 "Kết nối %lf  key %lf" = "Kết nối %lf  key %lf";
 "Kết nối %lld  key %lld" = "Kết nối %lld  key %lld";
 "Kết nối lại" = "Kết nối lại";
+"Link xem (tuỳ chọn)" = "Link xem (tuỳ chọn)";
+"Link xem (tuỳ chọn, vd https://youtube.com/@kenh/live)" = "Link xem (tuỳ chọn, vd https://youtube.com/@kenh/live)";
+"Link xem live" = "Link xem live";
 "Logo" = "Logo";
 "Logo đang trên PGM" = "Logo đang trên PGM";
 "Logo đã nạp — bấm Logo On" = "Logo đã nạp — bấm Logo On";
@@ -322,6 +325,7 @@
 "SỌC" = "SỌC";
 "Sọc" = "Sọc";
 "Sửa bảng tỉ số" = "Sửa bảng tỉ số";
+"Sửa link" = "Sửa link";
 "Sửa tên, logo, màu…" = "Sửa tên, logo, màu…";
 "Sự kiện" = "Sự kiện";
 "TIN NÓNG" = "TIN NÓNG";
@@ -338,6 +342,7 @@
 "Thêm %lld" = "Thêm %lld";
 "Thêm bảng tỉ số" = "Thêm bảng tỉ số";
 "Thêm khung" = "Thêm khung";
+"Thêm link xem" = "Thêm link xem";
 "Thêm nguồn" = "Thêm nguồn";
 "Thêm title" = "Thêm title";
 "Thêm đích" = "Thêm đích";
@@ -367,6 +372,7 @@
 "Tiếng Việt" = "Tiếng Việt";
 "Token (chỉ cần cho repo private)" = "Token (chỉ cần cho repo private)";
 "Toàn màn hình" = "Toàn màn hình";
+"Trang người xem mở để xem buổi live (YouTube: youtube.com/@kenh/live · Facebook: link bài live)." = "Trang người xem mở để xem buổi live (YouTube: youtube.com/@kenh/live · Facebook: link bài live).";
 "Trong suốt" = "Trong suốt";
 "Trên PGM" = "Trên PGM";
 "Trên phải" = "Trên phải";

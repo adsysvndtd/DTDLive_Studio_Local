@@ -506,6 +506,8 @@ struct OutputsSheet: View {
     @State private var platformBusy = false
     @State private var platformMessage: String?
     @State private var watchURL: URL?
+    @State private var editLinkID: UUID?
+    @State private var editLinkText = ""
     @AppStorage("dtd.live.privacy") private var livePrivacy = "public"
 
     var body: some View {
@@ -523,10 +525,15 @@ struct OutputsSheet: View {
                                 if st == .live, let r = engine.outputRates[o.id] {
                                     Text(verbatim: r).font(.caption2.monospacedDigit()).foregroundStyle(.secondary)
                                 }
-                                if let w = o.watchURL, let u = URL(string: w) {
+                                if o.proto != .record {
                                     HStack(spacing: 12) {
-                                        Link(destination: u) { Label("Xem live", systemImage: "play.tv") }
-                                        Button { UIPasteboard.general.url = u } label: { Label("Copy link", systemImage: "doc.on.doc") }
+                                        if let w = o.watchURL, let u = URL(string: w) {
+                                            Link(destination: u) { Label("Xem live", systemImage: "play.tv") }
+                                            Button { UIPasteboard.general.url = u } label: { Label("Copy link", systemImage: "doc.on.doc") }
+                                        }
+                                        Button { editLinkID = o.id; editLinkText = o.watchURL ?? "" } label: {
+                                            Label(o.watchURL == nil ? "Thêm link xem" : "Sửa link", systemImage: "link")
+                                        }
                                     }
                                     .font(.caption).buttonStyle(.borderless)
                                 }
@@ -578,6 +585,7 @@ struct OutputsSheet: View {
                                 Button {
                                     preset = p; draftKey = ""
                                     draft = OutputConfig(name: p.name, proto: .rtmp, url: p.server)
+                                    if p.id == "youtube" { draft.watchURL = PlatformLive.youtubeChannelLiveURL }
                                 } label: {
                                     Label(p.name, systemImage: p.icon)
                                 }
@@ -600,6 +608,9 @@ struct OutputsSheet: View {
                             .textInputAutocapitalization(.never).autocorrectionDisabled()
                         SecureField("Stream key", text: $draftKey)
                             .textInputAutocapitalization(.never).autocorrectionDisabled()
+                        TextField("Link xem (tuỳ chọn, vd https://youtube.com/@kenh/live)", text: Binding(
+                            get: { draft.watchURL ?? "" }, set: { draft.watchURL = $0.isEmpty ? nil : $0 }))
+                            .textInputAutocapitalization(.never).autocorrectionDisabled().keyboardType(.URL)
                         HStack {
                             Button("Thêm \(p.name)") {
                                 var c = draft
@@ -620,6 +631,9 @@ struct OutputsSheet: View {
                         if draft.proto != .record {
                             TextField(draft.proto.placeholder, text: $draft.url)
                                 .textInputAutocapitalization(.never).autocorrectionDisabled()
+                            TextField("Link xem (tuỳ chọn)", text: Binding(
+                                get: { draft.watchURL ?? "" }, set: { draft.watchURL = $0.isEmpty ? nil : $0 }))
+                                .textInputAutocapitalization(.never).autocorrectionDisabled().keyboardType(.URL)
                         }
                         Button("Thêm") {
                             engine.outputs.append(draft)
@@ -653,6 +667,18 @@ struct OutputsSheet: View {
                 }
             }
             .navigationTitle("Đầu ra")
+            .alert("Link xem live", isPresented: Binding(get: { editLinkID != nil }, set: { if !$0 { editLinkID = nil } })) {
+                TextField("https://…", text: $editLinkText)
+                    .textInputAutocapitalization(.never).autocorrectionDisabled().keyboardType(.URL)
+                Button("Lưu") {
+                    if let id = editLinkID, let i = engine.outputs.firstIndex(where: { $0.id == id }) {
+                        let t = editLinkText.trimmingCharacters(in: .whitespacesAndNewlines)
+                        engine.outputs[i].watchURL = t.isEmpty ? nil : (t.hasPrefix("http") ? t : "https://" + t)
+                    }
+                    editLinkID = nil
+                }
+                Button("Huỷ", role: .cancel) { editLinkID = nil }
+            } message: { Text("Trang người xem mở để xem buổi live (YouTube: youtube.com/@kenh/live · Facebook: link bài live).") }
             .toolbar {
                 ToolbarItemGroup {
                     Button("Phát tất cả") { engine.startAll() }
