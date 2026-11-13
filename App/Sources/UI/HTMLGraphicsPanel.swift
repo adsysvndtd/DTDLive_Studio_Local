@@ -112,6 +112,7 @@ struct HTMLFieldRows: View {
 
     var body: some View {
         let t = template
+        HTMLResizeRows(html: html, template: t, compact: compact)
         ForEach(t.fields) { f in
             if f.isColor {
                 HStack(spacing: 6) {
@@ -156,6 +157,69 @@ struct HTMLFieldRows: View {
     }
 }
 
+/// Resize: scale and move the whole graphic; saved into the template's HTML file.
+struct HTMLResizeRows: View {
+    @ObservedObject var html: HTMLGraphics
+    let template: HTMLTemplate
+    var compact = false
+    @State private var open = false
+
+    var body: some View {
+        let t = template
+        let l = html.layout(t)
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(spacing: 8) {
+                Button { open.toggle() } label: {
+                    Label("Resize", systemImage: "arrow.up.left.and.arrow.down.right")
+                        .font(DS.fBodyBold).padding(.horizontal, 10).frame(height: compact ? 28 : 32)
+                        .foregroundStyle(.white).background(open ? DS.accent.opacity(0.35) : DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
+                }
+                .buttonStyle(.plain)
+                Text(verbatim: "\(Int((l.scale * 100).rounded()))% · x \(Int(l.x)) · y \(Int(l.y))")
+                    .font(.caption.monospacedDigit()).foregroundStyle(DS.text3)
+                Spacer()
+                if !l.isIdentity {
+                    Button("Về gốc") { html.setLayout(t, HTMLLayout(anchor: l.anchor)) }
+                        .font(DS.fBody).buttonStyle(.borderless)
+                }
+            }
+            if open {
+                row("Kích thước", value: Binding(get: { l.scale }, set: { var n = html.layout(t); n.scale = $0; html.setLayout(t, n) }),
+                    range: 0.3...2.5) { "\(Int(($0 * 100).rounded()))%" }
+                row("Ngang", value: Binding(get: { l.x }, set: { var n = html.layout(t); n.x = $0; html.setLayout(t, n) }),
+                    range: -1200...1200) { "\(Int($0)) px" }
+                row("Dọc", value: Binding(get: { l.y }, set: { var n = html.layout(t); n.y = $0; html.setLayout(t, n) }),
+                    range: -800...800) { "\(Int($0)) px" }
+                HStack(spacing: 8) {
+                    Text("Điểm neo").font(DS.fBody).foregroundStyle(DS.text2).frame(width: 84, alignment: .leading)
+                    LazyVGrid(columns: Array(repeating: GridItem(.fixed(26), spacing: 3), count: 3), spacing: 3) {
+                        ForEach(HTMLLayout.anchors, id: \.0) { a in
+                            Button { var n = html.layout(t); n.anchor = a.0; html.setLayout(t, n) } label: {
+                                Text(a.1).font(.system(size: 12, weight: .bold)).frame(width: 26, height: 22)
+                                    .foregroundStyle(l.anchor == a.0 ? .black : .white)
+                                    .background(l.anchor == a.0 ? DS.accent : DS.surface2, in: RoundedRectangle(cornerRadius: 4))
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .frame(width: 84)
+                    Text("Điểm đứng yên khi phóng to/thu nhỏ. Lưu vào file HTML.").font(.caption2).foregroundStyle(DS.text3)
+                    Spacer(minLength: 0)
+                }
+            }
+        }
+    }
+
+    private func row(_ title: LocalizedStringKey, value: Binding<Double>, range: ClosedRange<Double>, fmt: @escaping (Double) -> String) -> some View {
+        HStack(spacing: 8) {
+            Text(title).font(DS.fBody).foregroundStyle(DS.text2).frame(width: 84, alignment: .leading)
+            Slider(value: value, in: range).tint(DS.accent).controlSize(.small)
+            Text(verbatim: fmt(value.wrappedValue)).font(.caption.monospacedDigit()).foregroundStyle(DS.text3).frame(width: 64, alignment: .trailing)
+        }
+        .frame(height: 28)
+    }
+}
+
 /// Edit an operator template: live preview, field values and the HTML source.
 struct HTMLEditorSheet: View {
     @ObservedObject var html: HTMLGraphics
@@ -174,7 +238,8 @@ struct HTMLEditorSheet: View {
             VStack(spacing: 8) {
                 ZStack {
                     HTMLCheckerBackground()
-                    HTMLPreviewView(template: current, source: previewSource, values: html.values(for: current), playToken: playToken)
+                    HTMLPreviewView(template: current, source: previewSource, values: html.values(for: current),
+                                    layout: html.layout(current), playToken: playToken)
                 }
                 .aspectRatio(16 / 9, contentMode: .fit)
                 .clipShape(RoundedRectangle(cornerRadius: DS.radius))
@@ -240,18 +305,21 @@ struct HTMLPreviewView: UIViewRepresentable {
     /// Unsaved source to preview; empty = the saved file.
     let source: String
     let values: [String: String]
+    var layout = HTMLLayout()
     let playToken: Int
 
     final class Box: UIView, WKNavigationDelegate {
         let web = WKWebView(frame: .zero, configuration: HTMLGraphicsStore.webConfiguration())
         var template: HTMLTemplate?
         var values: [String: String] = [:]
+        var layout = HTMLLayout()
         var loadedKey = ""
         var playToken = -1
         override init(frame: CGRect) {
             super.init(frame: frame)
             web.isOpaque = false; web.backgroundColor = .clear; web.scrollView.backgroundColor = .clear
             web.scrollView.isScrollEnabled = false; web.isUserInteractionEnabled = false
+            web.scrollView.contentInsetAdjustmentBehavior = .never
             web.navigationDelegate = self
             addSubview(web)
         }
@@ -262,7 +330,7 @@ struct HTMLPreviewView: UIViewRepresentable {
             if bounds.width > 0 { web.pageZoom = bounds.width / 1920 }
         }
         func push(play: Bool) {
-            guard let t = template, let js = HTMLGraphicsStore.pushJS(t, values: values) else { return }
+            guard let t = template, let js = HTMLGraphicsStore.pushJS(t, values: values, layout: layout) else { return }
             web.evaluateJavaScript(js + (play ? ";typeof play==='function'&&play()" : ""))
         }
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) { push(play: true) }
@@ -273,6 +341,7 @@ struct HTMLPreviewView: UIViewRepresentable {
     func updateUIView(_ v: Box, context: Context) {
         v.template = template
         v.values = values
+        v.layout = layout
         let key = template.id + "|" + String(source.hashValue)
         if key != v.loadedKey {
             v.loadedKey = key

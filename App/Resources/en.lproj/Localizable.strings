@@ -214,6 +214,7 @@
 "Kéo cho tiếng khớp với hình khi camera mạng bị trễ." = "Delays the sound to match late network-camera video.";
 "Kéo để di chuyển · kéo góc để đổi cỡ" = "Drag to move · drag a corner to resize";
 "Kênh âm thanh" = "Audio channels";
+"Kích thước" = "Size";
 "Kết nối" = "Connection";
 "Kết nối %@  key %@" = "Connecting %@  key %@";
 "Kết nối %lf  key %lf" = "Connecting %lf  key %lf";
@@ -365,6 +366,7 @@
 "Ra mắt" = "Premiere";
 "Replay" = "Replay";
 "Reset" = "Reset";
+"Resize" = "Resize";
 "Rèm" = "Blinds";
 "Rơi xuống" = "Drop";
 "Rộng" = "Width";
@@ -483,6 +485,7 @@
 "Vát góc" = "Angled";
 "Vòng tròn" = "Iris";
 "Vẽ" = "Draw";
+"Về gốc" = "Reset";
 "Về màu mặc định của kiểu" = "Reset to the style's colours";
 "Vị trí" = "Position";
 "Vị trí & cỡ" = "Position & size";
@@ -549,6 +552,8 @@
 "Điều khiển title từ điện thoại/laptop: http://<IP máy>:8080" = "Control titles from a phone/laptop: http://<device IP>:8080";
 "Điều khiển tỉ số, đồng hồ, logo, màu ở thẻ Bảng tỉ số phía trên" = "Score, clock, logos and colours are in the Scoreboard card above";
 "Điều khiển từ xa & ghép nối" = "Remote control & pairing";
+"Điểm neo" = "Anchor";
+"Điểm đứng yên khi phóng to/thu nhỏ. Lưu vào file HTML." = "The point that stays put when scaling. Saved into the HTML file.";
 "Điện ảnh" = "Cinema";
 "Đoạn %.1f s" = "Clip %.1f s";
 "Đoạn quá ngắn — đặt MARK IN và MARK OUT" = "Clip too short — set MARK IN and MARK OUT";

@@ -28,6 +28,21 @@ struct HTMLManifest: Codable {
     var templates: [HTMLTemplate]
 }
 
+/// Size / position of a whole HTML graphic on the 1920×1080 page (Resize in the panel).
+struct HTMLLayout: Equatable {
+    var scale: Double = 1
+    var x: Double = 0          // px, + = right
+    var y: Double = 0          // px, + = down
+    var anchor = "left bottom" // CSS transform-origin: the point that stays put when scaling
+    var isIdentity: Bool { abs(scale - 1) < 0.001 && abs(x) < 0.5 && abs(y) < 0.5 }
+    var transform: String { "translate(\(Int(x.rounded()))px,\(Int(y.rounded()))px) scale(\(String(format: "%.3f", scale)))" }
+    func cssRule(for id: String) -> String { "body[data-dtd=\"\(id)\"]{transform-origin:\(anchor);transform:\(transform)}" }
+    static let anchors: [(String, String)] = [
+        ("left top", "↖"), ("center top", "↑"), ("right top", "↗"),
+        ("left center", "←"), ("center center", "•"), ("right center", "→"),
+        ("left bottom", "↙"), ("center bottom", "↓"), ("right bottom", "↘")]
+}
+
 enum HTMLGraphicsStore {
     static var directory: URL {
         let d = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("Graphics", isDirectory: true)
@@ -248,6 +263,46 @@ enum HTMLGraphicsStore {
         return cfg
     }
 
+    // MARK: Layout (size / position), saved inside the template's HTML file
+
+    /// Rule per template id in one <style id="dtd-layout"> block, e.g.
+    /// body[data-dtd="lt-news-red"]{transform-origin:left bottom;transform:translate(0px,0px) scale(1.2)}
+    /// (several templates can share one file — the colour variants — each keeps its own rule).
+    static func readLayout(_ t: HTMLTemplate) -> HTMLLayout {
+        guard let html = try? String(contentsOf: entryURL(t), encoding: .utf8) else { return HTMLLayout() }
+        let id = NSRegularExpression.escapedPattern(for: t.id)
+        let pattern = #"body\[data-dtd=""# + id + #""\]\{transform-origin:([a-z ]+);transform:translate\((-?[\d.]+)px,(-?[\d.]+)px\) scale\(([\d.]+)\)\}"#
+        guard let re = try? NSRegularExpression(pattern: pattern),
+              let m = re.firstMatch(in: html, range: NSRange(location: 0, length: (html as NSString).length)) else { return HTMLLayout() }
+        let ns = html as NSString
+        return HTMLLayout(scale: Double(ns.substring(with: m.range(at: 4))) ?? 1,
+                          x: Double(ns.substring(with: m.range(at: 2))) ?? 0,
+                          y: Double(ns.substring(with: m.range(at: 3))) ?? 0,
+                          anchor: ns.substring(with: m.range(at: 1)))
+    }
+
+    static func writeLayout(_ t: HTMLTemplate, _ l: HTMLLayout) {
+        let url = entryURL(t)
+        guard var html = try? String(contentsOf: url, encoding: .utf8) else { return }
+        let ns = html as NSString
+        let id = NSRegularExpression.escapedPattern(for: t.id)
+        // drop this template's old rule
+        if let re = try? NSRegularExpression(pattern: #"\s*body\[data-dtd=""# + id + #""\]\{[^}]*\}"#) {
+            html = re.stringByReplacingMatches(in: html, range: NSRange(location: 0, length: ns.length), withTemplate: "")
+        }
+        if !l.isIdentity {
+            let rule = "\n  " + l.cssRule(for: t.id)
+            if let r = html.range(of: #"<style id="dtd-layout">"#) {
+                html.insert(contentsOf: rule, at: r.upperBound)
+            } else if let r = html.range(of: "</head>", options: .caseInsensitive) {
+                html.insert(contentsOf: "<style id=\"dtd-layout\">" + rule + "\n</style>\n", at: r.lowerBound)
+            } else {
+                html = "<style id=\"dtd-layout\">" + rule + "\n</style>\n" + html
+            }
+        }
+        try? html.write(to: url, atomically: true, encoding: .utf8)
+    }
+
     /// Image values are stored as "logo:<file>" (the container path changes between installs).
     static func resolve(_ v: String, _ f: HTMLTemplate.Field) -> String {
         guard f.isImage, v.hasPrefix("logo:") else { return v }
@@ -255,11 +310,17 @@ enum HTMLGraphicsStore {
     }
 
     /// JS that pushes values to a page (also sets CSS variables directly for pages whose update() ignores them).
-    static func pushJS(_ t: HTMLTemplate, values: [String: String]) -> String? {
+    static func pushJS(_ t: HTMLTemplate, values: [String: String], layout: HTMLLayout? = nil) -> String? {
         var d: [String: String] = [:]
         for f in t.fields { d[f.id] = resolve(values[f.id] ?? f.default ?? "", f) }
         guard let json = try? JSONSerialization.data(withJSONObject: d), let s = String(data: json, encoding: .utf8) else { return nil }
-        return "(function(d){try{if(typeof update==='function')update(d);}catch(e){}for(var k in d){if(k.indexOf('--')===0)document.documentElement.style.setProperty(k,d[k]);}})(\(s))"
+        let lay = layout.map { layoutJS($0) } ?? ""
+        return "document.body.dataset.dtd='\(t.id)';\(lay)(function(d){try{if(typeof update==='function')update(d);}catch(e){}for(var k in d){if(k.indexOf('--')===0)document.documentElement.style.setProperty(k,d[k]);}})(\(s))"
+    }
+
+    /// Applies a layout straight away (inline style beats the saved rule while editing).
+    static func layoutJS(_ l: HTMLLayout) -> String {
+        "document.body.style.transformOrigin='\(l.anchor)';document.body.style.transform='\(l.transform)';"
     }
 }
 
@@ -447,9 +508,34 @@ final class HTMLGraphics: NSObject, ObservableObject, WKNavigationDelegate {
         var c = t; c.name = name; HTMLGraphicsStore.updateUser(c); reload()
     }
     func saveSource(_ t: HTMLTemplate, html: String) throws {
-        _ = try HTMLGraphicsStore.saveSource(t, html: html); reload()
+        _ = try HTMLGraphicsStore.saveSource(t, html: html)
+        layouts[t.id] = nil
+        reload()
     }
     func values(for t: HTMLTemplate) -> [String: String] { values[t.id] ?? [:] }
+
+    // Resize: per-template layout, read from / written into the template's HTML file.
+    @Published private(set) var layouts: [String: HTMLLayout] = [:]
+    private var layoutSave: [String: Task<Void, Never>] = [:]
+
+    func layout(_ t: HTMLTemplate) -> HTMLLayout {
+        if let l = layouts[t.id] { return l }
+        let l = HTMLGraphicsStore.readLayout(t)
+        DispatchQueue.main.async { self.layouts[t.id] = l }
+        return l
+    }
+
+    func setLayout(_ t: HTMLTemplate, _ l: HTMLLayout) {
+        layouts[t.id] = l
+        if loadedID == t.id { web?.evaluateJavaScript("document.body.dataset.dtd='\(t.id)';" + HTMLGraphicsStore.layoutJS(l)) }
+        // write into the HTML file once the slider settles
+        layoutSave[t.id]?.cancel()
+        layoutSave[t.id] = Task { [t, l] in
+            try? await Task.sleep(nanoseconds: 400_000_000)
+            guard !Task.isCancelled else { return }
+            HTMLGraphicsStore.writeLayout(t, l)
+        }
+    }
 
     func value(_ t: HTMLTemplate, _ f: HTMLTemplate.Field) -> String { values[t.id]?[f.id] ?? f.default ?? "" }
 
@@ -496,7 +582,7 @@ final class HTMLGraphics: NSObject, ObservableObject, WKNavigationDelegate {
     }
 
     private func pushData(_ t: HTMLTemplate) {
-        guard let js = HTMLGraphicsStore.pushJS(t, values: values[t.id] ?? [:]) else { return }
+        guard let js = HTMLGraphicsStore.pushJS(t, values: values[t.id] ?? [:], layout: layout(t)) else { return }
         web?.evaluateJavaScript(js)
     }
 
@@ -507,6 +593,9 @@ final class HTMLGraphics: NSObject, ObservableObject, WKNavigationDelegate {
         w.backgroundColor = .clear
         w.scrollView.backgroundColor = .clear
         w.scrollView.isScrollEnabled = false
+        // The view sits in the app window: without this, safe-area insets (status/home bar) shift the page
+        // down and cut off whatever sits at the bottom (ticker).
+        w.scrollView.contentInsetAdjustmentBehavior = .never
         w.isUserInteractionEnabled = false
         w.navigationDelegate = self
         // The page is laid out at 1920×1080 and scaled to the view.

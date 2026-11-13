@@ -214,6 +214,7 @@
 "Kéo cho tiếng khớp với hình khi camera mạng bị trễ." = "Kéo cho tiếng khớp với hình khi camera mạng bị trễ.";
 "Kéo để di chuyển · kéo góc để đổi cỡ" = "Kéo để di chuyển · kéo góc để đổi cỡ";
 "Kênh âm thanh" = "Kênh âm thanh";
+"Kích thước" = "Kích thước";
 "Kết nối" = "Kết nối";
 "Kết nối %@  key %@" = "Kết nối %@  key %@";
 "Kết nối %lf  key %lf" = "Kết nối %lf  key %lf";
@@ -365,6 +366,7 @@
 "Ra mắt" = "Ra mắt";
 "Replay" = "Replay";
 "Reset" = "Reset";
+"Resize" = "Resize";
 "Rèm" = "Rèm";
 "Rơi xuống" = "Rơi xuống";
 "Rộng" = "Rộng";
@@ -483,6 +485,7 @@
 "Vát góc" = "Vát góc";
 "Vòng tròn" = "Vòng tròn";
 "Vẽ" = "Vẽ";
+"Về gốc" = "Về gốc";
 "Về màu mặc định của kiểu" = "Về màu mặc định của kiểu";
 "Vị trí" = "Vị trí";
 "Vị trí & cỡ" = "Vị trí & cỡ";
@@ -549,6 +552,8 @@
 "Điều khiển title từ điện thoại/laptop: http://<IP máy>:8080" = "Điều khiển title từ điện thoại/laptop: http://<IP máy>:8080";
 "Điều khiển tỉ số, đồng hồ, logo, màu ở thẻ Bảng tỉ số phía trên" = "Điều khiển tỉ số, đồng hồ, logo, màu ở thẻ Bảng tỉ số phía trên";
 "Điều khiển từ xa & ghép nối" = "Điều khiển từ xa & ghép nối";
+"Điểm neo" = "Điểm neo";
+"Điểm đứng yên khi phóng to/thu nhỏ. Lưu vào file HTML." = "Điểm đứng yên khi phóng to/thu nhỏ. Lưu vào file HTML.";
 "Điện ảnh" = "Điện ảnh";
 "Đoạn %.1f s" = "Đoạn %.1f s";
 "Đoạn quá ngắn — đặt MARK IN và MARK OUT" = "Đoạn quá ngắn — đặt MARK IN và MARK OUT";

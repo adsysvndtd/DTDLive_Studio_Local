@@ -6130,6 +6130,56 @@
           }
         }
       }
+    },
+    "Resize": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resize"
+          }
+        }
+      }
+    },
+    "Về gốc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset"
+          }
+        }
+      }
+    },
+    "Kích thước": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Size"
+          }
+        }
+      }
+    },
+    "Điểm neo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anchor"
+          }
+        }
+      }
+    },
+    "Điểm đứng yên khi phóng to/thu nhỏ. Lưu vào file HTML.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The point that stays put when scaling. Saved into the HTML file."
+          }
+        }
+      }
     }
   },
   "version": "1.0"
