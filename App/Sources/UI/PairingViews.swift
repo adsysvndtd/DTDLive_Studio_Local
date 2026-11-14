@@ -47,12 +47,33 @@ struct PairingBanner: View {
 /// Trusted devices + how cameras find this studio.
 struct PairedDevicesSection: View {
     @ObservedObject var pairing: PairingManager
+    /// HTTP control / pairing API for other apps (not DTDLive).
     var port: UInt16
+    @ObservedObject var dtdLive: DTDLiveLink
 
     var body: some View {
         SectionCard("Ghép nối qua Wi-Fi", systemImage: "wifi") {
+            let ip = NetworkInfo.wifiIPv4()
+            // DTDLive finds the studio by itself (Bonjour _dtd-pair._tcp); its port is chosen by iPadOS each launch,
+            // so nobody types it. The cameras' SRT ports are sent to DTDLive over the pairing link.
+            HStack(alignment: .firstTextBaseline) {
+                Label("DTDLive", systemImage: "iphone.gen3.radiowaves.left.and.right").font(DS.fBodyBold)
+                Spacer()
+                Text(dtdLive.pairPort > 0
+                     ? LF("Đang chờ · %@ · cổng ghép nối %@ (tự tìm, không cần nhập)", ip ?? "—", "\(dtdLive.pairPort)")
+                     : L("Chưa bật — bật \"Cho phép DTDLive tìm và ghép nối\" trong Cài đặt › Ingest"))
+                    .font(DS.fBody.monospaced()).foregroundStyle(dtdLive.pairPort > 0 ? DS.text2 : .orange)
+            }
+            ForEach(dtdLive.cameraPorts) { c in
+                HStack {
+                    Image(systemName: c.online ? "video.fill" : "video.slash").foregroundStyle(c.online ? DS.pvw : DS.text3)
+                    Text(c.name).font(DS.fBody)
+                    Spacer()
+                    Text(c.port > 0 ? LF("SRT cổng %@", "\(c.port)") : L("đang mở cổng…")).font(.caption.monospaced()).foregroundStyle(DS.text3)
+                }
+            }
             HStack {
-                Label(NetworkInfo.wifiIPv4().map { "\($0):\(port)" } ?? "Chưa có Wi-Fi", systemImage: "network")
+                Label(ip.map { LF("Ứng dụng khác (HTTP): %@", "\($0):\(port)") } ?? L("Chưa có Wi-Fi"), systemImage: "network")
                     .font(DS.fBody.monospaced()).foregroundStyle(DS.text2)
                 Spacer()
                 Toggle("Tự kết nối thiết bị tin cậy", isOn: $pairing.autoAcceptTrusted).font(DS.fBody).fixedSize()

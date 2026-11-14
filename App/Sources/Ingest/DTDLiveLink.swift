@@ -7,7 +7,7 @@ import SRTKit
 /// encrypted SRT receiver (SRTKCameraReceiver) and appears as an input. Many cameras can be paired;
 /// each camera's bond is remembered so it reconnects without asking again.
 @MainActor
-final class DTDLiveLink: NSObject, NetServiceDelegate {
+final class DTDLiveLink: NSObject, NetServiceDelegate, ObservableObject {
     static let serviceType = "_dtd-pair._tcp."
     static let serviceName: String = {
         let key = "dtd.dtdlive.instance"
@@ -33,6 +33,16 @@ final class DTDLiveLink: NSObject, NetServiceDelegate {
         var port: Int
         let source: IngestSource
     }
+    /// What the operator sees in Settings › Ghép nối: the DTDLive pairing port (found by DTDLive over Bonjour,
+    /// chosen by the system each launch) and each camera's media (SRT) port.
+    struct CameraPort: Identifiable { let id: String; let name: String; let port: Int; let online: Bool }
+    @Published private(set) var pairPort: Int = 0
+    @Published private(set) var cameraPorts: [CameraPort] = []
+    private func refreshPorts() {
+        cameraPorts = cameras.map { CameraPort(id: $0.key, name: $0.value.source.name, port: $0.value.port, online: $0.value.source.status == .live) }
+            .sorted { $0.name < $1.name }
+    }
+
     private var control: SRTKCameraPair?
     private var publication: NetService?
     private var cameras: [String: Camera] = [:]          // bond -> camera
@@ -83,6 +93,7 @@ final class DTDLiveLink: NSObject, NetServiceDelegate {
         for (_, cam) in cameras { let r = cam.receiver; DispatchQueue.global(qos: .utility).async { r.stop() } }
         cameras.removeAll()
         listening = false
+        pairPort = 0; cameraPorts = []
     }
 
     /// Operator decision from the pairing banner.
@@ -114,12 +125,13 @@ final class DTDLiveLink: NSObject, NetServiceDelegate {
             DispatchQueue.main.async {
                 guard let self, var cam = self.cameras[bond] else { return }
                 cam.port = port; self.cameras[bond] = cam
+                self.refreshPorts()
                 if !self.bonds.contains(bond) { self.bonds.append(bond) }
                 if let req = self.pendingMedia.removeValue(forKey: bond) { self.control?.mediaReady(req, port: port) }
             }
         }, onState: { state, _ in
             if state != .connected { frames.clear() }
-            DispatchQueue.main.async { source.setOnline(state == .connected) }
+            DispatchQueue.main.async { [weak self] in source.setOnline(state == .connected); self?.refreshPorts() }
         }, onFrame: { pb in pacer.pushArrival(pb) }, onAudio: { aac, asc, rate, channels, _ in
             sink.aac([UInt8](aac), asc: [UInt8](asc), sampleRate: rate, channels: channels)
         })
@@ -166,6 +178,7 @@ final class DTDLiveLink: NSObject, NetServiceDelegate {
         service.delegate = self
         service.publish()
         listening = true
+        pairPort = port
     }
 
     nonisolated func netService(_ sender: NetService, didNotPublish errorDict: [String: NSNumber]) {

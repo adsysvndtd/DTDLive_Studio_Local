@@ -7486,6 +7486,86 @@
           }
         }
       }
+    },
+    "Đang chờ · %@ · cổng ghép nối %@ (tự tìm, không cần nhập)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waiting · %@ · pairing port %@ (found automatically, nothing to type)"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang chờ · %@ · cổng ghép nối %@ (tự tìm, không cần nhập)"
+          }
+        }
+      }
+    },
+    "SRT cổng %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SRT port %@"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SRT cổng %@"
+          }
+        }
+      }
+    },
+    "đang mở cổng…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "opening port…"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "đang mở cổng…"
+          }
+        }
+      }
+    },
+    "Ứng dụng khác (HTTP): %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Other apps (HTTP): %@"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ứng dụng khác (HTTP): %@"
+          }
+        }
+      }
+    },
+    "Chưa bật — bật \"Cho phép DTDLive tìm và ghép nối\" trong Cài đặt › Ingest": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Off — turn on \"Let DTDLive find and pair\" in Settings › Ingest"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chưa bật — bật \"Cho phép DTDLive tìm và ghép nối\" trong Cài đặt › Ingest"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

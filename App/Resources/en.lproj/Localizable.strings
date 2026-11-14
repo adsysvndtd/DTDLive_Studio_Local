@@ -71,6 +71,7 @@
 "Chính + 2 phụ xếp dọc" = "Main + 2 stacked";
 "Chính + 3 phụ xếp dọc" = "Main + 3 stacked";
 "Chính + phụ phải" = "Main + right";
+"Chưa bật — bật \"Cho phép DTDLive tìm và ghép nối\" trong Cài đặt › Ingest" = "Off — turn on \"Let DTDLive find and pair\" in Settings › Ingest";
 "Chưa có NDI SDK. Trên Mac: cài \"NDI SDK for Apple\" từ ndi.video, chạy scripts/ndi-setup.sh rồi build lại — nhận & phát NDI sẽ tự bật." = "No NDI SDK yet. On the Mac: install \"NDI SDK for Apple\" from ndi.video, run scripts/ndi-setup.sh and rebuild — NDI input & output turn on automatically.";
 "Chưa có Wi-Fi" = "No Wi-Fi";
 "Chưa có camera mạng" = "No network cameras yet";
@@ -445,6 +446,7 @@
 "Rộng" = "Width";
 "Rộng tối đa" = "Max width";
 "SRT (một cổng, nhiều streamid)" = "SRT (one port, many streamids)";
+"SRT cổng %@" = "SRT port %@";
 "Satin" = "Satin";
 "Server URL (rtmp:// hoặc rtmps://)" = "Server URL (rtmp:// or rtmps://)";
 "Show đã lưu (Files › DTDStudio › Shows)" = "Saved shows (Files › DTDStudio › Shows)";
@@ -633,6 +635,7 @@
 "Âm thanh" = "Audio";
 "Ô tỉ số" = "Score box";
 "ĐANG REPLAY · DỪNG" = "REPLAY ON AIR · STOP";
+"Đang chờ · %@ · cổng ghép nối %@ (tự tìm, không cần nhập)" = "Waiting · %@ · pairing port %@ (found automatically, nothing to type)";
 "Đang dùng: %.1f Mbps" = "Current: %.1f Mbps";
 "Đang giải mã…" = "Decoding…";
 "Đang kiểm tra %@/%@…" = "Checking %@/%@…";
@@ -723,11 +726,13 @@
 "Đội B" = "Team B";
 "Đội khách" = "Away";
 "Đội nhà" = "Home";
+"đang mở cổng…" = "opening port…";
 "Ảnh" = "Pictures";
 "Ảnh PNG" = "PNG image";
 "Ảnh nền từ Thư viện" = "Background from Photos";
 "Ảnh đại diện" = "Avatars";
 "Ẩn tất cả" = "Hide all";
 "Ứng dụng" = "App";
+"Ứng dụng khác (HTTP): %@" = "Other apps (HTTP): %@";
 "→ Title" = "→ Title";
 "→ Title 2" = "→ Title 2";

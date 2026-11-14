@@ -71,6 +71,7 @@
 "Chính + 2 phụ xếp dọc" = "Chính + 2 phụ xếp dọc";
 "Chính + 3 phụ xếp dọc" = "Chính + 3 phụ xếp dọc";
 "Chính + phụ phải" = "Chính + phụ phải";
+"Chưa bật — bật \"Cho phép DTDLive tìm và ghép nối\" trong Cài đặt › Ingest" = "Chưa bật — bật \"Cho phép DTDLive tìm và ghép nối\" trong Cài đặt › Ingest";
 "Chưa có NDI SDK. Trên Mac: cài \"NDI SDK for Apple\" từ ndi.video, chạy scripts/ndi-setup.sh rồi build lại — nhận & phát NDI sẽ tự bật." = "Chưa có NDI SDK. Trên Mac: cài \"NDI SDK for Apple\" từ ndi.video, chạy scripts/ndi-setup.sh rồi build lại — nhận & phát NDI sẽ tự bật.";
 "Chưa có Wi-Fi" = "Chưa có Wi-Fi";
 "Chưa có camera mạng" = "Chưa có camera mạng";
@@ -445,6 +446,7 @@
 "Rộng" = "Rộng";
 "Rộng tối đa" = "Rộng tối đa";
 "SRT (một cổng, nhiều streamid)" = "SRT (một cổng, nhiều streamid)";
+"SRT cổng %@" = "SRT cổng %@";
 "Satin" = "Satin";
 "Server URL (rtmp:// hoặc rtmps://)" = "Server URL (rtmp:// hoặc rtmps://)";
 "Show đã lưu (Files › DTDStudio › Shows)" = "Show đã lưu (Files › DTDStudio › Shows)";
@@ -633,6 +635,7 @@
 "Âm thanh" = "Âm thanh";
 "Ô tỉ số" = "Ô tỉ số";
 "ĐANG REPLAY · DỪNG" = "ĐANG REPLAY · DỪNG";
+"Đang chờ · %@ · cổng ghép nối %@ (tự tìm, không cần nhập)" = "Đang chờ · %@ · cổng ghép nối %@ (tự tìm, không cần nhập)";
 "Đang dùng: %.1f Mbps" = "Đang dùng: %.1f Mbps";
 "Đang giải mã…" = "Đang giải mã…";
 "Đang kiểm tra %@/%@…" = "Đang kiểm tra %@/%@…";
@@ -723,11 +726,13 @@
 "Đội B" = "Đội B";
 "Đội khách" = "Đội khách";
 "Đội nhà" = "Đội nhà";
+"đang mở cổng…" = "đang mở cổng…";
 "Ảnh" = "Ảnh";
 "Ảnh PNG" = "Ảnh PNG";
 "Ảnh nền từ Thư viện" = "Ảnh nền từ Thư viện";
 "Ảnh đại diện" = "Ảnh đại diện";
 "Ẩn tất cả" = "Ẩn tất cả";
 "Ứng dụng" = "Ứng dụng";
+"Ứng dụng khác (HTTP): %@" = "Ứng dụng khác (HTTP): %@";
 "→ Title" = "→ Title";
 "→ Title 2" = "→ Title 2";

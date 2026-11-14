@@ -308,7 +308,7 @@ struct CategoryContent: View {
             sectionHeader("Camera mạng (SRT · RTSP · RTMP · DTDLive)")
             sourceGrid(net)
             IngestSection(ingest: engine.ingest, pairing: engine.pairing).padding(.top, 8)
-            PairedDevicesSection(pairing: engine.pairing, port: engine.controlPort).padding(.top, 8)
+            PairedDevicesSection(pairing: engine.pairing, port: engine.controlPort, dtdLive: engine.ingest.dtdLive).padding(.top, 8)
         case .settings:
             EmptyView()
         case .pip:
