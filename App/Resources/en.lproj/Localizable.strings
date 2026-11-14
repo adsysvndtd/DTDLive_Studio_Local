@@ -156,6 +156,7 @@
 "Dừng" = "Stop";
 "Dừng nhận" = "Stop";
 "Dừng tất cả" = "Stop all";
+"Facebook giới hạn số lần gọi — tạm dừng 5 phút rồi nhận tiếp" = "Facebook rate limit reached — pausing 5 minutes, then resuming";
 "Facebook phát lên" = "Facebook publishes to";
 "Facebook › Video trực tiếp › Phần mềm phát trực tiếp › Khoá luồng." = "Facebook › Live video › Streaming software › Stream key.";
 "Facebook: giữ bitrate ở mức tối đa Facebook nhận (%@ kbps)" = "Facebook: bitrate held at Facebook's maximum (%@ kbps)";
@@ -605,6 +606,7 @@
 "Xuất thất bại: %lf" = "Export failed: %lf";
 "Xuất thất bại: %lld" = "Export failed: %lld";
 "YouTube Studio › Phát trực tiếp › Khoá luồng." = "YouTube Studio › Go live › Stream key.";
+"YouTube: đã hết hạn mức API hôm nay (đặt lại lúc nửa đêm giờ Thái Bình Dương, khoảng 14–15 giờ VN) — xin tăng hạn mức trong Google Cloud" = "YouTube: today's API quota is used up (resets at midnight Pacific time) — request more quota in Google Cloud";
 "Yêu thích" = "Favorites";
 "bộ trộn âm thanh chưa chạy (kiểm tra quyền micro)" = "audio mixer not running (check microphone permission)";
 "chọn nguồn" = "select source";
@@ -641,6 +643,8 @@
 "Đang lên sóng" = "It's on air";
 "Đang nhận" = "Receiving";
 "Đang nhận (Trang %@)" = "Receiving (Page %@)";
+"Đang nhận (trực tiếp)" = "Receiving (live stream)";
+"Đang nhận trực tiếp (Trang %@)" = "Receiving live (Page %@)";
 "Đang phát" = "Live";
 "Đang tìm buổi live…" = "Looking for the live…";
 "Đang tìm…" = "Searching…";

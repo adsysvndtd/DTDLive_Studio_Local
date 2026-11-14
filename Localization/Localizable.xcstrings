@@ -7422,6 +7422,70 @@
           }
         }
       }
+    },
+    "Facebook giới hạn số lần gọi — tạm dừng 5 phút rồi nhận tiếp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Facebook rate limit reached — pausing 5 minutes, then resuming"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Facebook giới hạn số lần gọi — tạm dừng 5 phút rồi nhận tiếp"
+          }
+        }
+      }
+    },
+    "Đang nhận (trực tiếp)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Receiving (live stream)"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang nhận (trực tiếp)"
+          }
+        }
+      }
+    },
+    "Đang nhận trực tiếp (Trang %@)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Receiving live (Page %@)"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang nhận trực tiếp (Trang %@)"
+          }
+        }
+      }
+    },
+    "YouTube: đã hết hạn mức API hôm nay (đặt lại lúc nửa đêm giờ Thái Bình Dương, khoảng 14–15 giờ VN) — xin tăng hạn mức trong Google Cloud": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube: today's API quota is used up (resets at midnight Pacific time) — request more quota in Google Cloud"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YouTube: đã hết hạn mức API hôm nay (đặt lại lúc nửa đêm giờ Thái Bình Dương, khoảng 14–15 giờ VN) — xin tăng hạn mức trong Google Cloud"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

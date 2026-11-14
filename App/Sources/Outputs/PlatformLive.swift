@@ -318,6 +318,12 @@ final class PlatformLive: NSObject, ObservableObject, ASWebAuthenticationPresent
         return try await api(url, token: t, body: nil, method: "GET")
     }
 
+    /// Token for a Facebook call: the Page's when `page` is set, otherwise the signed-in user's.
+    func facebookToken(page: String?) async throws -> String {
+        if let page { return try await facebookPageToken(page) }
+        return try await facebookAccessToken()
+    }
+
     /// GET on the Facebook Graph API with the signed-in user token (path like "me/live_videos?…").
     func facebookGET(_ path: String, page: String? = nil) async throws -> [String: Any] {
         let t: String

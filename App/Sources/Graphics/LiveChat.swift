@@ -147,7 +147,9 @@ final class LiveChat: ObservableObject {
             var first = true
             var lastStats = Date.distantPast
             while !Task.isCancelled {
-                if let videoID, Date().timeIntervalSince(lastStats) >= 15 {
+                // YouTube quota is 10 000 units/day per Google project (shared by every DTDStudio user):
+                // chat list = 5 units → poll ≥ 10 s; likes/viewers (1 unit) once a minute.
+                if let videoID, Date().timeIntervalSince(lastStats) >= 60 {
                     lastStats = Date()
                     await youtubeStats(videoID)
                 }
@@ -157,41 +159,114 @@ final class LiveChat: ObservableObject {
                 page = j["nextPageToken"] as? String
                 ingest(((j["items"] as? [[String: Any]]) ?? []).compactMap(Self.parse), backlog: first)
                 first = false
-                let wait = max(5.0, Double((j["pollingIntervalMillis"] as? Int) ?? 5000) / 1000)
+                let wait = max(10.0, Double((j["pollingIntervalMillis"] as? Int) ?? 10000) / 1000)
                 try await Task.sleep(nanoseconds: UInt64(wait * 1_000_000_000))
             }
         } catch is CancellationError {
         } catch {
-            ytStatus = LF("Lỗi: %@", error.localizedDescription)
+            ytStatus = error.localizedDescription.lowercased().contains("quota")
+                ? L("YouTube: đã hết hạn mức API hôm nay (đặt lại lúc nửa đêm giờ Thái Bình Dương, khoảng 14–15 giờ VN) — xin tăng hạn mức trong Google Cloud")
+                : LF("Lỗi: %@", error.localizedDescription)
         }
     }
 
     // MARK: Facebook (Graph API: comments of a live video)
 
+    // Meta's call budget: user token 200 calls/hour per user, Page token 4 800 × engaged users per day.
+    // So comments come over ONE streaming connection (Server-Sent Events) when the live video ID is known,
+    // numbers (likes, viewers) once a minute, and a 5-minute pause if Meta reports the limit.
+    private static let fbStatsEvery: TimeInterval = 60
+    private static let fbPollEvery: UInt64 = 10_000_000_000
+
     private func facebookLoop() async {
         do {
-            let (vid, liveID, page) = try await findFacebookVideo()
+            var (vid, liveID, page) = try await findFacebookVideo()
+            if liveID == nil { liveID = await facebookLiveID(forVideo: vid, page: page) }
             fbStatus = page == nil ? L("Đang nhận") : LF("Đang nhận (Trang %@)", PlatformLive.shared.facebookTargetName)
-            var first = true
-            var lastStats = Date.distantPast
-            while !Task.isCancelled {
-                if Date().timeIntervalSince(lastStats) >= 15 {
-                    lastStats = Date()
-                    await facebookStats(video: vid, live: liveID, page: page)
+            let statsTask = Task { [weak self] in
+                while !Task.isCancelled {
+                    await self?.facebookStats(video: vid, live: liveID, page: page)
+                    try? await Task.sleep(nanoseconds: UInt64(Self.fbStatsEvery * 1_000_000_000))
                 }
-                let j = try await PlatformLive.shared.facebookGET(
-                    "\(vid)/comments?fields=id,message,created_time,from%7Bname,picture%7D&order=reverse_chronological&live_filter=no_filter&limit=50",
-                    page: page)
-                let items = ((j["data"] as? [[String: Any]]) ?? []).compactMap(Self.parseFacebook)
-                ingest(items, backlog: first)
-                first = false
-                try await Task.sleep(nanoseconds: 5_000_000_000)
+            }
+            defer { statsTask.cancel() }
+            if let liveID, await facebookStream(live: liveID, page: page) { return }
+            // no streaming (no live video ID, or the stream was refused): poll gently
+            var first = true
+            while !Task.isCancelled {
+                do {
+                    let j = try await PlatformLive.shared.facebookGET(
+                        "\(vid)/comments?fields=id,message,created_time,from%7Bname,picture%7D&order=reverse_chronological&live_filter=no_filter&limit=50",
+                        page: page)
+                    ingest(((j["data"] as? [[String: Any]]) ?? []).compactMap(Self.parseFacebook), backlog: first)
+                    first = false
+                    try await Task.sleep(nanoseconds: Self.fbPollEvery)
+                } catch where Self.isRateLimit(error) {
+                    fbStatus = L("Facebook giới hạn số lần gọi — tạm dừng 5 phút rồi nhận tiếp")
+                    try await Task.sleep(nanoseconds: 300_000_000_000)
+                    fbStatus = L("Đang nhận")
+                }
             }
         } catch is CancellationError {
         } catch {
             fbStatus = LF("Lỗi: %@", error.localizedDescription)
         }
     }
+
+    /// Meta rate-limit errors: (#4) app, (#17) user, (#32) Page, (#613), 80001 Page business use case.
+    static func isRateLimit(_ e: Error) -> Bool {
+        let m = e.localizedDescription.lowercased()
+        return m.contains("(#4)") || m.contains("(#17)") || m.contains("(#32)") || m.contains("(#613)")
+            || m.contains("80001") || m.contains("request limit") || m.contains("too many calls")
+    }
+
+    /// The live video object behind a pasted video ID (needed for the comment stream and viewers).
+    private func facebookLiveID(forVideo video: String, page: String?) async -> String? {
+        guard let j = try? await PlatformLive.shared.facebookGET(
+            "\(page ?? "me")/live_videos?broadcast_status=%5B%22LIVE%22%5D&fields=id,video%7Bid%7D&limit=10", page: page) else { return nil }
+        return ((j["data"] as? [[String: Any]]) ?? []).first { ($0["video"] as? [String: Any])?["id"] as? String == video }?["id"] as? String
+    }
+
+    /// Live comments over Server-Sent Events (streaming-graph.facebook.com). Returns false when the stream
+    /// is refused three times, so the caller falls back to polling.
+    private func facebookStream(live: String, page: String?) async -> Bool {
+        var failures = 0
+        var backoff: UInt64 = 2
+        while !Task.isCancelled {
+            guard failures < 3 else { return false }
+            do {
+                let token = try await PlatformLive.shared.facebookToken(page: page)
+                var c = URLComponents(string: "https://streaming-graph.facebook.com/\(live)/live_comments")!
+                c.queryItems = [.init(name: "access_token", value: token), .init(name: "comment_rate", value: "ten_per_second"),
+                                .init(name: "fields", value: "id,from{name,id,picture},message,created_time")]
+                let (bytes, resp) = try await Self.sse.bytes(from: c.url!)
+                guard (resp as? HTTPURLResponse)?.statusCode == 200 else { failures += 1; throw URLError(.badServerResponse) }
+                failures = 0; backoff = 2
+                fbStatus = page == nil ? L("Đang nhận (trực tiếp)") : LF("Đang nhận trực tiếp (Trang %@)", PlatformLive.shared.facebookTargetName)
+                for try await line in bytes.lines {
+                    if Task.isCancelled { return true }
+                    guard line.hasPrefix("data:"),
+                          let d = line.dropFirst(5).trimmingCharacters(in: .whitespaces).data(using: .utf8),
+                          let o = try? JSONSerialization.jsonObject(with: d) as? [String: Any],
+                          let m = Self.parseFacebook(o) else { continue }
+                    ingest([m], backlog: false)
+                }
+            } catch is CancellationError {
+                return true
+            } catch {}
+            if Task.isCancelled { return true }
+            try? await Task.sleep(nanoseconds: backoff * 1_000_000_000)
+            backoff = min(backoff * 2, 30)
+        }
+        return true
+    }
+
+    private static let sse: URLSession = {
+        let c = URLSessionConfiguration.default
+        c.timeoutIntervalForRequest = 120          // the stream sends keep-alives; a long idle read is normal
+        c.timeoutIntervalForResource = 24 * 3600
+        return URLSession(configuration: c)
+    }()
 
     /// Video ID from what the operator pasted: a bare ID, …/videos/123…, watch/?v=123…, or a share link
     /// (facebook.com/share/v/…, fb.watch/…) which is followed to the real video URL.

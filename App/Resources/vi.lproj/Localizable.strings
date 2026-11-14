@@ -156,6 +156,7 @@
 "Dừng" = "Dừng";
 "Dừng nhận" = "Dừng nhận";
 "Dừng tất cả" = "Dừng tất cả";
+"Facebook giới hạn số lần gọi — tạm dừng 5 phút rồi nhận tiếp" = "Facebook giới hạn số lần gọi — tạm dừng 5 phút rồi nhận tiếp";
 "Facebook phát lên" = "Facebook phát lên";
 "Facebook › Video trực tiếp › Phần mềm phát trực tiếp › Khoá luồng." = "Facebook › Video trực tiếp › Phần mềm phát trực tiếp › Khoá luồng.";
 "Facebook: giữ bitrate ở mức tối đa Facebook nhận (%@ kbps)" = "Facebook: giữ bitrate ở mức tối đa Facebook nhận (%@ kbps)";
@@ -605,6 +606,7 @@
 "Xuất thất bại: %lf" = "Xuất thất bại: %lf";
 "Xuất thất bại: %lld" = "Xuất thất bại: %lld";
 "YouTube Studio › Phát trực tiếp › Khoá luồng." = "YouTube Studio › Phát trực tiếp › Khoá luồng.";
+"YouTube: đã hết hạn mức API hôm nay (đặt lại lúc nửa đêm giờ Thái Bình Dương, khoảng 14–15 giờ VN) — xin tăng hạn mức trong Google Cloud" = "YouTube: đã hết hạn mức API hôm nay (đặt lại lúc nửa đêm giờ Thái Bình Dương, khoảng 14–15 giờ VN) — xin tăng hạn mức trong Google Cloud";
 "Yêu thích" = "Yêu thích";
 "bộ trộn âm thanh chưa chạy (kiểm tra quyền micro)" = "bộ trộn âm thanh chưa chạy (kiểm tra quyền micro)";
 "chọn nguồn" = "chọn nguồn";
@@ -641,6 +643,8 @@
 "Đang lên sóng" = "Đang lên sóng";
 "Đang nhận" = "Đang nhận";
 "Đang nhận (Trang %@)" = "Đang nhận (Trang %@)";
+"Đang nhận (trực tiếp)" = "Đang nhận (trực tiếp)";
+"Đang nhận trực tiếp (Trang %@)" = "Đang nhận trực tiếp (Trang %@)";
 "Đang phát" = "Đang phát";
 "Đang tìm buổi live…" = "Đang tìm buổi live…";
 "Đang tìm…" = "Đang tìm…";
