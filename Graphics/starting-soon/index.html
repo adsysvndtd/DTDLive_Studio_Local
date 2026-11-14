@@ -1,0 +1,76 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=1920,height=1080">
+<title>Màn chờ</title>
+<!-- DTD Studio · màn chờ toàn màn hình (thiết kế gốc DTD): Sắp bắt đầu / Quay lại ngay. Số phút để trống = không đếm ngược. next() = đếm lại từ đầu. -->
+<style>
+  html,body{margin:0;width:1920px;height:1080px;background:transparent;overflow:hidden;
+    font-family:"Montserrat","Avenir Next","Helvetica Neue",-apple-system,sans-serif}
+  :root{--accent:#6C5CE7;--accent2:#00C2A8;--bg:#0B0E1A}
+  .pg{position:absolute;box-sizing:border-box}
+  .scene{inset:0;background:var(--bg);overflow:hidden;opacity:0}
+  .blob{width:1200px;height:1200px;border-radius:50%;opacity:.6}
+  .b1{left:-420px;top:-460px;background:radial-gradient(circle,var(--accent) 0,transparent 62%);animation:drift1 14s ease-in-out infinite alternate}
+  .b2{right:-460px;bottom:-520px;background:radial-gradient(circle,var(--accent2) 0,transparent 62%);animation:drift2 17s ease-in-out infinite alternate}
+  .grid{inset:0;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);
+        background-size:80px 80px;-webkit-mask:radial-gradient(circle at 50% 50%,#000 30%,transparent 75%);mask:radial-gradient(circle at 50% 50%,#000 30%,transparent 75%)}
+  .center{left:0;right:0;top:0;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+  .logo{max-height:150px;max-width:520px;object-fit:contain;margin-bottom:46px;display:none;opacity:0;transform:translateY(-30px)}
+  .logo.on{display:block}
+  .title{color:#fff;font-weight:900;font-size:128px;letter-spacing:6px;text-transform:uppercase;line-height:1;opacity:0;transform:translateY(40px)}
+  .line{width:0;height:8px;border-radius:4px;margin:44px 0 36px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+  .sub{color:rgba(255,255,255,.78);font-weight:600;font-size:40px;opacity:0}
+  .count{margin-top:26px;color:#fff;font-weight:800;font-size:110px;font-variant-numeric:tabular-nums;letter-spacing:4px;opacity:0;
+        text-shadow:0 0 40px var(--accent)}
+  .foot{left:0;right:0;bottom:60px;text-align:center;color:rgba(255,255,255,.55);font-weight:600;font-size:30px;letter-spacing:2px;opacity:0}
+  /* ---- hiệu ứng ---- */
+  .on .scene{animation:fade .6s ease-out forwards}
+  .on .logo{animation:show .6s .3s ease-out forwards}
+  .on .title{animation:show .7s .4s cubic-bezier(.2,.9,.3,1) forwards}
+  .on .line{animation:line .7s .75s cubic-bezier(.7,0,.2,1) forwards}
+  .on .sub{animation:fade .5s 1s ease-out forwards}
+  .on .count{animation:fade .5s 1.15s ease-out forwards}
+  .on .foot{animation:fade .5s 1.3s ease-out forwards}
+  .off .scene,.off .logo,.off .title,.off .sub,.off .count,.off .foot{opacity:1;transform:none}.off .line{width:420px}
+  .off .scene{animation:fadeOut .6s ease-in forwards}
+  @keyframes fade{to{opacity:1}}
+  @keyframes fadeOut{to{opacity:0}}
+  @keyframes show{to{opacity:1;transform:none}}
+  @keyframes line{to{width:420px}}
+  @keyframes drift1{to{transform:translate(380px,240px) scale(1.15)}}
+  @keyframes drift2{to{transform:translate(-420px,-200px) scale(.9)}}
+  .hide{display:none!important}
+</style></head>
+<body><div id="root">
+  <div class="pg scene" data-layer="scene" data-label="Nền">
+    <div class="pg blob b1"></div><div class="pg blob b2"></div><div class="pg grid"></div>
+    <div class="pg center">
+      <img class="logo" id="logo" data-field="logo" data-type="image" alt="">
+      <div class="title" data-field="title" data-label="Tiêu đề">SẮP BẮT ĐẦU</div>
+      <div class="line"></div>
+      <div class="sub" data-field="sub" data-label="Dòng phụ">Chương trình sẽ bắt đầu sau</div>
+      <div class="count" id="count">05:00</div>
+    </div>
+    <div class="pg foot" id="foot" data-field="foot" data-label="Chân trang">DTD Studio · Cảm ơn quý vị đã chờ</div>
+  </div>
+</div>
+<script>
+  const root=document.getElementById('root'),count=document.getElementById('count');
+  let minutes=5,endText='Bắt đầu ngay!',end=0,timer=0;
+  function fmt(s){s=Math.max(0,Math.ceil(s));const m=Math.floor(s/60),r=s%60;return String(m).padStart(2,'0')+':'+String(r).padStart(2,'0');}
+  function draw(){if(!(minutes>0)){count.classList.add('hide');return;}count.classList.remove('hide');
+    const left=end?(end-Date.now())/1000:minutes*60;count.textContent=left>0?fmt(left):endText;}
+  function start(){end=minutes>0?Date.now()+minutes*60000:0;clearInterval(timer);timer=setInterval(draw,250);draw();}
+  function update(d){if(typeof d==='string')d=JSON.parse(d);
+    for(const k in d){const v=String(d[k]??'');
+      if(k==='accent'||k==='accent2'||k.startsWith('--')){document.documentElement.style.setProperty(k.startsWith('--')?k:'--'+k,v);continue;}
+      if(k==='minutes'){const n=parseFloat(v.replace(',','.'));const changed=n!==minutes;minutes=isFinite(n)?n:0;if(changed&&end)start();draw();continue;}
+      if(k==='endText'){endText=v;draw();continue;}
+      if(k==='logo'){const on=v.trim().length>0;const img=document.getElementById('logo');img.classList.toggle('on',on);if(on)img.src=v;else img.removeAttribute('src');continue;}
+      document.querySelectorAll('[data-field="'+k+'"]').forEach(e=>e.textContent=v);
+      if(k==='sub'||k==='foot')document.querySelector('[data-field="'+k+'"]').classList.toggle('hide',!v.trim());
+    }}
+  function play(){root.className='';void root.offsetWidth;root.className='on';start();}
+  function stop(){root.className='off';setTimeout(()=>clearInterval(timer),700);}
+  function next(){start();}
+  draw();
+</script></body></html>

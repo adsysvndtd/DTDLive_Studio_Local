@@ -1,0 +1,70 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=1920,height=1080">
+<title>Banner podcast</title>
+<!-- DTD Studio · banner podcast (thiết kế gốc DTD). Biểu tượng micro (hoặc logo), tên chương trình, tiêu đề tập, khách mời, sóng âm động. -->
+<style>
+  html,body{margin:0;width:1920px;height:1080px;background:transparent;overflow:hidden;
+    font-family:"Montserrat","Avenir Next","Helvetica Neue",-apple-system,sans-serif}
+  :root{--accent:#F5A623;--card:rgba(16,18,26,.9);--ink:#fff}
+  .pg{position:absolute;box-sizing:border-box}
+  .card{left:80px;bottom:90px;height:190px;display:flex;align-items:center;background:var(--card);border-radius:95px 28px 28px 95px;
+        padding:0 54px 0 0;box-shadow:0 18px 50px rgba(0,0,0,.35);transform-origin:left center;transform:scaleX(0);max-width:1500px}
+  .disc{width:190px;height:190px;flex:none;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;
+        box-shadow:0 0 0 8px rgba(255,255,255,.08);transform:scale(0) rotate(-90deg);overflow:hidden}
+  .disc svg{width:96px;height:96px}
+  .disc img{width:150px;height:150px;object-fit:contain;display:none}
+  .disc.has-logo img{display:block}.disc.has-logo svg{display:none}
+  .txt{padding-left:40px;min-width:0;opacity:0;transform:translateX(-30px)}
+  .show{color:var(--accent);font-weight:800;font-size:26px;letter-spacing:5px;text-transform:uppercase;display:flex;align-items:center;gap:22px}
+  .eq{display:flex;align-items:flex-end;gap:5px;height:28px}
+  .eq i{width:6px;height:100%;background:var(--accent);border-radius:3px;transform-origin:bottom;animation:eq 1s ease-in-out infinite}
+  .eq i:nth-child(2){animation-delay:-.2s}.eq i:nth-child(3){animation-delay:-.5s}.eq i:nth-child(4){animation-delay:-.7s}
+  .eq i:nth-child(5){animation-delay:-.35s}.eq i:nth-child(6){animation-delay:-.85s}
+  .title{color:var(--ink);font-weight:800;font-size:56px;line-height:1.1;margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .guest{color:rgba(255,255,255,.75);font-weight:600;font-size:30px;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .guest b{color:var(--accent);font-weight:700}
+  /* ---- hiệu ứng ---- */
+  .on .card{animation:grow .6s .15s cubic-bezier(.7,0,.2,1) forwards}
+  .on .disc{animation:pop .55s cubic-bezier(.2,1.4,.4,1) forwards}
+  .on .txt{animation:show .45s .6s ease-out forwards}
+  .off .card,.off .disc,.off .txt{transform:none;opacity:1}
+  .off .txt{animation:hideTxt .25s ease-in forwards}
+  .off .card{animation:shrink .45s .15s cubic-bezier(.7,0,.8,.4) forwards,cardOut .3s .6s ease-in forwards}
+  .off .disc{animation:popOut .35s .45s ease-in forwards}
+  @keyframes grow{to{transform:none}}
+  @keyframes pop{to{transform:none}}
+  @keyframes show{to{opacity:1;transform:none}}
+  @keyframes hideTxt{to{opacity:0}}
+  @keyframes shrink{to{transform:scaleX(.13)}}
+  @keyframes cardOut{to{opacity:0}}
+  @keyframes popOut{to{transform:scale(0) rotate(90deg)}}
+  @keyframes eq{0%,100%{transform:scaleY(.25)}50%{transform:scaleY(1)}}
+  .hide{display:none!important}
+</style></head>
+<body><div id="root">
+  <div class="pg card" data-layer="card" data-label="Khung podcast">
+    <div class="disc" id="disc" data-layer="disc" data-label="Vòng micro / logo">
+      <svg viewBox="0 0 64 64" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"><rect x="22" y="6" width="20" height="34" rx="10" fill="#fff" stroke="none"/><path d="M14 30a18 18 0 0 0 36 0M32 48v10M22 58h20"/></svg>
+      <img data-field="logo" data-type="image" alt="">
+    </div>
+    <div class="txt">
+      <div class="show"><span data-field="show" data-label="Tên chương trình">DTD PODCAST</span><span class="eq"><i></i><i></i><i></i><i></i><i></i><i></i></span></div>
+      <div class="title" data-field="title" data-label="Tiêu đề tập">Câu chuyện công nghệ cuối tuần</div>
+      <div class="guest" id="guestLine"><b data-field="guestLabel" data-label="Nhãn khách mời">Khách mời:</b> <span data-field="guest" data-label="Khách mời">Nguyễn Văn A</span></div>
+    </div>
+  </div>
+</div>
+<script>
+  const root=document.getElementById('root');
+  function update(d){if(typeof d==='string')d=JSON.parse(d);
+    for(const k in d){const v=String(d[k]??'');
+      if(k==='accent'||k.startsWith('--')){document.documentElement.style.setProperty(k==='accent'?'--accent':k,v);continue;}
+      if(k==='logo'){const img=document.querySelector('#disc img');const on=v.trim().length>0;
+        document.getElementById('disc').classList.toggle('has-logo',on);if(on)img.src=v;else img.removeAttribute('src');continue;}
+      document.querySelectorAll('[data-field="'+k+'"]').forEach(e=>e.textContent=v);
+      if(k==='guest')document.getElementById('guestLine').classList.toggle('hide',!v.trim());
+    }}
+  function play(){root.className='';void root.offsetWidth;root.className='on';}
+  function stop(){root.className='off';}
+  function next(){}
+</script></body></html>

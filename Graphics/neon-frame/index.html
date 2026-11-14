@@ -1,0 +1,74 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=1920,height=1080">
+<title>Khung neon livestream</title>
+<!-- DTD Studio · khung neon livestream (thiết kế gốc DTD). Viền phát sáng chạy màu quanh khung hình, nhãn tên kênh góc dưới trái, LIVE góc trên phải. -->
+<style>
+  html,body{margin:0;width:1920px;height:1080px;background:transparent;overflow:hidden;
+    font-family:"Montserrat","Avenir Next","Helvetica Neue",-apple-system,sans-serif}
+  :root{--accent:#00E5FF;--accent2:#FF2BD6;--glass:rgba(8,10,22,.78)}
+  .pg{position:absolute;box-sizing:border-box}
+  .frame{inset:26px;border-radius:30px;padding:7px;opacity:0;transform:scale(1.04);
+        background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent),var(--accent2),var(--accent));background-size:400% 100%;
+        -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;
+        mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);
+        filter:drop-shadow(0 0 10px var(--accent)) drop-shadow(0 0 22px var(--accent2));
+        animation:flow 6s linear infinite}
+  .corner{width:120px;height:120px;border:0 solid #fff;opacity:0}
+  .c1{left:14px;top:14px;border-left-width:6px;border-top-width:6px;border-top-left-radius:38px}
+  .c2{right:14px;bottom:14px;border-right-width:6px;border-bottom-width:6px;border-bottom-right-radius:38px}
+  .corner{filter:drop-shadow(0 0 8px #fff)}
+  .tag{left:70px;bottom:70px;display:flex;align-items:center;gap:22px;padding:18px 36px 18px 18px;border-radius:22px;
+        background:var(--glass);border:3px solid var(--accent);box-shadow:0 0 18px var(--accent),inset 0 0 18px rgba(0,229,255,.25);
+        opacity:0;transform:translateX(-60px)}
+  .avatar{width:96px;height:96px;border-radius:50%;border:4px solid var(--accent2);box-shadow:0 0 14px var(--accent2);
+        background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;overflow:hidden;
+        color:#fff;font-weight:900;font-size:40px}
+  .avatar img{width:100%;height:100%;object-fit:cover;display:none}
+  .avatar.has-logo img{display:block}.avatar.has-logo span{display:none}
+  .name{color:#fff;font-weight:800;font-size:48px;line-height:1.05;text-shadow:0 0 12px var(--accent)}
+  .handle{color:var(--accent);font-weight:700;font-size:28px;margin-top:6px;letter-spacing:1px}
+  .live{right:70px;top:66px;display:flex;align-items:center;gap:14px;padding:12px 28px;border-radius:40px;
+        border:3px solid var(--accent2);color:#fff;font-weight:900;font-size:32px;letter-spacing:3px;background:var(--glass);
+        box-shadow:0 0 18px var(--accent2);text-shadow:0 0 10px var(--accent2);opacity:0;transform:translateY(-40px)}
+  .dot{width:18px;height:18px;border-radius:50%;background:var(--accent2);box-shadow:0 0 12px var(--accent2);animation:pulse 1.1s ease-in-out infinite}
+  /* ---- hiệu ứng ---- */
+  .on .frame{animation:flow 6s linear infinite,frameIn .6s cubic-bezier(.2,.9,.3,1) forwards}
+  .on .corner{animation:flick .7s .3s steps(1) forwards}
+  .on .tag{animation:show .5s .45s cubic-bezier(.2,.9,.3,1) forwards}
+  .on .live{animation:show .5s .6s cubic-bezier(.2,.9,.3,1) forwards}
+  .off .frame,.off .corner,.off .tag,.off .live{opacity:1;transform:none}
+  #root.off>*{animation:fadeOut .45s ease-in forwards!important}
+  @keyframes flow{to{background-position:400% 0}}
+  @keyframes frameIn{to{opacity:1;transform:none}}
+  @keyframes flick{0%{opacity:1}15%{opacity:0}30%{opacity:1}45%{opacity:.3}60%,100%{opacity:1}}
+  @keyframes show{to{opacity:1;transform:none}}
+  @keyframes fadeOut{to{opacity:0}}
+  @keyframes pulse{50%{opacity:.3}}
+  .hide{display:none!important}
+</style></head>
+<body><div id="root">
+  <div class="pg frame" data-layer="frame" data-label="Viền neon"></div>
+  <div class="pg corner c1"></div><div class="pg corner c2"></div>
+  <div class="pg tag" data-layer="tag" data-label="Nhãn kênh">
+    <div class="avatar" id="avatar"><img data-field="logo" data-type="image" alt=""><span id="initial">D</span></div>
+    <div><div class="name" data-field="name" data-label="Tên kênh">DTD Gaming</div>
+      <div class="handle" id="handle" data-field="handle" data-label="Tài khoản / lời chào">@dtdstudio · Cảm ơn đã theo dõi!</div></div>
+  </div>
+  <div class="pg live" id="live" data-layer="live" data-label="Nhãn LIVE"><span class="dot"></span><span data-field="live" data-label="Chữ LIVE">LIVE</span></div>
+</div>
+<script>
+  const root=document.getElementById('root');
+  function update(d){if(typeof d==='string')d=JSON.parse(d);
+    for(const k in d){const v=String(d[k]??'');
+      if(k==='accent'||k==='accent2'||k.startsWith('--')){document.documentElement.style.setProperty(k.startsWith('--')?k:'--'+k,v);continue;}
+      if(k==='logo'){const img=document.querySelector('#avatar img');const on=v.trim().length>0;
+        document.getElementById('avatar').classList.toggle('has-logo',on);if(on)img.src=v;else img.removeAttribute('src');continue;}
+      document.querySelectorAll('[data-field="'+k+'"]').forEach(e=>e.textContent=v);
+      if(k==='name')document.getElementById('initial').textContent=(v.trim()[0]||'').toUpperCase();
+      if(k==='handle')document.getElementById('handle').classList.toggle('hide',!v.trim());
+      if(k==='live')document.getElementById('live').classList.toggle('hide',!v.trim());
+    }}
+  function play(){root.className='';void root.offsetWidth;root.className='on';}
+  function stop(){root.className='off';}
+  function next(){}
+</script></body></html>

@@ -423,6 +423,326 @@
           "type": "color"
         }
       ]
+    },
+    {
+      "id": "news-frame",
+      "name": "Khung bản tin trực tiếp · Xanh",
+      "entry": "news-frame/index.html",
+      "fields": [
+        {
+          "id": "channel",
+          "label": "Tên kênh",
+          "default": "DTD NEWS"
+        },
+        {
+          "id": "logo",
+          "label": "Logo (thay tên kênh)",
+          "default": "",
+          "type": "image"
+        },
+        {
+          "id": "live",
+          "label": "Chữ LIVE (trống = ẩn)",
+          "default": "TRỰC TIẾP"
+        },
+        {
+          "id": "headline",
+          "label": "Tiêu đề",
+          "default": "TIÊU ĐỀ BẢN TIN TRỰC TIẾP"
+        },
+        {
+          "id": "sub",
+          "label": "Dòng phụ",
+          "default": "Thông tin bổ sung cho tiêu đề"
+        },
+        {
+          "id": "tickerLabel",
+          "label": "Nhãn chữ chạy",
+          "default": "TIN NHANH"
+        },
+        {
+          "id": "ticker",
+          "label": "Chữ chạy (ngăn bằng |, trống = ẩn)",
+          "default": "Chào mừng quý vị đến với bản tin trực tiếp | Phát sóng từ DTD Studio"
+        },
+        {
+          "id": "clock",
+          "label": "Giờ (trống = giờ thực, - = ẩn)",
+          "default": ""
+        },
+        {
+          "id": "accent",
+          "label": "Màu nhấn",
+          "default": "#1F6FEB",
+          "type": "color"
+        }
+      ]
+    },
+    {
+      "id": "news-frame-red",
+      "name": "Khung bản tin trực tiếp · Đỏ",
+      "entry": "news-frame/index.html",
+      "fields": [
+        {
+          "id": "channel",
+          "label": "Tên kênh",
+          "default": "DTD NEWS"
+        },
+        {
+          "id": "logo",
+          "label": "Logo (thay tên kênh)",
+          "default": "",
+          "type": "image"
+        },
+        {
+          "id": "live",
+          "label": "Chữ LIVE (trống = ẩn)",
+          "default": "TRỰC TIẾP"
+        },
+        {
+          "id": "headline",
+          "label": "Tiêu đề",
+          "default": "TIÊU ĐỀ BẢN TIN TRỰC TIẾP"
+        },
+        {
+          "id": "sub",
+          "label": "Dòng phụ",
+          "default": "Thông tin bổ sung cho tiêu đề"
+        },
+        {
+          "id": "tickerLabel",
+          "label": "Nhãn chữ chạy",
+          "default": "TIN NHANH"
+        },
+        {
+          "id": "ticker",
+          "label": "Chữ chạy (ngăn bằng |, trống = ẩn)",
+          "default": "Chào mừng quý vị đến với bản tin trực tiếp | Phát sóng từ DTD Studio"
+        },
+        {
+          "id": "clock",
+          "label": "Giờ (trống = giờ thực, - = ẩn)",
+          "default": ""
+        },
+        {
+          "id": "accent",
+          "label": "Màu nhấn",
+          "default": "#C8102E",
+          "type": "color"
+        }
+      ]
+    },
+    {
+      "id": "breaking",
+      "name": "Tin nóng",
+      "entry": "breaking/index.html",
+      "fields": [
+        {
+          "id": "flash",
+          "label": "Chữ lớn",
+          "default": "TIN NÓNG"
+        },
+        {
+          "id": "tagSub",
+          "label": "Chữ nhỏ dưới nhãn",
+          "default": "MỚI NHẤT"
+        },
+        {
+          "id": "headline",
+          "label": "Tiêu đề",
+          "default": "TIÊU ĐỀ TIN NÓNG VỪA CẬP NHẬT"
+        },
+        {
+          "id": "sub",
+          "label": "Dòng phụ",
+          "default": "Thông tin chi tiết đang được cập nhật"
+        },
+        {
+          "id": "accent",
+          "label": "Màu nhấn",
+          "default": "#D7141A",
+          "type": "color"
+        }
+      ]
+    },
+    {
+      "id": "neon-frame",
+      "name": "Khung neon livestream",
+      "entry": "neon-frame/index.html",
+      "fields": [
+        {
+          "id": "name",
+          "label": "Tên kênh",
+          "default": "DTD Gaming"
+        },
+        {
+          "id": "handle",
+          "label": "Tài khoản / lời chào",
+          "default": "@dtdstudio · Cảm ơn đã theo dõi!"
+        },
+        {
+          "id": "logo",
+          "label": "Ảnh đại diện / logo",
+          "default": "",
+          "type": "image"
+        },
+        {
+          "id": "live",
+          "label": "Chữ LIVE (trống = ẩn)",
+          "default": "LIVE"
+        },
+        {
+          "id": "accent",
+          "label": "Màu 1",
+          "default": "#00E5FF",
+          "type": "color"
+        },
+        {
+          "id": "accent2",
+          "label": "Màu 2",
+          "default": "#FF2BD6",
+          "type": "color"
+        }
+      ]
+    },
+    {
+      "id": "podcast",
+      "name": "Banner podcast",
+      "entry": "podcast/index.html",
+      "fields": [
+        {
+          "id": "show",
+          "label": "Tên chương trình",
+          "default": "DTD PODCAST"
+        },
+        {
+          "id": "title",
+          "label": "Tiêu đề tập",
+          "default": "Câu chuyện công nghệ cuối tuần"
+        },
+        {
+          "id": "guestLabel",
+          "label": "Nhãn khách mời",
+          "default": "Khách mời:"
+        },
+        {
+          "id": "guest",
+          "label": "Khách mời (trống = ẩn)",
+          "default": "Nguyễn Văn A"
+        },
+        {
+          "id": "logo",
+          "label": "Logo (thay micro)",
+          "default": "",
+          "type": "image"
+        },
+        {
+          "id": "accent",
+          "label": "Màu nhấn",
+          "default": "#F5A623",
+          "type": "color"
+        }
+      ]
+    },
+    {
+      "id": "starting-soon",
+      "name": "Màn chờ · Sắp bắt đầu",
+      "entry": "starting-soon/index.html",
+      "fields": [
+        {
+          "id": "title",
+          "label": "Tiêu đề",
+          "default": "SẮP BẮT ĐẦU"
+        },
+        {
+          "id": "sub",
+          "label": "Dòng phụ",
+          "default": "Chương trình sẽ bắt đầu sau"
+        },
+        {
+          "id": "minutes",
+          "label": "Số phút đếm ngược (trống = không)",
+          "default": "5"
+        },
+        {
+          "id": "endText",
+          "label": "Chữ khi hết giờ",
+          "default": "Bắt đầu ngay!"
+        },
+        {
+          "id": "foot",
+          "label": "Chân trang",
+          "default": "DTD Studio · Cảm ơn quý vị đã chờ"
+        },
+        {
+          "id": "logo",
+          "label": "Logo",
+          "default": "",
+          "type": "image"
+        },
+        {
+          "id": "accent",
+          "label": "Màu 1",
+          "default": "#6C5CE7",
+          "type": "color"
+        },
+        {
+          "id": "accent2",
+          "label": "Màu 2",
+          "default": "#00C2A8",
+          "type": "color"
+        }
+      ]
+    },
+    {
+      "id": "be-right-back",
+      "name": "Màn chờ · Quay lại ngay",
+      "entry": "starting-soon/index.html",
+      "fields": [
+        {
+          "id": "title",
+          "label": "Tiêu đề",
+          "default": "SẼ QUAY LẠI NGAY"
+        },
+        {
+          "id": "sub",
+          "label": "Dòng phụ",
+          "default": "Chúng tôi sẽ trở lại sau ít phút"
+        },
+        {
+          "id": "minutes",
+          "label": "Số phút đếm ngược (trống = không)",
+          "default": ""
+        },
+        {
+          "id": "endText",
+          "label": "Chữ khi hết giờ",
+          "default": "Bắt đầu ngay!"
+        },
+        {
+          "id": "foot",
+          "label": "Chân trang",
+          "default": "DTD Studio · Cảm ơn quý vị đã chờ"
+        },
+        {
+          "id": "logo",
+          "label": "Logo",
+          "default": "",
+          "type": "image"
+        },
+        {
+          "id": "accent",
+          "label": "Màu 1",
+          "default": "#6C5CE7",
+          "type": "color"
+        },
+        {
+          "id": "accent2",
+          "label": "Màu 2",
+          "default": "#00C2A8",
+          "type": "color"
+        }
+      ]
     }
   ]
 }

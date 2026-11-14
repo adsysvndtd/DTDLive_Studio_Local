@@ -17,6 +17,18 @@ Mỗi trang phải có 4 hàm toàn cục (giống chuẩn template CasparCG):
 
 Dùng CSS animation / Web Animations; không tải thư viện từ Internet (app có thể chạy không mạng).
 
+## Bộ overlay phát sóng (thiết kế gốc DTD)
+
+| Thư mục | Mẫu | Ghi chú |
+|---|---|---|
+| `news-frame` | Khung bản tin trực tiếp (Xanh, Đỏ) | Tên kênh/logo + LIVE + giờ ở trên; tiêu đề, dòng phụ, chữ chạy ở dưới. Chữ chạy trống thì ẩn; giờ `-` thì ẩn |
+| `breaking` | Tin nóng | Dải chữ lớn quét ngang rồi thu thành nhãn, tiêu đề trượt ra. **Tiếp** = chạy lại hiệu ứng |
+| `neon-frame` | Khung neon livestream | Viền phát sáng chạy màu (2 màu), nhãn kênh + ảnh đại diện, LIVE |
+| `podcast` | Banner podcast | Micro (hoặc logo), tên chương trình, tiêu đề tập, khách mời, sóng âm động |
+| `starting-soon` | Màn chờ · Sắp bắt đầu / Quay lại ngay | Toàn màn hình, nền động, đếm ngược theo số phút (trống = không đếm). **Tiếp** = đếm lại |
+
+Không dùng tài nguyên tải từ thư viện ảnh stock (Freepik/Magnific…): giấy phép của họ không cho đóng gói vào app làm template.
+
 ## Nhập file HTML của riêng bạn (trong app: Đồ hoạ HTML5 › Nhập HTML)
 
 Chọn một file `.html` hoặc cả thư mục (có `index.html` + ảnh, font, css). App tự tìm phần sửa được:

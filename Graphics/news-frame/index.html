@@ -1,0 +1,97 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=1920,height=1080">
+<title>Khung bản tin trực tiếp</title>
+<!-- DTD Studio · khung bản tin trực tiếp (thiết kế gốc DTD). Nhãn kênh + LIVE + giờ ở trên, tiêu đề + chữ chạy ở dưới. -->
+<style>
+  html,body{margin:0;width:1920px;height:1080px;background:transparent;overflow:hidden;
+    font-family:"Montserrat","Avenir Next","Helvetica Neue",-apple-system,sans-serif}
+  :root{--accent:#1F6FEB;--live:#E5202E;--ink:#111722;--paper:#fff}
+  .pg{position:absolute;box-sizing:border-box}
+  /* ---- trên ---- */
+  .top{left:64px;top:48px;display:flex;align-items:stretch;height:72px;opacity:0;transform:translateY(-40px)}
+  .chan{background:var(--accent);color:#fff;font-weight:800;font-size:34px;letter-spacing:1px;text-transform:uppercase;
+        padding:0 30px;display:flex;align-items:center;gap:16px;clip-path:polygon(0 0,100% 0,calc(100% - 18px) 100%,0 100%);padding-right:44px}
+  .chan img{height:48px;max-width:220px;object-fit:contain;display:none}
+  .chan.has-logo img{display:block}.chan.has-logo .name{display:none}
+  .live{margin-left:-8px;background:var(--paper);color:var(--live);font-weight:900;font-size:30px;letter-spacing:2px;
+        display:flex;align-items:center;gap:14px;padding:0 30px 0 34px;clip-path:polygon(18px 0,100% 0,calc(100% - 18px) 100%,0 100%)}
+  .dot{width:18px;height:18px;border-radius:50%;background:var(--live);animation:pulse 1.2s ease-in-out infinite}
+  .clockbox{right:64px;top:48px;height:72px;min-width:170px;background:rgba(12,16,24,.82);color:#fff;font-weight:700;font-size:36px;
+        display:flex;align-items:center;justify-content:center;padding:0 26px;border-bottom:5px solid var(--accent);
+        font-variant-numeric:tabular-nums;opacity:0;transform:translateY(-40px)}
+  /* ---- dưới ---- */
+  .low{left:64px;right:64px;bottom:118px;height:200px}
+  .head{left:0;top:0;right:0;height:120px;background:var(--paper);display:flex;align-items:center;
+        transform-origin:left;transform:scaleX(0)}
+  .head:before{content:"";position:absolute;left:0;top:0;bottom:0;width:16px;background:var(--accent)}
+  .headline{padding:0 48px 0 52px;color:var(--ink);font-weight:800;font-size:58px;line-height:1.05;text-transform:uppercase;
+        white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:0;transform:translateY(20px)}
+  .sub{left:0;top:120px;height:62px;max-width:100%;background:var(--accent);color:#fff;font-weight:600;font-size:30px;
+        display:flex;align-items:center;padding:0 40px 0 52px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+        clip-path:polygon(0 0,100% 0,calc(100% - 26px) 100%,0 100%);padding-right:60px;opacity:0;transform:translateY(-20px)}
+  .tick{left:0;right:0;bottom:30px;height:70px;display:flex;background:rgba(10,13,20,.94);transform:translateY(130px)}
+  .tlabel{background:var(--live);color:#fff;font-weight:900;font-size:28px;letter-spacing:1px;padding:0 30px;display:flex;align-items:center;white-space:nowrap;z-index:2;text-transform:uppercase}
+  .lane{flex:1;overflow:hidden;position:relative}
+  .run{position:absolute;top:0;height:70px;display:flex;align-items:center;white-space:nowrap;color:#fff;font-size:32px;font-weight:600}
+  .run span{padding:0 56px}.run span:after{content:"";display:inline-block;width:12px;height:12px;background:var(--accent);transform:rotate(45deg);margin-left:112px;vertical-align:middle}
+  /* ---- hiệu ứng ---- */
+  .on .top,.on .clockbox{animation:show .5s cubic-bezier(.2,.9,.3,1) forwards}
+  .on .clockbox{animation-delay:.1s}
+  .on .head{animation:wipe .55s .15s cubic-bezier(.7,0,.2,1) forwards}
+  .on .headline{animation:show .45s .55s ease-out forwards}
+  .on .sub{animation:show .4s .75s ease-out forwards}
+  .on .tick{animation:show .5s .35s cubic-bezier(.2,.9,.3,1) forwards}
+  .off .top,.off .clockbox,.off .headline,.off .sub{opacity:1;transform:none}.off .head,.off .tick{transform:none}
+  .off .top,.off .clockbox{animation:upOut .45s ease-in forwards}
+  .off .low{animation:fadeOut .45s ease-in forwards}
+  .off .tick{animation:downOut .45s ease-in forwards}
+  @keyframes show{to{opacity:1;transform:none}}
+  @keyframes wipe{to{transform:none}}
+  @keyframes upOut{to{opacity:0;transform:translateY(-60px)}}
+  @keyframes downOut{to{transform:translateY(130px)}}
+  @keyframes fadeOut{to{opacity:0;transform:translateX(-80px)}}
+  @keyframes pulse{50%{opacity:.25;transform:scale(.75)}}
+  .noticker .low{bottom:48px}
+  .hide{display:none!important}
+</style></head>
+<body><div id="root">
+  <div class="pg top" data-layer="top" data-label="Nhãn kênh + LIVE">
+    <div class="chan" id="chan"><img data-field="logo" data-type="image" alt=""><span class="name" data-field="channel" data-label="Tên kênh">DTD NEWS</span></div>
+    <div class="live" id="livebox"><span class="dot"></span><span data-field="live" data-label="Chữ LIVE">TRỰC TIẾP</span></div>
+  </div>
+  <div class="pg clockbox" id="clock" data-layer="clock" data-label="Đồng hồ"></div>
+  <div class="pg low" data-layer="low" data-label="Khối tiêu đề">
+    <div class="pg head"><div class="headline" data-field="headline" data-label="Tiêu đề">TIÊU ĐỀ BẢN TIN TRỰC TIẾP</div></div>
+    <div class="pg sub" id="sub" data-field="sub" data-label="Dòng phụ">Thông tin bổ sung cho tiêu đề</div>
+  </div>
+  <div class="pg tick" id="tick" data-layer="tick" data-label="Thanh chữ chạy">
+    <div class="tlabel" data-field="tickerLabel" data-label="Nhãn chữ chạy">TIN NHANH</div>
+    <div class="lane"><div class="run" id="run"></div></div>
+  </div>
+</div>
+<script>
+  const root=document.getElementById('root'),run=document.getElementById('run');
+  let items=[],x=0,last=0,raf=0,manual='';
+  function hhmm(){const d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}
+  function tickClock(){document.getElementById('clock').textContent=manual||hhmm();}
+  function render(){run.innerHTML='';for(const t of items.concat(items)){const s=document.createElement('span');s.textContent=t;run.appendChild(s);}
+    document.getElementById('tick').classList.toggle('hide',items.length===0);document.body.classList.toggle('noticker',items.length===0);}
+  function loop(ts){const dt=last?(ts-last)/1000:0;last=ts;x-=130*dt;const half=run.scrollWidth/2;if(half>0&&-x>=half)x+=half;
+    run.style.transform='translateX('+x+'px)';raf=requestAnimationFrame(loop);}
+  function update(d){if(typeof d==='string')d=JSON.parse(d);
+    for(const k in d){const v=String(d[k]??'');
+      if(k==='accent'||k.startsWith('--')){document.documentElement.style.setProperty(k==='accent'?'--accent':k,v);continue;}
+      if(k==='clock'){manual=v.trim();document.getElementById('clock').classList.toggle('hide',manual==='-');if(manual==='-')manual='';tickClock();continue;}
+      if(k==='ticker'){items=v.split('|').map(s=>s.trim()).filter(Boolean);render();continue;}
+      if(k==='logo'){const img=document.querySelector('#chan img');const on=v.trim().length>0;
+        document.getElementById('chan').classList.toggle('has-logo',on);if(on)img.src=v;else img.removeAttribute('src');continue;}
+      document.querySelectorAll('[data-field="'+k+'"]').forEach(e=>e.textContent=v);
+      if(k==='sub')document.getElementById('sub').classList.toggle('hide',!v.trim());
+      if(k==='live')document.getElementById('livebox').classList.toggle('hide',!v.trim());
+    }}
+  function play(){root.className='';void root.offsetWidth;root.className='on';cancelAnimationFrame(raf);last=0;raf=requestAnimationFrame(loop);}
+  function stop(){root.className='off';setTimeout(()=>cancelAnimationFrame(raf),600);}
+  function next(){}
+  update({ticker:'Chào mừng quý vị đến với bản tin trực tiếp | Phát sóng từ DTD Studio'});
+  tickClock();setInterval(tickClock,1000);
+</script></body></html>

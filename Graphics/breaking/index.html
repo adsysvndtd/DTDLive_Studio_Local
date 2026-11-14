@@ -1,0 +1,66 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=1920,height=1080">
+<title>Tin nóng</title>
+<!-- DTD Studio · Tin nóng (thiết kế gốc DTD). Vào: dải chữ lớn quét ngang rồi thu về thành nhãn bên trái, tiêu đề trượt ra. next() = chạy lại hiệu ứng. -->
+<style>
+  html,body{margin:0;width:1920px;height:1080px;background:transparent;overflow:hidden;
+    font-family:"Montserrat","Avenir Next","Helvetica Neue",-apple-system,sans-serif}
+  :root{--accent:#D7141A;--ink:#10141c;--paper:#fff;--tag:380px}
+  .pg{position:absolute;box-sizing:border-box}
+  .wrap{left:0;right:0;bottom:150px;height:150px}
+  .flash{left:0;top:0;width:100%;height:150px;z-index:3;overflow:hidden;
+        background:repeating-linear-gradient(-55deg,rgba(255,255,255,.0) 0 34px,rgba(255,255,255,.10) 34px 68px),var(--accent);
+        background-size:auto,auto;clip-path:inset(0 100% 0 0)}
+  .flash:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);
+        width:40%;transform:translateX(-120%)}
+  .big{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;
+        font-size:104px;letter-spacing:10px;text-transform:uppercase;font-style:italic;opacity:0;transform:scale(1.6)}
+  .tagtxt{position:absolute;left:0;top:0;width:var(--tag);height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+        color:#fff;font-weight:900;font-size:50px;line-height:1;letter-spacing:3px;text-transform:uppercase;font-style:italic;opacity:0;text-align:center}
+  .tagtxt small{font-size:22px;letter-spacing:4px;margin-top:10px;font-style:normal;font-weight:700;opacity:.9}
+  .hl{left:calc(var(--tag) - 40px);top:0;width:1400px;max-width:calc(100% - var(--tag) + 40px);height:150px;z-index:2;
+        background:var(--paper);display:flex;flex-direction:column;justify-content:center;padding:0 60px 0 90px;
+        clip-path:inset(0 100% 0 0)}
+  .headline{color:var(--ink);font-weight:800;font-size:56px;line-height:1.08;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sub{color:var(--accent);font-weight:700;font-size:28px;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  /* ---- hiệu ứng ---- */
+  .on .flash{animation:sweep 1.55s cubic-bezier(.7,0,.2,1) forwards}
+  .on .flash:after{animation:shine .9s .3s ease-in-out}
+  .on .big{animation:bigIn 1.5s ease-out forwards}
+  .on .tagtxt{animation:fadeIn .35s 1.45s ease-out forwards}
+  .on .hl{animation:hlIn .6s 1.35s cubic-bezier(.2,.9,.3,1) forwards}
+  .off .flash{clip-path:inset(0 calc(100% - var(--tag)) 0 0)}.off .tagtxt{opacity:1}.off .hl{clip-path:inset(0 0 0 0)}
+  .off .wrap{animation:out .45s ease-in forwards}
+  @keyframes sweep{0%{clip-path:inset(0 100% 0 0)}25%{clip-path:inset(0 0 0 0)}70%{clip-path:inset(0 0 0 0)}100%{clip-path:inset(0 calc(100% - var(--tag)) 0 0)}}
+  @keyframes shine{to{transform:translateX(320%)}}
+  @keyframes bigIn{0%{opacity:0;transform:scale(1.6)}22%{opacity:1;transform:scale(1)}70%{opacity:1;transform:scale(1)}85%,100%{opacity:0;transform:scale(.9)}}
+  @keyframes fadeIn{to{opacity:1}}
+  @keyframes hlIn{to{clip-path:inset(0 0 0 0)}}
+  @keyframes out{to{opacity:0;transform:translateY(80px)}}
+  .hide{display:none!important}
+</style></head>
+<body><div id="root">
+  <div class="pg wrap" data-layer="wrap" data-label="Khối tin nóng">
+    <div class="pg flash" data-layer="flash" data-label="Dải màu">
+      <div class="big" data-field="flash" data-label="Chữ lớn">TIN NÓNG</div>
+      <div class="tagtxt"><span data-field="flash">TIN NÓNG</span><small data-field="tagSub" data-label="Chữ nhỏ dưới nhãn">MỚI NHẤT</small></div>
+    </div>
+    <div class="pg hl" data-layer="hl" data-label="Khối tiêu đề">
+      <div class="headline" data-field="headline" data-label="Tiêu đề">TIÊU ĐỀ TIN NÓNG VỪA CẬP NHẬT</div>
+      <div class="sub" id="sub" data-field="sub" data-label="Dòng phụ">Thông tin chi tiết đang được cập nhật</div>
+    </div>
+  </div>
+</div>
+<script>
+  const root=document.getElementById('root');
+  function update(d){if(typeof d==='string')d=JSON.parse(d);
+    for(const k in d){const v=String(d[k]??'');
+      if(k==='accent'||k.startsWith('--')){document.documentElement.style.setProperty(k==='accent'?'--accent':k,v);continue;}
+      document.querySelectorAll('[data-field="'+k+'"]').forEach(e=>e.textContent=v);
+      if(k==='sub')document.getElementById('sub').classList.toggle('hide',!v.trim());
+      if(k==='tagSub')document.querySelector('.tagtxt small').classList.toggle('hide',!v.trim());
+    }}
+  function play(){root.className='';void root.offsetWidth;root.className='on';}
+  function stop(){root.className='off';}
+  function next(){play();}
+</script></body></html>
