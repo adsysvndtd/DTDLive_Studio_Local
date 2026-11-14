@@ -170,7 +170,7 @@ final class PlatformLive: NSObject, ObservableObject, ASWebAuthenticationPresent
             "contentDetails": ["enableAutoStart": true, "enableAutoStop": true, "latencyPreference": "low"]
         ])
         let stream = try await api("https://www.googleapis.com/youtube/v3/liveStreams?part=snippet,cdn,contentDetails", token: token, body: [
-            "snippet": ["title": "DTD Studio \(iso)"],
+            "snippet": ["title": "DTDStudio \(iso)"],
             "cdn": ["frameRate": "variable", "ingestionType": "rtmp", "resolution": "variable"],
             "contentDetails": ["isReusable": false]
         ])

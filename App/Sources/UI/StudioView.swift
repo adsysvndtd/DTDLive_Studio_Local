@@ -102,7 +102,7 @@ struct StudioView: View {
     private var topBar: some View {
         HStack(spacing: 8) {
             Image("Logo").resizable().scaledToFit().frame(width: compact ? 20 : 24, height: compact ? 20 : 24)
-            Text("DTD Studio").font(compact ? .caption.weight(.bold) : .subheadline.weight(.bold)).fixedSize()
+            Text("DTDStudio").font(compact ? .caption.weight(.bold) : .subheadline.weight(.bold)).fixedSize()
             if !compact {
                 Text("\(engine.format.width)×\(engine.format.height) · \(engine.format.fps)p · \(engine.encoder.codec.label)")
                     .font(.caption2).foregroundStyle(DS.text3).fixedSize()
@@ -514,7 +514,7 @@ struct OutputsSheet: View {
     @State private var draftKey = ""
     @State private var preset: StreamPreset?
     @ObservedObject private var platform = PlatformLive.shared
-    @State private var liveTitle = "DTD Studio Live"
+    @State private var liveTitle = "DTDStudio Live"
     @State private var platformBusy = false
     @State private var platformMessage: String?
     @State private var watchURL: URL?
@@ -738,6 +738,9 @@ extension OutputsSheet {
                 engine.startOutput(cfg)          // push right away: the platform shows the live as soon as video arrives
                 watchURL = d.watchURL.flatMap(URL.init(string:))
                 platformMessage = L("Đã tạo và đang phát tới") + " \(d.name)"
+                // comments / likes / viewers of this live in the Bình luận panel (YouTube: the new broadcast;
+                // Facebook: the live just created, on the profile or the chosen Page)
+                engine.liveChat.follow(p == .youtube ? .youtube : .facebook)
             } catch {
                 platformMessage = error.localizedDescription
             }
@@ -762,7 +765,7 @@ struct ShowsSheet: View {
                         do { try engine.saveShow(named: name); shows = ShowStore.list() } catch { self.error = "\(error)" }
                     }.disabled(name.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
-                Section("Show đã lưu (Files › DTD Studio › Shows)") {
+                Section("Show đã lưu (Files › DTDStudio › Shows)") {
                     ForEach(shows, id: \.self) { s in
                         Button(s) { confirmLoad = s }
                     }

@@ -100,6 +100,13 @@ final class LiveChat: ObservableObject {
 
     private func restart() { stop(); start() }
 
+    /// After a live is created from the app: follow its comments, likes and viewers right away.
+    func follow(_ p: ChatMessage.Platform) {
+        if p == .youtube { videoInput = ""; if !useYouTube { useYouTube = true } }
+        else { fbVideoInput = ""; if !useFacebook { useFacebook = true } }
+        if running { restart() } else { start() }
+    }
+
     /// Adds fetched comments; in auto mode new ones (not the backlog found on connect) go on PGM.
     private func ingest(_ new: [ChatMessage], backlog: Bool) {
         let fresh = new.filter { m in !messages.contains(where: { $0.id == m.id }) }

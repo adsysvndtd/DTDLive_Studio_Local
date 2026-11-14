@@ -2581,12 +2581,12 @@
         }
       }
     },
-    "Mở DTDLive (hoặc app hỗ trợ DTD pairing) trên cùng mạng Wi-Fi → chọn DTD Studio → so ID xác nhận → Chấp nhận. Không cần nhập mã.": {
+    "Mở DTDLive (hoặc app hỗ trợ DTD pairing) trên cùng mạng Wi-Fi → chọn DTDStudio → so ID xác nhận → Chấp nhận. Không cần nhập mã.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Open DTDLive on the same Wi-Fi → pick DTD Studio → compare the confirmation ID → Accept. No code to type."
+            "value": "Open DTDLive on the same Wi-Fi → pick DTDStudio → compare the confirmation ID → Accept. No code to type."
           }
         }
       }
@@ -2811,12 +2811,12 @@
         }
       }
     },
-    "Nhận camera (đẩy về DTD Studio)": {
+    "Nhận camera (đẩy về DTDStudio)": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Camera ingest (push to DTD Studio)"
+            "value": "Camera ingest (push to DTDStudio)"
           }
         }
       }
@@ -3291,12 +3291,12 @@
         }
       }
     },
-    "Show đã lưu (Files › DTD Studio › Shows)": {
+    "Show đã lưu (Files › DTDStudio › Shows)": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Saved shows (Files › DTD Studio › Shows)"
+            "value": "Saved shows (Files › DTDStudio › Shows)"
           }
         }
       }
@@ -3661,32 +3661,32 @@
         }
       }
     },
-    "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTD Studio › Library › %@": {
+    "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTDStudio › Library › %@": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Library empty — use the import button above. Files live in Files › DTD Studio › Library › %@"
+            "value": "Library empty — use the import button above. Files live in Files › DTDStudio › Library › %@"
           }
         }
       }
     },
-    "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTD Studio › Library › %lf": {
+    "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTDStudio › Library › %lf": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Library empty — use the import button above. Files live in Files › DTD Studio › Library › %lf"
+            "value": "Library empty — use the import button above. Files live in Files › DTDStudio › Library › %lf"
           }
         }
       }
     },
-    "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTD Studio › Library › %lld": {
+    "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTDStudio › Library › %lld": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Library empty — use the import button above. Files live in Files › DTD Studio › Library › %lld"
+            "value": "Library empty — use the import button above. Files live in Files › DTDStudio › Library › %lld"
           }
         }
       }

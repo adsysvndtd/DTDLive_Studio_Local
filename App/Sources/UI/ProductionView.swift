@@ -633,7 +633,7 @@ struct CategoryContent: View {
     private func libraryGrid(_ k: LibraryKind, selected: URL? = nil, onTap: @escaping (URL) -> Void) -> some View {
         let items = library.list(k)
         return VStack(alignment: .leading, spacing: 6) {
-            if items.isEmpty { emptyHint("Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTD Studio › Library › \(k.folder)") }
+            if items.isEmpty { emptyHint("Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTDStudio › Library › \(k.folder)") }
             else if k == .movie || k == .picture { Text("Chạm để đưa lên PVW, rồi Cut / chuyển cảnh ở cột phải").font(.caption2).foregroundStyle(DS.text3) }
             else if k == .logo || k == .overlay { Text("Chạm để nạp, bật/tắt bằng phím ở cột phải").font(.caption2).foregroundStyle(DS.text3) }
             LazyVGrid(columns: columns, spacing: compact ? 6 : 10) {

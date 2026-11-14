@@ -343,7 +343,7 @@
 "Một khung giữa" = "Single centre";
 "Mờ dần" = "Fade";
 "Mờ nét" = "Blur";
-"Mở DTDLive (hoặc app hỗ trợ DTD pairing) trên cùng mạng Wi-Fi → chọn DTD Studio → so ID xác nhận → Chấp nhận. Không cần nhập mã." = "Open DTDLive on the same Wi-Fi → pick DTD Studio → compare the confirmation ID → Accept. No code to type.";
+"Mở DTDLive (hoặc app hỗ trợ DTD pairing) trên cùng mạng Wi-Fi → chọn DTDStudio → so ID xác nhận → Chấp nhận. Không cần nhập mã." = "Open DTDLive on the same Wi-Fi → pick DTDStudio → compare the confirmation ID → Accept. No code to type.";
 "Mở dọc" = "Open vertical";
 "Mở ngang" = "Open horizontal";
 "Mở trang xem live" = "Open live page";
@@ -374,7 +374,7 @@
 "Nhạc nền" = "Music";
 "Nhạc nền & hiệu ứng" = "Music & effects";
 "Nhận bình luận" = "Get comments";
-"Nhận camera (đẩy về DTD Studio)" = "Camera ingest (push to DTD Studio)";
+"Nhận camera (đẩy về DTDStudio)" = "Camera ingest (push to DTDStudio)";
 "Nhận camera: SRT · RTMP · RTSP · DTDLive" = "Camera ingest: SRT · RTMP · RTSP · DTDLive";
 "Nhập HTML" = "Import HTML";
 "Nhập SuperFG" = "Import SuperFG";
@@ -445,7 +445,7 @@
 "SRT (một cổng, nhiều streamid)" = "SRT (one port, many streamids)";
 "Satin" = "Satin";
 "Server URL (rtmp:// hoặc rtmps://)" = "Server URL (rtmp:// or rtmps://)";
-"Show đã lưu (Files › DTD Studio › Shows)" = "Saved shows (Files › DTD Studio › Shows)";
+"Show đã lưu (Files › DTDStudio › Shows)" = "Saved shows (Files › DTDStudio › Shows)";
 "SuperFG của bạn (PNG trong suốt · video có kênh alpha .mov)" = "Your SuperFG (transparent PNG · alpha video .mov)";
 "SuperFG của bạn: ảnh PNG/JPG chạy như thẻ có hiệu ứng · video .mov có kênh alpha" = "Your SuperFG: PNG/JPG pictures play as cards with a transition · .mov video with alpha";
 "SuperFG đang trên PGM" = "SuperFG on PGM";
@@ -493,9 +493,9 @@
 "Thư mục %lld không có manifest.json" = "Folder %lld has no manifest.json";
 "Thư mục không có file .html" = "The folder has no .html file";
 "Thư mục đồ hoạ" = "Graphics folder";
-"Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTD Studio › Library › %@" = "Library empty — use the import button above. Files live in Files › DTD Studio › Library › %@";
-"Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTD Studio › Library › %lf" = "Library empty — use the import button above. Files live in Files › DTD Studio › Library › %lf";
-"Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTD Studio › Library › %lld" = "Library empty — use the import button above. Files live in Files › DTD Studio › Library › %lld";
+"Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTDStudio › Library › %@" = "Library empty — use the import button above. Files live in Files › DTDStudio › Library › %@";
+"Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTDStudio › Library › %lf" = "Library empty — use the import button above. Files live in Files › DTDStudio › Library › %lf";
+"Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTDStudio › Library › %lld" = "Library empty — use the import button above. Files live in Files › DTDStudio › Library › %lld";
 "Thư viện ảnh" = "Photos";
 "Thời gian" = "Duration";
 "Thời gian %.1fs" = "Duration %.1fs";

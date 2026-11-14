@@ -45,7 +45,7 @@ final class ControlServer: @unchecked Sendable {
     func start() throws {
         let h = try NWListener(using: .tcp, on: NWEndpoint.Port(rawValue: httpPort)!)
         // Camera apps (DTDLive…) browse for this service to pair; TXT carries protocol version.
-        h.service = NWListener.Service(name: "DTD Studio", type: "_dtdstudio._tcp",
+        h.service = NWListener.Service(name: "DTDStudio", type: "_dtdstudio._tcp",
                                        txtRecord: NWTXTRecord(["v": "1", "api": "/api/pair"]))
         h.newConnectionHandler = { [weak self] c in self?.serveHTTP(c) }
         h.start(queue: queue)

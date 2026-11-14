@@ -202,7 +202,7 @@ final class RTMPOutput: OutputTarget, @unchecked Sendable {
             "videocodecid": desc.isHEVC ? ("hvc1" as any Sendable) : (7.0 as any Sendable),
             "videodatarate": Double(StreamStats.bitrateKbps),
             "framerate": Double(StreamStats.fps),
-            "encoder": "DTD Studio",
+            "encoder": "DTDStudio",
         ]
         if desc.hasAudio {
             meta["audiocodecid"] = 10.0

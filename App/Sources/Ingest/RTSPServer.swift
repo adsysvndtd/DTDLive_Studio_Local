@@ -203,7 +203,7 @@ final class RTSPIngestSession: @unchecked Sendable {
     }
 
     private func reply(_ cseq: String, status: String = "200 OK", extra: [String: String] = [:]) {
-        var s = "RTSP/1.0 \(status)\r\nCSeq: \(cseq)\r\nServer: DTD Studio\r\n"
+        var s = "RTSP/1.0 \(status)\r\nCSeq: \(cseq)\r\nServer: DTDStudio\r\n"
         for (k, v) in extra { s += "\(k): \(v)\r\n" }
         s += "\r\n"
         conn.send(content: s.data(using: .utf8), completion: .contentProcessed { _ in })

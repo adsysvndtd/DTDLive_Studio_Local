@@ -343,7 +343,7 @@
 "Một khung giữa" = "Một khung giữa";
 "Mờ dần" = "Mờ dần";
 "Mờ nét" = "Mờ nét";
-"Mở DTDLive (hoặc app hỗ trợ DTD pairing) trên cùng mạng Wi-Fi → chọn DTD Studio → so ID xác nhận → Chấp nhận. Không cần nhập mã." = "Mở DTDLive (hoặc app hỗ trợ DTD pairing) trên cùng mạng Wi-Fi → chọn DTD Studio → so ID xác nhận → Chấp nhận. Không cần nhập mã.";
+"Mở DTDLive (hoặc app hỗ trợ DTD pairing) trên cùng mạng Wi-Fi → chọn DTDStudio → so ID xác nhận → Chấp nhận. Không cần nhập mã." = "Mở DTDLive (hoặc app hỗ trợ DTD pairing) trên cùng mạng Wi-Fi → chọn DTDStudio → so ID xác nhận → Chấp nhận. Không cần nhập mã.";
 "Mở dọc" = "Mở dọc";
 "Mở ngang" = "Mở ngang";
 "Mở trang xem live" = "Mở trang xem live";
@@ -374,7 +374,7 @@
 "Nhạc nền" = "Nhạc nền";
 "Nhạc nền & hiệu ứng" = "Nhạc nền & hiệu ứng";
 "Nhận bình luận" = "Nhận bình luận";
-"Nhận camera (đẩy về DTD Studio)" = "Nhận camera (đẩy về DTD Studio)";
+"Nhận camera (đẩy về DTDStudio)" = "Nhận camera (đẩy về DTDStudio)";
 "Nhận camera: SRT · RTMP · RTSP · DTDLive" = "Nhận camera: SRT · RTMP · RTSP · DTDLive";
 "Nhập HTML" = "Nhập HTML";
 "Nhập SuperFG" = "Nhập SuperFG";
@@ -445,7 +445,7 @@
 "SRT (một cổng, nhiều streamid)" = "SRT (một cổng, nhiều streamid)";
 "Satin" = "Satin";
 "Server URL (rtmp:// hoặc rtmps://)" = "Server URL (rtmp:// hoặc rtmps://)";
-"Show đã lưu (Files › DTD Studio › Shows)" = "Show đã lưu (Files › DTD Studio › Shows)";
+"Show đã lưu (Files › DTDStudio › Shows)" = "Show đã lưu (Files › DTDStudio › Shows)";
 "SuperFG của bạn (PNG trong suốt · video có kênh alpha .mov)" = "SuperFG của bạn (PNG trong suốt · video có kênh alpha .mov)";
 "SuperFG của bạn: ảnh PNG/JPG chạy như thẻ có hiệu ứng · video .mov có kênh alpha" = "SuperFG của bạn: ảnh PNG/JPG chạy như thẻ có hiệu ứng · video .mov có kênh alpha";
 "SuperFG đang trên PGM" = "SuperFG đang trên PGM";
@@ -493,9 +493,9 @@
 "Thư mục %lld không có manifest.json" = "Thư mục %lld không có manifest.json";
 "Thư mục không có file .html" = "Thư mục không có file .html";
 "Thư mục đồ hoạ" = "Thư mục đồ hoạ";
-"Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTD Studio › Library › %@" = "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTD Studio › Library › %@";
-"Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTD Studio › Library › %lf" = "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTD Studio › Library › %lf";
-"Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTD Studio › Library › %lld" = "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTD Studio › Library › %lld";
+"Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTDStudio › Library › %@" = "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTDStudio › Library › %@";
+"Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTDStudio › Library › %lf" = "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTDStudio › Library › %lf";
+"Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTDStudio › Library › %lld" = "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTDStudio › Library › %lld";
 "Thư viện ảnh" = "Thư viện ảnh";
 "Thời gian" = "Thời gian";
 "Thời gian %.1fs" = "Thời gian %.1fs";

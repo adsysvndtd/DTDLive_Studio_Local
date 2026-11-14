@@ -79,7 +79,7 @@ struct IngestSection: View {
     @ObservedObject var pairing: PairingManager
 
     var body: some View {
-        SectionCard("Nhận camera (đẩy về DTD Studio)", systemImage: "antenna.radiowaves.left.and.right") {
+        SectionCard("Nhận camera (đẩy về DTDStudio)", systemImage: "antenna.radiowaves.left.and.right") {
             let ip = NetworkInfo.wifiIPv4() ?? "<IP iPad>"
             ForEach(ingest.urls(ip: ip)) { u in
                 HStack(spacing: 8) {

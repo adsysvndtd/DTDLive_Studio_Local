@@ -51,7 +51,7 @@ targets:
     info:
       path: App/Info.plist
       properties:
-        CFBundleDisplayName: DTD Studio
+        CFBundleDisplayName: DTDStudio
         CFBundleDevelopmentRegion: vi
         CFBundleLocalizations: [vi, en]
         UISupportedInterfaceOrientations: [UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]

@@ -147,7 +147,7 @@ struct SettingsForm: View {
                 }
                 .textSelection(.enabled)
                 Section(header: SettingsHeader("Giới thiệu")) {
-                    LabeledContent("Ứng dụng", value: "DTD Studio")
+                    LabeledContent("Ứng dụng", value: "DTDStudio")
                     LabeledContent("Phiên bản", value: "\(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0") (\(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "1"))")
                     // read from Info.plist directly (Bundle.main is re-classed for the in-app language switch)
                     let bid = (Bundle.main.infoDictionary?["CFBundleIdentifier"] as? String)

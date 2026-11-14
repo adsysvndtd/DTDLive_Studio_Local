@@ -102,7 +102,7 @@ final class PairingManager: ObservableObject {
         pending.append(req)
         states[req.id] = .pending
         return json(["status": "pending", "requestId": req.id.uuidString, "confirmCode": code,
-                     "studioName": "DTD Studio", "studioId": studioID])
+                     "studioName": "DTDStudio", "studioId": studioID])
     }
 
     func handleStatus(_ requestID: String) -> Data {

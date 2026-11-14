@@ -1086,7 +1086,7 @@ final class StudioEngine: ObservableObject {
             ndiOut.configure(on: ndiOutputOn && NDIAvailability.isAvailable, name: ndiName, fps: format.fps)
         }
     }
-    @Published var ndiName: String = UserDefaults.standard.string(forKey: "dtd.ndi.name") ?? "DTD Studio PGM" {
+    @Published var ndiName: String = UserDefaults.standard.string(forKey: "dtd.ndi.name") ?? "DTDStudio PGM" {
         didSet { UserDefaults.standard.set(ndiName, forKey: "dtd.ndi.name"); if ndiOutputOn { ndiOut.configure(on: true, name: ndiName, fps: format.fps) } }
     }
 

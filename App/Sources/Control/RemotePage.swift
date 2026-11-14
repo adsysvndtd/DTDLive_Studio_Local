@@ -4,7 +4,7 @@ enum RemotePage {
     static let html = #"""
 <!doctype html><html lang="vi"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>DTD Studio Remote</title>
+<title>DTDStudio Remote</title>
 <style>
 :root{color-scheme:dark}body{font:15px -apple-system,system-ui,sans-serif;margin:0;background:#111;color:#eee}
 header{padding:10px 14px;background:#1b1b1f;display:flex;gap:8px;align-items:center;position:sticky;top:0}
@@ -16,7 +16,7 @@ button.go{background:#d46a00}input,select{font:inherit;padding:8px;border-radius
 .card{background:#1b1b1f;margin:8px 14px;padding:10px;border-radius:10px;display:grid;gap:6px}
 .on{outline:2px solid #e3343c}
 </style></head><body>
-<header><b>DTD Studio</b><span id="st" style="color:#888"></span></header>
+<header><b>DTDStudio</b><span id="st" style="color:#888"></span></header>
 <h2>Chuyển cảnh</h2>
 <div class="row" id="inputs"></div>
 <div class="row" style="margin-top:8px">
