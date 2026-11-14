@@ -172,7 +172,12 @@ final class VideoEncoder: @unchecked Sendable {
             kVTCompressionPropertyKey_TransferFunction: kCVImageBufferTransferFunction_ITU_R_709_2,
             kVTCompressionPropertyKey_YCbCrMatrix: kCVImageBufferYCbCrMatrix_ITU_R_709_2,
         ]
-        VTSessionSetProperties(s, propertyDictionary: p as CFDictionary)
+        // One property at a time: a key the device's encoder rejects must not stop the others
+        // (bitrate, GOP, frame rate) from applying. Rejected optional keys are only logged.
+        for (k, v) in p {
+            let st = VTSessionSetProperty(s, key: k, value: v as CFTypeRef)
+            if st != noErr { onProblem?("Bộ mã hoá không nhận thuộc tính \(k) (\(st))") }
+        }
         if settings.codec == .h264 {
             VTSessionSetProperty(s, key: kVTCompressionPropertyKey_H264EntropyMode, value: kVTH264EntropyMode_CABAC)
         }
