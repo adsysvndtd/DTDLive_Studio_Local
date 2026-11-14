@@ -249,6 +249,7 @@
 "Không đọc được %@" = "Không đọc được %@";
 "Không đọc được %lf" = "Không đọc được %lf";
 "Không đọc được %lld" = "Không đọc được %lld";
+"Không đọc được ID video từ link này — mở link trên trình duyệt, copy địa chỉ có …/videos/số hoặc ?v=số rồi dán lại" = "Không đọc được ID video từ link này — mở link trên trình duyệt, copy địa chỉ có …/videos/số hoặc ?v=số rồi dán lại";
 "Không đọc được logo" = "Không đọc được logo";
 "Không đọc được video %@" = "Không đọc được video %@";
 "Không đọc được video %lf" = "Không đọc được video %lf";

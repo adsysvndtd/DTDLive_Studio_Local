@@ -249,6 +249,7 @@
 "Không đọc được %@" = "Couldn't read %@";
 "Không đọc được %lf" = "Couldn't read %lf";
 "Không đọc được %lld" = "Couldn't read %lld";
+"Không đọc được ID video từ link này — mở link trên trình duyệt, copy địa chỉ có …/videos/số hoặc ?v=số rồi dán lại" = "Could not read the video ID from this link — open it in a browser, copy the address with …/videos/number or ?v=number and paste it again";
 "Không đọc được logo" = "Could not read logo";
 "Không đọc được video %@" = "Couldn't read video %@";
 "Không đọc được video %lf" = "Couldn't read video %lf";

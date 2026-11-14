@@ -193,6 +193,35 @@ final class LiveChat: ObservableObject {
         }
     }
 
+    /// Video ID from what the operator pasted: a bare ID, …/videos/123…, watch/?v=123…, or a share link
+    /// (facebook.com/share/v/…, fb.watch/…) which is followed to the real video URL.
+    static func facebookVideoID(_ input: String) async throws -> String {
+        func extract(_ s: String) -> String? {
+            let text = s.removingPercentEncoding ?? s
+            for pattern in [#"[?&]v=(\d{8,})"#, #"/videos/(?:[^/]+/)?(\d{8,})"#, #"/live/?\?v=(\d{8,})"#, #""video_id":"(\d{8,})""#, #"/reel/(\d{8,})"#] {
+                if let r = text.range(of: pattern, options: .regularExpression) {
+                    let m = String(text[r])
+                    if let d = m.split(whereSeparator: { !$0.isNumber }).last(where: { $0.count >= 8 }) { return String(d) }
+                }
+            }
+            return nil
+        }
+        let v = input.trimmingCharacters(in: .whitespacesAndNewlines)
+        if v.allSatisfy(\.isNumber), v.count >= 8 { return v }
+        if let id = extract(v) { return id }
+        guard let url = URL(string: v.hasPrefix("http") ? v : "https://" + v) else { throw facebookIDError }
+        var req = URLRequest(url: url)
+        req.timeoutInterval = 10
+        req.setValue("Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
+                     forHTTPHeaderField: "User-Agent")
+        let (data, resp) = try await URLSession.shared.data(for: req)     // follows the share redirect
+        if let final = resp.url?.absoluteString, let id = extract(final) { return id }
+        if let html = String(data: data.prefix(400_000), encoding: .utf8), let id = extract(html) { return id }
+        throw facebookIDError
+    }
+    private static let facebookIDError = NSError(domain: "dtd", code: 4, userInfo: [NSLocalizedDescriptionKey:
+        L("Không đọc được ID video từ link này — mở link trên trình duyệt, copy địa chỉ có …/videos/số hoặc ?v=số rồi dán lại")])
+
     /// Reactions (likes), comment count and live viewers of the Facebook live.
     private func facebookStats(video: String, live: String?, page: String?) async {
         var e = fbStats
@@ -213,9 +242,15 @@ final class LiveChat: ObservableObject {
         let pl = PlatformLive.shared
         let v = fbVideoInput.trimmingCharacters(in: .whitespaces)
         if !v.isEmpty {
-            // link like facebook.com/…/videos/123456 or a bare ID
-            let digits = v.split(whereSeparator: { !$0.isNumber }).map(String.init).filter { $0.count >= 8 }
-            return (digits.last ?? v, nil, pl.facebookTargetPage)
+            let id = try await Self.facebookVideoID(v)
+            // Whose video is it? A Page the account manages → read it with that Page's token.
+            var page = pl.facebookTargetPage
+            if let j = try? await pl.facebookGET("\(id)?fields=from"),
+               let owner = (j["from"] as? [String: Any])?["id"] as? String {
+                if pl.facebookPages.isEmpty { try? await pl.refreshFacebookPages() }
+                page = pl.facebookPages.contains { $0.id == owner } ? owner : nil
+            }
+            return (id, nil, page)
         }
         if let cur = pl.currentFacebookLive {
             return (cur.videoID ?? cur.liveID, cur.liveID, cur.page)

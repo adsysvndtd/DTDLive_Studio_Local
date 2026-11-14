@@ -7406,6 +7406,22 @@
           }
         }
       }
+    },
+    "Không đọc được ID video từ link này — mở link trên trình duyệt, copy địa chỉ có …/videos/số hoặc ?v=số rồi dán lại": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not read the video ID from this link — open it in a browser, copy the address with …/videos/number or ?v=number and paste it again"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không đọc được ID video từ link này — mở link trên trình duyệt, copy địa chỉ có …/videos/số hoặc ?v=số rồi dán lại"
+          }
+        }
+      }
     }
   },
   "version": "1.0"
