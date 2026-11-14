@@ -219,7 +219,7 @@ final class StudioEngine: ObservableObject {
         ae.onEncoded = { buf, when in om.audio(buf, when: when) }
         // audio always flows: the mixer, or silence when the mixer could not start (see startSilentAudio)
         om.hasAudio = { true }
-        om.onStatus = { [weak self] id, st in Task { @MainActor in self?.outputStatus[id] = st } }
+        om.onStatus = { [weak self] id, st in Task { @MainActor in self?.setOutputStatus(id, st) } }
         switcher.graphicsProvider = { [weak self] size, now in
             let items = MainActorBox.titles(self)
             var img = titlesR.render(items, canvas: size, now: now)
@@ -1407,6 +1407,21 @@ final class StudioEngine: ObservableObject {
     func startAll() { outputs.filter { $0.enabled && $0.proto != .record }.forEach(startOutput) }
     func stopAll() { outputs.filter { $0.proto != .record }.forEach(stopOutput) }
     var isAnyLive: Bool { outputs.contains { $0.proto != .record && outputStatus[$0.id] == .live } }
+
+    /// When an output to YouTube / Facebook goes LIVE (created in the app or a pasted stream key),
+    /// the Bình luận panel starts following that platform's comments, likes and viewers — if signed in.
+    private func setOutputStatus(_ id: UUID, _ st: OutputStatus) {
+        let was = outputStatus[id]
+        outputStatus[id] = st
+        guard st == .live, was != .live, let o = outputs.first(where: { $0.id == id }), o.proto != .record else { return }
+        let u = o.url.lowercased()
+        let live = PlatformLive.shared
+        if (u.contains("youtube.com") || u.contains("youtube-nocookie")), live.youtubeSignedIn {
+            liveChat.followIfIdle(.youtube)
+        } else if Self.isFacebook(o), live.facebookSignedIn {
+            liveChat.followIfIdle(.facebook)
+        }
+    }
     var isRecording: Bool { outputs.contains { $0.proto == .record && outputStatus[$0.id] == .live } }
 
     func toggleRecording() {

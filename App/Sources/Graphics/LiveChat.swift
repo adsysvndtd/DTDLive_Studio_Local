@@ -100,6 +100,12 @@ final class LiveChat: ObservableObject {
 
     private func restart() { stop(); start() }
 
+    /// An output to this platform just went live: follow it unless already receiving it.
+    func followIfIdle(_ p: ChatMessage.Platform) {
+        if running && ((p == .youtube && useYouTube) || (p == .facebook && useFacebook)) { return }
+        follow(p)
+    }
+
     /// After a live is created from the app: follow its comments, likes and viewers right away.
     func follow(_ p: ChatMessage.Platform) {
         if p == .youtube { videoInput = ""; if !useYouTube { useYouTube = true } }
@@ -214,13 +220,25 @@ final class LiveChat: ObservableObject {
         if let cur = pl.currentFacebookLive {
             return (cur.videoID ?? cur.liveID, cur.liveID, cur.page)
         }
-        let page = pl.facebookTargetPage
-        let j = try await pl.facebookGET("\(page ?? "me")/live_videos?broadcast_status=%5B%22LIVE%22%5D&fields=id,video%7Bid%7D&limit=1",
-                                         page: page)
-        if let first = (j["data"] as? [[String: Any]])?.first, let live = first["id"] as? String {
-            let video = (first["video"] as? [String: Any])?["id"] as? String
-            return (video ?? live, live, page)
+        // The chosen target first, then the profile and every Page the account manages
+        // (a stream key pasted for a Page works without choosing that Page in Settings).
+        var targets: [String?] = [pl.facebookTargetPage]
+        if pl.facebookTargetPage != nil { targets.append(nil) }
+        if pl.facebookPages.isEmpty { try? await pl.refreshFacebookPages() }
+        targets += pl.facebookPages.map(\.id).filter { $0 != pl.facebookTargetPage }.map { Optional($0) }
+        var lastError: Error?
+        for page in targets {
+            do {
+                let j = try await pl.facebookGET("\(page ?? "me")/live_videos?broadcast_status=%5B%22LIVE%22%5D&fields=id,video%7Bid%7D&limit=1",
+                                                 page: page)
+                if let first = (j["data"] as? [[String: Any]])?.first, let live = first["id"] as? String {
+                    let video = (first["video"] as? [String: Any])?["id"] as? String
+                    return (video ?? live, live, page)
+                }
+            } catch { lastError = error }
         }
+        let page = pl.facebookTargetPage
+        if let lastError, pl.facebookPages.isEmpty { throw lastError }
         throw NSError(domain: "dtd", code: 3, userInfo: [NSLocalizedDescriptionKey:
             page == nil ? L("Không thấy live Facebook đang chạy — dán link/ID video live vào ô Facebook")
                         : LF("Không thấy live đang chạy trên Trang %@ — dán link/ID video live vào ô Facebook", pl.facebookTargetName)])
