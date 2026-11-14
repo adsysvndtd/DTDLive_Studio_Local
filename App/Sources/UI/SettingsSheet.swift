@@ -236,6 +236,7 @@ struct PlatformAccountRow: View {
                     Button("Đăng nhập") { signIn() }
                 }
             }
+            if platform == .facebook && signedIn { FacebookTargetPicker() }
             if let error { Text(verbatim: error).foregroundStyle(.red) }
         }
     }
@@ -245,6 +246,40 @@ struct PlatformAccountRow: View {
         Task {
             defer { busy = false }
             do { try await live.signIn(platform) } catch { self.error = error.localizedDescription }
+        }
+    }
+}
+
+
+/// Where "Facebook Live" publishes: the signed-in profile or one of its Pages.
+struct FacebookTargetPicker: View {
+    @ObservedObject private var live = PlatformLive.shared
+    @State private var loading = false
+    @State private var error: String?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Picker("Phát lên", selection: $live.facebookTarget) {
+                    Text("Trang cá nhân").tag("me")
+                    ForEach(live.facebookPages) { p in Text(verbatim: p.name).tag(p.id) }
+                }
+                Button {
+                    loading = true; error = nil
+                    Task {
+                        defer { loading = false }
+                        do { try await live.refreshFacebookPages() } catch { self.error = error.localizedDescription }
+                    }
+                } label: {
+                    if loading { ProgressView() } else { Image(systemName: "arrow.clockwise") }
+                }
+                .buttonStyle(.borderless).help("Tải lại danh sách Trang")
+            }
+            if live.facebookPages.isEmpty {
+                Text("Chưa thấy Trang nào: khi đăng nhập Facebook hãy chọn các Trang cho phép DTDStudio phát, rồi bấm tải lại.")
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+            if let error { Text(verbatim: error).font(.caption).foregroundStyle(.red) }
         }
     }
 }

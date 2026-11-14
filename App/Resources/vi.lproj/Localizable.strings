@@ -86,6 +86,7 @@
 "Chưa nhập Google OAuth Client ID (iOS) — vào Cài đặt › Phát trực tiếp, hoặc dùng 'Thêm đích' với stream key YouTube" = "Chưa nhập Google OAuth Client ID (iOS) — vào Cài đặt › Phát trực tiếp, hoặc dùng 'Thêm đích' với stream key YouTube";
 "Chưa nạp SuperFG" = "Chưa nạp SuperFG";
 "Chưa nạp logo" = "Chưa nạp logo";
+"Chưa thấy Trang nào: khi đăng nhập Facebook hãy chọn các Trang cho phép DTDStudio phát, rồi bấm tải lại." = "Chưa thấy Trang nào: khi đăng nhập Facebook hãy chọn các Trang cho phép DTDStudio phát, rồi bấm tải lại.";
 "Chưa tích hợp SDK" = "Chưa tích hợp SDK";
 "Chương trình (Program)" = "Chương trình (Program)";
 "Chạm một bình luận để đưa lên PGM." = "Chạm một bình luận để đưa lên PGM.";
@@ -155,8 +156,10 @@
 "Dừng" = "Dừng";
 "Dừng nhận" = "Dừng nhận";
 "Dừng tất cả" = "Dừng tất cả";
+"Facebook phát lên" = "Facebook phát lên";
 "Facebook › Video trực tiếp › Phần mềm phát trực tiếp › Khoá luồng." = "Facebook › Video trực tiếp › Phần mềm phát trực tiếp › Khoá luồng.";
 "Facebook: giữ bitrate ở mức tối đa Facebook nhận (%@ kbps)" = "Facebook: giữ bitrate ở mức tối đa Facebook nhận (%@ kbps)";
+"Facebook: khi app còn ở chế độ phát triển chỉ tài khoản có vai trò trong app (quản trị/tester) đọc được bình luận, lượt thích và phát lên Trang; cho mọi người dùng cần Meta duyệt quyền (App Review)." = "Facebook: khi app còn ở chế độ phát triển chỉ tài khoản có vai trò trong app (quản trị/tester) đọc được bình luận, lượt thích và phát lên Trang; cho mọi người dùng cần Meta duyệt quyền (App Review).";
 "Facebook: khi app còn ở chế độ phát triển chỉ đọc được bình luận live của chính tài khoản quản trị app; cho mọi người dùng cần Meta duyệt quyền (App Review)." = "Facebook: khi app còn ở chế độ phát triển chỉ đọc được bình luận live của chính tài khoản quản trị app; cho mọi người dùng cần Meta duyệt quyền (App Review).";
 "Font" = "Font";
 "Ghi" = "Ghi";
@@ -230,6 +233,7 @@
 "Không có tín hiệu" = "Không có tín hiệu";
 "Không công khai (có link)" = "Không công khai (có link)";
 "Không dùng" = "Không dùng";
+"Không lấy được quyền của Trang — đăng nhập lại Facebook và chọn Trang khi được hỏi" = "Không lấy được quyền của Trang — đăng nhập lại Facebook và chọn Trang khi được hỏi";
 "Không muốn đăng ký app: dùng Đầu ra › Thêm đích › YouTube/Facebook (stream key)." = "Không muốn đăng ký app: dùng Đầu ra › Thêm đích › YouTube/Facebook (stream key).";
 "Không mở được micro/bộ trộn âm thanh — đang phát kèm âm thanh câm. Kiểm tra quyền Micro trong Cài đặt iOS." = "Không mở được micro/bộ trộn âm thanh — đang phát kèm âm thanh câm. Kiểm tra quyền Micro trong Cài đặt iOS.";
 "Không mở được tệp: %@" = "Không mở được tệp: %@";
@@ -241,6 +245,7 @@
 "Không phát được nhạc: %lld" = "Không phát được nhạc: %lld";
 "Không thấy buổi live đang chạy trên kênh đã đăng nhập — dán link video live vào ô bên trên" = "Không thấy buổi live đang chạy trên kênh đã đăng nhập — dán link video live vào ô bên trên";
 "Không thấy live Facebook đang chạy — dán link/ID video live vào ô Facebook" = "Không thấy live Facebook đang chạy — dán link/ID video live vào ô Facebook";
+"Không thấy live đang chạy trên Trang %@ — dán link/ID video live vào ô Facebook" = "Không thấy live đang chạy trên Trang %@ — dán link/ID video live vào ô Facebook";
 "Không đọc được %@" = "Không đọc được %@";
 "Không đọc được %lf" = "Không đọc được %lf";
 "Không đọc được %lld" = "Không đọc được %lld";
@@ -270,6 +275,7 @@
 "Link xem live" = "Link xem live";
 "Link/ID video Facebook (trống = live đang chạy của tài khoản đã đăng nhập)" = "Link/ID video Facebook (trống = live đang chạy của tài khoản đã đăng nhập)";
 "Link/ID video YouTube (trống = live đang chạy trên kênh đã đăng nhập)" = "Link/ID video YouTube (trống = live đang chạy trên kênh đã đăng nhập)";
+"Live trên Trang hiển thị cho người xem Trang; mục Ai được xem chỉ áp dụng cho YouTube và trang cá nhân." = "Live trên Trang hiển thị cho người xem Trang; mục Ai được xem chỉ áp dụng cho YouTube và trang cá nhân.";
 "Logo" = "Logo";
 "Logo + tên + chức danh" = "Logo + tên + chức danh";
 "Logo đang trên PGM" = "Logo đang trên PGM";
@@ -401,6 +407,7 @@
 "Phiên bản" = "Phiên bản";
 "Phát" = "Phát";
 "Phát PGM qua NDI" = "Phát PGM qua NDI";
+"Phát lên" = "Phát lên";
 "Phát lên PGM" = "Phát lên PGM";
 "Phát lại" = "Phát lại";
 "Phát lại từ đầu" = "Phát lại từ đầu";
@@ -506,6 +513,7 @@
 "Tiếng Việt" = "Tiếng Việt";
 "Token (chỉ cần cho repo private)" = "Token (chỉ cần cho repo private)";
 "Toàn màn hình" = "Toàn màn hình";
+"Trang cá nhân" = "Trang cá nhân";
 "Trang người xem mở để xem buổi live (YouTube: youtube.com/@kenh/live · Facebook: link bài live)." = "Trang người xem mở để xem buổi live (YouTube: youtube.com/@kenh/live · Facebook: link bài live).";
 "Trong suốt" = "Trong suốt";
 "Trên PGM" = "Trên PGM";
@@ -535,6 +543,7 @@
 "Tạo phiên live YouTube / Facebook" = "Tạo phiên live YouTube / Facebook";
 "Tạo phiên live tự động" = "Tạo phiên live tự động";
 "Tải lên %@ kbps · hàng đợi %@ KB" = "Tải lên %@ kbps · hàng đợi %@ KB";
+"Tải lại danh sách Trang" = "Tải lại danh sách Trang";
 "TẮT" = "TẮT";
 "Tắt khi không dùng replay để đỡ nóng máy và tiết kiệm pin." = "Tắt khi không dùng replay để đỡ nóng máy và tiết kiệm pin.";
 "Tệp" = "Tệp";
@@ -630,6 +639,7 @@
 "Đang kết nối…" = "Đang kết nối…";
 "Đang lên sóng" = "Đang lên sóng";
 "Đang nhận" = "Đang nhận";
+"Đang nhận (Trang %@)" = "Đang nhận (Trang %@)";
 "Đang phát" = "Đang phát";
 "Đang tìm buổi live…" = "Đang tìm buổi live…";
 "Đang tìm…" = "Đang tìm…";

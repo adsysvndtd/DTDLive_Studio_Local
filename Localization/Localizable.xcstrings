@@ -7246,6 +7246,166 @@
           }
         }
       }
+    },
+    "Trang cá nhân": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Personal profile"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trang cá nhân"
+          }
+        }
+      }
+    },
+    "Phát lên": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Publish to"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phát lên"
+          }
+        }
+      }
+    },
+    "Facebook phát lên": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Facebook publishes to"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Facebook phát lên"
+          }
+        }
+      }
+    },
+    "Tải lại danh sách Trang": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reload Pages"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tải lại danh sách Trang"
+          }
+        }
+      }
+    },
+    "Chưa thấy Trang nào: khi đăng nhập Facebook hãy chọn các Trang cho phép DTDStudio phát, rồi bấm tải lại.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Pages yet: when signing in to Facebook, select the Pages DTDStudio may publish to, then tap reload."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chưa thấy Trang nào: khi đăng nhập Facebook hãy chọn các Trang cho phép DTDStudio phát, rồi bấm tải lại."
+          }
+        }
+      }
+    },
+    "Không lấy được quyền của Trang — đăng nhập lại Facebook và chọn Trang khi được hỏi": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not get access to the Page — sign in to Facebook again and select the Page when asked"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không lấy được quyền của Trang — đăng nhập lại Facebook và chọn Trang khi được hỏi"
+          }
+        }
+      }
+    },
+    "Đang nhận (Trang %@)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Receiving (Page %@)"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang nhận (Trang %@)"
+          }
+        }
+      }
+    },
+    "Không thấy live đang chạy trên Trang %@ — dán link/ID video live vào ô Facebook": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No live running on Page %@ — paste the live video link/ID into the Facebook field"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thấy live đang chạy trên Trang %@ — dán link/ID video live vào ô Facebook"
+          }
+        }
+      }
+    },
+    "Facebook: khi app còn ở chế độ phát triển chỉ tài khoản có vai trò trong app (quản trị/tester) đọc được bình luận, lượt thích và phát lên Trang; cho mọi người dùng cần Meta duyệt quyền (App Review).": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Facebook: while the app is in development mode only accounts with a role in the app (admin/tester) can read comments and likes and publish to Pages; for all users Meta must approve the permissions (App Review)."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Facebook: khi app còn ở chế độ phát triển chỉ tài khoản có vai trò trong app (quản trị/tester) đọc được bình luận, lượt thích và phát lên Trang; cho mọi người dùng cần Meta duyệt quyền (App Review)."
+          }
+        }
+      }
+    },
+    "Live trên Trang hiển thị cho người xem Trang; mục Ai được xem chỉ áp dụng cho YouTube và trang cá nhân.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Page lives are shown to the Page's audience; the audience setting only applies to YouTube and the personal profile."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Live trên Trang hiển thị cho người xem Trang; mục Ai được xem chỉ áp dụng cho YouTube và trang cá nhân."
+          }
+        }
+      }
     }
   },
   "version": "1.0"

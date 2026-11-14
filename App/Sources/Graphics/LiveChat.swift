@@ -63,6 +63,10 @@ final class LiveChat: ObservableObject {
     }
     @Published private(set) var ytStatus = ""
     @Published private(set) var fbStatus = ""
+    /// Engagement of the live being followed (nil = not known yet / no permission).
+    struct Engagement: Equatable { var likes: Int?; var viewers: Int?; var comments: Int? }
+    @Published private(set) var ytStats = Engagement()
+    @Published private(set) var fbStats = Engagement()
     /// Comments of the enabled platforms (list + auto mode).
     var visibleMessages: [ChatMessage] {
         messages.filter { ($0.platform == .youtube && useYouTube) || ($0.platform == .facebook && useFacebook) }
@@ -90,6 +94,7 @@ final class LiveChat: ObservableObject {
         tasks.forEach { $0.cancel() }; tasks = []
         running = false
         ytStatus = ""; fbStatus = ""
+        ytStats = Engagement(); fbStats = Engagement()
         status = L("Đã dừng")
     }
 
@@ -123,11 +128,16 @@ final class LiveChat: ObservableObject {
 
     private func youtubeLoop() async {
         do {
-            let chatID = try await findChatID()
+            let (chatID, videoID) = try await findChatID()
             ytStatus = L("Đang nhận")
             var page: String?
             var first = true
+            var lastStats = Date.distantPast
             while !Task.isCancelled {
+                if let videoID, Date().timeIntervalSince(lastStats) >= 15 {
+                    lastStats = Date()
+                    await youtubeStats(videoID)
+                }
                 var url = "https://www.googleapis.com/youtube/v3/liveChat/messages?liveChatId=\(chatID)&part=snippet,authorDetails&maxResults=200"
                 if let page { url += "&pageToken=\(page)" }
                 let j = try await PlatformLive.shared.youtubeGET(url)
@@ -147,12 +157,18 @@ final class LiveChat: ObservableObject {
 
     private func facebookLoop() async {
         do {
-            let vid = try await findFacebookVideo()
-            fbStatus = L("Đang nhận")
+            let (vid, liveID, page) = try await findFacebookVideo()
+            fbStatus = page == nil ? L("Đang nhận") : LF("Đang nhận (Trang %@)", PlatformLive.shared.facebookTargetName)
             var first = true
+            var lastStats = Date.distantPast
             while !Task.isCancelled {
+                if Date().timeIntervalSince(lastStats) >= 15 {
+                    lastStats = Date()
+                    await facebookStats(video: vid, live: liveID, page: page)
+                }
                 let j = try await PlatformLive.shared.facebookGET(
-                    "\(vid)/comments?fields=id,message,created_time,from%7Bname,picture%7D&order=reverse_chronological&live_filter=no_filter&limit=50")
+                    "\(vid)/comments?fields=id,message,created_time,from%7Bname,picture%7D&order=reverse_chronological&live_filter=no_filter&limit=50",
+                    page: page)
                 let items = ((j["data"] as? [[String: Any]]) ?? []).compactMap(Self.parseFacebook)
                 ingest(items, backlog: first)
                 first = false
@@ -164,20 +180,43 @@ final class LiveChat: ObservableObject {
         }
     }
 
-    private func findFacebookVideo() async throws -> String {
+    /// Reactions (likes), comment count and live viewers of the Facebook live.
+    private func facebookStats(video: String, live: String?, page: String?) async {
+        var e = fbStats
+        if let j = try? await PlatformLive.shared.facebookGET(
+            "\(video)?fields=reactions.limit(0).summary(total_count),comments.limit(0).summary(total_count)", page: page) {
+            e.likes = ((j["reactions"] as? [String: Any])?["summary"] as? [String: Any])?["total_count"] as? Int
+            e.comments = ((j["comments"] as? [String: Any])?["summary"] as? [String: Any])?["total_count"] as? Int
+        }
+        if let live, let j = try? await PlatformLive.shared.facebookGET("\(live)?fields=live_views", page: page) {
+            e.viewers = j["live_views"] as? Int
+        }
+        fbStats = e
+    }
+
+    /// (video ID for comments/reactions, live video ID for viewers, Page ID when it is a Page live).
+    /// Order: link/ID typed in → the live created from the app → the target's (profile or Page) current live.
+    private func findFacebookVideo() async throws -> (String, String?, String?) {
+        let pl = PlatformLive.shared
         let v = fbVideoInput.trimmingCharacters(in: .whitespaces)
         if !v.isEmpty {
             // link like facebook.com/…/videos/123456 or a bare ID
             let digits = v.split(whereSeparator: { !$0.isNumber }).map(String.init).filter { $0.count >= 8 }
-            return digits.last ?? v
+            return (digits.last ?? v, nil, pl.facebookTargetPage)
         }
-        let j = try await PlatformLive.shared.facebookGET("me/live_videos?broadcast_status=%5B%22LIVE%22%5D&fields=id,video%7Bid%7D&limit=1")
-        if let first = (j["data"] as? [[String: Any]])?.first {
-            if let video = first["video"] as? [String: Any], let id = video["id"] as? String { return id }
-            if let id = first["id"] as? String { return id }
+        if let cur = pl.currentFacebookLive {
+            return (cur.videoID ?? cur.liveID, cur.liveID, cur.page)
+        }
+        let page = pl.facebookTargetPage
+        let j = try await pl.facebookGET("\(page ?? "me")/live_videos?broadcast_status=%5B%22LIVE%22%5D&fields=id,video%7Bid%7D&limit=1",
+                                         page: page)
+        if let first = (j["data"] as? [[String: Any]])?.first, let live = first["id"] as? String {
+            let video = (first["video"] as? [String: Any])?["id"] as? String
+            return (video ?? live, live, page)
         }
         throw NSError(domain: "dtd", code: 3, userInfo: [NSLocalizedDescriptionKey:
-            L("Không thấy live Facebook đang chạy — dán link/ID video live vào ô Facebook")])
+            page == nil ? L("Không thấy live Facebook đang chạy — dán link/ID video live vào ô Facebook")
+                        : LF("Không thấy live đang chạy trên Trang %@ — dán link/ID video live vào ô Facebook", pl.facebookTargetName)])
     }
 
     private static func parseFacebook(_ it: [String: Any]) -> ChatMessage? {
@@ -190,20 +229,34 @@ final class LiveChat: ObservableObject {
                            text: text, avatarURL: pic.flatMap(URL.init(string:)), amount: nil, at: date)
     }
 
-    private func findChatID() async throws -> String {
+    /// Likes, concurrent viewers and comment count of the YouTube live (videos.list: 1 quota unit).
+    private func youtubeStats(_ videoID: String) async {
+        guard let j = try? await PlatformLive.shared.youtubeGET(
+            "https://www.googleapis.com/youtube/v3/videos?part=statistics,liveStreamingDetails&id=\(videoID)"),
+              let it = (j["items"] as? [[String: Any]])?.first else { return }
+        let st = it["statistics"] as? [String: Any]
+        let ld = it["liveStreamingDetails"] as? [String: Any]
+        ytStats = Engagement(likes: (st?["likeCount"] as? String).flatMap(Int.init),
+                             viewers: (ld?["concurrentViewers"] as? String).flatMap(Int.init),
+                             comments: (st?["commentCount"] as? String).flatMap(Int.init))
+    }
+
+    /// Live chat ID and the broadcast's video ID (for likes / viewers).
+    private func findChatID() async throws -> (String, String?) {
         let v = videoInput.trimmingCharacters(in: .whitespaces)
         if !v.isEmpty {
             let id = Self.videoID(v)
             let j = try await PlatformLive.shared.youtubeGET("https://www.googleapis.com/youtube/v3/videos?part=liveStreamingDetails&id=\(id)")
             if let d = ((j["items"] as? [[String: Any]])?.first?["liveStreamingDetails"]) as? [String: Any],
-               let chat = d["activeLiveChatId"] as? String { return chat }
+               let chat = d["activeLiveChatId"] as? String { return (chat, id) }
             throw NSError(domain: "dtd", code: 1, userInfo: [NSLocalizedDescriptionKey: L("Video này không có chat trực tiếp đang mở")])
         }
         for st in ["active", "upcoming"] {
             let j = try await PlatformLive.shared.youtubeGET(
                 "https://www.googleapis.com/youtube/v3/liveBroadcasts?part=snippet&broadcastStatus=\(st)&broadcastType=all&maxResults=5")
-            if let s = ((j["items"] as? [[String: Any]])?.first?["snippet"]) as? [String: Any], let chat = s["liveChatId"] as? String {
-                return chat
+            let item = (j["items"] as? [[String: Any]])?.first
+            if let s = item?["snippet"] as? [String: Any], let chat = s["liveChatId"] as? String {
+                return (chat, item?["id"] as? String)
             }
         }
         throw NSError(domain: "dtd", code: 2, userInfo: [NSLocalizedDescriptionKey:
@@ -398,9 +451,11 @@ struct LiveChatPanel: View {
             }
             if chat.useYouTube {
                 sourceRow("YouTube", .red, "Link/ID video YouTube (trống = live đang chạy trên kênh đã đăng nhập)", $chat.videoInput, chat.ytStatus)
+                statsRow(chat.ytStats)
             }
             if chat.useFacebook {
                 sourceRow("Facebook", .blue, "Link/ID video Facebook (trống = live đang chạy của tài khoản đã đăng nhập)", $chat.fbVideoInput, chat.fbStatus)
+                statsRow(chat.fbStats)
             }
             if !chat.status.isEmpty { Text(chat.status).font(.caption).foregroundStyle(DS.text3) }
             if showStyle { styleRows }
@@ -421,7 +476,7 @@ struct LiveChatPanel: View {
                     if let last = chat.visibleMessages.last { withAnimation { proxy.scrollTo(last.id, anchor: .bottom) } }
                 }
             }
-            Text("Facebook: khi app còn ở chế độ phát triển chỉ đọc được bình luận live của chính tài khoản quản trị app; cho mọi người dùng cần Meta duyệt quyền (App Review).")
+            Text("Facebook: khi app còn ở chế độ phát triển chỉ tài khoản có vai trò trong app (quản trị/tester) đọc được bình luận, lượt thích và phát lên Trang; cho mọi người dùng cần Meta duyệt quyền (App Review).")
                 .font(.caption2).foregroundStyle(DS.text3)
         }
     }
@@ -437,6 +492,18 @@ struct LiveChatPanel: View {
             .background(on.wrappedValue ? color.opacity(0.75) : DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
         }
         .buttonStyle(.plain)
+    }
+
+    /// 👍 likes · 💬 comments · 👁 viewers of the followed live (hidden until the first numbers arrive).
+    @ViewBuilder private func statsRow(_ e: LiveChat.Engagement) -> some View {
+        if e.likes != nil || e.viewers != nil || e.comments != nil {
+            HStack(spacing: 14) {
+                if let v = e.likes { Label("\(v)", systemImage: "hand.thumbsup.fill") }
+                if let v = e.comments { Label("\(v)", systemImage: "text.bubble.fill") }
+                if let v = e.viewers { Label("\(v)", systemImage: "eye.fill") }
+            }
+            .font(.system(size: 12, weight: .semibold)).foregroundStyle(DS.text2).padding(.leading, 16)
+        }
     }
 
     private func sourceRow(_ name: String, _ color: Color, _ hint: LocalizedStringKey, _ text: Binding<String>, _ status: String) -> some View {

@@ -572,6 +572,16 @@ struct OutputsSheet: View {
                         Text("Không công khai (có link)").tag("unlisted")
                         Text("Chỉ mình tôi").tag("private")
                     }
+                    if platform.facebookSignedIn {
+                        Picker("Facebook phát lên", selection: $platform.facebookTarget) {
+                            Text("Trang cá nhân").tag("me")
+                            ForEach(platform.facebookPages) { p in Text(verbatim: p.name).tag(p.id) }
+                        }
+                        if platform.facebookTargetPage != nil {
+                            Text("Live trên Trang hiển thị cho người xem Trang; mục Ai được xem chỉ áp dụng cho YouTube và trang cá nhân.")
+                                .font(.caption).foregroundStyle(.secondary)
+                        }
+                    }
                     HStack {
                         Button("YouTube Live") { createLive(.youtube) }
                         Button("Facebook Live") { createLive(.facebook) }

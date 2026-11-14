@@ -86,6 +86,7 @@
 "Chưa nhập Google OAuth Client ID (iOS) — vào Cài đặt › Phát trực tiếp, hoặc dùng 'Thêm đích' với stream key YouTube" = "No Google OAuth Client ID (iOS) — set it in Settings › Live, or use 'Add destination' with a YouTube stream key";
 "Chưa nạp SuperFG" = "No SuperFG loaded";
 "Chưa nạp logo" = "No logo loaded";
+"Chưa thấy Trang nào: khi đăng nhập Facebook hãy chọn các Trang cho phép DTDStudio phát, rồi bấm tải lại." = "No Pages yet: when signing in to Facebook, select the Pages DTDStudio may publish to, then tap reload.";
 "Chưa tích hợp SDK" = "SDK not integrated";
 "Chương trình (Program)" = "Program";
 "Chạm một bình luận để đưa lên PGM." = "Tap a comment to put it on PGM.";
@@ -155,8 +156,10 @@
 "Dừng" = "Stop";
 "Dừng nhận" = "Stop";
 "Dừng tất cả" = "Stop all";
+"Facebook phát lên" = "Facebook publishes to";
 "Facebook › Video trực tiếp › Phần mềm phát trực tiếp › Khoá luồng." = "Facebook › Live video › Streaming software › Stream key.";
 "Facebook: giữ bitrate ở mức tối đa Facebook nhận (%@ kbps)" = "Facebook: bitrate held at Facebook's maximum (%@ kbps)";
+"Facebook: khi app còn ở chế độ phát triển chỉ tài khoản có vai trò trong app (quản trị/tester) đọc được bình luận, lượt thích và phát lên Trang; cho mọi người dùng cần Meta duyệt quyền (App Review)." = "Facebook: while the app is in development mode only accounts with a role in the app (admin/tester) can read comments and likes and publish to Pages; for all users Meta must approve the permissions (App Review).";
 "Facebook: khi app còn ở chế độ phát triển chỉ đọc được bình luận live của chính tài khoản quản trị app; cho mọi người dùng cần Meta duyệt quyền (App Review)." = "Facebook: while the app is in development mode only the app admin's own live comments can be read; for everyone Meta must approve the permission (App Review).";
 "Font" = "Font";
 "Ghi" = "Rec";
@@ -230,6 +233,7 @@
 "Không có tín hiệu" = "No signal";
 "Không công khai (có link)" = "Unlisted (link only)";
 "Không dùng" = "None";
+"Không lấy được quyền của Trang — đăng nhập lại Facebook và chọn Trang khi được hỏi" = "Could not get access to the Page — sign in to Facebook again and select the Page when asked";
 "Không muốn đăng ký app: dùng Đầu ra › Thêm đích › YouTube/Facebook (stream key)." = "No app registration: use Outputs › Add destination › YouTube/Facebook (stream key).";
 "Không mở được micro/bộ trộn âm thanh — đang phát kèm âm thanh câm. Kiểm tra quyền Micro trong Cài đặt iOS." = "Couldn't open the microphone/audio mixer — streaming with silent audio. Check Microphone permission in iOS Settings.";
 "Không mở được tệp: %@" = "Couldn't open file: %@";
@@ -241,6 +245,7 @@
 "Không phát được nhạc: %lld" = "Couldn't play music: %lld";
 "Không thấy buổi live đang chạy trên kênh đã đăng nhập — dán link video live vào ô bên trên" = "No live running on the signed-in channel — paste the live video link above";
 "Không thấy live Facebook đang chạy — dán link/ID video live vào ô Facebook" = "No Facebook live running — paste the live video link/ID in the Facebook box";
+"Không thấy live đang chạy trên Trang %@ — dán link/ID video live vào ô Facebook" = "No live running on Page %@ — paste the live video link/ID into the Facebook field";
 "Không đọc được %@" = "Couldn't read %@";
 "Không đọc được %lf" = "Couldn't read %lf";
 "Không đọc được %lld" = "Couldn't read %lld";
@@ -270,6 +275,7 @@
 "Link xem live" = "Live watch link";
 "Link/ID video Facebook (trống = live đang chạy của tài khoản đã đăng nhập)" = "Facebook video link/ID (empty = current live of the signed-in account)";
 "Link/ID video YouTube (trống = live đang chạy trên kênh đã đăng nhập)" = "YouTube video link/ID (empty = current live on the signed-in channel)";
+"Live trên Trang hiển thị cho người xem Trang; mục Ai được xem chỉ áp dụng cho YouTube và trang cá nhân." = "Page lives are shown to the Page's audience; the audience setting only applies to YouTube and the personal profile.";
 "Logo" = "Logo";
 "Logo + tên + chức danh" = "Logo + name + title";
 "Logo đang trên PGM" = "Logo is on PGM";
@@ -401,6 +407,7 @@
 "Phiên bản" = "Version";
 "Phát" = "Go live";
 "Phát PGM qua NDI" = "Send PGM over NDI";
+"Phát lên" = "Publish to";
 "Phát lên PGM" = "Play to PGM";
 "Phát lại" = "Replay";
 "Phát lại từ đầu" = "Restart";
@@ -506,6 +513,7 @@
 "Tiếng Việt" = "Tiếng Việt";
 "Token (chỉ cần cho repo private)" = "Token (private repos only)";
 "Toàn màn hình" = "Full screen";
+"Trang cá nhân" = "Personal profile";
 "Trang người xem mở để xem buổi live (YouTube: youtube.com/@kenh/live · Facebook: link bài live)." = "The page viewers open to watch (YouTube: youtube.com/@channel/live · Facebook: the live post link).";
 "Trong suốt" = "Transparent";
 "Trên PGM" = "On PGM";
@@ -535,6 +543,7 @@
 "Tạo phiên live YouTube / Facebook" = "Create YouTube / Facebook live";
 "Tạo phiên live tự động" = "Create live event";
 "Tải lên %@ kbps · hàng đợi %@ KB" = "Upload %@ kbps · queue %@ KB";
+"Tải lại danh sách Trang" = "Reload Pages";
 "TẮT" = "OFF";
 "Tắt khi không dùng replay để đỡ nóng máy và tiết kiệm pin." = "Turn off when not using replay to keep the device cool and save battery.";
 "Tệp" = "Files";
@@ -630,6 +639,7 @@
 "Đang kết nối…" = "Connecting…";
 "Đang lên sóng" = "It's on air";
 "Đang nhận" = "Receiving";
+"Đang nhận (Trang %@)" = "Receiving (Page %@)";
 "Đang phát" = "Live";
 "Đang tìm buổi live…" = "Looking for the live…";
 "Đang tìm…" = "Searching…";

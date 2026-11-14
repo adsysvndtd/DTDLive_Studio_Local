@@ -8,7 +8,8 @@ import UIKit
 ///
 /// Configuration: Settings › Phát trực tiếp (UserDefaults), falling back to Info.plist (project.yml):
 ///   DTDGoogleClientID   — OAuth client of type "iOS" in Google Cloud (YouTube Data API v3 enabled)
-///   DTDFacebookAppID    — Facebook app with "publish_video" permission (needs App Review for public use)
+///   DTDFacebookAppID    — Facebook app: publish_video (profile), pages_show_list + pages_read_engagement +
+///                         pages_manage_posts (Page live), pages_read_user_content (comments) — App Review for public use
 /// Sign-in is kept in the Keychain (Google refresh token, Facebook token with its expiry), so the operator
 /// logs in once; each "Tạo live" then fetches a fresh RTMP URL + stream key automatically.
 @MainActor
@@ -31,6 +32,16 @@ final class PlatformLive: NSObject, ObservableObject, ASWebAuthenticationPresent
     }
 
     struct Destination { var name: String; var url: String; var watchURL: String? }
+    /// A Facebook Page the signed-in user can publish to (CREATE_CONTENT).
+    struct FacebookPage: Codable, Identifiable, Hashable { let id: String; let name: String }
+    /// The Facebook live created from the app: comments / reactions / viewers are read from it
+    /// with the matching token (the Page's for a Page live).
+    struct FacebookLive { let liveID: String; let videoID: String?; let page: String? }
+
+    /// Permissions asked when no Login for Business configuration is set (with a configuration,
+    /// the same list must be ticked in the configuration on developers.facebook.com):
+    /// timeline live, Pages list, Page live, reading comments and reactions.
+    static let facebookScopes = "publish_video,pages_show_list,pages_read_engagement,pages_manage_posts,pages_read_user_content"
 
     static let googleKey = "DTDGoogleClientID"
     static let facebookKey = "DTDFacebookAppID"
@@ -53,6 +64,21 @@ final class PlatformLive: NSObject, ObservableObject, ASWebAuthenticationPresent
     /// Account names shown in Settings (nil = not signed in).
     @Published private(set) var youtubeAccount: String? = UserDefaults.standard.string(forKey: "dtd.youtube.account")
     @Published private(set) var facebookAccount: String? = UserDefaults.standard.string(forKey: "dtd.facebook.account")
+    /// Pages of the signed-in account and where "Facebook Live" publishes ("me" = own profile).
+    @Published private(set) var facebookPages: [FacebookPage] = {
+        guard let d = UserDefaults.standard.data(forKey: "dtd.facebook.pages") else { return [] }
+        return (try? JSONDecoder().decode([FacebookPage].self, from: d)) ?? []
+    }()
+    @Published var facebookTarget: String = UserDefaults.standard.string(forKey: "dtd.facebook.target") ?? "me" {
+        didSet { UserDefaults.standard.set(facebookTarget, forKey: "dtd.facebook.target") }
+    }
+    var facebookTargetPage: String? { facebookTarget == "me" ? nil : facebookTarget }
+    var facebookTargetName: String {
+        guard let id = facebookTargetPage else { return L("Trang cá nhân") }
+        return facebookPages.first { $0.id == id }?.name ?? id
+    }
+    private(set) var currentFacebookLive: FacebookLive?
+    private var pageTokens: [String: String] = [:]
 
     var youtubeSignedIn: Bool { Keychain.get("dtd.google.refresh") != nil || (googleToken != nil && googleExpiry > Date()) }
     var facebookSignedIn: Bool { facebookToken != nil && facebookExpiry > Date() }
@@ -75,6 +101,7 @@ final class PlatformLive: NSObject, ObservableObject, ASWebAuthenticationPresent
             req.httpMethod = "GET"
             let name = (try? await send(req))?["name"] as? String ?? "Facebook"
             facebookAccount = name; UserDefaults.standard.set(name, forKey: "dtd.facebook.account")
+            try? await refreshFacebookPages()
         }
     }
 
@@ -93,7 +120,37 @@ final class PlatformLive: NSObject, ObservableObject, ASWebAuthenticationPresent
             facebookToken = nil; Keychain.set("", for: "dtd.facebook.token")
             UserDefaults.standard.removeObject(forKey: "dtd.facebook.expiry")
             facebookAccount = nil; UserDefaults.standard.removeObject(forKey: "dtd.facebook.account")
+            pageTokens = [:]; currentFacebookLive = nil
+            setFacebookPages([]); facebookTarget = "me"
         }
+    }
+
+    private func setFacebookPages(_ pages: [FacebookPage]) {
+        facebookPages = pages
+        if let d = try? JSONEncoder().encode(pages) { UserDefaults.standard.set(d, forKey: "dtd.facebook.pages") }
+    }
+
+    /// Pages the account can publish to (needs pages_show_list). Keeps the chosen target when still listed.
+    func refreshFacebookPages() async throws {
+        let j = try await facebookGET("me/accounts?fields=id,name,tasks&limit=100")
+        let pages: [FacebookPage] = ((j["data"] as? [[String: Any]]) ?? []).compactMap { p in
+            guard let id = p["id"] as? String, let name = p["name"] as? String else { return nil }
+            if let tasks = p["tasks"] as? [String], !tasks.contains("CREATE_CONTENT") { return nil }
+            return FacebookPage(id: id, name: name)
+        }
+        setFacebookPages(pages)
+        if let t = facebookTargetPage, !pages.contains(where: { $0.id == t }) { facebookTarget = "me" }
+    }
+
+    /// Page access token (derived from the user token; refetched after each new user sign-in).
+    func facebookPageToken(_ pageID: String) async throws -> String {
+        if let t = pageTokens[pageID] { return t }
+        let j = try await facebookGET("\(pageID)?fields=access_token")
+        guard let t = j["access_token"] as? String else {
+            throw LiveError.http(403, L("Không lấy được quyền của Trang — đăng nhập lại Facebook và chọn Trang khi được hỏi"))
+        }
+        pageTokens[pageID] = t
+        return t
     }
 
     nonisolated func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
@@ -177,15 +234,17 @@ final class PlatformLive: NSObject, ObservableObject, ASWebAuthenticationPresent
 
     // MARK: Facebook
 
-    /// Creates a live video on the user's timeline (or a Page if `pageID` + page token flow is added later).
-    /// privacy: "EVERYONE" (public), "ALL_FRIENDS", "SELF".
+    /// Creates a live video on the chosen target: the user's profile, or a Page (Settings › Facebook › Phát lên).
+    /// privacy (profile only; Page lives are public): "EVERYONE", "ALL_FRIENDS", "SELF".
     func createFacebook(title: String, privacy: String = "EVERYONE") async throws -> Destination {
-        let token = try await facebookAccessToken()
-        var c = URLComponents(string: "https://graph.facebook.com/v19.0/me/live_videos")!
+        let page = facebookTargetPage
+        let token: String
+        if let page { token = try await facebookPageToken(page) } else { token = try await facebookAccessToken() }
+        var c = URLComponents(string: "https://graph.facebook.com/v19.0/\(page ?? "me")/live_videos")!
         c.queryItems = [.init(name: "status", value: "LIVE_NOW"), .init(name: "title", value: title),
                         .init(name: "description", value: title),
-                        .init(name: "privacy", value: "{\"value\":\"\(privacy)\"}"),
                         .init(name: "access_token", value: token)]
+        if page == nil { c.queryItems?.append(.init(name: "privacy", value: "{\"value\":\"\(privacy)\"}")) }
         var req = URLRequest(url: c.url!)
         req.httpMethod = "POST"
         let json = try await send(req)
@@ -194,12 +253,14 @@ final class PlatformLive: NSObject, ObservableObject, ASWebAuthenticationPresent
         var watch: String?
         if let id = json["id"] as? String {
             var g = URLComponents(string: "https://graph.facebook.com/v19.0/\(id)")!
-            g.queryItems = [.init(name: "fields", value: "permalink_url"), .init(name: "access_token", value: token)]
-            if let j = try? await send(URLRequest(url: g.url!)), let p = j["permalink_url"] as? String {
+            g.queryItems = [.init(name: "fields", value: "permalink_url,video"), .init(name: "access_token", value: token)]
+            let j = try? await send(URLRequest(url: g.url!))
+            if let p = j?["permalink_url"] as? String {
                 watch = p.hasPrefix("http") ? p : "https://www.facebook.com" + p
             }
+            currentFacebookLive = FacebookLive(liveID: id, videoID: (j?["video"] as? [String: Any])?["id"] as? String, page: page)
         }
-        return Destination(name: "Facebook: \(title)", url: url, watchURL: watch)
+        return Destination(name: page == nil ? "Facebook: \(title)" : "Facebook \(facebookTargetName): \(title)", url: url, watchURL: watch)
     }
 
 
@@ -214,7 +275,7 @@ final class PlatformLive: NSObject, ObservableObject, ASWebAuthenticationPresent
         var items: [URLQueryItem] = [.init(name: "client_id", value: appID), .init(name: "redirect_uri", value: redirect),
                                      .init(name: "response_type", value: "token"), .init(name: "display", value: "touch")]
         if let cfg = Self.configured(Self.facebookConfigKey) { items.append(.init(name: "config_id", value: cfg)) }
-        else { items.append(.init(name: "scope", value: "publish_video")) }
+        else { items.append(.init(name: "scope", value: Self.facebookScopes)) }
         c.queryItems = items
         let callback = try await authenticate(url: c.url!) { done in
             ASWebAuthenticationSession(url: c.url!, callbackURLScheme: scheme, completionHandler: done)
@@ -224,6 +285,7 @@ final class PlatformLive: NSObject, ObservableObject, ASWebAuthenticationPresent
         guard let token = fragment?.queryItems?.first(where: { $0.name == "access_token" })?.value else { throw LiveError.badResponse }
         let secs = fragment?.queryItems?.first(where: { $0.name == "expires_in" })?.value.flatMap(Double.init) ?? 3600
         facebookToken = token
+        pageTokens = [:]
         facebookExpiry = Date().addingTimeInterval(secs > 0 ? secs : 3600)
         Keychain.set(token, for: "dtd.facebook.token")
         UserDefaults.standard.set(facebookExpiry.timeIntervalSince1970, forKey: "dtd.facebook.expiry")
@@ -257,8 +319,9 @@ final class PlatformLive: NSObject, ObservableObject, ASWebAuthenticationPresent
     }
 
     /// GET on the Facebook Graph API with the signed-in user token (path like "me/live_videos?…").
-    func facebookGET(_ path: String) async throws -> [String: Any] {
-        let t = try await facebookAccessToken()
+    func facebookGET(_ path: String, page: String? = nil) async throws -> [String: Any] {
+        let t: String
+        if let page { t = try await facebookPageToken(page) } else { t = try await facebookAccessToken() }
         let sep = path.contains("?") ? "&" : "?"
         var req = URLRequest(url: URL(string: "https://graph.facebook.com/v19.0/\(path)\(sep)access_token=\(t)")!)
         req.httpMethod = "GET"
