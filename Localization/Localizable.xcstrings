@@ -7566,6 +7566,146 @@
           }
         }
       }
+    },
+    "Ba khung dọc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Three tall"
+          }
+        }
+      }
+    },
+    "Chính + 4 phụ hàng dưới": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Main + 4 below"
+          }
+        }
+      }
+    },
+    "Hai khung chia đôi": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Split screen"
+          }
+        }
+      }
+    },
+    "Hai khung so le": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Two staggered"
+          }
+        }
+      }
+    },
+    "Hai trên + ba dưới": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Two over three"
+          }
+        }
+      }
+    },
+    "Không đọc được tệp %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't read file %@"
+          }
+        }
+      }
+    },
+    "Không đọc được ảnh từ Thư viện ảnh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not read the photo from Photos"
+          }
+        }
+      }
+    },
+    "Lưới 3×3": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "3×3 grid"
+          }
+        }
+      }
+    },
+    "Toàn khung + 2 PiP góc dưới": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Full + 2 PiP bottom corners"
+          }
+        }
+      }
+    },
+    "Toàn khung + PiP góc phải": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Full + PiP bottom right"
+          }
+        }
+      }
+    },
+    "Từ thư viện DTDStudio": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "From DTDStudio library"
+          }
+        }
+      }
+    },
+    "Đưa vào Khung %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Into window %@"
+          }
+        }
+      }
+    },
+    "Đưa vào khung PiP": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Into PiP"
+          }
+        }
+      }
+    },
+    "Ảnh / video từ Thư viện ảnh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Photo / video from Photos"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

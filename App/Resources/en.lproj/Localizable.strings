@@ -13,6 +13,7 @@
 "AFV2" = "AFV2";
 "Ai được xem" = "Who can watch";
 "B-frame" = "B-frames";
+"Ba khung dọc" = "Three tall";
 "Ba khung ngang" = "Three across";
 "Bitrate thích ứng" = "Adaptive bitrate";
 "Bitrate thích ứng: giảm %@ → %@ kbps (mạng tải lên chậm, trễ %@ s)" = "Adaptive bitrate: down %@ → %@ kbps (slow upload, %@ s behind)";
@@ -70,6 +71,7 @@
 "Chính + 2 phụ hàng ngang" = "Main + 2 side by side";
 "Chính + 2 phụ xếp dọc" = "Main + 2 stacked";
 "Chính + 3 phụ xếp dọc" = "Main + 3 stacked";
+"Chính + 4 phụ hàng dưới" = "Main + 4 below";
 "Chính + phụ phải" = "Main + right";
 "Chưa bật — bật \"Cho phép DTDLive tìm và ghép nối\" trong Cài đặt › Ingest" = "Off — turn on \"Let DTDLive find and pair\" in Settings › Ingest";
 "Chưa có NDI SDK. Trên Mac: cài \"NDI SDK for Apple\" từ ndi.video, chạy scripts/ndi-setup.sh rồi build lại — nhận & phát NDI sẽ tự bật." = "No NDI SDK yet. On the Mac: install \"NDI SDK for Apple\" from ndi.video, run scripts/ndi-setup.sh and rebuild — NDI input & output turn on automatically.";
@@ -199,7 +201,10 @@
 "Gửi khung hình đầu (keyframe: %lld)" = "First video frame sent (keyframe: %lld)";
 "Gửi tới máy khác" = "Send to another device";
 "HEVC: YouTube/RTMP cần máy chủ hỗ trợ Enhanced RTMP; Facebook chỉ nhận H.264. SRT/RTSP/ghi file dùng được." = "HEVC: YouTube/RTMP needs an Enhanced-RTMP server; Facebook takes H.264 only. SRT/RTSP/recording are fine.";
+"Hai khung chia đôi" = "Split screen";
 "Hai khung ngang" = "Two across";
+"Hai khung so le" = "Two staggered";
+"Hai trên + ba dưới" = "Two over three";
 "Hiện" = "Show";
 "Hiện trên PGM" = "Show on PGM";
 "Hiệp (vd H1, Q2)" = "Period (e.g. H1, Q2)";
@@ -253,6 +258,7 @@
 "Không đọc được %lld" = "Couldn't read %lld";
 "Không đọc được ID video từ link này — mở link trên trình duyệt, copy địa chỉ có …/videos/số hoặc ?v=số rồi dán lại" = "Could not read the video ID from this link — open it in a browser, copy the address with …/videos/number or ?v=number and paste it again";
 "Không đọc được logo" = "Could not read logo";
+"Không đọc được tệp %@" = "Couldn't read file %@";
 "Không đọc được video %@" = "Couldn't read video %@";
 "Không đọc được video %lf" = "Couldn't read video %lf";
 "Không đọc được video %lld" = "Couldn't read video %lld";
@@ -261,6 +267,7 @@
 "Không đọc được ảnh %@" = "Couldn't read image %@";
 "Không đọc được ảnh %lf" = "Couldn't read image %lf";
 "Không đọc được ảnh %lld" = "Couldn't read image %lld";
+"Không đọc được ảnh từ Thư viện ảnh" = "Could not read the photo from Photos";
 "Kick › Dashboard › Settings › Stream key: dán Stream URL (rtmps://…) và Stream key." = "Kick › Dashboard › Settings › Stream key: paste Stream URL (rtmps://…) and Stream key.";
 "Kim loại" = "Metallic";
 "Kiểu" = "Style";
@@ -292,6 +299,7 @@
 "Lưu clip" = "Save clip";
 "Lưu cấu hình hiện tại" = "Save current setup";
 "Lưới 2×2" = "2×2 grid";
+"Lưới 3×3" = "3×3 grid";
 "Lấy mới" = "Refresh";
 "Lấy nét (gần → xa)" = "Focus (near → far)";
 "Lấy nét tự động" = "Autofocus";
@@ -516,6 +524,8 @@
 "Tiêu đề trên (tổ chức / chương trình)" = "Header (organisation / show)";
 "Tiếng Việt" = "Tiếng Việt";
 "Token (chỉ cần cho repo private)" = "Token (private repos only)";
+"Toàn khung + 2 PiP góc dưới" = "Full + 2 PiP bottom corners";
+"Toàn khung + PiP góc phải" = "Full + PiP bottom right";
 "Toàn màn hình" = "Full screen";
 "Trang cá nhân" = "Personal profile";
 "Trang người xem mở để xem buổi live (YouTube: youtube.com/@kenh/live · Facebook: link bài live)." = "The page viewers open to watch (YouTube: youtube.com/@channel/live · Facebook: the live post link).";
@@ -559,6 +569,7 @@
 "Tối thiểu: %.1f Mbps" = "Minimum: %.1f Mbps";
 "Tối ưu chất lượng tốt nhất cho các đích phát" = "Optimize for best quality on all destinations";
 "Từ chối" = "Reject";
+"Từ thư viện DTDStudio" = "From DTDStudio library";
 "Tự kết nối thiết bị tin cậy" = "Auto-connect trusted devices";
 "Tự động" = "Auto";
 "Tự động chuyển cảnh" = "Auto switching";
@@ -692,6 +703,8 @@
 "Đăng nhập một lần; ở Đầu ra bấm Tạo live YouTube/Facebook để tự lấy URL + stream key." = "Sign in once; in Outputs tap Create YouTube/Facebook live to get the URL + stream key automatically.";
 "Đăng xuất" = "Sign out";
 "Đưa lên Preview" = "Send to Preview";
+"Đưa vào Khung %@" = "Into window %@";
+"Đưa vào khung PiP" = "Into PiP";
 "Đường truyền Wi‑Fi (DTDLive)" = "Wi‑Fi link (DTDLive)";
 "Đường truyền tốt." = "Link is good.";
 "Đầu ra" = "Outputs";
@@ -728,6 +741,7 @@
 "Đội nhà" = "Home";
 "đang mở cổng…" = "opening port…";
 "Ảnh" = "Pictures";
+"Ảnh / video từ Thư viện ảnh" = "Photo / video from Photos";
 "Ảnh PNG" = "PNG image";
 "Ảnh nền từ Thư viện" = "Background from Photos";
 "Ảnh đại diện" = "Avatars";
@@ -736,17 +750,3 @@
 "Ứng dụng khác (HTTP): %@" = "Other apps (HTTP): %@";
 "→ Title" = "→ Title";
 "→ Title 2" = "→ Title 2";
-"Ảnh / video từ Thư viện ảnh" = "Photo / video from Photos";
-"Từ thư viện DTDStudio" = "From DTDStudio library";
-"Không đọc được tệp %@" = "Couldn't read file %@";
-"Không đọc được ảnh từ Thư viện ảnh" = "Could not read the photo from Photos";
-"Đưa vào Khung %@" = "Into window %@";
-"Đưa vào khung PiP" = "Into PiP";
-"Toàn khung + PiP góc phải" = "Full + PiP bottom right";
-"Toàn khung + 2 PiP góc dưới" = "Full + 2 PiP bottom corners";
-"Hai khung chia đôi" = "Split screen";
-"Ba khung dọc" = "Three tall";
-"Hai khung so le" = "Two staggered";
-"Chính + 4 phụ hàng dưới" = "Main + 4 below";
-"Hai trên + ba dưới" = "Two over three";
-"Lưới 3×3" = "3×3 grid";

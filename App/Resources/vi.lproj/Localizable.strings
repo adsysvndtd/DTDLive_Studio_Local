@@ -13,6 +13,7 @@
 "AFV2" = "AFV2";
 "Ai được xem" = "Ai được xem";
 "B-frame" = "B-frame";
+"Ba khung dọc" = "Ba khung dọc";
 "Ba khung ngang" = "Ba khung ngang";
 "Bitrate thích ứng" = "Bitrate thích ứng";
 "Bitrate thích ứng: giảm %@ → %@ kbps (mạng tải lên chậm, trễ %@ s)" = "Bitrate thích ứng: giảm %@ → %@ kbps (mạng tải lên chậm, trễ %@ s)";
@@ -70,6 +71,7 @@
 "Chính + 2 phụ hàng ngang" = "Chính + 2 phụ hàng ngang";
 "Chính + 2 phụ xếp dọc" = "Chính + 2 phụ xếp dọc";
 "Chính + 3 phụ xếp dọc" = "Chính + 3 phụ xếp dọc";
+"Chính + 4 phụ hàng dưới" = "Chính + 4 phụ hàng dưới";
 "Chính + phụ phải" = "Chính + phụ phải";
 "Chưa bật — bật \"Cho phép DTDLive tìm và ghép nối\" trong Cài đặt › Ingest" = "Chưa bật — bật \"Cho phép DTDLive tìm và ghép nối\" trong Cài đặt › Ingest";
 "Chưa có NDI SDK. Trên Mac: cài \"NDI SDK for Apple\" từ ndi.video, chạy scripts/ndi-setup.sh rồi build lại — nhận & phát NDI sẽ tự bật." = "Chưa có NDI SDK. Trên Mac: cài \"NDI SDK for Apple\" từ ndi.video, chạy scripts/ndi-setup.sh rồi build lại — nhận & phát NDI sẽ tự bật.";
@@ -199,7 +201,10 @@
 "Gửi khung hình đầu (keyframe: %lld)" = "Gửi khung hình đầu (keyframe: %lld)";
 "Gửi tới máy khác" = "Gửi tới máy khác";
 "HEVC: YouTube/RTMP cần máy chủ hỗ trợ Enhanced RTMP; Facebook chỉ nhận H.264. SRT/RTSP/ghi file dùng được." = "HEVC: YouTube/RTMP cần máy chủ hỗ trợ Enhanced RTMP; Facebook chỉ nhận H.264. SRT/RTSP/ghi file dùng được.";
+"Hai khung chia đôi" = "Hai khung chia đôi";
 "Hai khung ngang" = "Hai khung ngang";
+"Hai khung so le" = "Hai khung so le";
+"Hai trên + ba dưới" = "Hai trên + ba dưới";
 "Hiện" = "Hiện";
 "Hiện trên PGM" = "Hiện trên PGM";
 "Hiệp (vd H1, Q2)" = "Hiệp (vd H1, Q2)";
@@ -253,6 +258,7 @@
 "Không đọc được %lld" = "Không đọc được %lld";
 "Không đọc được ID video từ link này — mở link trên trình duyệt, copy địa chỉ có …/videos/số hoặc ?v=số rồi dán lại" = "Không đọc được ID video từ link này — mở link trên trình duyệt, copy địa chỉ có …/videos/số hoặc ?v=số rồi dán lại";
 "Không đọc được logo" = "Không đọc được logo";
+"Không đọc được tệp %@" = "Không đọc được tệp %@";
 "Không đọc được video %@" = "Không đọc được video %@";
 "Không đọc được video %lf" = "Không đọc được video %lf";
 "Không đọc được video %lld" = "Không đọc được video %lld";
@@ -261,6 +267,7 @@
 "Không đọc được ảnh %@" = "Không đọc được ảnh %@";
 "Không đọc được ảnh %lf" = "Không đọc được ảnh %lf";
 "Không đọc được ảnh %lld" = "Không đọc được ảnh %lld";
+"Không đọc được ảnh từ Thư viện ảnh" = "Không đọc được ảnh từ Thư viện ảnh";
 "Kick › Dashboard › Settings › Stream key: dán Stream URL (rtmps://…) và Stream key." = "Kick › Dashboard › Settings › Stream key: dán Stream URL (rtmps://…) và Stream key.";
 "Kim loại" = "Kim loại";
 "Kiểu" = "Kiểu";
@@ -292,6 +299,7 @@
 "Lưu clip" = "Lưu clip";
 "Lưu cấu hình hiện tại" = "Lưu cấu hình hiện tại";
 "Lưới 2×2" = "Lưới 2×2";
+"Lưới 3×3" = "Lưới 3×3";
 "Lấy mới" = "Lấy mới";
 "Lấy nét (gần → xa)" = "Lấy nét (gần → xa)";
 "Lấy nét tự động" = "Lấy nét tự động";
@@ -516,6 +524,8 @@
 "Tiêu đề trên (tổ chức / chương trình)" = "Tiêu đề trên (tổ chức / chương trình)";
 "Tiếng Việt" = "Tiếng Việt";
 "Token (chỉ cần cho repo private)" = "Token (chỉ cần cho repo private)";
+"Toàn khung + 2 PiP góc dưới" = "Toàn khung + 2 PiP góc dưới";
+"Toàn khung + PiP góc phải" = "Toàn khung + PiP góc phải";
 "Toàn màn hình" = "Toàn màn hình";
 "Trang cá nhân" = "Trang cá nhân";
 "Trang người xem mở để xem buổi live (YouTube: youtube.com/@kenh/live · Facebook: link bài live)." = "Trang người xem mở để xem buổi live (YouTube: youtube.com/@kenh/live · Facebook: link bài live).";
@@ -559,6 +569,7 @@
 "Tối thiểu: %.1f Mbps" = "Tối thiểu: %.1f Mbps";
 "Tối ưu chất lượng tốt nhất cho các đích phát" = "Tối ưu chất lượng tốt nhất cho các đích phát";
 "Từ chối" = "Từ chối";
+"Từ thư viện DTDStudio" = "Từ thư viện DTDStudio";
 "Tự kết nối thiết bị tin cậy" = "Tự kết nối thiết bị tin cậy";
 "Tự động" = "Tự động";
 "Tự động chuyển cảnh" = "Tự động chuyển cảnh";
@@ -692,6 +703,8 @@
 "Đăng nhập một lần; ở Đầu ra bấm Tạo live YouTube/Facebook để tự lấy URL + stream key." = "Đăng nhập một lần; ở Đầu ra bấm Tạo live YouTube/Facebook để tự lấy URL + stream key.";
 "Đăng xuất" = "Đăng xuất";
 "Đưa lên Preview" = "Đưa lên Preview";
+"Đưa vào Khung %@" = "Đưa vào Khung %@";
+"Đưa vào khung PiP" = "Đưa vào khung PiP";
 "Đường truyền Wi‑Fi (DTDLive)" = "Đường truyền Wi‑Fi (DTDLive)";
 "Đường truyền tốt." = "Đường truyền tốt.";
 "Đầu ra" = "Đầu ra";
@@ -728,6 +741,7 @@
 "Đội nhà" = "Đội nhà";
 "đang mở cổng…" = "đang mở cổng…";
 "Ảnh" = "Ảnh";
+"Ảnh / video từ Thư viện ảnh" = "Ảnh / video từ Thư viện ảnh";
 "Ảnh PNG" = "Ảnh PNG";
 "Ảnh nền từ Thư viện" = "Ảnh nền từ Thư viện";
 "Ảnh đại diện" = "Ảnh đại diện";
@@ -736,17 +750,3 @@
 "Ứng dụng khác (HTTP): %@" = "Ứng dụng khác (HTTP): %@";
 "→ Title" = "→ Title";
 "→ Title 2" = "→ Title 2";
-"Toàn khung + PiP góc phải" = "Toàn khung + PiP góc phải";
-"Toàn khung + 2 PiP góc dưới" = "Toàn khung + 2 PiP góc dưới";
-"Hai khung chia đôi" = "Hai khung chia đôi";
-"Ba khung dọc" = "Ba khung dọc";
-"Hai khung so le" = "Hai khung so le";
-"Chính + 4 phụ hàng dưới" = "Chính + 4 phụ hàng dưới";
-"Hai trên + ba dưới" = "Hai trên + ba dưới";
-"Lưới 3×3" = "Lưới 3×3";
-"Ảnh / video từ Thư viện ảnh" = "Ảnh / video từ Thư viện ảnh";
-"Từ thư viện DTDStudio" = "Từ thư viện DTDStudio";
-"Không đọc được tệp %@" = "Không đọc được tệp %@";
-"Không đọc được ảnh từ Thư viện ảnh" = "Không đọc được ảnh từ Thư viện ảnh";
-"Đưa vào Khung %@" = "Đưa vào Khung %@";
-"Đưa vào khung PiP" = "Đưa vào khung PiP";
