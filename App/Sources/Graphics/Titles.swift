@@ -311,35 +311,42 @@ enum Fireworks {
         var rng = SplitMix(UInt64(bitPattern: Int64(seed)))
         let colors: [UIColor] = [.systemYellow, .systemRed, .systemPink, .systemTeal, .systemOrange, .white, .systemGreen]
         let ui = UIGraphicsImageRenderer(size: half, format: fmt).image { ctx in
-            let g = ctx.cgContext
-            g.setBlendMode(.plusLighter)
-            for b in 0..<7 {
-                let start = Double(b) * 0.45
-                let life = 1.8
-                let lt = t - start
-                let cx = half.width * (0.15 + 0.7 * rng.unit()), cy = half.height * (0.15 + 0.4 * rng.unit())
-                let col = colors[Int(rng.unit() * Double(colors.count)) % colors.count]
-                let speed = half.height * (0.28 + 0.2 * rng.unit())
-                let n = 46
-                guard lt > 0, lt < life else { for _ in 0..<n { _ = rng.unit() }; continue }
-                let alpha = CGFloat(max(0, 1 - lt / life))
-                for p in 0..<n {
-                    let ang = Double(p) / Double(n) * 2 * .pi + rng.unit() * 0.12
-                    let v = speed * (0.75 + 0.25 * rng.unit())
-                    let x = cx + CGFloat(cos(ang) * v * lt)
-                    let y = cy + CGFloat(sin(ang) * v * lt + 0.5 * Double(half.height) * 0.35 * lt * lt)
-                    let r = max(1, half.height * 0.006 * (1 - lt / life * 0.5))
-                    col.withAlphaComponent(alpha).setFill()
-                    g.fillEllipse(in: CGRect(x: x - r, y: y - r, width: 2 * r, height: 2 * r))
-                    // short trail
-                    col.withAlphaComponent(alpha * 0.35).setFill()
-                    let tx = cx + CGFloat(cos(ang) * v * max(0, lt - 0.08)), ty = cy + CGFloat(sin(ang) * v * max(0, lt - 0.08))
-                    g.fillEllipse(in: CGRect(x: tx - r * 0.7, y: ty - r * 0.7, width: 1.4 * r, height: 1.4 * r))
-                }
-            }
+            ctx.cgContext.setBlendMode(.plusLighter)
+            for b in 0..<7 { burst(b, t: t, half: half, colors: colors, rng: &rng, in: ctx.cgContext) }
         }
         guard let cg = ui.cgImage else { return nil }
         return CIImage(cgImage: cg).transformed(by: CGAffineTransform(scaleX: 2, y: 2))
+    }
+
+    /// One burst of particles (split out so the compiler type-checks it quickly).
+    private static func burst(_ b: Int, t: Double, half: CGSize, colors: [UIColor], rng: inout SplitMix, in g: CGContext) {
+        let w = Double(half.width), h = Double(half.height)
+        let start: Double = Double(b) * 0.45
+        let life: Double = 1.8
+        let lt: Double = t - start
+        let cx: Double = w * (0.15 + 0.7 * rng.unit())
+        let cy: Double = h * (0.15 + 0.4 * rng.unit())
+        let col: UIColor = colors[Int(rng.unit() * Double(colors.count)) % colors.count]
+        let speed: Double = h * (0.28 + 0.2 * rng.unit())
+        let n = 46
+        guard lt > 0, lt < life else { for _ in 0..<n { _ = rng.unit() }; return }
+        let alpha = CGFloat(max(0, 1 - lt / life))
+        let r: Double = max(1, h * 0.006 * (1 - lt / life * 0.5))
+        let fall: Double = 0.5 * h * 0.35 * lt * lt
+        let lt0: Double = max(0, lt - 0.08)
+        for p in 0..<n {
+            let ang: Double = Double(p) / Double(n) * 2 * Double.pi + rng.unit() * 0.12
+            let v: Double = speed * (0.75 + 0.25 * rng.unit())
+            let x: Double = cx + cos(ang) * v * lt
+            let y: Double = cy + sin(ang) * v * lt + fall
+            col.withAlphaComponent(alpha).setFill()
+            g.fillEllipse(in: CGRect(x: x - r, y: y - r, width: 2 * r, height: 2 * r))
+            // short trail
+            col.withAlphaComponent(alpha * 0.35).setFill()
+            let tx: Double = cx + cos(ang) * v * lt0
+            let ty: Double = cy + sin(ang) * v * lt0
+            g.fillEllipse(in: CGRect(x: tx - r * 0.7, y: ty - r * 0.7, width: 1.4 * r, height: 1.4 * r))
+        }
     }
 
     struct SplitMix {
