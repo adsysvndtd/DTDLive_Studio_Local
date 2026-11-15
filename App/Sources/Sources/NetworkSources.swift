@@ -1,6 +1,5 @@
 @preconcurrency import AVFoundation
 import Foundation
-import AVFoundation
 import CoreImage
 import HaishinKit
 import RTMPHaishinKit
