@@ -14,9 +14,10 @@
   .flash:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);
         width:40%;transform:translateX(-120%)}
   .big{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;
-        font-size:104px;letter-spacing:10px;text-transform:uppercase;font-style:italic;opacity:0;transform:scale(1.6)}
+        font-size:104px;letter-spacing:10px;text-transform:uppercase;font-style:italic;opacity:0;transform:scale(1.6);white-space:nowrap;overflow:hidden}
   .tagtxt{position:absolute;left:0;top:0;width:var(--tag);height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;
-        color:#fff;font-weight:900;font-size:50px;line-height:1;letter-spacing:3px;text-transform:uppercase;font-style:italic;opacity:0;text-align:center}
+        color:#fff;font-weight:900;font-size:50px;line-height:1;letter-spacing:3px;text-transform:uppercase;font-style:italic;opacity:0;text-align:center;white-space:nowrap;overflow:hidden;padding:0 16px;box-sizing:border-box}
+  .tagtxt>*{max-width:100%;overflow:hidden}
   .tagtxt small{font-size:22px;letter-spacing:4px;margin-top:10px;font-style:normal;font-weight:700;opacity:.9}
   .hl{left:calc(var(--tag) - 40px);top:0;width:1400px;max-width:calc(100% - var(--tag) + 40px);height:150px;z-index:2;
         background:var(--paper);display:flex;flex-direction:column;justify-content:center;padding:0 60px 0 90px;

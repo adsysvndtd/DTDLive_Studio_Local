@@ -276,8 +276,11 @@ struct HTMLResizeRows: View {
                 Menu {
                     Button("Theo mẫu") { set { $0.fontFamily = nil } }
                     ForEach(HTMLLayerStyle.fonts, id: \.0) { f in Button(f.1) { set { $0.fontFamily = f.0 } } }
+                    Menu("Font hệ thống khác (có thể thiếu dấu tiếng Việt)") {
+                        ForEach(HTMLLayerStyle.otherFonts, id: \.0) { f in Button(f.1) { set { $0.fontFamily = f.0 } } }
+                    }
                 } label: {
-                    Text(HTMLLayerStyle.fonts.first { $0.0 == st.fontFamily }?.1 ?? L("Theo mẫu"))
+                    Text((HTMLLayerStyle.fonts + HTMLLayerStyle.otherFonts).first { $0.0 == st.fontFamily }?.1 ?? L("Theo mẫu"))
                         .font(DS.fBodyBold).lineLimit(1).padding(.horizontal, 10).frame(height: 28)
                         .background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
                 }

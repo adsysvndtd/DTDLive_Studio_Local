@@ -110,6 +110,8 @@ struct CategoryContent: View {
     @State private var ptzSource: UUID?
     @State private var infoSource: UUID?
     @State private var showOutputs = false
+    /// Title category: HTML5 graphics · classic titles · scoreboard, each on its own tab.
+    @AppStorage("ui.titleTab") private var titleTab = 0
 
     var body: some View {
         VStack(spacing: 0) {
@@ -187,7 +189,8 @@ struct CategoryContent: View {
 
     private var hasToolbar: Bool {
         switch category {
-        case .camera, .favorite, .movie, .picture, .overlay, .logo, .audio, .title: return true
+        case .camera, .favorite, .movie, .picture, .overlay, .logo, .audio: return true
+        case .title: return titleTab == 1
         default: return false
         }
     }
@@ -221,7 +224,7 @@ struct CategoryContent: View {
             case .audio:
                 headerButton("Nhập nhạc", "square.and.arrow.down") { fileTarget = .music; importing = .music }
                 headerButton("Nhập hiệu ứng", "sparkles") { fileTarget = .sound; importing = .sound }
-            case .title:
+            case .title where titleTab == 1:
                 Menu {
                     ForEach(TitleStyle.allCases) { s in
                         Button(s.label) {
@@ -329,11 +332,25 @@ struct CategoryContent: View {
             sectionHeader("SuperFG của bạn: ảnh PNG/JPG chạy như thẻ có hiệu ứng · video .mov có kênh alpha")
             libraryGrid(.overlay, selected: engine.currentForegroundURL) { engine.useForeground($0) }
         case .title:
-            HTMLGraphicsPanel(html: engine.html, repo: engine.graphicsRepo, compact: true,
-                              background: engine.switcher.previewMonitor,
-                              aspect: CGFloat(engine.format.width) / CGFloat(max(engine.format.height, 1))).padding(.bottom, 2)
-            ScoreboardControl(engine: engine, compact: true).padding(.bottom, 2)
-            TitlesPanel(engine: engine)
+            Picker("", selection: $titleTab) {
+                Text("Đồ hoạ HTML5").tag(0)
+                Text("Title").tag(1)
+                Text("Bảng tỉ số").tag(2)
+            }
+            .pickerStyle(.segmented)
+            switch titleTab {
+            case 1:
+                TitlesPanel(engine: engine)
+                if engine.titles.enumerated().allSatisfy({ $0.offset == engine.scoreboardIndex }) {
+                    emptyHint("Chưa có title — bấm Thêm title ở góc trên")
+                }
+            case 2:
+                ScoreboardControl(engine: engine, compact: true)
+            default:
+                HTMLGraphicsPanel(html: engine.html, repo: engine.graphicsRepo, compact: true,
+                                  background: engine.switcher.previewMonitor,
+                                  aspect: CGFloat(engine.format.width) / CGFloat(max(engine.format.height, 1)))
+            }
         case .logo:
             HStack {
                 Label(engine.logo == nil ? "Chưa nạp logo" : (engine.logoOn ? "Logo đang trên PGM" : "Logo đã nạp — bấm Logo On"),

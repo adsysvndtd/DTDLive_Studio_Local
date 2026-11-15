@@ -85,7 +85,6 @@ struct HTMLLayerStyle: Codable, Equatable {
         if abs(x) > 0.5 || abs(y) > 0.5 { own.append("translate:\(Int(x.rounded()))px \(Int(y.rounded()))px") }
         if abs(scale - 1) > 0.001 { own.append("scale:\(String(format: "%.3f", scale))") }
         if opacity < 0.999 { own.append("filter:opacity(\(String(format: "%.2f", opacity)))") }
-        if let fontSize { own.append("font-size:\(Int(fontSize))px!important") }
         if let background {
             let c = UIColor(hex: background); var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
             c.getRed(&r, green: &g, blue: &b, alpha: &a)
@@ -122,20 +121,29 @@ struct HTMLLayerStyle: Codable, Equatable {
         }
         var out = ""
         if !own.isEmpty { out += "\(base){\(own.joined(separator: ";"))}\n" }
+        // size on the layer and on the elements holding its text (a block's label has its own size in the template)
+        if let fontSize { out += "\(base),\(base) :is(div,span,p,b,i,em,strong,small,h1,h2,h3,h4,li):not(:has(*)){font-size:\(Int(fontSize))px!important}\n" }
         if !text.isEmpty { out += "\(base),\(base) *{\(text.joined(separator: ";"))}\n" }
         // gradient text: on the elements holding the text (not the block background)
         if !fx.isEmpty { out += "\(base) :is(div,span,p,h1,h2,h3):not(:has(*)),\(base):not(:has(*)){\(fx.joined(separator: ";"))}\n" }
         return out
     }
 
+    /// Fonts shipped in Graphics/fonts (full Vietnamese), loaded by the page shim.
     static let fonts: [(String, String)] = [
-        ("-apple-system,sans-serif", "SF (hệ thống)"), ("'Avenir Next',sans-serif", "Avenir Next"),
-        ("'Helvetica Neue',sans-serif", "Helvetica Neue"), ("Futura,sans-serif", "Futura"), ("'Gill Sans',sans-serif", "Gill Sans"),
-        ("'Trebuchet MS',sans-serif", "Trebuchet"), ("Verdana,sans-serif", "Verdana"), ("Arial,sans-serif", "Arial"),
-        ("Georgia,serif", "Georgia"), ("'Times New Roman',serif", "Times New Roman"), ("Didot,serif", "Didot"),
-        ("'American Typewriter',serif", "American Typewriter"), ("Menlo,monospace", "Menlo"),
-        ("'Marker Felt',cursive", "Marker Felt"), ("'Chalkboard SE',cursive", "Chalkboard")]
-}
+        ("Montserrat,sans-serif", "Montserrat"), ("'Be Vietnam Pro',sans-serif", "Be Vietnam Pro"),
+        ("Roboto,sans-serif", "Roboto"), ("Oswald,sans-serif", "Oswald (cao, hẹp)"),
+        ("'Barlow Condensed',sans-serif", "Barlow Condensed (hẹp)"), ("Anton,sans-serif", "Anton (tiêu đề đậm)"),
+        ("'Playfair Display',serif", "Playfair Display (có chân)"),
+        ("-apple-system,sans-serif", "SF (hệ thống)"), ("'Helvetica Neue',sans-serif", "Helvetica Neue"),
+        ("Arial,sans-serif", "Arial"), ("Verdana,sans-serif", "Verdana"), ("Georgia,serif", "Georgia"),
+        ("'Times New Roman',serif", "Times New Roman")]
+    /// System fonts that may lack some Vietnamese letters (listed separately in the menu).
+    static let otherFonts: [(String, String)] = [
+        ("'Avenir Next',sans-serif", "Avenir Next"), ("Futura,sans-serif", "Futura"), ("'Gill Sans',sans-serif", "Gill Sans"),
+        ("'Trebuchet MS',sans-serif", "Trebuchet"), ("Didot,serif", "Didot"), ("'American Typewriter',serif", "American Typewriter"),
+        ("Menlo,monospace", "Menlo"), ("'Marker Felt',cursive", "Marker Felt"), ("'Chalkboard SE',cursive", "Chalkboard")]
+}}
 
 /// Everything the operator designs for one template, stored in its HTML file (see writeDesign).
 /// A styleable layer of a template (shown as a chip in Design › Layers).
@@ -455,6 +463,45 @@ enum HTMLGraphicsStore {
         'body.dtd-out #dtd-fx.dtd-plain{animation:dtd-fade .4s ease-in reverse both}'
       ].join('\\n');
       document.head.appendChild(st);
+      // Bundled fonts with full Vietnamese (Documents/Graphics/fonts): same look on every iPad, no missing accents.
+      var href=location.href, di=href.indexOf('/Documents/');
+      var fbase=di>=0?href.slice(0,di+11)+'Graphics/fonts/':new URL('../fonts/',href).href;
+      var FONTS=[['Montserrat','Montserrat','100 900'],['Roboto','Roboto','100 900'],['Oswald','Oswald','200 700'],
+        ['Playfair Display','PlayfairDisplay','400 900'],['Be Vietnam Pro','BeVietnamPro-Regular','100 500'],
+        ['Be Vietnam Pro','BeVietnamPro-Bold','600 700'],['Be Vietnam Pro','BeVietnamPro-ExtraBold','800 900'],
+        ['Barlow Condensed','BarlowCondensed-SemiBold','100 600'],['Barlow Condensed','BarlowCondensed-Bold','700 900'],
+        ['Anton','Anton-Regular','100 900']];
+      var ff=document.createElement('style');ff.id='dtd-fonts';
+      ff.textContent=FONTS.map(function(f){return "@font-face{font-family:'"+f[0]+"';src:url('"+fbase+f[1]+".woff2') format('woff2');font-weight:"+f[2]+";font-display:block}";}).join(' ');
+      document.head.insertBefore(ff,document.head.firstChild);
+      // Text that does not fit its box shrinks (down to half its size) instead of spilling over or being cut.
+      // A field opts out with data-fit="off".
+      var fitting=false, fitTimer=0;
+      function blockOf(e){var n=e;while(n&&n!==document.body&&getComputedStyle(n).display==='inline'){n=n.parentElement;}return n;}
+      // too big for its own box (templates give boxes that grow with the text a max-width)
+      function bad(b){return b.scrollWidth>b.clientWidth+1||b.scrollHeight>b.clientHeight+1;}
+      function fitOne(e){
+        if(e.tagName==='IMG'||e.getAttribute('data-fit')==='off')return;
+        e.style.removeProperty('font-size');
+        if(!(e.textContent||'').trim())return;
+        var b=blockOf(e); if(!b||b===document.body||b.clientWidth<=0||!bad(b))return;
+        var base=parseFloat(getComputedStyle(e).fontSize)||0, sz=base;
+        for(var k=0;k<40&&bad(b)&&sz>base*0.5;k++){sz=sz*0.95;e.style.setProperty('font-size',sz.toFixed(1)+'px','important');}
+      }
+      // fields marked data-field, plus older pages that use the field id as the element id (f0, f1, …)
+      var fitKeys={};
+      window.dtdFit=function(){
+        if(fitting)return; fitting=true;
+        try{
+          var els=Array.prototype.slice.call(document.querySelectorAll('[data-field]'));
+          for(var k in fitKeys){var e=document.getElementById(k);if(e&&els.indexOf(e)<0&&!e.querySelector('[data-field]'))els.push(e);}
+          els.forEach(fitOne);
+        }catch(x){}
+        fitting=false;
+      };
+      function fitSoon(){if(fitting)return;clearTimeout(fitTimer);fitTimer=setTimeout(window.dtdFit,30);}
+      new MutationObserver(fitSoon).observe(document.documentElement,{childList:true,subtree:true,characterData:true});
+      if(document.fonts){document.fonts.ready.then(window.dtdFit);document.fonts.addEventListener('loadingdone',fitSoon);}
       if(typeof window.update!=='function'){window.update=function(d){if(typeof d==='string')d=JSON.parse(d);for(var k in d)setv(k,d[k]);};}
       // pages without their own animation: plain fade in/out of the wrapper
       if(typeof window.play!=='function'){
@@ -463,6 +510,11 @@ enum HTMLGraphicsStore {
       }
       if(typeof window.stop!=='function'){window.stop=function(){document.body.classList.remove('dtd-in');document.body.classList.add('dtd-out');};}
       if(typeof window.next!=='function'){window.next=function(){};}
+      var pageUpdate=window.update;
+      window.update=function(d){
+        try{var o=typeof d==='string'?JSON.parse(d):d;for(var k in o){if(k.indexOf('--')!==0&&k!=='accent')fitKeys[k]=1;}}catch(x){}
+        var r=pageUpdate.apply(this,arguments);window.dtdFit();return r;
+      };
       function v(n){return getComputedStyle(document.body).getPropertyValue(n).trim();}
       // In/out effect chosen in the app (on top of the template's own animation).
       window.dtdPlay=function(){

@@ -1,14 +1,14 @@
 <!doctype html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=1920,height=1080">
 <style>
-  html,body{margin:0;width:1920px;height:1080px;background:transparent;overflow:hidden;font-family:-apple-system,"Helvetica Neue",sans-serif}
+  html,body{margin:0;width:1920px;height:1080px;background:transparent;overflow:hidden;font-family:"Be Vietnam Pro",-apple-system,"Helvetica Neue",sans-serif}
   :root{--accent:#20C4F4}
   .card{position:absolute;left:50%;bottom:120px;transform:translateX(-50%) translateY(40px) scale(.96);opacity:0;
-        min-width:900px;padding:22px 48px 26px;background:linear-gradient(135deg,rgba(255,255,255,.22),rgba(255,255,255,.06));
+        min-width:900px;max-width:1720px;box-sizing:border-box;padding:22px 48px 26px;background:linear-gradient(135deg,rgba(255,255,255,.22),rgba(255,255,255,.06));
         border:2px solid rgba(255,255,255,.35);box-shadow:0 18px 50px rgba(0,0,0,.45);text-align:center}
   .card:before{content:"";position:absolute;left:0;top:0;height:6px;width:100%;background:var(--accent);transform:scaleX(0);transform-origin:left}
-  .l1{color:var(--accent);font-weight:900;font-size:30px;letter-spacing:6px}
-  .l2{color:#fff;font-weight:700;font-size:56px;margin-top:6px;text-shadow:0 3px 12px rgba(0,0,0,.5)}
+  .l1{color:var(--accent);font-weight:900;font-size:30px;letter-spacing:6px;white-space:nowrap}
+  .l2{color:#fff;font-weight:700;font-size:56px;white-space:nowrap;margin-top:6px;text-shadow:0 3px 12px rgba(0,0,0,.5)}
   .on .card{animation:in .6s cubic-bezier(.2,.9,.25,1.1) forwards}
   .on .card:before{animation:line .5s .35s ease-out forwards}
   .off .card{opacity:1;transform:translateX(-50%);animation:out .4s ease-in forwards}

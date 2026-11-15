@@ -7706,6 +7706,26 @@
           }
         }
       }
+    },
+    "Chưa có title — bấm Thêm title ở góc trên": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No titles yet — tap Add title at the top"
+          }
+        }
+      }
+    },
+    "Font hệ thống khác (có thể thiếu dấu tiếng Việt)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Other system fonts (may lack Vietnamese accents)"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

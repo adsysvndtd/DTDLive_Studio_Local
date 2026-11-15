@@ -29,6 +29,17 @@ Dùng CSS animation / Web Animations; không tải thư viện từ Internet (ap
 
 Không dùng tài nguyên tải từ thư viện ảnh stock (Freepik/Magnific…): giấy phép của họ không cho đóng gói vào app làm template.
 
+## Font và chữ tự co
+
+`fonts/` chứa các font có đủ dấu tiếng Việt (Montserrat, Be Vietnam Pro, Roboto, Oswald, Barlow Condensed,
+Anton, Playfair Display — giấy phép SIL OFL, xem `fonts/LICENSES.txt`). App tự nạp chúng vào mọi trang, kể cả HTML
+bạn nhập: chỉ cần ghi `font-family: "Be Vietnam Pro"` (hoặc tên font khác ở trên) trong CSS. Trong app, mục
+Thiết kế › Lớp › Font cũng chọn được các font này.
+
+Chữ dài hơn khung sẽ tự thu nhỏ (tối đa còn một nửa cỡ chữ) thay vì tràn ra ngoài. Điều kiện: khung có chiều rộng
+giới hạn (`width` / `max-width`) và chữ không xuống dòng (`white-space: nowrap`), hoặc khung có chiều cao cố định.
+Thêm `data-fit="off"` vào phần tử nào không muốn tự co.
+
 ## Nhập file HTML của riêng bạn (trong app: Đồ hoạ HTML5 › Nhập HTML)
 
 Chọn một file `.html` hoặc cả thư mục (có `index.html` + ảnh, font, css). App tự tìm phần sửa được:
