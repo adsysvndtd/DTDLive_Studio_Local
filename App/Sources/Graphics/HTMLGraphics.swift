@@ -143,7 +143,7 @@ struct HTMLLayerStyle: Codable, Equatable {
         ("'Avenir Next',sans-serif", "Avenir Next"), ("Futura,sans-serif", "Futura"), ("'Gill Sans',sans-serif", "Gill Sans"),
         ("'Trebuchet MS',sans-serif", "Trebuchet"), ("Didot,serif", "Didot"), ("'American Typewriter',serif", "American Typewriter"),
         ("Menlo,monospace", "Menlo"), ("'Marker Felt',cursive", "Marker Felt"), ("'Chalkboard SE',cursive", "Chalkboard")]
-}}
+}
 
 /// Everything the operator designs for one template, stored in its HTML file (see writeDesign).
 /// A styleable layer of a template (shown as a chip in Design › Layers).
