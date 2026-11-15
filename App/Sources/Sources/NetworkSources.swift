@@ -1,5 +1,7 @@
 @preconcurrency import AVFoundation
 import Foundation
+import AVFoundation
+import CoreImage
 import HaishinKit
 import RTMPHaishinKit
 import SRTHaishinKit
@@ -151,6 +153,47 @@ final class FileSource: VideoSource {
         item.add(output)
         player.replaceCurrentItem(with: item)
         player.actionAtItemEnd = .pause
+        Task { await loadOrientation() }
+    }
+
+    // MARK: Orientation
+    // Phone videos are stored sideways with a rotation flag (preferredTransform); the video output ignores it,
+    // so a 9:16 clip would show lying on its side. Frames are turned upright here, once, for every consumer.
+    private var orientation: CGImagePropertyOrientation = .up
+    private var uprightPool: CVPixelBufferPool?
+    private var uprightSize = CGSize.zero
+    private static let rotateContext = CIContext(options: [.cacheIntermediates: false])
+
+    private func loadOrientation() async {
+        guard let track = try? await item.asset.loadTracks(withMediaType: .video).first,
+              let t = try? await track.load(.preferredTransform) else { return }
+        let deg = Int((atan2(Double(t.b), Double(t.a)) * 180 / Double.pi).rounded())
+        switch deg {
+        case 90: orientation = .right
+        case -90, 270: orientation = .left
+        case 180, -180: orientation = .down
+        default: orientation = .up
+        }
+    }
+
+    private func upright(_ pb: CVPixelBuffer) -> CVPixelBuffer {
+        guard orientation != .up else { return pb }
+        var img = CIImage(cvPixelBuffer: pb).oriented(orientation)
+        img = img.transformed(by: CGAffineTransform(translationX: -img.extent.minX, y: -img.extent.minY))
+        let size = img.extent.size
+        if uprightPool == nil || uprightSize != size {
+            let attrs: [String: Any] = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA,
+                                        kCVPixelBufferWidthKey as String: Int(size.width),
+                                        kCVPixelBufferHeightKey as String: Int(size.height),
+                                        kCVPixelBufferIOSurfacePropertiesKey as String: [:]]
+            uprightPool = nil
+            CVPixelBufferPoolCreate(nil, nil, attrs as CFDictionary, &uprightPool)
+            uprightSize = size
+        }
+        var out: CVPixelBuffer?
+        guard let pool = uprightPool, CVPixelBufferPoolCreatePixelBuffer(nil, pool, &out) == kCVReturnSuccess, let out else { return pb }
+        Self.rotateContext.render(img, to: out)
+        return out
     }
 
     func start() async {
@@ -178,7 +221,7 @@ final class FileSource: VideoSource {
     @objc private func tick() {
         let t = output.itemTime(forHostTime: CACurrentMediaTime())
         if output.hasNewPixelBuffer(forItemTime: t), let pb = output.copyPixelBuffer(forItemTime: t, itemTimeForDisplay: nil) {
-            frames.put(pb)
+            frames.put(upright(pb))
         } else if !isPlaying, let last = lastFrame {
             frames.put(last)                  // paused / ended: keep the still alive (no "no signal" slate)
             return

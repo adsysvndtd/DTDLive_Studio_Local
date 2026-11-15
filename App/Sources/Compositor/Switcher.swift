@@ -657,7 +657,13 @@ final class Switcher: @unchecked Sendable {
         guard var img = src else { return base }
         let s = min(r.width / img.extent.width, r.height / img.extent.height)
         img = img.transformed(by: CGAffineTransform(scaleX: s, y: s))
-        img = img.transformed(by: CGAffineTransform(translationX: r.minX - img.extent.minX, y: r.minY - img.extent.minY))
+        if o.pipSourceID != nil {
+            // PiP window: picture centred and whole (a 9:16 phone shot stays upright), black where it doesn't reach
+            img = img.transformed(by: CGAffineTransform(translationX: r.midX - img.extent.midX, y: r.midY - img.extent.midY))
+                .composited(over: CIImage(color: .black).cropped(to: r))
+        } else {
+            img = img.transformed(by: CGAffineTransform(translationX: r.minX - img.extent.minX, y: r.minY - img.extent.minY))
+        }
         if o.opacity < 1 {
             img = img.applyingFilter("CIColorMatrix", parameters: ["inputAVector": CIVector(x: 0, y: 0, z: 0, w: o.opacity)])
         }

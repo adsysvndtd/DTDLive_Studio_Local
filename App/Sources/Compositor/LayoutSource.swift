@@ -173,10 +173,14 @@ final class LayoutRenderer: @unchecked Sendable {
             var tile: CIImage
             if i < ins.count, let buf = ins[i]?.latest() {
                 let img = CIImage(cvPixelBuffer: buf)
-                // Aspect fill into the slot, centre-cropped.
-                let s = max(r.width / img.extent.width, r.height / img.extent.height)
+                // Aspect fill into the slot, centre-cropped — except a portrait (9:16) source in a landscape window:
+                // that one is shown whole, never cut down to a strip, with black bars at the sides.
+                let portraitInLandscape = img.extent.height > img.extent.width && r.width > r.height
+                let s = portraitInLandscape ? min(r.width / img.extent.width, r.height / img.extent.height)
+                                            : max(r.width / img.extent.width, r.height / img.extent.height)
                 let scaled = img.transformed(by: CGAffineTransform(scaleX: s, y: s))
                 tile = scaled.transformed(by: CGAffineTransform(translationX: r.midX - scaled.extent.midX, y: r.midY - scaled.extent.midY)).cropped(to: r)
+                if portraitInLandscape { tile = tile.composited(over: CIImage(color: .black).cropped(to: r)) }
             } else {
                 tile = CIImage(color: CIColor(red: 0.12, green: 0.12, blue: 0.14)).cropped(to: r)
             }
