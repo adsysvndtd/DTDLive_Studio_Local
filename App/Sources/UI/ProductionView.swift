@@ -557,6 +557,10 @@ struct CategoryContent: View {
                     .buttonStyle(.plain)
                 }
             }
+            MediaInputPicker(engine: engine, library: library, compact: compact,
+                             hint: LF("Đưa vào Khung %@", "\(engine.layoutSelectedSlot + 1)")) {
+                engine.assignLayoutSlot(engine.layoutSelectedSlot, source: $0)
+            }
             LazyVGrid(columns: columns, spacing: compact ? 6 : 10) {
                 ForEach(engine.sources.filter { $0.id != engine.layoutSource.id }, id: \.id) { s in
                     Button { engine.assignLayoutSlot(engine.layoutSelectedSlot, source: s.id) } label: {
@@ -580,6 +584,7 @@ struct CategoryContent: View {
             Picker("Vị trí", selection: $engine.pipPreset) { ForEach(StudioEngine.PiPPreset.allCases) { Text($0.label).tag($0) } }
                 .pickerStyle(.menu)
         }
+        MediaInputPicker(engine: engine, library: library, compact: compact, hint: L("Đưa vào khung PiP")) { engine.setPiP($0) }
         LazyVGrid(columns: columns, spacing: compact ? 6 : 10) {
             ForEach(engine.sources.filter { $0.id != engine.layoutSource.id }, id: \.id) { s in
                 let on = engine.pip?.pipSourceID == s.id
@@ -1177,6 +1182,89 @@ struct LayoutEditor: View {
     }
 }
 
+
+/// Puts a photo or video into a PiP / layout window: from the Photos library, the Files app,
+/// or something already in the DTDStudio library. The file is copied into the library
+/// (Ảnh / Video) and becomes an input, without changing Preview.
+struct MediaInputPicker: View {
+    @ObservedObject var engine: StudioEngine
+    @ObservedObject var library: MediaLibrary
+    var compact = false
+    var hint = ""
+    let onPick: (UUID) -> Void
+    @State private var item: PhotosPickerItem?
+    @State private var openFile = false
+    @State private var loading = false
+
+    var body: some View {
+        HStack(spacing: 6) {
+            if !hint.isEmpty {
+                Text(hint).font(DS.fBody).foregroundStyle(DS.text3).lineLimit(1)
+            }
+            PhotosPicker(selection: $item, matching: .any(of: [.images, .videos])) {
+                label(loading ? L("Đang tải…") : L("Ảnh / video từ Thư viện ảnh"), loading ? "hourglass" : "photo.on.rectangle")
+            }
+            .buttonStyle(.plain).disabled(loading)
+            Button { openFile = true } label: { label(L("Tệp"), "folder") }.buttonStyle(.plain)
+            let pics = library.list(.picture), movies = library.list(.movie)
+            if !pics.isEmpty || !movies.isEmpty {
+                Menu {
+                    if !pics.isEmpty {
+                        Section(L("Ảnh")) {
+                            ForEach(pics, id: \.self) { u in Button(u.deletingPathExtension().lastPathComponent) { use(u, movie: false) } }
+                        }
+                    }
+                    if !movies.isEmpty {
+                        Section("Video") {
+                            ForEach(movies, id: \.self) { u in Button(u.deletingPathExtension().lastPathComponent) { use(u, movie: true) } }
+                        }
+                    }
+                } label: { label(L("Từ thư viện DTDStudio"), "rectangle.stack") }
+            }
+            Spacer(minLength: 0)
+        }
+        .onChange(of: item) { _, it in
+            guard let it else { return }
+            Task { await load(it); item = nil }
+        }
+        .fileImporter(isPresented: $openFile, allowedContentTypes: [.image, .movie]) { r in
+            guard case .success(let u) = r else { return }
+            let movie = UTType(filenameExtension: u.pathExtension)?.conforms(to: .movie) ?? false
+            if let dest = library.importFile(u, into: movie ? .movie : .picture) { use(dest, movie: movie) }
+            else { engine.message = LF("Không đọc được tệp %@", u.lastPathComponent) }
+        }
+    }
+
+    private func load(_ it: PhotosPickerItem) async {
+        loading = true
+        defer { loading = false }
+        if it.supportedContentTypes.contains(where: { $0.conforms(to: .movie) }) {
+            if let mv = try? await it.loadTransferable(type: PickedMovie.self) {
+                let dest = library.importFile(mv.url, into: .movie)
+                try? FileManager.default.removeItem(at: mv.url)
+                if let dest { use(dest, movie: true); return }
+            }
+            engine.message = L("Không đọc được video từ Thư viện ảnh")
+        } else if let d = try? await it.loadTransferable(type: Data.self), let url = library.importImage(d, into: .picture) {
+            use(url, movie: false)
+        } else {
+            engine.message = L("Không đọc được ảnh từ Thư viện ảnh")
+        }
+    }
+
+    private func use(_ u: URL, movie: Bool) {
+        if let id = engine.libraryInput(u, movie: movie) { onPick(id) }
+    }
+
+    private func label(_ title: String, _ icon: String) -> some View {
+        Label(title, systemImage: icon)
+            .font(.system(size: compact ? 11 : 12, weight: .semibold)).lineLimit(1)
+            .padding(.horizontal, compact ? 6 : 8).frame(height: compact ? 24 : 28)
+            .foregroundStyle(.white)
+            .background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
+            .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(DS.stroke))
+    }
+}
 
 /// A video picked from Photos, copied to a temp file the library then imports.
 struct PickedMovie: Transferable {

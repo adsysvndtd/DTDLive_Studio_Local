@@ -736,3 +736,17 @@
 "Ứng dụng khác (HTTP): %@" = "Other apps (HTTP): %@";
 "→ Title" = "→ Title";
 "→ Title 2" = "→ Title 2";
+"Ảnh / video từ Thư viện ảnh" = "Photo / video from Photos";
+"Từ thư viện DTDStudio" = "From DTDStudio library";
+"Không đọc được tệp %@" = "Couldn't read file %@";
+"Không đọc được ảnh từ Thư viện ảnh" = "Could not read the photo from Photos";
+"Đưa vào Khung %@" = "Into window %@";
+"Đưa vào khung PiP" = "Into PiP";
+"Toàn khung + PiP góc phải" = "Full + PiP bottom right";
+"Toàn khung + 2 PiP góc dưới" = "Full + 2 PiP bottom corners";
+"Hai khung chia đôi" = "Split screen";
+"Ba khung dọc" = "Three tall";
+"Hai khung so le" = "Two staggered";
+"Chính + 4 phụ hàng dưới" = "Main + 4 below";
+"Hai trên + ba dưới" = "Two over three";
+"Lưới 3×3" = "3×3 grid";

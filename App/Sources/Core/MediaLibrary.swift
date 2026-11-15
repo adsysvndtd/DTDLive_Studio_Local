@@ -55,30 +55,34 @@ final class MediaLibrary: ObservableObject {
     /// Returns an error line for files that could not be copied.
     @discardableResult
     func importFiles(_ urls: [URL], into k: LibraryKind) -> String? {
-        var failed: [String] = []
-        for u in urls {
-            let scoped = u.startAccessingSecurityScopedResource()
-            defer { if scoped { u.stopAccessingSecurityScopedResource() } }
-            var dest = Self.directory(k).appendingPathComponent(u.lastPathComponent)
-            var n = 1
-            while FileManager.default.fileExists(atPath: dest.path) {
-                dest = Self.directory(k).appendingPathComponent("\(u.deletingPathExtension().lastPathComponent)-\(n).\(u.pathExtension)")
-                n += 1
-            }
-            do {
-                // iCloud/Drive files may not be downloaded yet: coordinate the read so the system fetches them
-                var err: NSError?
-                var copyErr: Error?
-                NSFileCoordinator().coordinate(readingItemAt: u, options: .forUploading, error: &err) { src in
-                    do { try FileManager.default.copyItem(at: src, to: dest) } catch { copyErr = error }
-                }
-                if let e = err ?? copyErr as NSError? { throw e }
-            } catch {
-                failed.append(u.lastPathComponent)
-            }
-        }
+        let failed = urls.filter { copyIn($0, into: k) == nil }.map(\.lastPathComponent)
         refresh()
         return failed.isEmpty ? nil : "Không nhập được: " + failed.joined(separator: ", ")
+    }
+
+    /// Copies one file into the library and returns its new location (nil on failure).
+    func importFile(_ u: URL, into k: LibraryKind) -> URL? {
+        let dest = copyIn(u, into: k)
+        refresh()
+        return dest
+    }
+
+    private func copyIn(_ u: URL, into k: LibraryKind) -> URL? {
+        let scoped = u.startAccessingSecurityScopedResource()
+        defer { if scoped { u.stopAccessingSecurityScopedResource() } }
+        var dest = Self.directory(k).appendingPathComponent(u.lastPathComponent)
+        var n = 1
+        while FileManager.default.fileExists(atPath: dest.path) {
+            dest = Self.directory(k).appendingPathComponent("\(u.deletingPathExtension().lastPathComponent)-\(n).\(u.pathExtension)")
+            n += 1
+        }
+        // iCloud/Drive files may not be downloaded yet: coordinate the read so the system fetches them
+        var err: NSError?
+        var copyErr: Error?
+        NSFileCoordinator().coordinate(readingItemAt: u, options: .forUploading, error: &err) { src in
+            do { try FileManager.default.copyItem(at: src, to: dest) } catch { copyErr = error }
+        }
+        return (err == nil && copyErr == nil) ? dest : nil
     }
 
     @discardableResult

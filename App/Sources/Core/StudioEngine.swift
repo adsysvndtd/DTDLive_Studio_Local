@@ -414,10 +414,23 @@ final class StudioEngine: ObservableObject {
     /// Double-tap on a library item: straight to program (cut).
 
     func cuePicture(_ url: URL) {
-        if let s = sources.first(where: { ($0 as? ImageSource)?.url == url }) { select(s.id); return }
-        guard UIImage(contentsOfFile: url.path) != nil else { message = LF("Không đọc được ảnh %@", "\(url.lastPathComponent)"); return }
+        if let id = libraryInput(url, movie: false) { select(id) }
+    }
+
+    /// Input for a library picture or movie (reused if it is already an input), without changing Preview.
+    /// Used to put photos/videos into PiP and layout windows.
+    @discardableResult
+    func libraryInput(_ url: URL, movie: Bool) -> UUID? {
+        if movie {
+            if let s = sources.first(where: { ($0 as? FileSource)?.url == url }) { return s.id }
+            guard FileManager.default.isReadableFile(atPath: url.path) else { message = LF("Không đọc được video %@", "\(url.lastPathComponent)"); return nil }
+            let s = FileSource(name: url.deletingPathExtension().lastPathComponent, url: url)
+            add(s); return s.id
+        }
+        if let s = sources.first(where: { ($0 as? ImageSource)?.url == url }) { return s.id }
+        guard UIImage(contentsOfFile: url.path) != nil else { message = LF("Không đọc được ảnh %@", "\(url.lastPathComponent)"); return nil }
         let s = ImageSource(url: url)
-        add(s); select(s.id)
+        add(s); return s.id
     }
 
     func useLogo(_ url: URL) {

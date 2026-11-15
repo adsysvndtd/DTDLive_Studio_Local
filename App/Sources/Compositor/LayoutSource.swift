@@ -32,7 +32,21 @@ struct LayoutTemplate: Identifiable, Equatable {
             LayoutTemplate(id: 8, name: L("Bốn khung ngang"), slots: (0..<4).map { i in r(CGFloat(i) * 0.25 + g / 2, 0.15, 0.25 - g, 0.7) }),
             LayoutTemplate(id: 9, name: L("Khung phối cảnh"), slots: [Slot(rect: CGRect(x: 0.2, y: 0.12, width: 0.6, height: 0.76), perspective: true)]),
             LayoutTemplate(id: 10, name: L("Lưới 2×2"), slots: [r(g, g, 0.5 - 1.5 * g, 0.5 - 1.5 * g), r(0.5 + g / 2, g, 0.5 - 1.5 * g, 0.5 - 1.5 * g),
-                                                            r(g, 0.5 + g / 2, 0.5 - 1.5 * g, 0.5 - 1.5 * g), r(0.5 + g / 2, 0.5 + g / 2, 0.5 - 1.5 * g, 0.5 - 1.5 * g)])
+                                                            r(g, 0.5 + g / 2, 0.5 - 1.5 * g, 0.5 - 1.5 * g), r(0.5 + g / 2, 0.5 + g / 2, 0.5 - 1.5 * g, 0.5 - 1.5 * g)]),
+            // Toàn khung + PiP nhỏ (khung sau vẽ đè khung trước)
+            LayoutTemplate(id: 11, name: L("Toàn khung + PiP góc phải"), slots: [r(0, 0, 1, 1), r(0.66, 0.62, 0.3, 0.3)]),
+            LayoutTemplate(id: 12, name: L("Toàn khung + 2 PiP góc dưới"), slots: [r(0, 0, 1, 1), r(0.04, 0.66, 0.26, 0.26), r(0.70, 0.66, 0.26, 0.26)]),
+            LayoutTemplate(id: 13, name: L("Hai khung chia đôi"), slots: [r(0, 0, 0.5 - g / 2, 1), r(0.5 + g / 2, 0, 0.5 - g / 2, 1)]),
+            LayoutTemplate(id: 14, name: L("Ba khung dọc"), slots: (0..<3).map { i in r(CGFloat(i) * (1 + g) / 3, 0, (1 - 2 * g) / 3, 1) }),
+            LayoutTemplate(id: 15, name: L("Hai khung so le"), slots: [r(0.04, 0.07, 0.56, 0.56), r(0.40, 0.37, 0.56, 0.56)]),
+            LayoutTemplate(id: 16, name: L("Chính + 4 phụ hàng dưới"), slots: [r(0.16, g, 0.68, 0.68)] +
+                           (0..<4).map { i in r(g + CGFloat(i) * (1 - g) / 4, 0.705, (1 - g) / 4 - g, 0.283) }),
+            LayoutTemplate(id: 17, name: L("Hai trên + ba dưới"), slots: (0..<2).map { i in r(0.17 + CGFloat(i) * 0.335, 0.03, 0.325, 0.47) } +
+                           (0..<3).map { i in r(g + CGFloat(i) * (1 - g) / 3, 0.52, (1 - g) / 3 - g, 0.45) }),
+            LayoutTemplate(id: 18, name: L("Lưới 3×3"), slots: (0..<9).map { i in
+                let w = (1 - 4 * g) / 3
+                return r(g + CGFloat(i % 3) * (w + g), g + CGFloat(i / 3) * (w + g), w, w)
+            })
         ]
     }
 }
