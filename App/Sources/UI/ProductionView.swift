@@ -885,6 +885,7 @@ struct TransitionColumn: View {
                     .buttonStyle(.plain)
                     .background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
                 }
+                AutoSwitchBadge(auto: engine.autoSwitcher, compact: compact)
                 key("PiP Trans", enabled: engine.layoutSlots.count > 0) { engine.layoutTransition() }
                 // AUTO key named after the selected transition (Dissolve, Wipe…)
                 if engine.superFGStingerReady {
@@ -1295,6 +1296,28 @@ struct PickedMovie: Transferable {
             try? FileManager.default.removeItem(at: dst)
             try FileManager.default.copyItem(at: r.file, to: dst)
             return PickedMovie(url: dst)
+        }
+    }
+}
+
+/// Shown above the keys while automatic switching runs (it changes PGM by itself): tap to turn it off.
+struct AutoSwitchBadge: View {
+    @ObservedObject var auto: AutoSwitcher
+    var compact = false
+
+    var body: some View {
+        if auto.enabled {
+            Button { auto.enabled = false } label: {
+                HStack(spacing: 4) {
+                    Image(systemName: "arrow.triangle.2.circlepath").font(.caption2.weight(.bold))
+                    Text("Tự động").font(.caption2.weight(.bold)).lineLimit(1).minimumScaleFactor(0.7)
+                    Image(systemName: "xmark").font(.system(size: 8, weight: .bold))
+                }
+                .foregroundStyle(.black).frame(maxWidth: .infinity, minHeight: compact ? 22 : 26)
+                .background(Color.orange, in: RoundedRectangle(cornerRadius: DS.radius))
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(Text("Tắt tự động chuyển cảnh"))
         }
     }
 }

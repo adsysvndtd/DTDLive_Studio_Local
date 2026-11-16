@@ -349,14 +349,16 @@ final class StudioEngine: ObservableObject {
     // MARK: Switching
 
     func select(_ id: UUID) { switcher.setPreview(id); syncState() }
-    func take(_ id: UUID) { switcher.take(id); syncState() }
+    func take(_ id: UUID) { switcher.take(id); syncState(); autoSwitcher.noteManualTake() }
     func cut() {
         guard takeAllowed() else { return }
+        autoSwitcher.noteManualTake()
         if superFGStingerReady { stinger(hold: 0.1); return }
         switcher.cut(); syncState()
     }
     func autoTransition() {
         guard takeAllowed() else { return }
+        autoSwitcher.noteManualTake()
         if superFGStingerReady { stinger(hold: max(0.15, transitionDuration * 0.4)); return }
         switcher.auto(transition, duration: transitionDuration)
         DispatchQueue.main.asyncAfter(deadline: .now() + transitionDuration + 0.05) { [weak self] in self?.syncState() }
@@ -375,6 +377,7 @@ final class StudioEngine: ObservableObject {
 
     /// T-bar position 0...1; releasing at the end completes the transition.
     func tbar(_ p: Double) {
+        if p > 0.001 { autoSwitcher.noteManualTake() }
         if superFGStingerReady || switcher.stingerBusy, let c = stingerArt() {
             if switcher.stingerManual(p, background: c.bg, text: c.text, motion: c.motion, textMotion: superFGTextMotion) { syncState() }
             return

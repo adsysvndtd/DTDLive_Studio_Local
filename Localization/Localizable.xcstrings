@@ -9716,6 +9716,16 @@
           }
         }
       }
+    },
+    "Tắt tự động chuyển cảnh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Turn off auto switching"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

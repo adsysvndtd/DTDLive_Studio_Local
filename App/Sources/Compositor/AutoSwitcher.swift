@@ -35,6 +35,15 @@ final class AutoSwitcher: ObservableObject {
 
     private func stop() { timer?.invalidate(); timer = nil }
 
+    /// The operator switched by hand (CUT / AUTO / T-bar / hot-punch): give that shot a full interval
+    /// before the automatic switching moves on, instead of jumping away from it a moment later.
+    func noteManualTake() {
+        guard enabled, !switching else { return }
+        lastSwitch = Date()
+        if mode != .audio { start() }
+    }
+    private var switching = false
+
     private func step() {
         guard let engine, !inputs.isEmpty else { return }
         let next: UUID?
@@ -51,8 +60,10 @@ final class AutoSwitcher: ObservableObject {
             if let n = next, let l = levels[audioMap[n] ?? n], l < -40 { return }
         }
         guard let next, next != engine.programID else { return }
+        switching = true
         engine.select(next)
         engine.autoTransition()
+        switching = false
         lastSwitch = Date()
     }
 }
