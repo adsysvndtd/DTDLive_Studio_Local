@@ -822,6 +822,14 @@ final class StudioEngine: ObservableObject {
     }
 
     func setScore(a: Int? = nil, b: Int? = nil) {
+        // Sport mode: the old "set score" API (web remote, OSC, Companion) adds points through the rules engine.
+        if scoreboardSport != nil, let i = scoreboardIndex {
+            let curA = titles[i].scoreA, curB = titles[i].scoreB
+            if let a, a > curA { for _ in 0..<min(a - curA, 20) { sportPrimary(.home) } }
+            if let b, b > curB { for _ in 0..<min(b - curB, 20) { sportPrimary(.away) } }
+            if (a.map { $0 < curA } ?? false) || (b.map { $0 < curB } ?? false) { sportUndo() }
+            return
+        }
         for i in titles.indices where titles[i].style == .scoreBug {
             if let a { titles[i].scoreA = max(0, a) }
             if let b { titles[i].scoreB = max(0, b) }
@@ -848,7 +856,7 @@ final class StudioEngine: ObservableObject {
 
     /// Fraction of the program frame the scoreboard covers at its current scale.
     func scoreboardFraction(_ t: TitleItem) -> CGSize {
-        let sz = ScoreboardRenderer.size(compact: t.sb.compact)
+        let sz = ScoreboardRenderer.size(t)
         let W = CGFloat(format.width), H = CGFloat(max(format.height, 1))
         let k = W / 1920 * t.scale
         return CGSize(width: sz.width * k / W, height: sz.height * k / H)
@@ -896,8 +904,19 @@ final class StudioEngine: ObservableObject {
     }
     func setScoreboardBanner(_ text: String) { updateScoreboard { var b = $0.sb; b.banner = text; $0.sb = b } }
 
-    func scoreboardClockToggle() { updateScoreboard { var b = $0.sb; b.toggleClock(); $0.sb = b } }
-    func scoreboardClockReset() { updateScoreboard { var b = $0.sb; b.resetClock(); $0.sb = b } }
+    func scoreboardClockToggle() {
+        // sport with its own clock (bóng đá: match clock, bi-a: shot clock)
+        if let sp = scoreboardSport {
+            let ids = sp.controls(lang: .current).map(\.id)
+            if let id = ["kickoff", "clock", "sc"].first(where: ids.contains) { sportPerform(controlID: id) }
+            return
+        }
+        updateScoreboard { var b = $0.sb; b.toggleClock(); $0.sb = b }
+    }
+    func scoreboardClockReset() {
+        if scoreboardSport != nil { sportPerform(controlID: "scr"); return }
+        updateScoreboard { var b = $0.sb; b.resetClock(); $0.sb = b }
+    }
 
     func removeTitle(_ id: UUID) { checkpoint(); titles.removeAll { $0.id == id } }
 
@@ -1478,6 +1497,20 @@ extension StudioEngine: ControlTarget {
         case .titleUpdate(let t): upsertTitle(t)
         case .scoreA(let v): setScore(a: v)
         case .scoreB(let v): setScore(b: v)
+        case .sportAction(let id, let input): sportPerform(controlID: id, input: input)
+        case .sportTemplate(let raw): setScoreboardSport(raw.flatMap(SportTemplate.init(rawValue:)))
+        case .sportUndo: sportUndo()
+        case .sportRedo: sportRedo()
+        case .sportRestart: restartSportMatch()
+        case .scoreboardTeams(let home, let away):
+            ensureScoreboard()
+            updateScoreboard { t in
+                if let home { t.line1 = home }
+                if let away { t.line2 = away }
+                Self.syncSport(&t)
+            }
+        case .scoreboardShow(let on):
+            if let i = scoreboardIndex { setTitleVisible(titles[i].id, on) }
         case .streamStart: startAll()
         case .streamStop: stopAll()
         case .recordToggle: toggleRecording()

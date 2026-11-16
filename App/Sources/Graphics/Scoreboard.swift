@@ -23,6 +23,17 @@ struct ScoreboardData: Codable, Equatable {
     var compact = false           // two-row corner layout instead of the wide strip
     var style = ScoreboardStyle.classic.rawValue   // look of the wide strip
     var banner = "LIVE MATCH DAY"                   // ribbon under the centre (broadcast styles)
+    /// Sport rules engine (pickleball, cầu lông, bóng chuyền, bóng đá phủi, bi-a). nil = free scoring (+/−).
+    var sport: SportBoard? = nil
+    /// Template the sport board was made from (SportTemplate.rawValue) — for pickers / web remote.
+    var sportTemplate: String? = nil
+
+    // Per-frame values filled by TitleItem.adaptedForSport (never saved).
+    var overrideClock: String? = nil
+    var servingSide: Int? = nil       // 0 = home, 1 = away
+    var callout: String? = nil
+    var homeColumns: [String] = []
+    var awayColumns: [String] = []
 
     init() {}
     init(from d: Decoder) throws {
@@ -37,16 +48,18 @@ struct ScoreboardData: Codable, Equatable {
         clockLimitSec = v(.clockLimitSec, z.clockLimitSec); clockBase = v(.clockBase, z.clockBase); clockStart = v(.clockStart, z.clockStart)
         compact = v(.compact, z.compact)
         style = v(.style, z.style); banner = v(.banner, z.banner)
+        sport = v(.sport, z.sport); sportTemplate = v(.sportTemplate, z.sportTemplate)
     }
     enum CodingKeys: String, CodingKey {
         case homeSub, awaySub, homeLogo, awayLogo, homeColor, awayColor, centerColor, nameBg, nameText
-        case showClock, countDown, clockLimitSec, clockBase, clockStart, compact, style, banner
+        case showClock, countDown, clockLimitSec, clockBase, clockStart, compact, style, banner, sport, sportTemplate
     }
     var look: ScoreboardStyle { ScoreboardStyle(rawValue: style) ?? .classic }
 
     var running: Bool { clockStart != nil }
     func elapsed(_ now: Date = Date()) -> Double { clockBase + (clockStart.map { now.timeIntervalSince($0) } ?? 0) }
     func clockText(_ now: Date = Date()) -> String {
+        if let o = overrideClock { return o }
         var s = Int(elapsed(now))
         if countDown { s = max(0, clockLimitSec - s) }
         return String(format: "%02d:%02d", s / 60, s % 60)
@@ -131,6 +144,15 @@ enum ScoreboardRenderer {
     static let wideSize = CGSize(width: 1600, height: 250)
     static let compactSize = CGSize(width: 640, height: 232)
     static func size(compact: Bool) -> CGSize { compact ? compactSize : wideSize }
+    /// Compact board grows to the right by one column per finished set/game (sport mode).
+    static func size(_ t: TitleItem) -> CGSize {
+        guard t.sb.compact else { return wideSize }
+        let a = t.adaptedForSport(now: Date()).sb
+        let n = max(a.homeColumns.count, a.awayColumns.count)
+        return CGSize(width: compactSize.width + CGFloat(n) * colW, height: compactSize.height)
+    }
+    static let colW: CGFloat = 64
+    static let serveColor = UIColor(red: 1, green: 0.78, blue: 0, alpha: 1)
 
     /// Small sample picture of a style for the style picker (cached).
     private static var previews: [ScoreboardStyle: UIImage] = [:]
@@ -148,13 +170,16 @@ enum ScoreboardRenderer {
 
     /// Changes whenever the drawn picture would change (scores, names, clock seconds, colours…).
     static func signature(_ t: TitleItem, now: Date = Date()) -> String {
+        let t = t.adaptedForSport(now: now)
         let b = t.sb
         return [t.line1, t.line2, b.homeSub, b.awaySub, "\(t.scoreA)", "\(t.scoreB)", b.homeLogo ?? "", b.awayLogo ?? "",
                 b.homeColor, b.awayColor, b.centerColor, b.nameBg, b.nameText, t.period, b.showClock ? b.clockText(now) : "",
-                b.compact ? "c" : "w", b.style, b.banner].joined(separator: "|")
+                b.compact ? "c" : "w", b.style, b.banner, "\(b.servingSide ?? -1)", b.callout ?? "",
+                b.homeColumns.joined(separator: ","), b.awayColumns.joined(separator: ",")].joined(separator: "|")
     }
 
     static func render(_ t: TitleItem, now: Date = Date()) -> UIImage {
+        let t = t.adaptedForSport(now: now)
         let b = t.sb
         if b.compact { return renderCompact(t, b, now: now) }
         if b.look != .classic { return renderBroadcast(t, b, now: now) }
@@ -186,7 +211,7 @@ enum ScoreboardRenderer {
                 }
             }
 
-            func panel(x: CGFloat, right: Bool, name: String, sub: String, color: UIColor, logoImg: UIImage?) {
+            func panel(x: CGFloat, right: Bool, name: String, sub: String, color: UIColor, logoImg: UIImage?, serving: Bool) {
                 let slant: CGFloat = right ? -26 : 26
                 gradientFill(g, parallelogram(x: x, y: barTop, w: panelW, h: nameH, slant: slant), nameBg.lighter(0.08), nameBg.darker(0.10))
                 gradientFill(g, parallelogram(x: x, y: barTop + nameH, w: panelW, h: subH, slant: slant), color.lighter(0.08), color.darker(0.12))
@@ -210,10 +235,16 @@ enum ScoreboardRenderer {
                     (sub.uppercased() as NSString).draw(in: subRect, withAttributes: [.font: subFont, .foregroundColor: UIColor.white, .paragraphStyle: para])
                 }
                 if let logoImg { logoImg.draw(in: AVMakeRect(aspectRatio: logoImg.size, insideRect: logoRect)) }
+                if serving {
+                    let d: CGFloat = 22, dx = right ? x + 50 : x + panelW - 50 - d
+                    serveColor.setFill()
+                    UIBezierPath(ovalIn: CGRect(x: dx, y: barTop + (nameH - d) / 2, width: d, height: d)).fill()
+                }
                 g.setShadow(offset: CGSize(width: 0, height: 6), blur: 14, color: shadow)
             }
-            panel(x: leftX, right: false, name: t.line1, sub: b.homeSub, color: UIColor(hex: b.homeColor), logoImg: ScoreboardLogos.image(b.homeLogo))
-            panel(x: rightX, right: true, name: t.line2, sub: b.awaySub, color: UIColor(hex: b.awayColor), logoImg: ScoreboardLogos.image(b.awayLogo))
+            panel(x: leftX, right: false, name: t.line1, sub: b.homeSub, color: UIColor(hex: b.homeColor), logoImg: ScoreboardLogos.image(b.homeLogo), serving: b.servingSide == 0)
+            panel(x: rightX, right: true, name: t.line2, sub: b.awaySub, color: UIColor(hex: b.awayColor), logoImg: ScoreboardLogos.image(b.awayLogo),
+                  serving: b.servingSide == 1)
 
             // trapezoid score box (wide top, narrow bottom) with a light rim
             let center = UIBezierPath()
@@ -261,12 +292,26 @@ enum ScoreboardRenderer {
                 (b.clockText(now) as NSString).draw(in: CGRect(x: cx - cw / 2, y: cy + (ch - cf.lineHeight) / 2, width: cw, height: cf.lineHeight),
                                                     withAttributes: [.font: cf, .foregroundColor: UIColor.white, .paragraphStyle: scorePara])
             }
+            if let co = b.callout, !co.isEmpty { calloutPill(co, centerX: cx, y: 0) }
         }
+    }
+
+    /// Yellow pill with the sport callout (GAME POINT, ĐỔI SÂN, VÀO!…).
+    private static func calloutPill(_ text: String, centerX: CGFloat, y: CGFloat, height: CGFloat = 36) {
+        let f = UIFont.systemFont(ofSize: 24, weight: .heavy)
+        let txt = text.uppercased() as NSString
+        let w = min(900, txt.size(withAttributes: [.font: f]).width + 40)
+        let r = CGRect(x: centerX - w / 2, y: y, width: w, height: height)
+        serveColor.setFill(); UIBezierPath(roundedRect: r, cornerRadius: height / 2).fill()
+        let p = NSMutableParagraphStyle(); p.alignment = .center; p.lineBreakMode = .byTruncatingTail
+        txt.draw(in: CGRect(x: r.minX + 10, y: r.midY - f.lineHeight / 2, width: r.width - 20, height: f.lineHeight),
+                 withAttributes: [.font: f, .foregroundColor: UIColor.black, .paragraphStyle: p])
     }
 
     /// Corner layout: two rows [team colour | logo | name | score], then period + clock.
     private static func renderCompact(_ t: TitleItem, _ b: ScoreboardData, now: Date) -> UIImage {
-        let S = compactSize
+        let nCols = max(b.homeColumns.count, b.awayColumns.count)
+        let S = CGSize(width: compactSize.width + CGFloat(nCols) * colW, height: compactSize.height)
         let fmt = UIGraphicsImageRendererFormat()
         fmt.scale = 1
         fmt.opaque = false
@@ -279,7 +324,7 @@ enum ScoreboardRenderer {
             let center = UIColor(hex: b.centerColor)
             let shadow = UIColor.black.withAlphaComponent(0.45).cgColor
             g.setShadow(offset: CGSize(width: 0, height: 4), blur: 10, color: shadow)
-            func row(_ y: CGFloat, name: String, score: Int, color: UIColor, logoImg: UIImage?) {
+            func row(_ y: CGFloat, name: String, score: Int, color: UIColor, logoImg: UIImage?, cols: [String], serving: Bool) {
                 gradientFill(g, UIBezierPath(rect: CGRect(x: strip, y: y, width: S.width - strip - scoreW, height: rowH)),
                              nameBg.lighter(0.08), nameBg.darker(0.10))
                 gradientFill(g, UIBezierPath(rect: CGRect(x: 0, y: y, width: strip, height: rowH)), color.lighter(0.1), color.darker(0.15))
@@ -294,17 +339,34 @@ enum ScoreboardRenderer {
                 }
                 let para = NSMutableParagraphStyle(); para.lineBreakMode = .byTruncatingTail
                 let nf = UIFont.systemFont(ofSize: 40, weight: .heavy)
-                (name.uppercased() as NSString).draw(in: CGRect(x: textX, y: y + (rowH - nf.lineHeight) / 2, width: S.width - scoreW - textX - 10, height: nf.lineHeight),
+                let colsW = CGFloat(nCols) * colW
+                (name.uppercased() as NSString).draw(in: CGRect(x: textX, y: y + (rowH - nf.lineHeight) / 2, width: S.width - scoreW - colsW - textX - 34, height: nf.lineHeight),
                                                      withAttributes: [.font: nf, .foregroundColor: nameFg, .paragraphStyle: para])
+                // finished sets/games (sport mode), right-aligned before the score box
+                let cf = UIFont.monospacedDigitSystemFont(ofSize: 34, weight: .bold)
+                let ccp = NSMutableParagraphStyle(); ccp.alignment = .center
+                for (k, c) in cols.enumerated() {
+                    let cx0 = S.width - scoreW - colsW + CGFloat(k) * colW
+                    (c as NSString).draw(in: CGRect(x: cx0, y: y + (rowH - cf.lineHeight) / 2, width: colW, height: cf.lineHeight),
+                                         withAttributes: [.font: cf, .foregroundColor: nameFg.withAlphaComponent(0.65), .paragraphStyle: ccp])
+                }
+                if serving {
+                    let d: CGFloat = 18
+                    serveColor.setFill()
+                    UIBezierPath(ovalIn: CGRect(x: S.width - scoreW - colsW - d - 10, y: y + (rowH - d) / 2, width: d, height: d)).fill()
+                }
                 let sf = UIFont.monospacedDigitSystemFont(ofSize: 58, weight: .heavy)
                 let cp = NSMutableParagraphStyle(); cp.alignment = .center
                 ("\(score)" as NSString).draw(in: CGRect(x: S.width - scoreW, y: y + (rowH - sf.lineHeight) / 2, width: scoreW, height: sf.lineHeight),
                                               withAttributes: [.font: sf, .foregroundColor: UIColor.white, .paragraphStyle: cp])
                 g.setShadow(offset: CGSize(width: 0, height: 4), blur: 10, color: shadow)
             }
-            row(top, name: t.line1, score: t.scoreA, color: UIColor(hex: b.homeColor), logoImg: ScoreboardLogos.image(b.homeLogo))
-            row(top + rowH + gap, name: t.line2, score: t.scoreB, color: UIColor(hex: b.awayColor), logoImg: ScoreboardLogos.image(b.awayLogo))
-            let info = [t.period.uppercased(), b.showClock ? b.clockText(now) : ""].filter { !$0.isEmpty }.joined(separator: "   ")
+            row(top, name: t.line1, score: t.scoreA, color: UIColor(hex: b.homeColor), logoImg: ScoreboardLogos.image(b.homeLogo),
+                cols: b.homeColumns, serving: b.servingSide == 0)
+            row(top + rowH + gap, name: t.line2, score: t.scoreB, color: UIColor(hex: b.awayColor), logoImg: ScoreboardLogos.image(b.awayLogo),
+                cols: b.awayColumns, serving: b.servingSide == 1)
+            let info = [t.period.uppercased(), b.showClock ? b.clockText(now) : "", (b.callout ?? "").uppercased()]
+                .filter { !$0.isEmpty }.joined(separator: "   ")
             if !info.isEmpty {
                 let y = top + 2 * rowH + gap + 4
                 gradientFill(g, UIBezierPath(rect: CGRect(x: 0, y: y, width: S.width, height: S.height - y - 2)),
@@ -436,6 +498,11 @@ enum ScoreboardRenderer {
                     (sub.uppercased() as NSString).draw(in: CGRect(x: a.minX, y: y + nameFont.lineHeight - 4, width: a.width, height: sf.lineHeight),
                         withAttributes: [.font: sf, .foregroundColor: UIColor.white.withAlphaComponent(0.85), .paragraphStyle: p])
                 }
+            }
+            for (r, on) in [(sA, b.servingSide == 0), (sB, b.servingSide == 1)] where on {
+                let d: CGFloat = 20
+                serveColor.setFill()
+                UIBezierPath(ovalIn: CGRect(x: r.midX - d / 2, y: r.maxY - d - 2, width: d, height: d)).fill()
             }
             let nameA = outerScores ? CGRect(x: sA.maxX, y: leftR.minY, width: leftR.maxX - sA.maxX, height: leftR.height)
                                     : CGRect(x: leftR.minX, y: leftR.minY, width: sA.minX - leftR.minX, height: leftR.height)

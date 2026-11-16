@@ -24,7 +24,7 @@ button.go{background:#d46a00}input,select{font:inherit;padding:8px;border-radius
  <button onclick="post('/api/ftb?on='+(ftb?0:1))" id="ftb">FTB</button>
  <button onclick="post('/api/replay')">REPLAY</button>
 </div>
-<h2>Tỉ số</h2>
+<h2>Tỉ số <a href="/scoreboard" style="color:#d46a00;text-transform:none;margin-left:8px">Bảng tỉ số theo luật →</a></h2>
 <div class="row">
  <button onclick="score('a',-1)">A −</button><b id="sa">0</b><button onclick="score('a',1)">A +</button>
  <button onclick="score('b',-1)">B −</button><b id="sb">0</b><button onclick="score('b',1)">B +</button>

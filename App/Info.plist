@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>vi</string>
+	<key>CFBundleDisplayName</key>
+	<string>DTDStudio</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>vi</string>
+		<string>en</string>
+	</array>
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>DTDFacebookAppID</key>
+	<string>4456468081286454</string>
+	<key>DTDFacebookConfigID</key>
+	<string>1596868605545622</string>
+	<key>DTDGoogleClientID</key>
+	<string>1007472905780-3b4d6gl65igcggb8su86kr4g6p2o8bib.apps.googleusercontent.com</string>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_dtdstudio._tcp</string>
+		<string>_dtd-pair._tcp</string>
+		<string>_http._tcp</string>
+		<string>_ndi._tcp</string>
+	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Dùng camera làm nguồn hình cho bàn trộn.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Nhận/phát luồng SRT, RTMP, RTSP trong mạng nội bộ.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Thu âm thanh cho chương trình phát trực tiếp.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Lưu video đã ghi và clip replay vào Thư viện ảnh.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Chọn ảnh, video, logo và ảnh nền từ Thư viện ảnh để dùng trong chương trình.</string>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<true/>
+		<key>UISceneConfigurations</key>
+		<dict>
+			<key>UIWindowSceneSessionRoleExternalDisplayNonInteractive</key>
+			<array>
+				<dict>
+					<key>UISceneConfigurationName</key>
+					<string>External</string>
+					<key>UISceneDelegateClassName</key>
+					<string>ExternalDisplaySceneDelegate</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+	</array>
+	<key>UIFileSharingEnabled</key>
+	<true/>
+	<key>UILaunchScreen</key>
+	<dict/>
+	<key>UIRequiresFullScreen</key>
+	<true/>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+</dict>
+</plist>

@@ -5,6 +5,9 @@ import Network
 enum ControlCommand {
     case cut, auto, take(Int), preview(Int), ftb(Bool)
     case titleShow(UUID?, Bool), titleUpdate(TitleItem), scoreA(Int), scoreB(Int)
+    // Sport scoreboard (rules engine): control id from /api/scoreboard, template, undo/redo, names, on air
+    case sportAction(String, String?), sportTemplate(String?), sportUndo, sportRedo, sportRestart
+    case scoreboardTeams(String?, String?), scoreboardShow(Bool)
     case streamStart, streamStop, recordToggle
     case replay, replayStop
     case ptz(source: Int, pan: Double, tilt: Double, zoom: Double), ptzPreset(source: Int, preset: Int, store: Bool)
@@ -14,6 +17,7 @@ protocol ControlTarget: AnyObject, Sendable {
     func handle(_ cmd: ControlCommand) async
     func stateJSON() async -> Data
     func tallyJSON(for name: String) async -> Data
+    func scoreboardJSON() async -> Data
     func pairRequest(_ body: Data) async -> Data
     func pairStatus(_ requestID: String) async -> Data
 }
@@ -31,7 +35,12 @@ protocol ControlTarget: AnyObject, Sendable {
 ///   POST /api/pair/request  {deviceID,name,model,app,protocols,pullURL,nonce,token} -> {requestId, confirmCode}
 ///   GET  /api/pair/status?id=<requestId>  -> pending | rejected | expired | {status:"accepted", pushURL, token, ...}
 ///   GET  /api/tally?name=<source name>   -> {"program":bool,"preview":bool}  (camera app DTDLive polls this)
-/// OSC (same verbs): /dtd/cut, /dtd/auto, /dtd/take i, /dtd/preview i, /dtd/ftb i, /dtd/score ii, /dtd/replay
+///   GET  /scoreboard                     web scoreboard operator (rules engine: pickleball, cầu lông, bóng chuyền, bóng đá, bi-a)
+///   GET  /api/scoreboard                 JSON: display, controls (ids), templates, teams
+///   POST /api/scoreboard/action?id=<control id>[&input=<player>] | /api/scoreboard/template?t=<id|empty>
+///   POST /api/scoreboard/undo | /redo | /restart | /api/scoreboard/teams?home=&away= | /api/scoreboard/show?on=1
+/// OSC (same verbs): /dtd/cut, /dtd/auto, /dtd/take i, /dtd/preview i, /dtd/ftb i, /dtd/score ii, /dtd/replay,
+///   /dtd/sb s (scoreboard control id, e.g. "rally-home"), /dtd/sb/undo
 final class ControlServer: @unchecked Sendable {
     private var http: NWListener?
     private var osc: NWListener?
@@ -107,6 +116,25 @@ final class ControlServer: @unchecked Sendable {
         case ("POST", "/api/score"):
             if let a = int("a") { await target.handle(.scoreA(a)) }
             if let b = int("b") { await target.handle(.scoreB(b)) }
+        case ("GET", "/scoreboard"): return HTTPRequest.response(200, "text/html; charset=utf-8", Data(ScoreboardRemotePage.html.utf8))
+        case ("GET", "/api/scoreboard"): return HTTPRequest.response(200, "application/json", await target.scoreboardJSON())
+        case ("POST", "/api/scoreboard/action"):
+            if let id = q["id"] { await target.handle(.sportAction(id, q["input"])) }
+            return HTTPRequest.response(200, "application/json", await target.scoreboardJSON())
+        case ("POST", "/api/scoreboard/template"):
+            let t = q["t"] ?? ""
+            await target.handle(.sportTemplate(t.isEmpty ? nil : t))
+            return HTTPRequest.response(200, "application/json", await target.scoreboardJSON())
+        case ("POST", "/api/scoreboard/undo"): await target.handle(.sportUndo)
+            return HTTPRequest.response(200, "application/json", await target.scoreboardJSON())
+        case ("POST", "/api/scoreboard/redo"): await target.handle(.sportRedo)
+            return HTTPRequest.response(200, "application/json", await target.scoreboardJSON())
+        case ("POST", "/api/scoreboard/restart"): await target.handle(.sportRestart)
+            return HTTPRequest.response(200, "application/json", await target.scoreboardJSON())
+        case ("POST", "/api/scoreboard/teams"): await target.handle(.scoreboardTeams(q["home"], q["away"]))
+            return HTTPRequest.response(200, "application/json", await target.scoreboardJSON())
+        case ("POST", "/api/scoreboard/show"): await target.handle(.scoreboardShow(q["on"] != "0"))
+            return HTTPRequest.response(200, "application/json", await target.scoreboardJSON())
         case ("POST", "/api/stream/start"): await target.handle(.streamStart)
         case ("POST", "/api/stream/stop"): await target.handle(.streamStop)
         case ("POST", "/api/record"): await target.handle(.recordToggle)
@@ -145,6 +173,8 @@ final class ControlServer: @unchecked Sendable {
         case "/dtd/ftb": await target.handle(.ftb((i.first ?? 1) != 0))
         case "/dtd/score": if i.count >= 2 { await target.handle(.scoreA(i[0])); await target.handle(.scoreB(i[1])) }
         case "/dtd/replay": await target.handle(.replay)
+        case "/dtd/sb": if let id = m.args.first as? String { await target.handle(.sportAction(id, m.args.dropFirst().first as? String)) }
+        case "/dtd/sb/undo": await target.handle(.sportUndo)
         case "/dtd/stream/start": await target.handle(.streamStart)
         case "/dtd/stream/stop": await target.handle(.streamStop)
         default: break
