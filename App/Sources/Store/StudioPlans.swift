@@ -366,3 +366,69 @@ enum VND {
         return (f.string(from: NSNumber(value: v)) ?? "\(v)") + " đ"
     }
 }
+
+// MARK: - Plan list shown to the buyer (always all three, even before the App Store answers)
+
+struct StudioPlanInfo: Identifiable {
+    let id: String          // App Store product id
+    let title: String
+    let period: String
+    /// Price in VND (same as the bank-transfer price on the license server).
+    let vnd: Int64
+
+    static var all: [StudioPlanInfo] {
+        [StudioPlanInfo(id: StudioStore.dayPass, title: L("Gói ngày"), period: L("1 ngày"), vnd: 25_000),
+         StudioPlanInfo(id: StudioStore.monthly, title: L("Gói tháng"), period: L("1 tháng · tự gia hạn"), vnd: 400_000),
+         StudioPlanInfo(id: StudioStore.yearly, title: L("Gói năm"), period: L("1 năm · tự gia hạn"), vnd: 2_999_000)]
+    }
+}
+
+/// VND ⇄ USD for showing prices in both currencies. Starts from a built-in rate and refreshes from a public
+/// rate feed at most twice a day (cached); without network the last known rate is used.
+@MainActor
+final class ExchangeRate: ObservableObject {
+    static let shared = ExchangeRate()
+    /// VND per 1 USD.
+    @Published private(set) var vndPerUSD: Double
+    @Published private(set) var updated: Date?
+
+    private let key = "dtd.fx.usdvnd"
+    private init() {
+        let d = UserDefaults.standard
+        let saved = d.double(forKey: key)
+        vndPerUSD = saved > 1000 ? saved : 26_300       // mid-market rate, Nov 2026
+        updated = d.object(forKey: key + ".at") as? Date
+    }
+
+    func refreshIfNeeded() async {
+        if let u = updated, Date().timeIntervalSince(u) < 12 * 3600 { return }
+        guard let url = URL(string: "https://open.er-api.com/v6/latest/USD") else { return }
+        do {
+            var req = URLRequest(url: url); req.timeoutInterval = 8
+            let (data, _) = try await URLSession.shared.data(for: req)
+            struct R: Decodable { let rates: [String: Double] }
+            guard let v = try JSONDecoder().decode(R.self, from: data).rates["VND"], v > 1000, v < 100_000 else { return }
+            vndPerUSD = v; updated = Date()
+            UserDefaults.standard.set(v, forKey: key); UserDefaults.standard.set(updated, forKey: key + ".at")
+        } catch {}
+    }
+
+    func usd(fromVND v: Double) -> String { Self.usdString(v / vndPerUSD) }
+    func vnd(fromUSD v: Double) -> String { VND.format(Int64((v * vndPerUSD / 1000).rounded()) * 1000) }
+
+    static func usdString(_ v: Double) -> String {
+        let f = NumberFormatter(); f.numberStyle = .currency; f.currencyCode = "USD"; f.locale = Locale(identifier: "en_US")
+        f.maximumFractionDigits = 2; f.minimumFractionDigits = 2
+        return f.string(from: NSNumber(value: v)) ?? String(format: "$%.2f", v)
+    }
+
+    /// "≈ $15.21" for a VND price, "≈ 400.000 đ" for a USD one, nil for other currencies.
+    func other(price: Decimal, currency: String) -> String? {
+        let v = NSDecimalNumber(decimal: price).doubleValue
+        switch currency.uppercased() {
+        case "VND": return "≈ " + usd(fromVND: v)
+        case "USD": return "≈ " + vnd(fromUSD: v)
+        default: return nil
+        }
+    }
+}

@@ -119,6 +119,7 @@
 "Chưa có ảnh nền — bấm Ảnh nền từ Thư viện hoặc Tệp" = "No background picture — tap Background from Photos or Files";
 "Chưa có ảnh — nhập ảnh nền ở mục Ảnh (Thư viện ảnh / Tệp)" = "No pictures — import one in Pictures (Photos / Files)";
 "Chưa có ảnh — nhập ở mục Ảnh" = "No pictures — import in Pictures";
+"Chưa mở bán trên App Store" = "Not on sale in the App Store yet";
 "Chưa nhập Facebook App ID — vào Cài đặt › Phát trực tiếp, hoặc dùng 'Thêm đích' với stream key Facebook" = "No Facebook App ID — set it in Settings › Live, or use 'Add destination' with a Facebook stream key";
 "Chưa nhập Google OAuth Client ID (iOS) — vào Cài đặt › Phát trực tiếp, hoặc dùng 'Thêm đích' với stream key YouTube" = "No Google OAuth Client ID (iOS) — set it in Settings › Live, or use 'Add destination' with a YouTube stream key";
 "Chưa nạp SuperFG" = "No SuperFG loaded";
@@ -250,6 +251,9 @@
 "Gói DTDStudio" = "DTDStudio plan";
 "Gói DTDStudio dùng được cả DTDLive Pro: đăng nhập cùng tài khoản DTD trên DTDLive." = "A DTDStudio plan also unlocks DTDLive Pro: sign in with the same DTD account in DTDLive.";
 "Gói bị bỏ (đến trễ)" = "Packets dropped (too late)";
+"Gói ngày" = "Day pass";
+"Gói năm" = "Yearly";
+"Gói tháng" = "Monthly";
 "Gói tháng / năm tự gia hạn cho tới khi huỷ trong Cài đặt › Apple ID › Đăng ký, ít nhất 24 giờ trước khi hết kỳ; tiền trừ vào tài khoản Apple ID khi xác nhận mua. Gói ngày dùng 24 giờ, không tự gia hạn." = "Monthly / yearly plans renew automatically until cancelled in Settings › Apple ID › Subscriptions at least 24 hours before the period ends; payment is charged to your Apple ID when you confirm. The day pass lasts 24 hours and does not renew.";
 "Gói đến quá trễ bị bỏ → hình giật. Tăng độ trễ Wi‑Fi (Cài đặt › Kết nối), dùng Wi‑Fi 5 GHz, đặt máy gần router hoặc giảm bitrate trên DTDLive." = "Packets arrive too late and are dropped → stutter. Raise the Wi‑Fi latency (Settings › Connections), use 5 GHz Wi‑Fi, move closer to the router or lower the bitrate in DTDLive.";
 "GẤP" = "FOLD";
@@ -728,6 +732,7 @@
 "TẮT" = "OFF";
 "Tắt khi không dùng replay để đỡ nóng máy và tiết kiệm pin." = "Turn off when not using replay to keep the device cool and save battery.";
 "Tệp" = "Files";
+"Tỉ giá tham khảo: 1 USD ≈ %@" = "Reference rate: 1 USD ≈ %@";
 "Tỉ số" = "Score";
 "Tốc độ" = "Speed";
 "Tốc độ chạy" = "Scroll speed";
@@ -838,6 +843,7 @@
 "Đang phát" = "Live";
 "Đang tìm buổi live…" = "Looking for the live…";
 "Đang tìm…" = "Searching…";
+"Đang tải giá từ App Store…" = "Loading prices from the App Store…";
 "Đang tải…" = "Loading…";
 "Điều khiển PTZ" = "PTZ control";
 "Điều khiển camera" = "Camera control";

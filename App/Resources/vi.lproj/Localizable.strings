@@ -119,6 +119,7 @@
 "Chưa có ảnh nền — bấm Ảnh nền từ Thư viện hoặc Tệp" = "Chưa có ảnh nền — bấm Ảnh nền từ Thư viện hoặc Tệp";
 "Chưa có ảnh — nhập ảnh nền ở mục Ảnh (Thư viện ảnh / Tệp)" = "Chưa có ảnh — nhập ảnh nền ở mục Ảnh (Thư viện ảnh / Tệp)";
 "Chưa có ảnh — nhập ở mục Ảnh" = "Chưa có ảnh — nhập ở mục Ảnh";
+"Chưa mở bán trên App Store" = "Chưa mở bán trên App Store";
 "Chưa nhập Facebook App ID — vào Cài đặt › Phát trực tiếp, hoặc dùng 'Thêm đích' với stream key Facebook" = "Chưa nhập Facebook App ID — vào Cài đặt › Phát trực tiếp, hoặc dùng 'Thêm đích' với stream key Facebook";
 "Chưa nhập Google OAuth Client ID (iOS) — vào Cài đặt › Phát trực tiếp, hoặc dùng 'Thêm đích' với stream key YouTube" = "Chưa nhập Google OAuth Client ID (iOS) — vào Cài đặt › Phát trực tiếp, hoặc dùng 'Thêm đích' với stream key YouTube";
 "Chưa nạp SuperFG" = "Chưa nạp SuperFG";
@@ -250,6 +251,9 @@
 "Gói DTDStudio" = "Gói DTDStudio";
 "Gói DTDStudio dùng được cả DTDLive Pro: đăng nhập cùng tài khoản DTD trên DTDLive." = "Gói DTDStudio dùng được cả DTDLive Pro: đăng nhập cùng tài khoản DTD trên DTDLive.";
 "Gói bị bỏ (đến trễ)" = "Gói bị bỏ (đến trễ)";
+"Gói ngày" = "Gói ngày";
+"Gói năm" = "Gói năm";
+"Gói tháng" = "Gói tháng";
 "Gói tháng / năm tự gia hạn cho tới khi huỷ trong Cài đặt › Apple ID › Đăng ký, ít nhất 24 giờ trước khi hết kỳ; tiền trừ vào tài khoản Apple ID khi xác nhận mua. Gói ngày dùng 24 giờ, không tự gia hạn." = "Gói tháng / năm tự gia hạn cho tới khi huỷ trong Cài đặt › Apple ID › Đăng ký, ít nhất 24 giờ trước khi hết kỳ; tiền trừ vào tài khoản Apple ID khi xác nhận mua. Gói ngày dùng 24 giờ, không tự gia hạn.";
 "Gói đến quá trễ bị bỏ → hình giật. Tăng độ trễ Wi‑Fi (Cài đặt › Kết nối), dùng Wi‑Fi 5 GHz, đặt máy gần router hoặc giảm bitrate trên DTDLive." = "Gói đến quá trễ bị bỏ → hình giật. Tăng độ trễ Wi‑Fi (Cài đặt › Kết nối), dùng Wi‑Fi 5 GHz, đặt máy gần router hoặc giảm bitrate trên DTDLive.";
 "GẤP" = "GẤP";
@@ -728,6 +732,7 @@
 "TẮT" = "TẮT";
 "Tắt khi không dùng replay để đỡ nóng máy và tiết kiệm pin." = "Tắt khi không dùng replay để đỡ nóng máy và tiết kiệm pin.";
 "Tệp" = "Tệp";
+"Tỉ giá tham khảo: 1 USD ≈ %@" = "Tỉ giá tham khảo: 1 USD ≈ %@";
 "Tỉ số" = "Tỉ số";
 "Tốc độ" = "Tốc độ";
 "Tốc độ chạy" = "Tốc độ chạy";
@@ -838,6 +843,7 @@
 "Đang phát" = "Đang phát";
 "Đang tìm buổi live…" = "Đang tìm buổi live…";
 "Đang tìm…" = "Đang tìm…";
+"Đang tải giá từ App Store…" = "Đang tải giá từ App Store…";
 "Đang tải…" = "Đang tải…";
 "Điều khiển PTZ" = "Điều khiển PTZ";
 "Điều khiển camera" = "Điều khiển camera";

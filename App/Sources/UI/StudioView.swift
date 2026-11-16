@@ -380,6 +380,7 @@ struct TBar: View {
     var onChange: (Double) -> Void
     @State private var rest: Double = 0  // end the current stroke starts from (0 or 1)
     @State private var grab: Double?     // finger offset from the handle when the drag began
+    @State private var done = false      // this drag already completed a take: ignore it until the finger lifts
 
     var body: some View {
         GeometryReader { g in
@@ -399,19 +400,27 @@ struct TBar: View {
             .contentShape(Rectangle())
             .gesture(DragGesture(minimumDistance: 0)
                 .onChanged { d in
-                    // relative drag: touching the bar never makes the handle jump to the finger
-                    if grab == nil { grab = d.startLocation.y / travel - value }
+                    if grab == nil {
+                        // relative drag: touching the bar never makes the handle jump to the finger
+                        grab = d.startLocation.y / travel - value
+                        // A stroke always starts from the end the handle rests at. (The rest end used to be kept
+                        // only in this view: after the layout switched, a touch on a handle sitting at the far end
+                        // counted as a finished stroke and took the previous camera straight back to air.)
+                        if value <= 0.001 { rest = 0 } else if value >= 0.999 { rest = 1 }
+                    }
+                    guard !done else { return }
                     let v = min(1, max(0, d.location.y / travel - (grab ?? 0)))
                     value = v
                     let p = abs(v - rest)
                     if p >= 0.999 {
                         onChange(1)                    // take completes at the far end
                         rest = v > 0.5 ? 1 : 0         // …which is the new rest position
+                        done = true                    // finger jitter at the end must not start the reverse stroke
                     } else {
                         onChange(p)                    // held / reversible mix
                     }
                 }
-                .onEnded { _ in grab = nil })          // stays where it was left
+                .onEnded { _ in grab = nil; done = false })   // stays where it was left
         }
     }
 }

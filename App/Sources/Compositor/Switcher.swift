@@ -226,10 +226,20 @@ final class Switcher: @unchecked Sendable {
             programID = previewID
             previewID = p
             transition = nil
-            if stingerManual != nil { card = nil }
-            clearStinger()
+            endStingerCard()
         }
     }
+
+    /// A take that interrupts a stinger: a T-bar card goes at once, a timed card plays out
+    /// (it used to stay on screen forever once its switch had been cancelled).
+    private func endStingerCard() {
+        if stingerManual != nil { card = nil }
+        else if stingerTo != nil || stingerOutAt != nil, card?.outAt == nil { card?.outAt = HostClock.now }
+        clearStinger()
+    }
+
+    /// True while a timed AUTO transition runs (the T-bar must not take it over half-way).
+    private var timedTransitionRunning: Bool { (transition?.duration ?? 0) > 0 && (transition?.duration ?? 0) < 100_000 }
 
     /// AUTO: animated transition preview -> program.
     func auto(_ style: TransitionStyle, duration: CFTimeInterval = 0.8) {
@@ -245,6 +255,9 @@ final class Switcher: @unchecked Sendable {
     func setManual(_ progress: Double, style: TransitionStyle) {
         let p = max(0, min(1, progress))
         locked {
+            // An AUTO in progress belongs to the AUTO key: touching the T-bar must not cancel it (that left
+            // program on the previous camera) or jump it to the bar's position.
+            if timedTransitionRunning { return }
             if p >= 0.999 {
                 guard let to = transition?.to ?? previewID else { transition = nil; return }
                 previewID = programID; programID = to; transition = nil
@@ -257,7 +270,7 @@ final class Switcher: @unchecked Sendable {
     }
 
     /// Hot-punch a source straight to program (multiview double-tap).
-    func take(_ id: UUID) { locked { previewID = programID; programID = id; transition = nil; if stingerManual != nil { card = nil }; clearStinger() } }
+    func take(_ id: UUID) { locked { previewID = programID; programID = id; transition = nil; endStingerCard() } }
 
     // MARK: Render clock
 

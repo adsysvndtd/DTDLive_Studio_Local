@@ -341,13 +341,26 @@ final class StudioEngine: ObservableObject {
     func select(_ id: UUID) { switcher.setPreview(id); syncState() }
     func take(_ id: UUID) { switcher.take(id); syncState() }
     func cut() {
+        guard takeAllowed() else { return }
         if superFGStingerReady { stinger(hold: 0.1); return }
         switcher.cut(); syncState()
     }
     func autoTransition() {
+        guard takeAllowed() else { return }
         if superFGStingerReady { stinger(hold: max(0.15, transitionDuration * 0.4)); return }
         switcher.auto(transition, duration: transitionDuration)
         DispatchQueue.main.asyncAfter(deadline: .now() + transitionDuration + 0.05) { [weak self] in self?.syncState() }
+    }
+
+    /// CUT / AUTO arriving twice in a row (double tap, the same key on two views, a controller sending
+    /// press + release) flipped program straight back to the previous camera; and a take while a SuperFG
+    /// stinger is still covering the screen switched the cameras a second time behind it.
+    private var lastTakeAt: CFTimeInterval = 0
+    private func takeAllowed() -> Bool {
+        let now = CACurrentMediaTime()
+        if switcher.stingerBusy || now - lastTakeAt < 0.3 { return false }
+        lastTakeAt = now
+        return true
     }
 
     /// T-bar position 0...1; releasing at the end completes the transition.

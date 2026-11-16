@@ -7,6 +7,7 @@ import SwiftUI
 struct PlansView: View {
     @ObservedObject var store: StudioStore
     @ObservedObject var account: StudioAccount
+    @ObservedObject private var fx = ExchangeRate.shared
     @Environment(\.dismiss) private var dismiss
     @State private var error: String?
     @State private var manage = false
@@ -25,11 +26,16 @@ struct PlansView: View {
 
                 Section(header: SettingsHeader("Mua qua App Store"),
                         footer: Text("Gói tháng / năm tự gia hạn cho tới khi huỷ trong Cài đặt › Apple ID › Đăng ký, ít nhất 24 giờ trước khi hết kỳ; tiền trừ vào tài khoản Apple ID khi xác nhận mua. Gói ngày dùng 24 giờ, không tự gia hạn.")) {
+                    // all three plans, always: App Store price when the store has answered, the list price otherwise
+                    ForEach(StudioPlanInfo.all) { info in planRow(info, store.products.first { $0.id == info.id }) }
                     if store.products.isEmpty {
-                        if store.loading { ProgressView() }
-                        Text(verbatim: store.loadError ?? "").font(.footnote).foregroundStyle(.secondary)
+                        HStack(spacing: 8) {
+                            if store.loading { ProgressView() }
+                            Text(verbatim: store.loadError ?? L("Đang tải giá từ App Store…")).font(.footnote).foregroundStyle(.secondary)
+                        }
                     }
-                    ForEach(store.products, id: \.id) { p in productRow(p) }
+                    Text(verbatim: LF("Tỉ giá tham khảo: 1 USD ≈ %@", VND.format(Int64(fx.vndPerUSD.rounded()))))
+                        .font(.caption2).foregroundStyle(.secondary)
                     HStack {
                         Button("Khôi phục giao dịch") { Task { error = await store.restore() } }
                         Spacer()
@@ -61,6 +67,8 @@ struct PlansView: View {
             .toolbar { ToolbarItem(placement: .topBarTrailing) { Button("Xong") { dismiss() } } }
             .manageSubscriptionsSheet(isPresented: $manage)
             .task { await store.refresh(); await account.refresh() }
+            .task { await fx.refreshIfNeeded() }
+            .task { if store.products.isEmpty { await store.load() } }
         }
     }
 
@@ -86,25 +94,38 @@ struct PlansView: View {
         .padding(.vertical, 4)
     }
 
-    private func productRow(_ p: Product) -> some View {
-        let active = store.activeProduct == p.id
+    /// One plan: name, period, price (App Store price if loaded, else the list price) and the other currency.
+    private func planRow(_ info: StudioPlanInfo, _ p: Product?) -> some View {
+        let active = store.activeProduct == info.id
+        let price = p?.displayPrice ?? VND.format(info.vnd)
+        let other = p.flatMap { fx.other(price: $0.price, currency: $0.priceFormatStyle.currencyCode) }
+            ?? "≈ " + fx.usd(fromVND: Double(info.vnd))
         return Button {
+            guard let p else { return }
             Task { error = await store.purchase(p) }
         } label: {
-            HStack {
+            HStack(alignment: .center, spacing: 10) {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(verbatim: p.displayName.isEmpty ? StudioStore.periodLabel(p) : p.displayName).font(.headline)
-                    Text(verbatim: StudioStore.periodLabel(p)).font(.caption).foregroundStyle(.secondary)
-                    if !p.description.isEmpty { Text(verbatim: p.description).font(.caption).foregroundStyle(.secondary) }
+                    Text(verbatim: info.title).font(.headline)
+                    Text(verbatim: info.period).font(.caption).foregroundStyle(.secondary)
+                    if let d = p?.description, !d.isEmpty { Text(verbatim: d).font(.caption).foregroundStyle(.secondary) }
+                    if p == nil, !store.loading {
+                        Text("Chưa mở bán trên App Store").font(.caption2).foregroundStyle(.orange)
+                    }
                 }
                 Spacer()
-                if store.purchasing == p.id { ProgressView() }
+                if store.purchasing == info.id { ProgressView() }
                 else if active { Text("Đang dùng").font(.subheadline.bold()).foregroundStyle(.green) }
-                else { Text(verbatim: p.displayPrice).font(.headline) }
+                else {
+                    VStack(alignment: .trailing, spacing: 1) {
+                        Text(verbatim: price).font(.headline).monospacedDigit()
+                        Text(verbatim: other).font(.caption).foregroundStyle(.secondary).monospacedDigit()
+                    }
+                }
             }
         }
         // a day pass can be bought again (it adds 24 h); a running subscription can't
-        .disabled(store.purchasing != nil || (active && p.id != StudioStore.dayPass))
+        .disabled(p == nil || store.purchasing != nil || (active && info.id != StudioStore.dayPass))
     }
 }
 
@@ -185,7 +206,13 @@ struct StudioBankRows: View {
                                 if let d = p.desc, !d.isEmpty { Text(verbatim: d).font(.caption.bold()).foregroundStyle(.green) }
                             }
                             Spacer()
-                            if creating == p.id { ProgressView() } else { Text(verbatim: VND.format(p.amount)).font(.headline) }
+                            if creating == p.id { ProgressView() } else {
+                                VStack(alignment: .trailing, spacing: 1) {
+                                    Text(verbatim: VND.format(p.amount)).font(.headline).monospacedDigit()
+                                    Text(verbatim: "≈ " + ExchangeRate.shared.usd(fromVND: Double(p.amount)))
+                                        .font(.caption).foregroundStyle(.secondary).monospacedDigit()
+                                }
+                            }
                         }
                     }
                     .disabled(!plans.bankReady || creating != nil)

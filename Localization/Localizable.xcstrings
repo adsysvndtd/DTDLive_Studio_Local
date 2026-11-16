@@ -9656,6 +9656,66 @@
           }
         }
       }
+    },
+    "Gói ngày": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Day pass"
+          }
+        }
+      }
+    },
+    "Gói tháng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monthly"
+          }
+        }
+      }
+    },
+    "Gói năm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yearly"
+          }
+        }
+      }
+    },
+    "Đang tải giá từ App Store…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loading prices from the App Store…"
+          }
+        }
+      }
+    },
+    "Tỉ giá tham khảo: 1 USD ≈ %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reference rate: 1 USD ≈ %@"
+          }
+        }
+      }
+    },
+    "Chưa mở bán trên App Store": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not on sale in the App Store yet"
+          }
+        }
+      }
     }
   },
   "version": "1.0"
