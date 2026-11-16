@@ -1,10 +1,14 @@
 "%.1f Mbps · Âm thanh %.0f dBFS" = "%.1f Mbps · Âm thanh %.0f dBFS";
 "%@ (mặc định)" = "%@ (mặc định)";
+"%@ ngày" = "%@ ngày";
 "(bản sao)" = "(bản sao)";
 "(lưu vào Files › DTDStudio)" = "(lưu vào Files › DTDStudio)";
 "0.25×" = "0.25×";
 "0.5×" = "0.5×";
 "0.75×" = "0.75×";
+"1 ngày" = "1 ngày";
+"1 năm · tự gia hạn" = "1 năm · tự gia hạn";
+"1 tháng · tự gia hạn" = "1 tháng · tự gia hạn";
 "1080×1920 (dọc)" = "1080×1920 (dọc)";
 "1×" = "1×";
 "720×1280 (dọc)" = "720×1280 (dọc)";
@@ -65,6 +69,7 @@
 "Cho phép DTDLive tìm và ghép nối" = "Cho phép DTDLive tìm và ghép nối";
 "Chrome xanh" = "Chrome xanh";
 "Chuyển cảnh" = "Chuyển cảnh";
+"Chuyển khoản ngân hàng (VietQR)" = "Chuyển khoản ngân hàng (VietQR)";
 "Chuyển màu dọc" = "Chuyển màu dọc";
 "Chuyển màu ngang" = "Chuyển màu ngang";
 "Chuyển sang 1080×1920" = "Chuyển sang 1080×1920";
@@ -74,11 +79,15 @@
 "Chính + 3 phụ xếp dọc" = "Chính + 3 phụ xếp dọc";
 "Chính + 4 phụ hàng dưới" = "Chính + 4 phụ hàng dưới";
 "Chính + phụ phải" = "Chính + phụ phải";
+"Chính sách quyền riêng tư" = "Chính sách quyền riêng tư";
 "Chưa bật — bật \"Cho phép DTDLive tìm và ghép nối\" trong Cài đặt › Ingest" = "Chưa bật — bật \"Cho phép DTDLive tìm và ghép nối\" trong Cài đặt › Ingest";
+"Chưa có" = "Chưa có";
 "Chưa có NDI SDK. Trên Mac: cài \"NDI SDK for Apple\" từ ndi.video, chạy scripts/ndi-setup.sh rồi build lại — nhận & phát NDI sẽ tự bật." = "Chưa có NDI SDK. Trên Mac: cài \"NDI SDK for Apple\" từ ndi.video, chạy scripts/ndi-setup.sh rồi build lại — nhận & phát NDI sẽ tự bật.";
 "Chưa có Wi-Fi" = "Chưa có Wi-Fi";
 "Chưa có camera mạng" = "Chưa có camera mạng";
 "Chưa có camera — bấm Thêm nguồn" = "Chưa có camera — bấm Thêm nguồn";
+"Chưa có gói" = "Chưa có gói";
+"Chưa có gói DTDStudio trên máy chủ." = "Chưa có gói DTDStudio trên máy chủ.";
 "Chưa có hình" = "Chưa có hình";
 "Chưa có kênh nào" = "Chưa có kênh nào";
 "Chưa có thiết bị nào được ghép nối" = "Chưa có thiết bị nào được ghép nối";
@@ -93,6 +102,7 @@
 "Chưa nạp logo" = "Chưa nạp logo";
 "Chưa thấy Trang nào: khi đăng nhập Facebook hãy chọn các Trang cho phép DTDStudio phát, rồi bấm tải lại." = "Chưa thấy Trang nào: khi đăng nhập Facebook hãy chọn các Trang cho phép DTDStudio phát, rồi bấm tải lại.";
 "Chưa tích hợp SDK" = "Chưa tích hợp SDK";
+"Chưa tải được gói từ App Store (bản cài nội bộ, hoặc gói chưa được tạo trong App Store Connect)." = "Chưa tải được gói từ App Store (bản cài nội bộ, hoặc gói chưa được tạo trong App Store Connect).";
 "Chương trình (Program)" = "Chương trình (Program)";
 "Chạm một bình luận để đưa lên PGM." = "Chạm một bình luận để đưa lên PGM.";
 "Chạm một mẫu để nạp (đang trên sóng thì thay ngay); bật/tắt bằng SuperFG On ở cột phải. Sửa chữ, màu cập nhật ngay." = "Chạm một mẫu để nạp (đang trên sóng thì thay ngay); bật/tắt bằng SuperFG On ở cột phải. Sửa chữ, màu cập nhật ngay.";
@@ -109,6 +119,7 @@
 "Chỉ chấp nhận nếu ID này trùng với ID trên màn hình thiết bị" = "Chỉ chấp nhận nếu ID này trùng với ID trên màn hình thiết bị";
 "Chỉ mình tôi" = "Chỉ mình tôi";
 "Chỉnh khung" = "Chỉnh khung";
+"Chọn lại gói" = "Chọn lại gói";
 "Chọn một mẫu trong danh sách để xem trước" = "Chọn một mẫu trong danh sách để xem trước";
 "Chọn một nguồn ở hàng PREVIEW để chỉnh" = "Chọn một nguồn ở hàng PREVIEW để chỉnh";
 "Chọn tay" = "Chọn tay";
@@ -118,6 +129,7 @@
 "Chống rung" = "Chống rung";
 "Chớp sáng" = "Chớp sáng";
 "Chủ repo (owner)" = "Chủ repo (owner)";
+"Chủ tài khoản" = "Chủ tài khoản";
 "Chức danh" = "Chức danh";
 "Chữ chạy" = "Chữ chạy";
 "Chữ dòng 1" = "Chữ dòng 1";
@@ -162,6 +174,7 @@
 "Dừng" = "Dừng";
 "Dừng nhận" = "Dừng nhận";
 "Dừng tất cả" = "Dừng tất cả";
+"Email" = "Email";
 "Facebook giới hạn số lần gọi — tạm dừng 5 phút rồi nhận tiếp" = "Facebook giới hạn số lần gọi — tạm dừng 5 phút rồi nhận tiếp";
 "Facebook phát lên" = "Facebook phát lên";
 "Facebook › Video trực tiếp › Phần mềm phát trực tiếp › Khoá luồng." = "Facebook › Video trực tiếp › Phần mềm phát trực tiếp › Khoá luồng.";
@@ -173,6 +186,7 @@
 "Ghi" = "Ghi";
 "Ghép nối camera" = "Ghép nối camera";
 "Ghép nối qua Wi-Fi" = "Ghép nối qua Wi-Fi";
+"Giao dịch đang chờ duyệt" = "Giao dịch đang chờ duyệt";
 "Giao thức" = "Giao thức";
 "GitHub giới hạn lượt gọi, thử lại sau" = "GitHub giới hạn lượt gọi, thử lại sau";
 "Giây %@" = "Giây %@";
@@ -189,7 +203,9 @@
 "Gán title vào phím Title / Title 2, rồi bấm “Title On” ở cột phải để lên sóng" = "Gán title vào phím Title / Title 2, rồi bấm “Title On” ở cột phải để lên sóng";
 "Góc" = "Góc";
 "Góc ngắm" = "Góc ngắm";
+"Gói DTDStudio" = "Gói DTDStudio";
 "Gói bị bỏ (đến trễ)" = "Gói bị bỏ (đến trễ)";
+"Gói tháng / năm tự gia hạn cho tới khi huỷ trong Cài đặt › Apple ID › Đăng ký, ít nhất 24 giờ trước khi hết kỳ; tiền trừ vào tài khoản Apple ID khi xác nhận mua. Gói ngày dùng 24 giờ, không tự gia hạn." = "Gói tháng / năm tự gia hạn cho tới khi huỷ trong Cài đặt › Apple ID › Đăng ký, ít nhất 24 giờ trước khi hết kỳ; tiền trừ vào tài khoản Apple ID khi xác nhận mua. Gói ngày dùng 24 giờ, không tự gia hạn.";
 "Gói đến quá trễ bị bỏ → hình giật. Tăng độ trễ Wi‑Fi (Cài đặt › Kết nối), dùng Wi‑Fi 5 GHz, đặt máy gần router hoặc giảm bitrate trên DTDLive." = "Gói đến quá trễ bị bỏ → hình giật. Tăng độ trễ Wi‑Fi (Cài đặt › Kết nối), dùng Wi‑Fi 5 GHz, đặt máy gần router hoặc giảm bitrate trên DTDLive.";
 "GẤP" = "GẤP";
 "Gấp" = "Gấp";
@@ -210,6 +226,7 @@
 "Hai khung so le" = "Hai khung so le";
 "Hai trên + ba dưới" = "Hai trên + ba dưới";
 "Hiện" = "Hiện";
+"Hiện mọi tính năng vẫn dùng được." = "Hiện mọi tính năng vẫn dùng được.";
 "Hiện trên PGM" = "Hiện trên PGM";
 "Hiệp (vd H1, Q2)" = "Hiệp (vd H1, Q2)";
 "Hiệu ứng" = "Hiệu ứng";
@@ -221,6 +238,7 @@
 "Hoà trộn" = "Hoà trộn";
 "Hoàn tác" = "Hoàn tác";
 "Huỷ" = "Huỷ";
+"Huỷ đơn" = "Huỷ đơn";
 "Hình %@/s · Tiếng %@/s" = "Hình %@/s · Tiếng %@/s";
 "Hình %lf/s · Tiếng %lf/s" = "Hình %lf/s · Tiếng %lf/s";
 "Hình %lld/s · Tiếng %lld/s" = "Hình %lld/s · Tiếng %lld/s";
@@ -239,6 +257,7 @@
 "Khung viền" = "Khung viền";
 "Khung đôi" = "Khung đôi";
 "Khuyến nghị cho %@×%@ %@ fps: %@ Mbps" = "Khuyến nghị cho %@×%@ %@ fps: %@ Mbps";
+"Khôi phục giao dịch" = "Khôi phục giao dịch";
 "Khôi phục mẫu" = "Khôi phục mẫu";
 "Không" = "Không";
 "Không có tín hiệu" = "Không có tín hiệu";
@@ -257,6 +276,8 @@
 "Không thấy buổi live đang chạy trên kênh đã đăng nhập — dán link video live vào ô bên trên" = "Không thấy buổi live đang chạy trên kênh đã đăng nhập — dán link video live vào ô bên trên";
 "Không thấy live Facebook đang chạy — dán link/ID video live vào ô Facebook" = "Không thấy live Facebook đang chạy — dán link/ID video live vào ô Facebook";
 "Không thấy live đang chạy trên Trang %@ — dán link/ID video live vào ô Facebook" = "Không thấy live đang chạy trên Trang %@ — dán link/ID video live vào ô Facebook";
+"Không tìm thấy gói DTDStudio đã mua với Apple ID này" = "Không tìm thấy gói DTDStudio đã mua với Apple ID này";
+"Không xác thực được giao dịch" = "Không xác thực được giao dịch";
 "Không đọc được %@" = "Không đọc được %@";
 "Không đọc được %lf" = "Không đọc được %lf";
 "Không đọc được %lld" = "Không đọc được %lld";
@@ -296,6 +317,7 @@
 "Logo đã nạp — bấm Logo On" = "Logo đã nạp — bấm Logo On";
 "Loại" = "Loại";
 "Làm lại" = "Làm lại";
+"Làm mới" = "Làm mới";
 "Lên Preview" = "Lên Preview";
 "Lên sóng" = "Lên sóng";
 "Lên sóng ngay" = "Lên sóng ngay";
@@ -320,6 +342,8 @@
 "Lớp" = "Lớp";
 "Lớp phủ" = "Lớp phủ";
 "Lửa đỏ" = "Lửa đỏ";
+"Mua gói ngày / tháng / năm" = "Mua gói ngày / tháng / năm";
+"Mua qua App Store" = "Mua qua App Store";
 "Màn hình" = "Màn hình";
 "Màn hình ngoài" = "Màn hình ngoài";
 "Màn ngoài" = "Màn ngoài";
@@ -335,6 +359,8 @@
 "Màu nền" = "Màu nền";
 "Màu sắc" = "Màu sắc";
 "Màu, key, PTZ…" = "Màu, key, PTZ…";
+"Máy chủ chưa cấu hình tài khoản nhận tiền." = "Máy chủ chưa cấu hình tài khoản nhận tiền.";
+"Máy chủ trả lỗi %@" = "Máy chủ trả lỗi %@";
 "Máy khác trong mạng (vMix, OBS, TriCaster…) thấy nguồn này. NDI® là thương hiệu của Vizrt NDI AB." = "Máy khác trong mạng (vMix, OBS, TriCaster…) thấy nguồn này. NDI® là thương hiệu của Vizrt NDI AB.";
 "Máy nóng: giảm bitrate còn %@ kbps" = "Máy nóng: giảm bitrate còn %@ kbps";
 "Máy đang nóng — tạm giảm bitrate để hạ nhiệt" = "Máy đang nóng — tạm giảm bitrate để hạ nhiệt";
@@ -348,6 +374,7 @@
 "Mất kết nối — thử lại" = "Mất kết nối — thử lại";
 "Mẫu bố cục" = "Mẫu bố cục";
 "Mẫu này chưa có lớp nào: đánh dấu khối bằng data-layer=\"tên\" trong HTML." = "Mẫu này chưa có lớp nào: đánh dấu khối bằng data-layer=\"tên\" trong HTML.";
+"Mật khẩu" = "Mật khẩu";
 "Mật khẩu SRT (để trống = không mã hoá, 10–79 ký tự)" = "Mật khẩu SRT (để trống = không mã hoá, 10–79 ký tự)";
 "Mặc định" = "Mặc định";
 "Mềm biên" = "Mềm biên";
@@ -371,6 +398,7 @@
 "Nguồn nhỏ hơn chương trình (%@×%@): hình bị phóng to nên mềm trên YouTube/Facebook. Đặt camera/DTDLive cùng độ phân giải với chương trình." = "Nguồn nhỏ hơn chương trình (%@×%@): hình bị phóng to nên mềm trên YouTube/Facebook. Đặt camera/DTDLive cùng độ phân giải với chương trình.";
 "Nguồn tham gia" = "Nguồn tham gia";
 "Nguồn đang chỉnh" = "Nguồn đang chỉnh";
+"Ngân hàng" = "Ngân hàng";
 "Ngôn ngữ" = "Ngôn ngữ";
 "Ngẫu nhiên" = "Ngẫu nhiên";
 "Ngắt PTZ" = "Ngắt PTZ";
@@ -437,16 +465,19 @@
 "Phút %lld" = "Phút %lld";
 "Phơi sáng" = "Phơi sáng";
 "Phản hồi không hợp lệ" = "Phản hồi không hợp lệ";
+"Phản hồi máy chủ không hợp lệ" = "Phản hồi máy chủ không hợp lệ";
 "Phần tử có data-field=\"tên\" sẽ thành ô sửa chữ; biến màu CSS (--accent: #…) thành ô chọn màu." = "Phần tử có data-field=\"tên\" sẽ thành ô sửa chữ; biến màu CSS (--accent: #…) thành ô chọn màu.";
 "Phẳng (theo mẫu)" = "Phẳng (theo mẫu)";
 "PiP trên Program" = "PiP trên Program";
 "Preset: chạm = gọi, giữ = lưu" = "Preset: chạm = gọi, giữ = lưu";
 "QUÉT" = "QUÉT";
 "Quét" = "Quét";
+"Quét bằng app ngân hàng bất kỳ – số tiền và nội dung đã điền sẵn" = "Quét bằng app ngân hàng bất kỳ – số tiền và nội dung đã điền sẵn";
 "Quét chéo" = "Quét chéo";
 "Quét dọc" = "Quét dọc";
 "Quét ngang" = "Quét ngang";
 "Quên mọi DTDLive đã ghép" = "Quên mọi DTDLive đã ghép";
+"Quản lý gói" = "Quản lý gói";
 "Quản lý đích phát (RTMP · SRT · RTSP · YouTube · Facebook)" = "Quản lý đích phát (RTMP · SRT · RTSP · YouTube · Facebook)";
 "RTMP (một cổng, nhiều stream key)" = "RTMP (một cổng, nhiều stream key)";
 "RTSP (ANNOUNCE/RECORD, nhiều đường dẫn)" = "RTSP (ANNOUNCE/RECORD, nhiều đường dẫn)";
@@ -476,6 +507,8 @@
 "Sọc" = "Sọc";
 "Sọc chéo" = "Sọc chéo";
 "Số bình luận" = "Số bình luận";
+"Số tiền" = "Số tiền";
+"Số tài khoản" = "Số tài khoản";
 "Sửa" = "Sửa";
 "Sửa bảng tỉ số" = "Sửa bảng tỉ số";
 "Sửa link" = "Sửa link";
@@ -550,6 +583,7 @@
 "Trực tiếp từ Hà Nội" = "Trực tiếp từ Hà Nội";
 "Tuyệt vời" = "Tuyệt vời";
 "Twitch › Creator Dashboard › Settings › Stream › Primary Stream key." = "Twitch › Creator Dashboard › Settings › Stream › Primary Stream key.";
+"Tài khoản DTD" = "Tài khoản DTD";
 "Tài khoản phát trực tiếp" = "Tài khoản phát trực tiếp";
 "Tên" = "Tên";
 "Tên + chức danh" = "Tên + chức danh";
@@ -563,6 +597,7 @@
 "Tạo live" = "Tạo live";
 "Tạo phiên live YouTube / Facebook" = "Tạo phiên live YouTube / Facebook";
 "Tạo phiên live tự động" = "Tạo phiên live tự động";
+"Tạo tài khoản" = "Tạo tài khoản";
 "Tải lên %@ kbps · hàng đợi %@ KB" = "Tải lên %@ kbps · hàng đợi %@ KB";
 "Tải lại danh sách Trang" = "Tải lại danh sách Trang";
 "TẮT" = "TẮT";
@@ -577,6 +612,7 @@
 "Tối ưu chất lượng tốt nhất cho các đích phát" = "Tối ưu chất lượng tốt nhất cho các đích phát";
 "Từ chối" = "Từ chối";
 "Từ thư viện DTDStudio" = "Từ thư viện DTDStudio";
+"Tự gia hạn" = "Tự gia hạn";
 "Tự kết nối thiết bị tin cậy" = "Tự kết nối thiết bị tin cậy";
 "Tự động" = "Tự động";
 "Tự động chuyển cảnh" = "Tự động chuyển cảnh";
@@ -654,7 +690,10 @@
 "Âm thanh" = "Âm thanh";
 "Ô tỉ số" = "Ô tỉ số";
 "ĐANG REPLAY · DỪNG" = "ĐANG REPLAY · DỪNG";
+"Đang chờ ngân hàng xác nhận…" = "Đang chờ ngân hàng xác nhận…";
 "Đang chờ · %@ · cổng ghép nối %@ (tự tìm, không cần nhập)" = "Đang chờ · %@ · cổng ghép nối %@ (tự tìm, không cần nhập)";
+"Đang dùng" = "Đang dùng";
+"Đang dùng gói" = "Đang dùng gói";
 "Đang dùng: %.1f Mbps" = "Đang dùng: %.1f Mbps";
 "Đang giải mã…" = "Đang giải mã…";
 "Đang kiểm tra %@/%@…" = "Đang kiểm tra %@/%@…";
@@ -676,6 +715,7 @@
 "Điều khiển title từ điện thoại/laptop: http://<IP máy>:8080" = "Điều khiển title từ điện thoại/laptop: http://<IP máy>:8080";
 "Điều khiển tỉ số, đồng hồ, logo, màu ở thẻ Bảng tỉ số phía trên" = "Điều khiển tỉ số, đồng hồ, logo, màu ở thẻ Bảng tỉ số phía trên";
 "Điều khiển từ xa & ghép nối" = "Điều khiển từ xa & ghép nối";
+"Điều khoản sử dụng (EULA)" = "Điều khoản sử dụng (EULA)";
 "Điểm neo" = "Điểm neo";
 "Điểm đứng yên khi phóng to/thu nhỏ." = "Điểm đứng yên khi phóng to/thu nhỏ.";
 "Điểm đứng yên khi phóng to/thu nhỏ. Lưu vào file HTML." = "Điểm đứng yên khi phóng to/thu nhỏ. Lưu vào file HTML.";
@@ -683,6 +723,7 @@
 "Đoạn %.1f s" = "Đoạn %.1f s";
 "Đoạn quá ngắn — đặt MARK IN và MARK OUT" = "Đoạn quá ngắn — đặt MARK IN và MARK OUT";
 "Đã bắt kịp — gửi lại hình (bỏ %@ khung)" = "Đã bắt kịp — gửi lại hình (bỏ %@ khung)";
+"Đã có gói DTDStudio trên tài khoản DTD? Đăng nhập để dùng." = "Đã có gói DTDStudio trên tài khoản DTD? Đăng nhập để dùng.";
 "Đã cập nhật %@ tệp (%@)" = "Đã cập nhật %@ tệp (%@)";
 "Đã cập nhật %lf tệp (%lf)" = "Đã cập nhật %lf tệp (%lf)";
 "Đã cập nhật %lld tệp (%lld)" = "Đã cập nhật %lld tệp (%lld)";
@@ -694,6 +735,7 @@
 "Đã mới nhất (%@)" = "Đã mới nhất (%@)";
 "Đã mới nhất (%lf)" = "Đã mới nhất (%lf)";
 "Đã mới nhất (%lld)" = "Đã mới nhất (%lld)";
+"Đã nhận tiền — gói đã kích hoạt" = "Đã nhận tiền — gói đã kích hoạt";
 "Đã nhập: %@" = "Đã nhập: %@";
 "Đã nạp" = "Đã nạp";
 "Đã nạp logo — bấm Logo ở cột phải để lên PGM" = "Đã nạp logo — bấm Logo ở cột phải để lên PGM";
@@ -711,6 +753,7 @@
 "Đăng nhập" = "Đăng nhập";
 "Đăng nhập một lần; ở Đầu ra bấm Tạo live YouTube/Facebook để tự lấy URL + stream key." = "Đăng nhập một lần; ở Đầu ra bấm Tạo live YouTube/Facebook để tự lấy URL + stream key.";
 "Đăng xuất" = "Đăng xuất";
+"Đơn đã hết hạn hoặc bị huỷ" = "Đơn đã hết hạn hoặc bị huỷ";
 "Đưa lên Preview" = "Đưa lên Preview";
 "Đưa vào Khung %@" = "Đưa vào Khung %@";
 "Đưa vào khung PiP" = "Đưa vào khung PiP";
@@ -725,6 +768,7 @@
 "Đặt lại tỉ số 0 - 0" = "Đặt lại tỉ số 0 - 0";
 "Đặt lại đồng hồ" = "Đặt lại đồng hồ";
 "Đếm ngược" = "Đếm ngược";
+"Đến %@" = "Đến %@";
 "ĐỒNG HÀNH CÙNG CHƯƠNG TRÌNH" = "ĐỒNG HÀNH CÙNG CHƯƠNG TRÌNH";
 "Đồ hoạ HTML5" = "Đồ hoạ HTML5";
 "Đồ hoạ HTML5 (tải từ Git)" = "Đồ hoạ HTML5 (tải từ Git)";

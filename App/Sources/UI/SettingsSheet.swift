@@ -23,6 +23,9 @@ struct SettingsForm: View {
 
     var body: some View {
             Form {
+                Section(header: SettingsHeader("Gói DTDStudio")) {
+                    PlanSettingsRows()
+                }
                 Section(header: SettingsHeader("Phát trực tiếp")) {
                     if engine.outputs.isEmpty {
                         Text("Chưa có đích phát").foregroundStyle(.secondary)

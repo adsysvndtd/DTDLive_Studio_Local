@@ -7806,6 +7806,446 @@
           }
         }
       }
+    },
+    "Gói DTDStudio": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DTDStudio plan"
+          }
+        }
+      }
+    },
+    "Mua qua App Store": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buy on the App Store"
+          }
+        }
+      }
+    },
+    "Gói tháng / năm tự gia hạn cho tới khi huỷ trong Cài đặt › Apple ID › Đăng ký, ít nhất 24 giờ trước khi hết kỳ; tiền trừ vào tài khoản Apple ID khi xác nhận mua. Gói ngày dùng 24 giờ, không tự gia hạn.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monthly / yearly plans renew automatically until cancelled in Settings › Apple ID › Subscriptions at least 24 hours before the period ends; payment is charged to your Apple ID when you confirm. The day pass lasts 24 hours and does not renew."
+          }
+        }
+      }
+    },
+    "Khôi phục giao dịch": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore purchases"
+          }
+        }
+      }
+    },
+    "Quản lý gói": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Manage plan"
+          }
+        }
+      }
+    },
+    "Tài khoản DTD": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DTD account"
+          }
+        }
+      }
+    },
+    "Chuyển khoản ngân hàng (VietQR)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bank transfer (VietQR)"
+          }
+        }
+      }
+    },
+    "Chính sách quyền riêng tư": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Privacy policy"
+          }
+        }
+      }
+    },
+    "Điều khoản sử dụng (EULA)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terms of use (EULA)"
+          }
+        }
+      }
+    },
+    "Đang dùng gói": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plan active"
+          }
+        }
+      }
+    },
+    "Đến %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Until %@"
+          }
+        }
+      }
+    },
+    "Tự gia hạn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Renews automatically"
+          }
+        }
+      }
+    },
+    "Chưa có gói": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No plan"
+          }
+        }
+      }
+    },
+    "Hiện mọi tính năng vẫn dùng được.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All features are available for now."
+          }
+        }
+      }
+    },
+    "Đang dùng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Active"
+          }
+        }
+      }
+    },
+    "Email": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Email"
+          }
+        }
+      }
+    },
+    "Chưa có": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "None"
+          }
+        }
+      }
+    },
+    "Làm mới": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Refresh"
+          }
+        }
+      }
+    },
+    "Đã có gói DTDStudio trên tài khoản DTD? Đăng nhập để dùng.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Have a DTDStudio plan on your DTD account? Sign in to use it."
+          }
+        }
+      }
+    },
+    "Mật khẩu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Password"
+          }
+        }
+      }
+    },
+    "Tạo tài khoản": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Create account"
+          }
+        }
+      }
+    },
+    "Máy chủ chưa cấu hình tài khoản nhận tiền.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The server has no receiving bank account yet."
+          }
+        }
+      }
+    },
+    "%@ ngày": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ days"
+          }
+        }
+      }
+    },
+    "Chưa có gói DTDStudio trên máy chủ.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No DTDStudio plans on the server."
+          }
+        }
+      }
+    },
+    "Đã nhận tiền — gói đã kích hoạt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Payment received — plan activated"
+          }
+        }
+      }
+    },
+    "Đơn đã hết hạn hoặc bị huỷ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Order expired or cancelled"
+          }
+        }
+      }
+    },
+    "Chọn lại gói": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose again"
+          }
+        }
+      }
+    },
+    "Quét bằng app ngân hàng bất kỳ – số tiền và nội dung đã điền sẵn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scan with any banking app – amount and reference are filled in"
+          }
+        }
+      }
+    },
+    "Ngân hàng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bank"
+          }
+        }
+      }
+    },
+    "Số tài khoản": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Account number"
+          }
+        }
+      }
+    },
+    "Chủ tài khoản": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Account name"
+          }
+        }
+      }
+    },
+    "Số tiền": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Amount"
+          }
+        }
+      }
+    },
+    "Đang chờ ngân hàng xác nhận…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waiting for the bank…"
+          }
+        }
+      }
+    },
+    "Huỷ đơn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel order"
+          }
+        }
+      }
+    },
+    "Mua gói ngày / tháng / năm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buy a day / month / year plan"
+          }
+        }
+      }
+    },
+    "Chưa tải được gói từ App Store (bản cài nội bộ, hoặc gói chưa được tạo trong App Store Connect).": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't load plans from the App Store (internal build, or the products aren't created in App Store Connect yet)."
+          }
+        }
+      }
+    },
+    "Không xác thực được giao dịch": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't verify the transaction"
+          }
+        }
+      }
+    },
+    "Giao dịch đang chờ duyệt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Purchase pending approval"
+          }
+        }
+      }
+    },
+    "Không tìm thấy gói DTDStudio đã mua với Apple ID này": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No DTDStudio purchase found for this Apple ID"
+          }
+        }
+      }
+    },
+    "1 ngày": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 day"
+          }
+        }
+      }
+    },
+    "1 tháng · tự gia hạn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 month · auto-renews"
+          }
+        }
+      }
+    },
+    "1 năm · tự gia hạn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 year · auto-renews"
+          }
+        }
+      }
+    },
+    "Máy chủ trả lỗi %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Server error %@"
+          }
+        }
+      }
+    },
+    "Phản hồi máy chủ không hợp lệ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invalid server response"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

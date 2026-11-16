@@ -1,10 +1,14 @@
 "%.1f Mbps · Âm thanh %.0f dBFS" = "%.1f Mbps · Audio %.0f dBFS";
 "%@ (mặc định)" = "%@ (default)";
+"%@ ngày" = "%@ days";
 "(bản sao)" = "(copy)";
 "(lưu vào Files › DTDStudio)" = "(saved to Files › DTDStudio)";
 "0.25×" = "0.25×";
 "0.5×" = "0.5×";
 "0.75×" = "0.75×";
+"1 ngày" = "1 day";
+"1 năm · tự gia hạn" = "1 year · auto-renews";
+"1 tháng · tự gia hạn" = "1 month · auto-renews";
 "1080×1920 (dọc)" = "1080×1920 (vertical)";
 "1×" = "1×";
 "720×1280 (dọc)" = "720×1280 (vertical)";
@@ -65,6 +69,7 @@
 "Cho phép DTDLive tìm và ghép nối" = "Let DTDLive find and pair";
 "Chrome xanh" = "Blue chrome";
 "Chuyển cảnh" = "Transitions";
+"Chuyển khoản ngân hàng (VietQR)" = "Bank transfer (VietQR)";
 "Chuyển màu dọc" = "Vertical gradient";
 "Chuyển màu ngang" = "Horizontal gradient";
 "Chuyển sang 1080×1920" = "Switch to 1080×1920";
@@ -74,11 +79,15 @@
 "Chính + 3 phụ xếp dọc" = "Main + 3 stacked";
 "Chính + 4 phụ hàng dưới" = "Main + 4 below";
 "Chính + phụ phải" = "Main + right";
+"Chính sách quyền riêng tư" = "Privacy policy";
 "Chưa bật — bật \"Cho phép DTDLive tìm và ghép nối\" trong Cài đặt › Ingest" = "Off — turn on \"Let DTDLive find and pair\" in Settings › Ingest";
+"Chưa có" = "None";
 "Chưa có NDI SDK. Trên Mac: cài \"NDI SDK for Apple\" từ ndi.video, chạy scripts/ndi-setup.sh rồi build lại — nhận & phát NDI sẽ tự bật." = "No NDI SDK yet. On the Mac: install \"NDI SDK for Apple\" from ndi.video, run scripts/ndi-setup.sh and rebuild — NDI input & output turn on automatically.";
 "Chưa có Wi-Fi" = "No Wi-Fi";
 "Chưa có camera mạng" = "No network cameras yet";
 "Chưa có camera — bấm Thêm nguồn" = "No cameras — tap Add source";
+"Chưa có gói" = "No plan";
+"Chưa có gói DTDStudio trên máy chủ." = "No DTDStudio plans on the server.";
 "Chưa có hình" = "No picture";
 "Chưa có kênh nào" = "No channels yet";
 "Chưa có thiết bị nào được ghép nối" = "No paired devices yet";
@@ -93,6 +102,7 @@
 "Chưa nạp logo" = "No logo loaded";
 "Chưa thấy Trang nào: khi đăng nhập Facebook hãy chọn các Trang cho phép DTDStudio phát, rồi bấm tải lại." = "No Pages yet: when signing in to Facebook, select the Pages DTDStudio may publish to, then tap reload.";
 "Chưa tích hợp SDK" = "SDK not integrated";
+"Chưa tải được gói từ App Store (bản cài nội bộ, hoặc gói chưa được tạo trong App Store Connect)." = "Couldn't load plans from the App Store (internal build, or the products aren't created in App Store Connect yet).";
 "Chương trình (Program)" = "Program";
 "Chạm một bình luận để đưa lên PGM." = "Tap a comment to put it on PGM.";
 "Chạm một mẫu để nạp (đang trên sóng thì thay ngay); bật/tắt bằng SuperFG On ở cột phải. Sửa chữ, màu cập nhật ngay." = "Tap a template to load it (replaces it live if on air); turn it on/off with SuperFG On. Text and colour update instantly.";
@@ -109,6 +119,7 @@
 "Chỉ chấp nhận nếu ID này trùng với ID trên màn hình thiết bị" = "Accept only if this ID matches the one on the device";
 "Chỉ mình tôi" = "Only me";
 "Chỉnh khung" = "Edit windows";
+"Chọn lại gói" = "Choose again";
 "Chọn một mẫu trong danh sách để xem trước" = "Pick a template in the list to preview it";
 "Chọn một nguồn ở hàng PREVIEW để chỉnh" = "Pick a source on PREVIEW to adjust";
 "Chọn tay" = "Manual";
@@ -118,6 +129,7 @@
 "Chống rung" = "Stabilization";
 "Chớp sáng" = "Flash";
 "Chủ repo (owner)" = "Repo owner";
+"Chủ tài khoản" = "Account name";
 "Chức danh" = "Title";
 "Chữ chạy" = "Ticker";
 "Chữ dòng 1" = "Line 1 text";
@@ -162,6 +174,7 @@
 "Dừng" = "Stop";
 "Dừng nhận" = "Stop";
 "Dừng tất cả" = "Stop all";
+"Email" = "Email";
 "Facebook giới hạn số lần gọi — tạm dừng 5 phút rồi nhận tiếp" = "Facebook rate limit reached — pausing 5 minutes, then resuming";
 "Facebook phát lên" = "Facebook publishes to";
 "Facebook › Video trực tiếp › Phần mềm phát trực tiếp › Khoá luồng." = "Facebook › Live video › Streaming software › Stream key.";
@@ -173,6 +186,7 @@
 "Ghi" = "Rec";
 "Ghép nối camera" = "Camera pairing";
 "Ghép nối qua Wi-Fi" = "Wi-Fi pairing";
+"Giao dịch đang chờ duyệt" = "Purchase pending approval";
 "Giao thức" = "Protocol";
 "GitHub giới hạn lượt gọi, thử lại sau" = "GitHub rate limit reached, try again later";
 "Giây %@" = "Seconds %@";
@@ -189,7 +203,9 @@
 "Gán title vào phím Title / Title 2, rồi bấm “Title On” ở cột phải để lên sóng" = "Assign a title to the Title / Title 2 key, then press “Title On” to go on air";
 "Góc" = "Corners";
 "Góc ngắm" = "Viewfinder";
+"Gói DTDStudio" = "DTDStudio plan";
 "Gói bị bỏ (đến trễ)" = "Packets dropped (too late)";
+"Gói tháng / năm tự gia hạn cho tới khi huỷ trong Cài đặt › Apple ID › Đăng ký, ít nhất 24 giờ trước khi hết kỳ; tiền trừ vào tài khoản Apple ID khi xác nhận mua. Gói ngày dùng 24 giờ, không tự gia hạn." = "Monthly / yearly plans renew automatically until cancelled in Settings › Apple ID › Subscriptions at least 24 hours before the period ends; payment is charged to your Apple ID when you confirm. The day pass lasts 24 hours and does not renew.";
 "Gói đến quá trễ bị bỏ → hình giật. Tăng độ trễ Wi‑Fi (Cài đặt › Kết nối), dùng Wi‑Fi 5 GHz, đặt máy gần router hoặc giảm bitrate trên DTDLive." = "Packets arrive too late and are dropped → stutter. Raise the Wi‑Fi latency (Settings › Connections), use 5 GHz Wi‑Fi, move closer to the router or lower the bitrate in DTDLive.";
 "GẤP" = "FOLD";
 "Gấp" = "Fold";
@@ -210,6 +226,7 @@
 "Hai khung so le" = "Two staggered";
 "Hai trên + ba dưới" = "Two over three";
 "Hiện" = "Show";
+"Hiện mọi tính năng vẫn dùng được." = "All features are available for now.";
 "Hiện trên PGM" = "Show on PGM";
 "Hiệp (vd H1, Q2)" = "Period (e.g. H1, Q2)";
 "Hiệu ứng" = "Effects";
@@ -221,6 +238,7 @@
 "Hoà trộn" = "Dissolve";
 "Hoàn tác" = "Undo";
 "Huỷ" = "Cancel";
+"Huỷ đơn" = "Cancel order";
 "Hình %@/s · Tiếng %@/s" = "Video %@/s · Audio %@/s";
 "Hình %lf/s · Tiếng %lf/s" = "Video %lf/s · Audio %lf/s";
 "Hình %lld/s · Tiếng %lld/s" = "Video %lld/s · Audio %lld/s";
@@ -239,6 +257,7 @@
 "Khung viền" = "Window frame";
 "Khung đôi" = "Split frame";
 "Khuyến nghị cho %@×%@ %@ fps: %@ Mbps" = "Recommended for %@×%@ %@ fps: %@ Mbps";
+"Khôi phục giao dịch" = "Restore purchases";
 "Khôi phục mẫu" = "Reset template";
 "Không" = "No";
 "Không có tín hiệu" = "No signal";
@@ -257,6 +276,8 @@
 "Không thấy buổi live đang chạy trên kênh đã đăng nhập — dán link video live vào ô bên trên" = "No live running on the signed-in channel — paste the live video link above";
 "Không thấy live Facebook đang chạy — dán link/ID video live vào ô Facebook" = "No Facebook live running — paste the live video link/ID in the Facebook box";
 "Không thấy live đang chạy trên Trang %@ — dán link/ID video live vào ô Facebook" = "No live running on Page %@ — paste the live video link/ID into the Facebook field";
+"Không tìm thấy gói DTDStudio đã mua với Apple ID này" = "No DTDStudio purchase found for this Apple ID";
+"Không xác thực được giao dịch" = "Couldn't verify the transaction";
 "Không đọc được %@" = "Couldn't read %@";
 "Không đọc được %lf" = "Couldn't read %lf";
 "Không đọc được %lld" = "Couldn't read %lld";
@@ -296,6 +317,7 @@
 "Logo đã nạp — bấm Logo On" = "Logo loaded — press Logo On";
 "Loại" = "Type";
 "Làm lại" = "Redo";
+"Làm mới" = "Refresh";
 "Lên Preview" = "To Preview";
 "Lên sóng" = "On air";
 "Lên sóng ngay" = "Take now";
@@ -320,6 +342,8 @@
 "Lớp" = "Layers";
 "Lớp phủ" = "Overlay";
 "Lửa đỏ" = "Red flame";
+"Mua gói ngày / tháng / năm" = "Buy a day / month / year plan";
+"Mua qua App Store" = "Buy on the App Store";
 "Màn hình" = "Display";
 "Màn hình ngoài" = "External display";
 "Màn ngoài" = "External";
@@ -335,6 +359,8 @@
 "Màu nền" = "Background colour";
 "Màu sắc" = "Colour";
 "Màu, key, PTZ…" = "Colour, key, PTZ…";
+"Máy chủ chưa cấu hình tài khoản nhận tiền." = "The server has no receiving bank account yet.";
+"Máy chủ trả lỗi %@" = "Server error %@";
 "Máy khác trong mạng (vMix, OBS, TriCaster…) thấy nguồn này. NDI® là thương hiệu của Vizrt NDI AB." = "Other machines on the network (vMix, OBS, TriCaster…) see this source. NDI® is a trademark of Vizrt NDI AB.";
 "Máy nóng: giảm bitrate còn %@ kbps" = "Device hot: bitrate lowered to %@ kbps";
 "Máy đang nóng — tạm giảm bitrate để hạ nhiệt" = "Device is hot — bitrate lowered to cool down";
@@ -348,6 +374,7 @@
 "Mất kết nối — thử lại" = "Connection lost — retrying";
 "Mẫu bố cục" = "Layouts";
 "Mẫu này chưa có lớp nào: đánh dấu khối bằng data-layer=\"tên\" trong HTML." = "This template has no layers yet: mark blocks with data-layer=\"name\" in the HTML.";
+"Mật khẩu" = "Password";
 "Mật khẩu SRT (để trống = không mã hoá, 10–79 ký tự)" = "SRT passphrase (empty = unencrypted, 10–79 characters)";
 "Mặc định" = "Default";
 "Mềm biên" = "Edge softness";
@@ -371,6 +398,7 @@
 "Nguồn nhỏ hơn chương trình (%@×%@): hình bị phóng to nên mềm trên YouTube/Facebook. Đặt camera/DTDLive cùng độ phân giải với chương trình." = "Source is smaller than the program (%@×%@): it is upscaled and looks soft on YouTube/Facebook. Set the camera/DTDLive to the program resolution.";
 "Nguồn tham gia" = "Sources";
 "Nguồn đang chỉnh" = "Adjusting";
+"Ngân hàng" = "Bank";
 "Ngôn ngữ" = "Language";
 "Ngẫu nhiên" = "Random";
 "Ngắt PTZ" = "Disconnect PTZ";
@@ -437,16 +465,19 @@
 "Phút %lld" = "Minutes %lld";
 "Phơi sáng" = "Exposure";
 "Phản hồi không hợp lệ" = "Invalid response";
+"Phản hồi máy chủ không hợp lệ" = "Invalid server response";
 "Phần tử có data-field=\"tên\" sẽ thành ô sửa chữ; biến màu CSS (--accent: #…) thành ô chọn màu." = "Elements with data-field=\"name\" become text fields; CSS colour variables (--accent: #…) become colour pickers.";
 "Phẳng (theo mẫu)" = "Flat (template)";
 "PiP trên Program" = "PiP on Program";
 "Preset: chạm = gọi, giữ = lưu" = "Presets: tap = recall, hold = store";
 "QUÉT" = "WIPE";
 "Quét" = "Wipe";
+"Quét bằng app ngân hàng bất kỳ – số tiền và nội dung đã điền sẵn" = "Scan with any banking app – amount and reference are filled in";
 "Quét chéo" = "Diagonal wipe";
 "Quét dọc" = "Vertical wipe";
 "Quét ngang" = "Wipe";
 "Quên mọi DTDLive đã ghép" = "Forget all paired DTDLive";
+"Quản lý gói" = "Manage plan";
 "Quản lý đích phát (RTMP · SRT · RTSP · YouTube · Facebook)" = "Manage destinations (RTMP · SRT · RTSP · YouTube · Facebook)";
 "RTMP (một cổng, nhiều stream key)" = "RTMP (one port, many stream keys)";
 "RTSP (ANNOUNCE/RECORD, nhiều đường dẫn)" = "RTSP (ANNOUNCE/RECORD, many paths)";
@@ -476,6 +507,8 @@
 "Sọc" = "Bars";
 "Sọc chéo" = "Diagonal stripes";
 "Số bình luận" = "Comments shown";
+"Số tiền" = "Amount";
+"Số tài khoản" = "Account number";
 "Sửa" = "Edit";
 "Sửa bảng tỉ số" = "Edit scoreboard";
 "Sửa link" = "Edit link";
@@ -550,6 +583,7 @@
 "Trực tiếp từ Hà Nội" = "Live from Hanoi";
 "Tuyệt vời" = "Perfect";
 "Twitch › Creator Dashboard › Settings › Stream › Primary Stream key." = "Twitch › Creator Dashboard › Settings › Stream › Primary Stream key.";
+"Tài khoản DTD" = "DTD account";
 "Tài khoản phát trực tiếp" = "Streaming accounts";
 "Tên" = "Name";
 "Tên + chức danh" = "Name + title";
@@ -563,6 +597,7 @@
 "Tạo live" = "Create live";
 "Tạo phiên live YouTube / Facebook" = "Create YouTube / Facebook live";
 "Tạo phiên live tự động" = "Create live event";
+"Tạo tài khoản" = "Create account";
 "Tải lên %@ kbps · hàng đợi %@ KB" = "Upload %@ kbps · queue %@ KB";
 "Tải lại danh sách Trang" = "Reload Pages";
 "TẮT" = "OFF";
@@ -577,6 +612,7 @@
 "Tối ưu chất lượng tốt nhất cho các đích phát" = "Optimize for best quality on all destinations";
 "Từ chối" = "Reject";
 "Từ thư viện DTDStudio" = "From DTDStudio library";
+"Tự gia hạn" = "Renews automatically";
 "Tự kết nối thiết bị tin cậy" = "Auto-connect trusted devices";
 "Tự động" = "Auto";
 "Tự động chuyển cảnh" = "Auto switching";
@@ -654,7 +690,10 @@
 "Âm thanh" = "Audio";
 "Ô tỉ số" = "Score box";
 "ĐANG REPLAY · DỪNG" = "REPLAY ON AIR · STOP";
+"Đang chờ ngân hàng xác nhận…" = "Waiting for the bank…";
 "Đang chờ · %@ · cổng ghép nối %@ (tự tìm, không cần nhập)" = "Waiting · %@ · pairing port %@ (found automatically, nothing to type)";
+"Đang dùng" = "Active";
+"Đang dùng gói" = "Plan active";
 "Đang dùng: %.1f Mbps" = "Current: %.1f Mbps";
 "Đang giải mã…" = "Decoding…";
 "Đang kiểm tra %@/%@…" = "Checking %@/%@…";
@@ -676,6 +715,7 @@
 "Điều khiển title từ điện thoại/laptop: http://<IP máy>:8080" = "Control titles from a phone/laptop: http://<device IP>:8080";
 "Điều khiển tỉ số, đồng hồ, logo, màu ở thẻ Bảng tỉ số phía trên" = "Score, clock, logos and colours are in the Scoreboard card above";
 "Điều khiển từ xa & ghép nối" = "Remote control & pairing";
+"Điều khoản sử dụng (EULA)" = "Terms of use (EULA)";
 "Điểm neo" = "Anchor";
 "Điểm đứng yên khi phóng to/thu nhỏ." = "The point that stays put when scaling.";
 "Điểm đứng yên khi phóng to/thu nhỏ. Lưu vào file HTML." = "The point that stays put when scaling. Saved into the HTML file.";
@@ -683,6 +723,7 @@
 "Đoạn %.1f s" = "Clip %.1f s";
 "Đoạn quá ngắn — đặt MARK IN và MARK OUT" = "Clip too short — set MARK IN and MARK OUT";
 "Đã bắt kịp — gửi lại hình (bỏ %@ khung)" = "Caught up — sending video again (%@ frames dropped)";
+"Đã có gói DTDStudio trên tài khoản DTD? Đăng nhập để dùng." = "Have a DTDStudio plan on your DTD account? Sign in to use it.";
 "Đã cập nhật %@ tệp (%@)" = "Updated %@ files (%@)";
 "Đã cập nhật %lf tệp (%lf)" = "Updated %lf files (%lf)";
 "Đã cập nhật %lld tệp (%lld)" = "Updated %lld files (%lld)";
@@ -694,6 +735,7 @@
 "Đã mới nhất (%@)" = "Up to date (%@)";
 "Đã mới nhất (%lf)" = "Up to date (%lf)";
 "Đã mới nhất (%lld)" = "Up to date (%lld)";
+"Đã nhận tiền — gói đã kích hoạt" = "Payment received — plan activated";
 "Đã nhập: %@" = "Imported: %@";
 "Đã nạp" = "Loaded";
 "Đã nạp logo — bấm Logo ở cột phải để lên PGM" = "Logo loaded — press Logo in the right column to put it on PGM";
@@ -711,6 +753,7 @@
 "Đăng nhập" = "Sign in";
 "Đăng nhập một lần; ở Đầu ra bấm Tạo live YouTube/Facebook để tự lấy URL + stream key." = "Sign in once; in Outputs tap Create YouTube/Facebook live to get the URL + stream key automatically.";
 "Đăng xuất" = "Sign out";
+"Đơn đã hết hạn hoặc bị huỷ" = "Order expired or cancelled";
 "Đưa lên Preview" = "Send to Preview";
 "Đưa vào Khung %@" = "Into window %@";
 "Đưa vào khung PiP" = "Into PiP";
@@ -725,6 +768,7 @@
 "Đặt lại tỉ số 0 - 0" = "Reset score to 0 - 0";
 "Đặt lại đồng hồ" = "Reset clock";
 "Đếm ngược" = "Count down";
+"Đến %@" = "Until %@";
 "ĐỒNG HÀNH CÙNG CHƯƠNG TRÌNH" = "PROUDLY SUPPORTED BY";
 "Đồ hoạ HTML5" = "HTML5 graphics";
 "Đồ hoạ HTML5 (tải từ Git)" = "HTML5 graphics (from Git)";

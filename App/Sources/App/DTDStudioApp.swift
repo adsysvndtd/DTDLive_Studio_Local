@@ -19,6 +19,8 @@ struct DTDStudioApp: App {
                 .persistentSystemOverlays(.hidden)
                 .environment(\.locale, AppLanguage.locale)
                 .id(language)          // rebuild the UI so every string re-reads the chosen language
+                // start the App Store transaction listener at launch (renewals, purchases from other devices)
+                .task { _ = StudioPlan.shared }
         }
     }
 }
