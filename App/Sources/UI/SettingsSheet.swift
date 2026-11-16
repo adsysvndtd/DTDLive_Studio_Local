@@ -1,9 +1,6 @@
 import SwiftUI
 
 struct SettingsSheet: View {
-    /// Access key of the web remote (part of the link); renewing it locks out old links.
-    @State private var remoteKey = ControlServer.accessKey
-
     @ObservedObject var engine: StudioEngine
     @Environment(\.dismiss) private var dismiss
 
@@ -18,6 +15,9 @@ struct SettingsSheet: View {
 
 /// Settings content, shown both as a sheet and inline in the "Cài đặt" sidebar category.
 struct SettingsForm: View {
+    /// Access key of the web remote (part of the link); renewing it locks out old links.
+    @State private var remoteKey = ControlServer.accessKey
+
     @ObservedObject var engine: StudioEngine
     var onOpenOutputs: (() -> Void)? = nil
 
@@ -292,7 +292,7 @@ struct FacebookTargetPicker: View {
     }
 }
 
-extension SettingsSheet {
+extension SettingsForm {
     /// A web remote link (with its access key): selectable, copyable.
     func remoteLinkRow(_ title: LocalizedStringKey, _ link: String) -> some View {
         HStack {
