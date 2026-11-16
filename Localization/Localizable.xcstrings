@@ -8246,6 +8246,1406 @@
           }
         }
       }
+    },
+    "GIẢI LAO": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BREAK"
+          }
+        }
+      }
+    },
+    "CẢM ƠN": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "THANK YOU"
+          }
+        }
+      }
+    },
+    "ĐÃ THEO DÕI": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "FOR WATCHING"
+          }
+        }
+      }
+    },
+    "Oswald (cao, hẹp)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oswald (tall, narrow)"
+          }
+        }
+      }
+    },
+    "Barlow Condensed (hẹp)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Barlow Condensed (narrow)"
+          }
+        }
+      }
+    },
+    "Anton (tiêu đề đậm)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anton (bold headline)"
+          }
+        }
+      }
+    },
+    "Playfair Display (có chân)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Playfair Display (serif)"
+          }
+        }
+      }
+    },
+    "SF (hệ thống)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SF (system)"
+          }
+        }
+      }
+    },
+    "Cầu lông": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Badminton"
+          }
+        }
+      }
+    },
+    "Bóng chuyền": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Volleyball"
+          }
+        }
+      }
+    },
+    "Bóng đá": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Football"
+          }
+        }
+      }
+    },
+    "Bi-a": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Billiards"
+          }
+        }
+      }
+    },
+    "Thẻ vàng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yellow card"
+          }
+        }
+      }
+    },
+    "Thẻ đỏ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Red card"
+          }
+        }
+      }
+    },
+    "CAM 1 · Sân khấu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CAM 1 · Stage"
+          }
+        }
+      }
+    },
+    "CAM 3 · Khán giả": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CAM 3 · Audience"
+          }
+        }
+      }
+    },
+    "Giám đốc Trung tâm Truyền hình": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Director, Television Centre"
+          }
+        }
+      }
+    },
+    "Hà Nội": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hanoi"
+          }
+        }
+      }
+    },
+    "Tin nhanh: DTDStudio — bàn trộn hình nhiều camera và phát trực tiếp RTMP · SRT · RTSP": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "News: DTDStudio — multi-camera switcher and live streaming over RTMP · SRT · RTSP"
+          }
+        }
+      }
+    },
+    "Nhà tài trợ: DTD Solution": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sponsor: DTD Solution"
+          }
+        }
+      }
+    },
+    "Tự do": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Free"
+          }
+        }
+      }
+    },
+    "Tự do (+/−)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Free (+/−)"
+          }
+        }
+      }
+    },
+    "Đổi môn sẽ bắt đầu trận mới (tỉ số hiện tại bị xoá).": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Changing the sport starts a new match (the current score is cleared)."
+          }
+        }
+      }
+    },
+    "Đổi môn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Change sport"
+          }
+        }
+      }
+    },
+    "Nhập điểm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Score entry"
+          }
+        }
+      }
+    },
+    "Trên sóng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "On air"
+          }
+        }
+      }
+    },
+    "Trận mới (giữ luật)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New match (same rules)"
+          }
+        }
+      }
+    },
+    "LUẬT THI ĐẤU": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MATCH RULES"
+          }
+        }
+      }
+    },
+    "Đổi luật giữa trận áp dụng từ điểm tiếp theo. Dùng \"Trận mới\" để bắt đầu lại với luật này.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rule changes mid-match apply from the next point. Use \"New match\" to start over with these rules."
+          }
+        }
+      }
+    },
+    "Chấm điểm tự do. Chọn môn để tính điểm, set, game theo luật:": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Free scoring. Pick a sport to score points, sets and games by its rules:"
+          }
+        }
+      }
+    },
+    "Thể thức": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Format"
+          }
+        }
+      }
+    },
+    "Đơn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Singles"
+          }
+        }
+      }
+    },
+    "Tính điểm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scoring"
+          }
+        }
+      }
+    },
+    "Side-out (chỉ bên giao ghi điểm)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Side-out (only the serving side scores)"
+          }
+        }
+      }
+    },
+    "Rally (mọi rally đều ra điểm)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rally (every rally scores)"
+          }
+        }
+      }
+    },
+    "Game đến %lld điểm, cách %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Game to %lld points, win by %lld"
+          }
+        }
+      }
+    },
+    "Hội ý mỗi game: %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Timeouts per game: %lld"
+          }
+        }
+      }
+    },
+    "Đổi sân giữa game quyết định": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Switch ends in the deciding game"
+          }
+        }
+      }
+    },
+    "Hệ điểm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scoring system"
+          }
+        }
+      }
+    },
+    "Game 21, cách 2, chạm 30 thắng; nghỉ ở 11.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Game to 21, win by 2, cap 30; interval at 11."
+          }
+        }
+      }
+    },
+    "Game 15, cách 2, chạm 21 thắng; nghỉ ở 8.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Game to 15, win by 2, cap 21; interval at 8."
+          }
+        }
+      }
+    },
+    "Trong nhà": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Indoor"
+          }
+        }
+      }
+    },
+    "Bãi biển": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beach"
+          }
+        }
+      }
+    },
+    "Set đến %lld điểm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set to %lld points"
+          }
+        }
+      }
+    },
+    "Set quyết định đến %lld điểm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deciding set to %lld points"
+          }
+        }
+      }
+    },
+    "Hội ý mỗi set: %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Timeouts per set: %lld"
+          }
+        }
+      }
+    },
+    "Thay người mỗi set: %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Substitutions per set: %lld"
+          }
+        }
+      }
+    },
+    "Sân": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pitch"
+          }
+        }
+      }
+    },
+    "Sân 5": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "5-a-side"
+          }
+        }
+      }
+    },
+    "Sân 7": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "7-a-side"
+          }
+        }
+      }
+    },
+    "Sân 11": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "11-a-side"
+          }
+        }
+      }
+    },
+    "Số hiệp: %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Periods: %lld"
+          }
+        }
+      }
+    },
+    "Mỗi hiệp %lld phút": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld minutes per period"
+          }
+        }
+      }
+    },
+    "Đồng hồ đếm ngược (futsal)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Count-down clock (futsal)"
+          }
+        }
+      }
+    },
+    "Lỗi tích lũy": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Accumulated fouls"
+          }
+        }
+      }
+    },
+    "Giới hạn lỗi mỗi hiệp: %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Foul limit per period: %lld"
+          }
+        }
+      }
+    },
+    "Hội ý mỗi hiệp: %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Timeouts per period: %lld"
+          }
+        }
+      }
+    },
+    "Khi hoà": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "If tied"
+          }
+        }
+      }
+    },
+    "Kết thúc hoà": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ends in a draw"
+          }
+        }
+      }
+    },
+    "Đá luân lưu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Penalty shoot-out"
+          }
+        }
+      }
+    },
+    "Hiệp phụ rồi luân lưu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extra time, then shoot-out"
+          }
+        }
+      }
+    },
+    "Hiệp phụ %lld × %lld phút": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extra time %lld × %lld minutes"
+          }
+        }
+      }
+    },
+    "Luân lưu %lld lượt rồi đột tử": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shoot-out %lld kicks, then sudden death"
+          }
+        }
+      }
+    },
+    "Đánh đến %lld điểm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Play to %lld points"
+          }
+        }
+      }
+    },
+    "Giới hạn lượt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inning limit"
+          }
+        }
+      }
+    },
+    "Tối đa %lld lượt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "At most %lld innings"
+          }
+        }
+      }
+    },
+    "Lượt cân bằng (người sau được đánh lượt cuối)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Equalizing inning (second player gets the last turn)"
+          }
+        }
+      }
+    },
+    "Chạm %lld rack": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Race to %lld racks"
+          }
+        }
+      }
+    },
+    "Quyền phá": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Break"
+          }
+        }
+      }
+    },
+    "Luân phiên": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alternate"
+          }
+        }
+      }
+    },
+    "Thắng rack được phá": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Winner breaks"
+          }
+        }
+      }
+    },
+    "Đồng hồ cơ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shot clock"
+          }
+        }
+      }
+    },
+    "%lld giây / cú, gia hạn %lld giây": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld s per shot, %lld s extension"
+          }
+        }
+      }
+    },
+    "Số ván / set": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Games / sets"
+          }
+        }
+      }
+    },
+    "1 ván": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 game"
+          }
+        }
+      }
+    },
+    "Thắng %@/%@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Best %@ of %@"
+          }
+        }
+      }
+    },
+    "Nạp %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Load %@"
+          }
+        }
+      }
+    },
+    "Bảng nhập điểm…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Score entry…"
+          }
+        }
+      }
+    },
+    "Sửa tên, logo, màu, luật…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edit names, logos, colours, rules…"
+          }
+        }
+      }
+    },
+    "Hết bộ đệm khung hình — đã tạo lại (khung bị giữ ở bộ mã hoá)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Out of frame buffers — recreated (frames held by the encoder)"
+          }
+        }
+      }
+    },
+    "Khung hình/giây: dựng %@ · vào mã hoá %@ · ra %@ · dựng TB %@ ms, max %@ ms, quá hạn %@ · %@×%@ %@/%@ kbps%@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Frames/s: rendered %@ · into encoder %@ · out %@ · render avg %@ ms, max %@ ms, late %@ · %@×%@ %@/%@ kbps%@"
+          }
+        }
+      }
+    },
+    " (máy nóng)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": " (device hot)"
+          }
+        }
+      }
+    },
+    "VideoToolbox lỗi %@ %@ — tạo lại bộ mã hoá": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "VideoToolbox error %@ %@ — recreating the encoder"
+          }
+        }
+      }
+    },
+    "(tham số/thời gian khung không hợp lệ)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "(invalid parameter / frame timing)"
+          }
+        }
+      }
+    },
+    "(phiên mã hoá mất hiệu lực — app vào nền / bị gián đoạn)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "(encoder session invalidated — app in background / interrupted)"
+          }
+        }
+      }
+    },
+    "(không tạo được bộ mã hoá)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "(couldn't create the encoder)"
+          }
+        }
+      }
+    },
+    "(bộ mã hoá phần cứng lỗi / quá tải)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "(hardware encoder failed / overloaded)"
+          }
+        }
+      }
+    },
+    "(phần cứng mã hoá đang bận)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "(hardware encoder busy)"
+          }
+        }
+      }
+    },
+    "(hết bộ nhớ đệm)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "(out of buffers)"
+          }
+        }
+      }
+    },
+    "Bộ mã hoá không ra hình (%@ khung vào, 0 ra) — khởi động lại": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Encoder produced no frames (%@ in, 0 out) — restarting"
+          }
+        }
+      }
+    },
+    "Bộ mã hoá không nhận thuộc tính %@ (%@)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Encoder rejected property %@ (%@)"
+          }
+        }
+      }
+    },
+    "Bộ mã hoá đổi thông số (SPS/PPS) — kết nối lại": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Encoder parameters changed (SPS/PPS) — reconnecting"
+          }
+        }
+      }
+    },
+    "Tin tức · Xanh dương": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "News · Blue"
+          }
+        }
+      }
+    },
+    "Tin tức · Xanh đá": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "News · Slate"
+          }
+        }
+      }
+    },
+    "Tin tức · Cam": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "News · Orange"
+          }
+        }
+      }
+    },
+    "Tin tức · Đỏ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "News · Red"
+          }
+        }
+      }
+    },
+    "LIVE · Xanh dương": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LIVE · Blue"
+          }
+        }
+      }
+    },
+    "LIVE · Xanh đá": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LIVE · Slate"
+          }
+        }
+      }
+    },
+    "LIVE · Cam": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LIVE · Orange"
+          }
+        }
+      }
+    },
+    "LIVE · Đỏ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LIVE · Red"
+          }
+        }
+      }
+    },
+    "Lower third trượt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sliding lower third"
+          }
+        }
+      }
+    },
+    "Lower third kính mờ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Frosted-glass lower third"
+          }
+        }
+      }
+    },
+    "Chữ chạy tin tức": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "News ticker"
+          }
+        }
+      }
+    },
+    "Lower third neon": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neon lower third"
+          }
+        }
+      }
+    },
+    "Lower third vát hai tầng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Two-tier angled lower third"
+          }
+        }
+      }
+    },
+    "Khung bản tin trực tiếp · Xanh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Live news frame · Blue"
+          }
+        }
+      }
+    },
+    "Khung bản tin trực tiếp · Đỏ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Live news frame · Red"
+          }
+        }
+      }
+    },
+    "Khung neon livestream": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neon livestream frame"
+          }
+        }
+      }
+    },
+    "Banner podcast": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Podcast banner"
+          }
+        }
+      }
+    },
+    "Màn chờ · Sắp bắt đầu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Standby · Starting soon"
+          }
+        }
+      }
+    },
+    "Màn chờ · Quay lại ngay": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Standby · Be right back"
+          }
+        }
+      }
+    },
+    "Chân trang": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Footer"
+          }
+        }
+      }
+    },
+    "Chữ LIVE (trống = ẩn)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LIVE text (empty = hidden)"
+          }
+        }
+      }
+    },
+    "Chữ chạy (ngăn bằng |, trống = ẩn)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ticker (separate with |, empty = hidden)"
+          }
+        }
+      }
+    },
+    "Chữ khi hết giờ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Text when time is up"
+          }
+        }
+      }
+    },
+    "Chữ lớn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Big text"
+          }
+        }
+      }
+    },
+    "Chữ nhỏ dưới nhãn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Small text under the tag"
+          }
+        }
+      }
+    },
+    "Dòng mô tả": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Description"
+          }
+        }
+      }
+    },
+    "Dòng phụ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Subline"
+          }
+        }
+      }
+    },
+    "Giờ (trống = giờ thực)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time (empty = real time)"
+          }
+        }
+      }
+    },
+    "Giờ (trống = giờ thực, - = ẩn)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time (empty = real time, - = hidden)"
+          }
+        }
+      }
+    },
+    "Khách mời (trống = ẩn)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guest (empty = hidden)"
+          }
+        }
+      }
+    },
+    "Logo (thay chữ nhãn)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logo (replaces the tag text)"
+          }
+        }
+      }
+    },
+    "Logo (thay micro)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logo (replaces the mic)"
+          }
+        }
+      }
+    },
+    "Logo (thay tên kênh)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logo (replaces the channel name)"
+          }
+        }
+      }
+    },
+    "Logo (thư viện Logo)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logo (Logo library)"
+          }
+        }
+      }
+    },
+    "Nhãn (tự xuống dòng)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tag (wraps)"
+          }
+        }
+      }
+    },
+    "Nhãn chữ chạy": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ticker tag"
+          }
+        }
+      }
+    },
+    "Nhãn khách mời": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guest tag"
+          }
+        }
+      }
+    },
+    "Nội dung (ngăn bằng |)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Content (separate with |)"
+          }
+        }
+      }
+    },
+    "Số phút đếm ngược (trống = không)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Countdown minutes (empty = none)"
+          }
+        }
+      }
+    },
+    "Tiêu đề": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Headline"
+          }
+        }
+      }
+    },
+    "Tiêu đề chính": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Main headline"
+          }
+        }
+      }
+    },
+    "Tiêu đề trên": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Top line"
+          }
+        }
+      }
+    },
+    "Tiêu đề tập": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Episode title"
+          }
+        }
+      }
+    },
+    "Tài khoản / lời chào": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Handle / greeting"
+          }
+        }
+      }
+    },
+    "Tên chương trình": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show name"
+          }
+        }
+      }
+    },
+    "Tên kênh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Channel name"
+          }
+        }
+      }
+    },
+    "Địa điểm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Location"
+          }
+        }
+      }
+    },
+    "Ảnh đại diện / logo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avatar / logo"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

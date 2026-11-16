@@ -3,7 +3,7 @@
 /// so every sport works without page changes. Works on any phone / laptop in the same LAN.
 enum ScoreboardRemotePage {
     static let html = #"""
-<!doctype html><html lang="vi"><head><meta charset="utf-8">
+<!doctype html><html lang="__LANG__"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>DTDStudio · Bảng tỉ số</title>
 <style>
@@ -43,7 +43,7 @@ button.destructive{background:#5a1a1d;border-color:#8a2a2e}button.air{background
 <header><b>Bảng tỉ số</b>
  <select id="tpl" onchange="setTpl(this.value)"></select>
  <button id="airBtn" onclick="air()">Lên sóng</button>
- <a href="/" style="margin-left:auto">← Remote</a></header>
+ <a id="lng" href="#" style="margin-left:auto;color:#aaa"></a><a href="/">← Remote</a></header>
 <div id="board"></div>
 <div id="msg"></div>
 <div class="teams"><input id="home" placeholder="Đội nhà" onchange="teams()"><input id="away" placeholder="Đội khách" onchange="teams()"></div>
@@ -61,20 +61,33 @@ button.destructive{background:#5a1a1d;border-color:#8a2a2e}button.air{background
  <div class="btns"><button onclick="dlgDone(null)">Huỷ</button><button class="primary" style="min-height:44px" id="dlgOK" onclick="dlgDone(dlgI.value)">OK</button></div>
 </div></div>
 <script>
+// language: ?lang= in the link, else the app's language (filled in by the server)
+const LANG=((new URLSearchParams(location.search).get('lang'))||'__LANG__')==='en'?'en':'vi';
+const EN={"Chuyển cảnh": "Switching", "Tỉ số": "Score", "Bảng tỉ số theo luật →": "Rules scoreboard →", "Tên + chức danh": "Name + title", "Toàn màn hình": "Full screen", "Chữ chạy": "Ticker", "Tỉ số ": "Score", "Đồng hồ": "Clock", "+ Thêm title": "+ Add title", "Dòng 1": "Line 1", "Dòng 2": "Line 2", "Ẩn": "Hide", "Hiện": "Show", "DTDStudio · Bảng tỉ số": "DTDStudio · Scoreboard", "Bảng tỉ số": "Scoreboard", "Lên sóng": "Go on air", "● Trên sóng": "● On air", "↶ Hoàn tác": "↶ Undo", "↷ Làm lại": "↷ Redo", "Trận mới": "New match", "Huỷ": "Cancel", "OK": "OK", "Tự do (+/−)": "Free (+/−)", "TỰ DO": "FREE", "Đội nhà": "Home", "Đội khách": "Away", "Tên / số áo": "Name / number", "Bắt đầu lại trận với cùng luật?": "Restart the match with the same rules?", "Mất kết nối tới DTDStudio…": "Lost connection to DTDStudio…", "Không gửi được lệnh": "Couldn't send the command", "← Remote": "← Remote"};
+const T=s=>(LANG==='en'&&EN[s]!==undefined)?EN[s]:s;
+document.documentElement.lang=LANG;
+(function i18n(){ if(LANG!=='en')return;
+ const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT); const ns=[]; while(w.nextNode())ns.push(w.currentNode);
+ ns.forEach(n=>{ const t=n.nodeValue.trim(); if(t&&EN[t]!==undefined)n.nodeValue=n.nodeValue.replace(t,EN[t]); });
+ document.querySelectorAll('[placeholder],[title]').forEach(e=>{ ['placeholder','title'].forEach(a=>{ const v=e.getAttribute(a); if(v&&EN[v]!==undefined)e.setAttribute(a,EN[v]); }); });
+ if(EN[document.title]!==undefined)document.title=EN[document.title];
+})();
 // access key from the link (…/?key=…): added to every request and link on this page
 const KEY=new URLSearchParams(location.search).get('key')||'';
 const _fetch=window.fetch.bind(window);
-window.fetch=(u,o)=>_fetch(u+(String(u).includes('?')?'&':'?')+'key='+encodeURIComponent(KEY),o);
-document.querySelectorAll('a[href^="/"]').forEach(a=>a.href=a.getAttribute('href')+'?key='+encodeURIComponent(KEY));
+window.fetch=(u,o)=>_fetch(u+(String(u).includes('?')?'&':'?')+'key='+encodeURIComponent(KEY)+'&lang='+LANG,o);
+document.querySelectorAll('a[href^="/"]').forEach(a=>a.href=a.getAttribute('href')+'?key='+encodeURIComponent(KEY)+'&lang='+LANG);
+lng.textContent=LANG==='en'?'Tiếng Việt':'English';
+lng.href=location.pathname+'?key='+encodeURIComponent(KEY)+'&lang='+(LANG==='en'?'vi':'en');
 let S={},busy=false,CTL=[],dlgCB=null;
 function ask(title,choices,input){ return new Promise(res=>{ dlgCB=res; dlgT.textContent=title;
  dlgC.innerHTML=''; (choices||[]).forEach(c=>{ const b=document.createElement('button'); b.textContent=c; b.onclick=()=>dlgDone(c); dlgC.appendChild(b); });
  dlgI.style.display=input?'':'none'; dlgI.value=''; dlg.hidden=false; if(input)setTimeout(()=>dlgI.focus(),50); }); }
 function dlgDone(v){ dlg.hidden=true; const cb=dlgCB; dlgCB=null; if(cb)cb(v); }
-async function restart(){ if(await ask('Bắt đầu lại trận với cùng luật?',[],false)!==null)act('/api/scoreboard/restart'); }
+async function restart(){ if(await ask(T('Bắt đầu lại trận với cùng luật?'),[],false)!==null)act('/api/scoreboard/restart'); }
 const E=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-async function load(){ if(busy)return; try{ S=await (await fetch('/api/scoreboard')).json(); draw(); msg.textContent=''; }catch(e){ msg.textContent='Mất kết nối tới DTDStudio…'; } }
-async function act(u){ busy=true; try{ S=await (await fetch(u,{method:'POST'})).json(); draw(); }catch(e){ msg.textContent='Không gửi được lệnh'; } busy=false; }
+async function load(){ if(busy)return; try{ S=await (await fetch('/api/scoreboard')).json(); draw(); msg.textContent=''; }catch(e){ msg.textContent=T('Mất kết nối tới DTDStudio…'); } }
+async function act(u){ busy=true; try{ S=await (await fetch(u,{method:'POST'})).json(); draw(); }catch(e){ msg.textContent=T('Không gửi được lệnh'); } busy=false; }
 function q(o){return Object.entries(o).map(([k,v])=>k+'='+encodeURIComponent(v)).join('&')}
 function setTpl(v){act('/api/scoreboard/template?'+q({t:v}))}
 function teams(){act('/api/scoreboard/teams?'+q({home:home.value,away:away.value}))}
@@ -84,14 +97,14 @@ async function ctl(i){ const c=CTL[i]; if(!c||!c.enabled)return; let p='';
  if(navigator.vibrate)navigator.vibrate(15); act('/api/scoreboard/action?'+q({id:c.id,input:p})); }
 function draw(){
  if(!tpl.options.length){ const g={}; (S.templates||[]).forEach(t=>(g[t.group]=g[t.group]||[]).push(t));
-  tpl.innerHTML='<option value="">Tự do (+/−)</option>'+Object.entries(g).map(([k,a])=>`<optgroup label="${E(k)}">`+a.map(t=>`<option value="${t.id}">${E(t.title)}</option>`).join('')+'</optgroup>').join(''); }
+  tpl.innerHTML='<option value="">'+T('Tự do (+/−)')+'</option>'+Object.entries(g).map(([k,a])=>`<optgroup label="${E(k)}">`+a.map(t=>`<option value="${t.id}">${E(t.title)}</option>`).join('')+'</optgroup>').join(''); }
  tpl.value=S.template||'';
- airBtn.textContent=S.visible?'● Trên sóng':'Lên sóng'; airBtn.className=S.visible?'air':'';
+ airBtn.textContent=T(S.visible?'● Trên sóng':'Lên sóng'); airBtn.className=S.visible?'air':'';
  if(document.activeElement!==home)home.value=S.home||''; if(document.activeElement!==away)away.value=S.away||'';
  undo.disabled=!S.canUndo; redo.disabled=!S.canRedo;
  const d=S.display;
  if(!d){ // free scoring
-  board.innerHTML=`<div class="sb"><div class="sbh"><span class="t">TỰ DO</span><span>${E(S.period)}</span>${S.clock?`<span class="ck">${E(S.clock)}</span>`:''}</div>
+  board.innerHTML=`<div class="sb"><div class="sbh"><span class="t">${T('TỰ DO')}</span><span>${E(S.period)}</span>${S.clock?`<span class="ck">${E(S.clock)}</span>`:''}</div>
    <div class="free"><button onclick="score('a',-1)">−</button><b>${S.scoreA??0}</b><button onclick="score('a',1)" class="primary">+ ${E(S.home)}</button></div>
    <div class="free"><button onclick="score('b',-1)">−</button><b>${S.scoreB??0}</b><button onclick="score('b',1)" class="primary">+ ${E(S.away)}</button></div></div>`;
   shared.innerHTML='';sides.innerHTML='';return; }

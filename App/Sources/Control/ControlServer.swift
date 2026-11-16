@@ -18,7 +18,7 @@ protocol ControlTarget: AnyObject, Sendable {
     func handle(_ cmd: ControlCommand) async
     func stateJSON() async -> Data
     func tallyJSON(for name: String) async -> Data
-    func scoreboardJSON() async -> Data
+    func scoreboardJSON(lang: String?) async -> Data
     func pairRequest(_ body: Data) async -> Data
     func pairStatus(_ requestID: String) async -> Data
 }
@@ -92,6 +92,18 @@ final class ControlServer: @unchecked Sendable {
         return k
     }
 
+    /// Web pages follow ?lang=en|vi, else the app's language (Settings › Ngôn ngữ).
+    static func page(_ html: String, _ lang: String?) -> String {
+        html.replacingOccurrences(of: "__LANG__", with: uiLang(lang))
+    }
+    static func uiLang(_ asked: String?) -> String {
+        if asked == "en" || asked == "vi" { return asked! }
+        switch AppLanguage.current {
+        case "en", "vi": return AppLanguage.current
+        default: return (Locale.preferredLanguages.first ?? "vi").hasPrefix("vi") ? "vi" : "en"
+        }
+    }
+
     private static let openPaths: Set<String> = ["/api/pair/request", "/api/pair/status", "/api/tally", "/favicon.ico"]
 
     private static func authorized(_ r: HTTPRequest) -> Bool {
@@ -131,7 +143,9 @@ final class ControlServer: @unchecked Sendable {
                 let page = "<!doctype html><meta charset=utf-8><meta name=viewport content='width=device-width'>"
                     + "<body style='font:16px -apple-system,sans-serif;background:#111;color:#eee;padding:24px'>"
                     + "<h3>DTDStudio</h3><p>Liên kết thiếu hoặc sai key bảo mật. Mở đúng đường link trong "
-                    + "DTDStudio › Cài đặt › Điều khiển từ xa (link có <code>?key=…</code>).</p></body>"
+                    + "DTDStudio › Cài đặt › Điều khiển từ xa (link có <code>?key=…</code>).</p>"
+                    + "<p style='color:#999'>The link is missing its security key or the key is wrong. Open the link from "
+                    + "DTDStudio › Settings › Remote control (it ends with <code>?key=…</code>).</p></body>"
                 return HTTPRequest.response(401, "text/html; charset=utf-8", Data(page.utf8))
             }
             return HTTPRequest.response(401, "application/json", Data("{\"error\":\"key required\"}".utf8))
@@ -141,7 +155,7 @@ final class ControlServer: @unchecked Sendable {
         func dbl(_ k: String) -> Double { q[k].flatMap(Double.init) ?? 0 }
         let ok = HTTPRequest.response(200, "application/json", Data("{\"ok\":true}".utf8))
         switch (r.method, r.path) {
-        case ("GET", "/"): return HTTPRequest.response(200, "text/html; charset=utf-8", Data(RemotePage.html.utf8))
+        case ("GET", "/"): return HTTPRequest.response(200, "text/html; charset=utf-8", Data(Self.page(RemotePage.html, q["lang"]).utf8))
         case ("GET", "/api/state"): return HTTPRequest.response(200, "application/json", await target.stateJSON())
         case ("GET", "/api/tally"): return HTTPRequest.response(200, "application/json", await target.tallyJSON(for: q["name"] ?? ""))
         case ("POST", "/api/pair/request"): return HTTPRequest.response(200, "application/json", await target.pairRequest(r.body))
@@ -160,25 +174,25 @@ final class ControlServer: @unchecked Sendable {
         case ("POST", "/api/score"):
             if let a = int("a") { await target.handle(.scoreA(a)) }
             if let b = int("b") { await target.handle(.scoreB(b)) }
-        case ("GET", "/scoreboard"): return HTTPRequest.response(200, "text/html; charset=utf-8", Data(ScoreboardRemotePage.html.utf8))
-        case ("GET", "/api/scoreboard"): return HTTPRequest.response(200, "application/json", await target.scoreboardJSON())
+        case ("GET", "/scoreboard"): return HTTPRequest.response(200, "text/html; charset=utf-8", Data(Self.page(ScoreboardRemotePage.html, q["lang"]).utf8))
+        case ("GET", "/api/scoreboard"): return HTTPRequest.response(200, "application/json", await target.scoreboardJSON(lang: q["lang"]))
         case ("POST", "/api/scoreboard/action"):
             if let id = q["id"] { await target.handle(.sportAction(id, q["input"])) }
-            return HTTPRequest.response(200, "application/json", await target.scoreboardJSON())
+            return HTTPRequest.response(200, "application/json", await target.scoreboardJSON(lang: q["lang"]))
         case ("POST", "/api/scoreboard/template"):
             let t = q["t"] ?? ""
             await target.handle(.sportTemplate(t.isEmpty ? nil : t))
-            return HTTPRequest.response(200, "application/json", await target.scoreboardJSON())
+            return HTTPRequest.response(200, "application/json", await target.scoreboardJSON(lang: q["lang"]))
         case ("POST", "/api/scoreboard/undo"): await target.handle(.sportUndo)
-            return HTTPRequest.response(200, "application/json", await target.scoreboardJSON())
+            return HTTPRequest.response(200, "application/json", await target.scoreboardJSON(lang: q["lang"]))
         case ("POST", "/api/scoreboard/redo"): await target.handle(.sportRedo)
-            return HTTPRequest.response(200, "application/json", await target.scoreboardJSON())
+            return HTTPRequest.response(200, "application/json", await target.scoreboardJSON(lang: q["lang"]))
         case ("POST", "/api/scoreboard/restart"): await target.handle(.sportRestart)
-            return HTTPRequest.response(200, "application/json", await target.scoreboardJSON())
+            return HTTPRequest.response(200, "application/json", await target.scoreboardJSON(lang: q["lang"]))
         case ("POST", "/api/scoreboard/teams"): await target.handle(.scoreboardTeams(q["home"], q["away"]))
-            return HTTPRequest.response(200, "application/json", await target.scoreboardJSON())
+            return HTTPRequest.response(200, "application/json", await target.scoreboardJSON(lang: q["lang"]))
         case ("POST", "/api/scoreboard/show"): await target.handle(.scoreboardShow(q["on"] != "0"))
-            return HTTPRequest.response(200, "application/json", await target.scoreboardJSON())
+            return HTTPRequest.response(200, "application/json", await target.scoreboardJSON(lang: q["lang"]))
         case ("POST", "/api/stream/start"): await target.handle(.streamStart)
         case ("POST", "/api/stream/stop"): await target.handle(.streamStop)
         case ("POST", "/api/record"): await target.handle(.recordToggle)

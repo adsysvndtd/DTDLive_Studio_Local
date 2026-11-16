@@ -321,12 +321,12 @@ struct SuperFGTemplate: Identifiable {
             poly(g, [CGPoint(x: s.width * 0.82, y: s.height), CGPoint(x: s.width * 0.86, y: s.height * 0.9), CGPoint(x: s.width * 0.9, y: s.height)],
                  UIColor(hex: "#2BB3A3"))
         },
-        SuperFGTemplate(id: "break", name: L("Giải lao"), motion: .drop, defaultLines: ["GIẢI LAO"], defaultAccent: "#F2B233") { g, s, a in
+        SuperFGTemplate(id: "break", name: L("Giải lao"), motion: .drop, defaultLines: [L("GIẢI LAO")], defaultAccent: "#F2B233") { g, s, a in
             navyPanels(g, s, seed: 29)
             poly(g, [CGPoint(x: s.width, y: s.height * 0.78), CGPoint(x: s.width, y: s.height), CGPoint(x: s.width * 0.94, y: s.height)], a)
             poly(g, [CGPoint(x: 0, y: 0), CGPoint(x: s.width * 0.05, y: 0), CGPoint(x: 0, y: s.height * 0.12)], a)
         },
-        SuperFGTemplate(id: "thanks", name: L("Cảm ơn"), motion: .fade, defaultLines: ["CẢM ƠN", "ĐÃ THEO DÕI"], defaultAccent: "#1FA88E", look: .gold) { g, s, a in
+        SuperFGTemplate(id: "thanks", name: L("Cảm ơn"), motion: .fade, defaultLines: [L("CẢM ƠN"), L("ĐÃ THEO DÕI")], defaultAccent: "#1FA88E", look: .gold) { g, s, a in
             linear(g, [UIColor(hex: "#0C2A2E"), a.withAlphaComponent(1)], from: CGPoint(x: 0, y: 0), to: CGPoint(x: s.width, y: s.height))
             let r = rng(42), k = s.height / 1080
             for _ in 0..<14 {

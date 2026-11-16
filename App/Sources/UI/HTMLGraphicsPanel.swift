@@ -108,7 +108,7 @@ struct HTMLGraphicsPanel: View {
                     .fill(colour.isEmpty ? DS.text3 : Color(UIColor(hex: colour)))
                     .frame(width: 4, height: 30)
                 VStack(alignment: .leading, spacing: 1) {
-                    Text(t.name).font(.system(size: compact ? 12 : 13, weight: .semibold)).lineLimit(1)
+                    Text(verbatim: L(t.name)).font(.system(size: compact ? 12 : 13, weight: .semibold)).lineLimit(1)
                     if !subtitle.isEmpty {
                         Text(subtitle).font(.system(size: 10)).foregroundStyle(DS.text3).lineLimit(1)
                     }
@@ -149,7 +149,7 @@ struct HTMLGraphicsPanel: View {
                                         background: background, aspect: aspect, playToken: replayToken)
                 }
                 HStack(spacing: 6) {
-                    Text(t.name).font(DS.fBodyBold).lineLimit(1)
+                    Text(verbatim: L(t.name)).font(DS.fBodyBold).lineLimit(1)
                     Spacer(minLength: 4)
                     smallButton("Chạy lại", "arrow.counterclockwise") {
                         if armed { html.replayPreview() } else { replayToken += 1 }
@@ -208,7 +208,7 @@ struct HTMLFieldRows: View {
         ForEach(t.fields) { f in
             if f.isColor {
                 HStack(spacing: 6) {
-                    Text(f.label).font(DS.fBodyBold).foregroundStyle(DS.text2).lineLimit(1)
+                    Text(verbatim: L(f.label)).font(DS.fBodyBold).foregroundStyle(DS.text2).lineLimit(1)
                     Spacer(minLength: 4)
                     ForEach(Self.presets, id: \.self) { hex in
                         let on = html.value(t, f).uppercased() == hex
@@ -225,7 +225,7 @@ struct HTMLFieldRows: View {
                 }
             } else if f.isImage {
                 HStack {
-                    Text(f.label).font(DS.fBodyBold).foregroundStyle(DS.text2).lineLimit(1)
+                    Text(verbatim: L(f.label)).font(DS.fBodyBold).foregroundStyle(DS.text2).lineLimit(1)
                     Spacer()
                     Menu {
                         Button("Không dùng") { html.setValue(t, f, "") }
@@ -240,7 +240,7 @@ struct HTMLFieldRows: View {
                     }
                 }
             } else {
-                TextField(f.label, text: Binding(get: { html.value(t, f) }, set: { html.setValue(t, f, $0) }))
+                TextField(L(f.label), text: Binding(get: { html.value(t, f) }, set: { html.setValue(t, f, $0) }))
                     .font(.system(size: compact ? 12 : 14, weight: .semibold))
                     .padding(.horizontal, 8).frame(height: compact ? 28 : 34)
                     .background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
@@ -363,12 +363,12 @@ struct HTMLResizeRows: View {
                 label("Font")
                 Menu {
                     Button("Theo mẫu") { set { $0.fontFamily = nil } }
-                    ForEach(HTMLLayerStyle.fonts, id: \.0) { f in Button(f.1) { set { $0.fontFamily = f.0 } } }
+                    ForEach(HTMLLayerStyle.fonts, id: \.0) { f in Button(L(f.1)) { set { $0.fontFamily = f.0 } } }
                     Menu("Font hệ thống khác (có thể thiếu dấu tiếng Việt)") {
                         ForEach(HTMLLayerStyle.otherFonts, id: \.0) { f in Button(f.1) { set { $0.fontFamily = f.0 } } }
                     }
                 } label: {
-                    Text((HTMLLayerStyle.fonts + HTMLLayerStyle.otherFonts).first { $0.0 == st.fontFamily }?.1 ?? L("Theo mẫu"))
+                    Text(verbatim: L((HTMLLayerStyle.fonts + HTMLLayerStyle.otherFonts).first { $0.0 == st.fontFamily }?.1 ?? "Theo mẫu"))
                         .font(DS.fBodyBold).lineLimit(1).padding(.horizontal, 10).frame(height: 28)
                         .background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
                 }

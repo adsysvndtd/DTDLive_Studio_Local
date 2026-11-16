@@ -213,7 +213,7 @@ final class StudioEngine: ObservableObject {
         ve.onEncoded = { sb in om.video(sb); rb.append(sb) }
         ve.onProblem = { [weak self] text in Task { @MainActor in self?.logToLiveOutputs(text) } }
         switcher.onPoolRebuilt = { [weak self] in
-            Task { @MainActor in self?.logToLiveOutputs("Hết bộ đệm khung hình — đã tạo lại (khung bị giữ ở bộ mã hoá)") }
+            Task { @MainActor in self?.logToLiveOutputs(L("Hết bộ đệm khung hình — đã tạo lại (khung bị giữ ở bộ mã hoá)")) }
         }
         audio.onBuffer = { pcm, when in ae.append(pcm, when: when) }
         ae.onEncoded = { buf, when in om.audio(buf, when: when) }
@@ -1102,7 +1102,7 @@ final class StudioEngine: ObservableObject {
         var r: [UUID: String] = [:]
         for (id, c) in now {
             let p = lastCounts[id] ?? (0, 0)
-            r[id] = "Hình \(max(0, c.0 - p.0))/s · Tiếng \(max(0, c.1 - p.1))/s"
+            r[id] = LF("Hình %@/s · Tiếng %@/s", "\(max(0, c.0 - p.0))", "\(max(0, c.1 - p.1))")
         }
         lastCounts = now
         if r != outputRates { outputRates = r }
@@ -1153,7 +1153,10 @@ final class StudioEngine: ObservableObject {
         watchdogTick += 1
         if watchdogTick % 5 == 1 {
             let st = switcher.renderStats.take()
-            logToLiveOutputs("Khung hình/giây: dựng \(r - lastRendered) · vào mã hoá \(i - lastEncIn) · ra \(o - lastEncOut) · dựng TB \(String(format: "%.1f", st.avg)) ms, max \(String(format: "%.0f", st.max)) ms, quá hạn \(st.over) · \(format.width)×\(format.height) \(currentBitrate / 1000)/\(encoder.bitrate / 1000) kbps\(thermalThrottled ? " (máy nóng)" : "")")
+            logToLiveOutputs(LF("Khung hình/giây: dựng %@ · vào mã hoá %@ · ra %@ · dựng TB %@ ms, max %@ ms, quá hạn %@ · %@×%@ %@/%@ kbps%@",
+                                 "\(r - lastRendered)", "\(i - lastEncIn)", "\(o - lastEncOut)", String(format: "%.1f", st.avg),
+                                 String(format: "%.0f", st.max), "\(st.over)", "\(format.width)", "\(format.height)",
+                                 "\(currentBitrate / 1000)", "\(encoder.bitrate / 1000)", thermalThrottled ? L(" (máy nóng)") : ""))
         }
     }
 

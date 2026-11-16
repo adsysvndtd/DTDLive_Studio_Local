@@ -224,8 +224,8 @@ extension StudioEngine {
 
     // MARK: Web remote JSON
 
-    func scoreboardJSON() async -> Data {
-        let lang = ScoreLang.current
+    func scoreboardJSON(lang code: String?) async -> Data {
+        let lang = code.flatMap(ScoreLang.init(rawValue:)) ?? ScoreLang.current
         var obj: [String: Any] = [
             "lang": lang.rawValue,
             "templates": SportTemplate.allCases.map { ["id": $0.rawValue, "title": $0.title(lang), "group": $0.sportGroup] },
