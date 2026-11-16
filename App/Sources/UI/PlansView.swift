@@ -21,7 +21,7 @@ struct PlansView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section { statusRow }
+                Section(footer: Text("Gói DTDStudio dùng được cả DTDLive Pro: đăng nhập cùng tài khoản DTD trên DTDLive.")) { statusRow }
 
                 Section(header: SettingsHeader("Mua qua App Store"),
                         footer: Text("Gói tháng / năm tự gia hạn cho tới khi huỷ trong Cài đặt › Apple ID › Đăng ký, ít nhất 24 giờ trước khi hết kỳ; tiền trừ vào tài khoản Apple ID khi xác nhận mua. Gói ngày dùng 24 giờ, không tự gia hạn.")) {
@@ -145,7 +145,10 @@ struct StudioAccountRows: View {
     private func go(register: Bool) {
         error = nil
         Task {
-            do { try await account.signIn(email: email, password: password, register: register); password = "" }
+            do {
+                try await account.signIn(email: email, password: password, register: register); password = ""
+                await StudioPlan.shared.syncStore()   // link an App Store plan bought on this device
+            }
             catch { self.error = error.localizedDescription }
         }
     }

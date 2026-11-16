@@ -39,6 +39,8 @@ final class StudioStore: ObservableObject {
     @Published private(set) var willRenew = false
 
     private var updates: Task<Void, Never>?
+    /// Called after every refresh (StudioPlan links App Store purchases to the DTD account).
+    var onChange: (() async -> Void)?
 
     init() {
         updates = Task { [weak self] in
@@ -92,6 +94,22 @@ final class StudioStore: ObservableObject {
            let st = try? await p.subscription?.status.first, case .verified(let info) = st.renewalInfo {
             willRenew = info.willAutoRenew
         }
+        await onChange?()
+    }
+
+    /// Signed transactions to link to the DTD account: running subscriptions and day passes from the last 2 days.
+    func entitlementJWS() async -> [String] {
+        var out: [String] = []
+        for await r in Transaction.currentEntitlements {
+            guard case .verified(let t) = r, t.productID == Self.monthly || t.productID == Self.yearly else { continue }
+            out.append(r.jwsRepresentation)
+        }
+        let since = Date().addingTimeInterval(-2 * 86_400)
+        for await r in Transaction.all {
+            guard case .verified(let t) = r, t.productID == Self.dayPass, t.purchaseDate > since else { continue }
+            out.append(r.jwsRepresentation)
+        }
+        return Array(out.prefix(50))
     }
 
     /// Error message, or nil (bought or cancelled by the user).
@@ -297,6 +315,19 @@ final class StudioAccount: ObservableObject {
     func cancelOrder(_ code: String) async {
         let _: Empty? = try? await call("POST", "api/orders/\(code)/cancel", body: [:])
     }
+
+    /// Link App Store purchases to this account (the server checks Apple's signature). A DTDStudio
+    /// plan then also unlocks DTDLive Pro on the same account.
+    private struct SyncResp: Decodable { var me: StudioMe; var errors: [String]? }
+    @discardableResult
+    func syncAppStore(_ jws: [String]) async -> [String] {
+        guard signedIn, !jws.isEmpty else { return [] }
+        do {
+            let r: SyncResp = try await call("POST", "api/appstore/sync", body: ["transactions": jws, "app": Self.app])
+            setMe(r.me)
+            return r.errors ?? []
+        } catch { return [error.localizedDescription] }
+    }
 }
 
 // MARK: - Combined state
@@ -306,6 +337,17 @@ final class StudioPlan: ObservableObject {
     static let shared = StudioPlan()
     let store = StudioStore()
     let account = StudioAccount()
+
+    init() {
+        store.onChange = { [weak self] in await self?.syncStore() }
+    }
+
+    /// Sends the App Store plan to the DTD account (if signed in), so it shows in DTDLive too.
+    func syncStore() async {
+        guard account.signedIn else { return }
+        let jws = await store.entitlementJWS()
+        if !jws.isEmpty { await account.syncAppStore(jws) }
+    }
 
     /// The later of the App Store plan and the account plan.
     var until: Date? {

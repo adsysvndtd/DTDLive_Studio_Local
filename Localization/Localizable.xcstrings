@@ -9646,6 +9646,16 @@
           }
         }
       }
+    },
+    "Gói DTDStudio dùng được cả DTDLive Pro: đăng nhập cùng tài khoản DTD trên DTDLive.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A DTDStudio plan also unlocks DTDLive Pro: sign in with the same DTD account in DTDLive."
+          }
+        }
+      }
     }
   },
   "version": "1.0"

@@ -248,6 +248,7 @@
 "Góc" = "Corners";
 "Góc ngắm" = "Viewfinder";
 "Gói DTDStudio" = "DTDStudio plan";
+"Gói DTDStudio dùng được cả DTDLive Pro: đăng nhập cùng tài khoản DTD trên DTDLive." = "A DTDStudio plan also unlocks DTDLive Pro: sign in with the same DTD account in DTDLive.";
 "Gói bị bỏ (đến trễ)" = "Packets dropped (too late)";
 "Gói tháng / năm tự gia hạn cho tới khi huỷ trong Cài đặt › Apple ID › Đăng ký, ít nhất 24 giờ trước khi hết kỳ; tiền trừ vào tài khoản Apple ID khi xác nhận mua. Gói ngày dùng 24 giờ, không tự gia hạn." = "Monthly / yearly plans renew automatically until cancelled in Settings › Apple ID › Subscriptions at least 24 hours before the period ends; payment is charged to your Apple ID when you confirm. The day pass lasts 24 hours and does not renew.";
 "Gói đến quá trễ bị bỏ → hình giật. Tăng độ trễ Wi‑Fi (Cài đặt › Kết nối), dùng Wi‑Fi 5 GHz, đặt máy gần router hoặc giảm bitrate trên DTDLive." = "Packets arrive too late and are dropped → stutter. Raise the Wi‑Fi latency (Settings › Connections), use 5 GHz Wi‑Fi, move closer to the router or lower the bitrate in DTDLive.";
