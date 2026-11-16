@@ -108,6 +108,7 @@
 "Chỉ chấp nhận nếu ID này trùng với ID trên màn hình thiết bị" = "Chỉ chấp nhận nếu ID này trùng với ID trên màn hình thiết bị";
 "Chỉ mình tôi" = "Chỉ mình tôi";
 "Chỉnh khung" = "Chỉnh khung";
+"Chọn một mẫu trong danh sách để xem trước" = "Chọn một mẫu trong danh sách để xem trước";
 "Chọn một nguồn ở hàng PREVIEW để chỉnh" = "Chọn một nguồn ở hàng PREVIEW để chỉnh";
 "Chọn tay" = "Chọn tay";
 "Chọn từ thư viện Logo" = "Chọn từ thư viện Logo";
@@ -397,6 +398,8 @@
 "Nhập nhạc" = "Nhập nhạc";
 "Nhập video" = "Nhập video";
 "Nhập ảnh" = "Nhập ảnh";
+"Nạp" = "Nạp";
+"Nạp (tắt mẫu đang phát)" = "Nạp (tắt mẫu đang phát)";
 "Nạp .cube" = "Nạp .cube";
 "Nạp show sẽ dừng phát và thay toàn bộ nguồn, đầu ra, title." = "Nạp show sẽ dừng phát và thay toàn bộ nguồn, đầu ra, title.";
 "Nền" = "Nền";
@@ -449,6 +452,7 @@
 "RTT" = "RTT";
 "Ra mắt" = "Ra mắt";
 "Replay" = "Replay";
+"Replay đang phát trên PGM — bấm DỪNG trước khi đưa đoạn khác lên Preview" = "Replay đang phát trên PGM — bấm DỪNG trước khi đưa đoạn khác lên Preview";
 "Reset" = "Reset";
 "Resize" = "Resize";
 "Rèm" = "Rèm";
@@ -600,6 +604,7 @@
 "Xem mã đang sửa" = "Xem mã đang sửa";
 "Xem nhật ký" = "Xem nhật ký";
 "Xem trước" = "Xem trước";
+"Xem trước · chưa nạp" = "Xem trước · chưa nạp";
 "Xoay" = "Xoay";
 "Xoay 180°" = "Xoay 180°";
 "Xoay 180° nguồn PVW" = "Xoay 180° nguồn PVW";
@@ -689,6 +694,7 @@
 "Đã mới nhất (%lf)" = "Đã mới nhất (%lf)";
 "Đã mới nhất (%lld)" = "Đã mới nhất (%lld)";
 "Đã nhập: %@" = "Đã nhập: %@";
+"Đã nạp" = "Đã nạp";
 "Đã nạp logo — bấm Logo ở cột phải để lên PGM" = "Đã nạp logo — bấm Logo ở cột phải để lên PGM";
 "Đã nạp — bấm SuperFG On ở cột phải" = "Đã nạp — bấm SuperFG On ở cột phải";
 "Đã tạo và đang phát tới" = "Đã tạo và đang phát tới";

@@ -7726,6 +7726,66 @@
           }
         }
       }
+    },
+    "Nạp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Load"
+          }
+        }
+      }
+    },
+    "Nạp (tắt mẫu đang phát)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Load (takes the current one off air)"
+          }
+        }
+      }
+    },
+    "Đã nạp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loaded"
+          }
+        }
+      }
+    },
+    "Chọn một mẫu trong danh sách để xem trước": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pick a template in the list to preview it"
+          }
+        }
+      }
+    },
+    "Xem trước · chưa nạp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preview · not loaded"
+          }
+        }
+      }
+    },
+    "Replay đang phát trên PGM — bấm DỪNG trước khi đưa đoạn khác lên Preview": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A replay is on PGM — press STOP before cueing another one to Preview"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

@@ -22,7 +22,7 @@ button.go{background:#d46a00}input,select{font:inherit;padding:8px;border-radius
 <div class="row" style="margin-top:8px">
  <button onclick="post('/api/cut')">CUT</button><button class="go" onclick="post('/api/auto')">AUTO</button>
  <button onclick="post('/api/ftb?on='+(ftb?0:1))" id="ftb">FTB</button>
- <button onclick="post('/api/replay')">REPLAY</button>
+ <button onclick="post('/api/replay')">REPLAY (PVW → PLAY)</button>
 </div>
 <h2>Tỉ số</h2>
 <div class="row">

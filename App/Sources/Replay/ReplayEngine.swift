@@ -64,9 +64,16 @@ final class ReplaySource: VideoSource {
     func start() async { status = .live }
     func stop() async { cancel(); status = .idle }
 
-    func play() {
+    /// Last `length` seconds of the buffer (kept, so the same moment can be played again on air).
+    func play() { play(clip: buffer.clip(lastSeconds: length)) }
+
+    /// Plays the moment shown by the last play() again (e.g. cued on PVW, now taken to PGM).
+    func playAgain() { lastClip.isEmpty ? play() : play(clip: lastClip) }
+    private var lastClip: [CMSampleBuffer] = []
+
+    private func play(clip: [CMSampleBuffer]) {
         cancel()
-        let clip = buffer.clip(lastSeconds: length)
+        lastClip = clip
         guard let fd = clip.first?.formatDescription else { return }
         buffer.setFrozen(true)
         isPlaying = true

@@ -17,6 +17,9 @@ struct HTMLGraphicsPanel: View {
     @State private var renaming: HTMLTemplate?
     @State private var newName = ""
     @State private var message: String?
+    /// Template shown in the preview (clicked in the list); defaults to the armed one.
+    @State private var selectedID: String?
+    @State private var replayToken = 0
 
     var body: some View {
         SectionCard("Đồ hoạ HTML5", systemImage: "chevron.left.forwardslash.chevron.right",
@@ -37,34 +40,19 @@ struct HTMLGraphicsPanel: View {
                     smallButton("Next", "forward.frame") { html.next() }
                 }
             }
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 6) {
-                    ForEach(html.templates) { t in
-                        let loaded = html.loadedID == t.id
-                        Button { html.load(t.id) } label: {
-                            HStack(spacing: 4) {
-                                if t.isUser { Image(systemName: "person.crop.square").font(.system(size: 10)) }
-                                Text(t.name).lineLimit(1)
-                            }
-                            .font(.system(size: compact ? 12 : 13, weight: .semibold))
-                            .padding(.horizontal, 12).frame(height: compact ? 30 : 36)
-                            .foregroundStyle(loaded ? .black : .white)
-                            .background(loaded ? (html.onAir ? DS.pgm : DS.accent) : DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
-                        }
-                        .buttonStyle(.plain)
-                        .contextMenu {
-                            Button { edit(t) } label: { Label(t.isUser ? "Sửa mã HTML" : "Nhân bản để sửa", systemImage: "pencil") }
-                            Button { dup(t) } label: { Label("Nhân bản", systemImage: "plus.square.on.square") }
-                            if t.isUser {
-                                Button { newName = t.name; renaming = t } label: { Label("Đổi tên", systemImage: "character.cursor.ibeam") }
-                                Button(role: .destructive) { html.delete(t) } label: { Label("Xoá", systemImage: "trash") }
-                            }
-                        }
-                    }
+            // List on the left, preview on the right (stacked when the column is narrow).
+            ViewThatFits(in: .horizontal) {
+                HStack(alignment: .top, spacing: 10) {
+                    templateList.frame(width: compact ? 200 : 240).frame(height: 300)
+                    previewPane.frame(minWidth: 280, maxWidth: .infinity)
+                }
+                VStack(spacing: 8) {
+                    templateList.frame(height: 210)
+                    previewPane
                 }
             }
-            if let t = html.templates.first(where: { $0.id == html.loadedID }) {
-                HTMLFieldRows(html: html, template: t, compact: compact, background: background, aspect: aspect)
+            if let t = shown {
+                HTMLFieldRows(html: html, template: t, compact: compact, background: background, aspect: aspect, showPreview: false)
             }
           }
         }
@@ -82,6 +70,103 @@ struct HTMLGraphicsPanel: View {
             TextField("Tên", text: $newName)
             Button("Huỷ", role: .cancel) { renaming = nil }
             Button("Lưu") { if let t = renaming { html.rename(t, newName) }; renaming = nil }
+        }
+    }
+
+    // MARK: List + preview
+
+    private var shown: HTMLTemplate? {
+        let id = selectedID ?? html.loadedID
+        return html.templates.first { $0.id == id } ?? html.templates.first { $0.id == html.loadedID }
+    }
+
+    /// Click = preview. Off air it also arms the template (what you see is what goes on air);
+    /// on air it only previews, so the graphic on air is never pulled by accident.
+    private func select(_ t: HTMLTemplate) {
+        selectedID = t.id
+        if !html.onAir, html.loadedID != t.id { html.load(t.id) }
+    }
+
+    private var templateList: some View {
+        ScrollView {
+            LazyVStack(spacing: 4) {
+                ForEach(html.templates) { t in row(t) }
+            }
+        }
+        .padding(4)
+        .background(Color.black.opacity(0.25), in: RoundedRectangle(cornerRadius: DS.radius))
+    }
+
+    private func row(_ t: HTMLTemplate) -> some View {
+        let loaded = html.loadedID == t.id
+        let sel = shown?.id == t.id
+        let colour = t.fields.first { $0.isColor }.map { html.value(t, $0) } ?? ""
+        let subtitle = t.fields.first { !$0.isColor && !$0.isImage && !html.value(t, $0).isEmpty }.map { html.value(t, $0) } ?? ""
+        return Button { select(t) } label: {
+            HStack(spacing: 8) {
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(colour.isEmpty ? DS.text3 : Color(UIColor(hex: colour)))
+                    .frame(width: 4, height: 30)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(t.name).font(.system(size: compact ? 12 : 13, weight: .semibold)).lineLimit(1)
+                    if !subtitle.isEmpty {
+                        Text(subtitle).font(.system(size: 10)).foregroundStyle(DS.text3).lineLimit(1)
+                    }
+                }
+                Spacer(minLength: 2)
+                if t.isUser { Image(systemName: "person.crop.square").font(.system(size: 10)).foregroundStyle(DS.text3) }
+                if loaded {
+                    Text(html.onAir ? "PGM" : "Đã nạp").font(.system(size: 9, weight: .bold))
+                        .padding(.horizontal, 5).padding(.vertical, 2).foregroundStyle(.black)
+                        .background(html.onAir ? DS.pgm : DS.accent, in: RoundedRectangle(cornerRadius: 3))
+                }
+            }
+            .padding(.horizontal, 8).frame(height: 42)
+            .foregroundStyle(.white)
+            .background(sel ? DS.accent.opacity(0.28) : DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
+            .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(sel ? DS.accent : .clear, lineWidth: 1.5))
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .contextMenu {
+            Button { edit(t) } label: { Label(t.isUser ? "Sửa mã HTML" : "Nhân bản để sửa", systemImage: "pencil") }
+            Button { dup(t) } label: { Label("Nhân bản", systemImage: "plus.square.on.square") }
+            if t.isUser {
+                Button { newName = t.name; renaming = t } label: { Label("Đổi tên", systemImage: "character.cursor.ibeam") }
+                Button(role: .destructive) { html.delete(t) } label: { Label("Xoá", systemImage: "trash") }
+            }
+        }
+    }
+
+    @ViewBuilder private var previewPane: some View {
+        if let t = shown {
+            let armed = t.id == html.loadedID
+            VStack(alignment: .leading, spacing: 6) {
+                if armed {
+                    HTMLLivePreview(html: html, background: background, aspect: aspect, maxWidth: .infinity)
+                } else {
+                    HTMLTemplatePreview(template: t, values: html.values(for: t), design: html.design(t),
+                                        background: background, aspect: aspect, playToken: replayToken)
+                }
+                HStack(spacing: 6) {
+                    Text(t.name).font(DS.fBodyBold).lineLimit(1)
+                    Spacer(minLength: 4)
+                    smallButton("Chạy lại", "arrow.counterclockwise") {
+                        if armed { html.replayPreview() } else { replayToken += 1 }
+                    }
+                    if !armed {
+                        smallButton(html.onAir ? "Nạp (tắt mẫu đang phát)" : "Nạp", "tray.and.arrow.down") { html.load(t.id) }
+                    }
+                }
+            }
+        } else {
+            ZStack {
+                Color.black.opacity(0.3)
+                Text("Chọn một mẫu trong danh sách để xem trước").font(DS.fBody).foregroundStyle(DS.text3)
+                    .multilineTextAlignment(.center).padding()
+            }
+            .aspectRatio(aspect, contentMode: .fit)
+            .clipShape(RoundedRectangle(cornerRadius: DS.radius))
         }
     }
 
@@ -113,11 +198,13 @@ struct HTMLFieldRows: View {
     var compact = false
     var background: FrameStore? = nil
     var aspect: CGFloat = 16 / 9
+    /// The panel already shows a large preview next to the list.
+    var showPreview = true
     static let presets = ["#5172BE", "#3E5068", "#D98A2B", "#C84B33", "#2E9E6A", "#7A4FC2", "#111418"]
 
     var body: some View {
         let t = template
-        HTMLResizeRows(html: html, template: t, compact: compact, background: background, aspect: aspect)
+        HTMLResizeRows(html: html, template: t, compact: compact, background: background, aspect: aspect, showPreview: showPreview)
         ForEach(t.fields) { f in
             if f.isColor {
                 HStack(spacing: 6) {
@@ -170,6 +257,7 @@ struct HTMLResizeRows: View {
     var compact = false
     var background: FrameStore? = nil
     var aspect: CGFloat = 16 / 9
+    var showPreview = true
     @State private var open = false
     @State private var tab = 0
     @State private var layerKey: String?
@@ -193,7 +281,7 @@ struct HTMLResizeRows: View {
                 }
             }
             if open {
-                HTMLLivePreview(html: html, background: background, aspect: aspect)
+                if showPreview { HTMLLivePreview(html: html, background: background, aspect: aspect) }
                 Picker("", selection: $tab) {
                     Text("Bố cục").tag(0)
                     Text("Lớp").tag(1)
@@ -414,6 +502,7 @@ struct HTMLLivePreview: View {
     @ObservedObject var html: HTMLGraphics
     var background: FrameStore?
     var aspect: CGFloat
+    var maxWidth: CGFloat = 520
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -430,7 +519,7 @@ struct HTMLLivePreview: View {
             }
         }
         .aspectRatio(aspect, contentMode: .fit)
-        .frame(maxWidth: 520)
+        .frame(maxWidth: maxWidth)
         .clipShape(RoundedRectangle(cornerRadius: DS.radius))
         .overlay(alignment: .topLeading) {
             Text(html.onAir ? "PGM" : "Xem trước").font(.system(size: 10, weight: .bold))
@@ -439,6 +528,37 @@ struct HTMLLivePreview: View {
         }
         .onAppear { html.beginPreview() }
         .onDisappear { html.endPreview() }
+    }
+}
+
+/// Preview of a template that is not armed (e.g. choosing the next graphic while another is on air):
+/// its own web page, the 1920×1080 page fitted into a frame with the program's aspect, over PVW.
+struct HTMLTemplatePreview: View {
+    let template: HTMLTemplate
+    let values: [String: String]
+    let design: HTMLDesign
+    var background: FrameStore?
+    var aspect: CGFloat
+    var playToken: Int
+
+    var body: some View {
+        ZStack {
+            if let background { MonitorView(store: background, maxFPS: 10) } else { Color(white: 0.3) }
+            HTMLPreviewView(template: template, source: "", values: values, design: design, playToken: playToken)
+                .aspectRatio(16 / 9, contentMode: .fit)
+            GeometryReader { g in
+                Rectangle().stroke(Color.white.opacity(0.25), style: StrokeStyle(lineWidth: 1, dash: [4, 4]))
+                    .frame(width: g.size.width * 0.9, height: g.size.height * 0.9)
+                    .position(x: g.size.width / 2, y: g.size.height / 2)
+            }
+        }
+        .aspectRatio(aspect, contentMode: .fit)
+        .clipShape(RoundedRectangle(cornerRadius: DS.radius))
+        .overlay(alignment: .topLeading) {
+            Text("Xem trước · chưa nạp").font(.system(size: 10, weight: .bold))
+                .padding(.horizontal, 6).padding(.vertical, 2)
+                .background(Color.black.opacity(0.6), in: RoundedRectangle(cornerRadius: 3)).padding(4)
+        }
     }
 }
 

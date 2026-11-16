@@ -1280,16 +1280,29 @@ final class StudioEngine: ObservableObject {
 
     // MARK: Replay
 
+    /// Instant replay (REPLAY key on the remote page / OSC / API). First press: the last seconds go to PVW
+    /// only (PGM untouched). Next press, while it is still on PVW: the same moment plays on PGM.
     func startReplay(speed: Double = 0.5, length: Double = 8) {
-        if !sources.contains(where: { $0.id == replay.id }) {
-            sources.append(replay)
-            switcher.register(replay.id, store: replay.frames)
-            Task { await replay.start() }
+        if previewID == replay.id, !replayOnAir, programID != replay.id {
+            replay.playAgain()
+            beginReplayOnAir(replay.id)
+            return
         }
+        guard replayCanCue() else { return }
+        ensureReplaySource()
         replay.speed = speed; replay.length = length
         replay.play()
-        switcher.setPreview(replay.id)
-        autoTransition()
+        switcher.setPreview(replay.id); syncState()
+    }
+
+    /// There is one REPLAY input: while it is on PGM, cueing another moment would change PGM itself.
+    private func replayCanCue(file url: URL? = nil) -> Bool {
+        let fileOnAir = url.flatMap { u in sources.first { ($0 as? FileSource)?.url == u } }.map { $0.id == programID } ?? false
+        if replayOnAir || programID == replay.id || fileOnAir || (replayFileID != nil && programID == replayFileID) {
+            message = L("Replay đang phát trên PGM — bấm DỪNG trước khi đưa đoạn khác lên Preview")
+            return false
+        }
+        return true
     }
 
     /// True while a replay is on PGM (drives the PLAY REPLAY / STOP button).
@@ -1331,6 +1344,8 @@ final class StudioEngine: ObservableObject {
     /// Plays the editor's current MARK IN → MARK OUT range and takes it to air.
     func playEditorRange(toAir: Bool = true) {
         let ed = replayEditor
+        if !toAir, case .file(let u) = ed.material { guard replayCanCue(file: u) else { return } }
+        else if !toAir { guard replayCanCue() else { return } }
         switch ed.material {
         case .buffer:
             let r = ed.bufferRange()
@@ -1353,6 +1368,8 @@ final class StudioEngine: ObservableObject {
 
     func playClip(_ c: ReplayClip, toAir: Bool = true) {
         let ed = replayEditor
+        if !toAir, case .file(let u) = c.material { guard replayCanCue(file: u) else { return } }
+        else if !toAir { guard replayCanCue() else { return } }
         switch c.material {
         case .buffer:
             ensureReplaySource()

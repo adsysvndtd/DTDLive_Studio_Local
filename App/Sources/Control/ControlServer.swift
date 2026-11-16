@@ -26,7 +26,7 @@ protocol ControlTarget: AnyObject, Sendable {
 ///   POST /api/cut | /api/auto | /api/ftb?on=1
 ///   POST /api/take?input=N | /api/preview?input=N         (1-based, multiview order)
 ///   POST /api/title  (JSON TitleItem)  | POST /api/title/show?id=UUID&on=1
-///   POST /api/score?a=N&b=N | /api/stream/start | /api/stream/stop | /api/record | /api/replay
+///   POST /api/score?a=N&b=N | /api/stream/start | /api/stream/stop | /api/record | /api/replay (1st: cue on PVW, 2nd: play to PGM)
 ///   POST /api/ptz?input=N&pan=-1..1&tilt=-1..1&zoom=-1..1 | /api/ptz/preset?input=N&preset=K[&store=1]
 ///   POST /api/pair/request  {deviceID,name,model,app,protocols,pullURL,nonce,token} -> {requestId, confirmCode}
 ///   GET  /api/pair/status?id=<requestId>  -> pending | rejected | expired | {status:"accepted", pushURL, token, ...}

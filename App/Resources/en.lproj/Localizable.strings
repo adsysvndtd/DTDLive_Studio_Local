@@ -108,6 +108,7 @@
 "Chỉ chấp nhận nếu ID này trùng với ID trên màn hình thiết bị" = "Accept only if this ID matches the one on the device";
 "Chỉ mình tôi" = "Only me";
 "Chỉnh khung" = "Edit windows";
+"Chọn một mẫu trong danh sách để xem trước" = "Pick a template in the list to preview it";
 "Chọn một nguồn ở hàng PREVIEW để chỉnh" = "Pick a source on PREVIEW to adjust";
 "Chọn tay" = "Manual";
 "Chọn từ thư viện Logo" = "Choose from Logo library";
@@ -397,6 +398,8 @@
 "Nhập nhạc" = "Import music";
 "Nhập video" = "Import video";
 "Nhập ảnh" = "Import pictures";
+"Nạp" = "Load";
+"Nạp (tắt mẫu đang phát)" = "Load (takes the current one off air)";
 "Nạp .cube" = "Load .cube";
 "Nạp show sẽ dừng phát và thay toàn bộ nguồn, đầu ra, title." = "Loading a show stops streaming and replaces all sources, outputs and titles.";
 "Nền" = "Background";
@@ -449,6 +452,7 @@
 "RTT" = "RTT";
 "Ra mắt" = "Premiere";
 "Replay" = "Replay";
+"Replay đang phát trên PGM — bấm DỪNG trước khi đưa đoạn khác lên Preview" = "A replay is on PGM — press STOP before cueing another one to Preview";
 "Reset" = "Reset";
 "Resize" = "Resize";
 "Rèm" = "Blinds";
@@ -600,6 +604,7 @@
 "Xem mã đang sửa" = "Preview edited code";
 "Xem nhật ký" = "Show log";
 "Xem trước" = "Preview";
+"Xem trước · chưa nạp" = "Preview · not loaded";
 "Xoay" = "Spin";
 "Xoay 180°" = "Rotate 180°";
 "Xoay 180° nguồn PVW" = "Rotate PVW source 180°";
@@ -689,6 +694,7 @@
 "Đã mới nhất (%lf)" = "Up to date (%lf)";
 "Đã mới nhất (%lld)" = "Up to date (%lld)";
 "Đã nhập: %@" = "Imported: %@";
+"Đã nạp" = "Loaded";
 "Đã nạp logo — bấm Logo ở cột phải để lên PGM" = "Logo loaded — press Logo in the right column to put it on PGM";
 "Đã nạp — bấm SuperFG On ở cột phải" = "Loaded — press SuperFG On in the right column";
 "Đã tạo và đang phát tới" = "Created and streaming to";
