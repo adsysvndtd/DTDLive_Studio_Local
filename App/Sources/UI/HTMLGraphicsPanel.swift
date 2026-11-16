@@ -143,7 +143,7 @@ struct HTMLGraphicsPanel: View {
             let armed = t.id == html.loadedID
             VStack(alignment: .leading, spacing: 6) {
                 if armed {
-                    HTMLLivePreview(html: html, background: background, aspect: aspect, maxWidth: .infinity)
+                    HTMLLivePreview(html: html, background: background, aspect: aspect, maxWidth: .infinity, crop: true)
                 } else {
                     HTMLTemplatePreview(template: t, values: html.values(for: t), design: html.design(t),
                                         background: background, aspect: aspect, playToken: replayToken)
@@ -503,20 +503,18 @@ struct HTMLLivePreview: View {
     var background: FrameStore?
     var aspect: CGFloat
     var maxWidth: CGFloat = 520
+    /// Panel preview: zoom onto the graphic itself (the lower third), not the whole frame.
+    var crop = false
 
     var body: some View {
-        ZStack(alignment: .bottom) {
-            // PVW underneath at a low rate: it is only a backdrop
-            if let background { MonitorView(store: background, maxFPS: 5) } else { Color(white: 0.3) }
-            HTMLFeedPicture(feed: html.feed)
-            // title-safe guide (90 %)
-            GeometryReader { g in
-                Rectangle().stroke(Color.white.opacity(0.25), style: StrokeStyle(lineWidth: 1, dash: [4, 4]))
-                    .frame(width: g.size.width * 0.9, height: g.size.height * 0.9)
-                    .position(x: g.size.width / 2, y: g.size.height / 2)
+        HTMLCroppedFrame(feed: html.feed.crop, enabled: crop, aspect: aspect) {
+            ZStack(alignment: .bottom) {
+                // PVW underneath at a low rate: it is only a backdrop
+                if let background { MonitorView(store: background, maxFPS: 5) } else { Color(white: 0.3) }
+                HTMLFeedPicture(feed: html.feed)
+                if !crop { HTMLSafeGuide() }
             }
         }
-        .aspectRatio(aspect, contentMode: .fit)
         .frame(maxWidth: maxWidth)
         .clipShape(RoundedRectangle(cornerRadius: DS.radius))
         .overlay(alignment: .topLeading) {
@@ -526,6 +524,64 @@ struct HTMLLivePreview: View {
         }
         .onAppear { html.beginPreview() }
         .onDisappear { html.endPreview() }
+    }
+}
+
+/// Title-safe guide (90 %).
+private struct HTMLSafeGuide: View {
+    var body: some View {
+        GeometryReader { g in
+            Rectangle().stroke(Color.white.opacity(0.25), style: StrokeStyle(lineWidth: 1, dash: [4, 4]))
+                .frame(width: g.size.width * 0.9, height: g.size.height * 0.9)
+                .position(x: g.size.width / 2, y: g.size.height / 2)
+        }
+    }
+}
+
+/// Observes only the graphic's box (not the frames) and frames the content on it.
+private struct HTMLCroppedFrame<Content: View>: View {
+    @ObservedObject var feed: HTMLCropFeed
+    var enabled: Bool
+    var aspect: CGFloat
+    @ViewBuilder var content: () -> Content
+    var body: some View {
+        HTMLCrop(box: enabled ? feed.box : nil, aspect: aspect, content: content)
+    }
+}
+
+/// Shows `content` (a full program frame) zoomed onto `box` (normalised, top-left origin), with a margin;
+/// the whole frame when there is no box. Wide graphics are kept at most 4:1 so the strip stays readable.
+struct HTMLCrop<Content: View>: View {
+    var box: CGRect?
+    var aspect: CGFloat
+    @ViewBuilder var content: () -> Content
+
+    static func fitted(_ box: CGRect?, aspect: CGFloat) -> CGRect {
+        let full = CGRect(x: 0, y: 0, width: 1, height: 1)
+        guard var b = box, b.width > 0.01, b.height > 0.01 else { return full }
+        b = b.insetBy(dx: -0.03, dy: -0.04).intersection(full)
+        // pixel aspect of the box = (w · aspect) / h
+        let maxRatio: CGFloat = 4
+        if b.width * aspect / b.height > maxRatio {
+            let h = min(1, b.width * aspect / maxRatio)
+            b = CGRect(x: b.minX, y: min(max(0, b.midY - h / 2), 1 - h), width: b.width, height: h)
+        }
+        // a box taller than the frame shape, or covering most of it: just show the whole frame
+        if b.width * aspect / b.height < 1.3 || b.width * b.height > 0.6 { return full }
+        return b
+    }
+
+    var body: some View {
+        let b = Self.fitted(box, aspect: aspect)
+        GeometryReader { g in
+            let W = g.size.width / b.width, Hf = W / aspect
+            content()
+                .frame(width: W, height: Hf)
+                .offset(x: -b.minX * W, y: -b.minY * Hf)
+        }
+        .aspectRatio(b.width * aspect / b.height, contentMode: .fit)
+        .clipped()
+        .animation(.easeInOut(duration: 0.3), value: b)
     }
 }
 
@@ -554,18 +610,27 @@ struct HTMLTemplatePreview: View {
     var aspect: CGFloat
     var playToken: Int
 
+    @State private var box: CGRect?
+
+    /// The page's box (in its 16:9 viewport) placed in the program-aspect frame the page is fitted into.
+    private var frameBox: CGRect? {
+        guard let b = box else { return nil }
+        let page: CGFloat = 16 / 9
+        let w = aspect > page ? page / aspect : 1, h = aspect > page ? 1 : aspect / page
+        let x = (1 - w) / 2, y = (1 - h) / 2
+        return CGRect(x: x + b.minX * w, y: y + b.minY * h, width: b.width * w, height: b.height * h)
+    }
+
     var body: some View {
-        ZStack {
-            if let background { MonitorView(store: background, maxFPS: 5) } else { Color(white: 0.3) }
-            HTMLPreviewView(template: template, source: "", values: values, design: design, playToken: playToken)
-                .aspectRatio(16 / 9, contentMode: .fit)
-            GeometryReader { g in
-                Rectangle().stroke(Color.white.opacity(0.25), style: StrokeStyle(lineWidth: 1, dash: [4, 4]))
-                    .frame(width: g.size.width * 0.9, height: g.size.height * 0.9)
-                    .position(x: g.size.width / 2, y: g.size.height / 2)
+        HTMLCrop(box: frameBox, aspect: aspect) {
+            ZStack {
+                if let background { MonitorView(store: background, maxFPS: 5) } else { Color(white: 0.3) }
+                HTMLPreviewView(template: template, source: "", values: values, design: design, playToken: playToken,
+                                onBox: { b in if b != box { box = b } })
+                    .aspectRatio(16 / 9, contentMode: .fit)
             }
         }
-        .aspectRatio(aspect, contentMode: .fit)
+        .onChange(of: template.id) { _, _ in box = nil }
         .clipShape(RoundedRectangle(cornerRadius: DS.radius))
         .overlay(alignment: .topLeading) {
             Text("Xem trước · chưa nạp").font(.system(size: 10, weight: .bold))
@@ -662,8 +727,32 @@ struct HTMLPreviewView: UIViewRepresentable {
     let values: [String: String]
     var design = HTMLDesign()
     let playToken: Int
+    /// Box of the painted graphic in the page (normalised), measured after the in-animation.
+    var onBox: ((CGRect?) -> Void)? = nil
 
     final class Box: UIView, WKNavigationDelegate {
+        var onBox: ((CGRect?) -> Void)?
+        private var measured: CGRect?
+        private var measureToken = 0
+        /// Measures twice after the in-animation (it may still be settling at the first look).
+        func measureSoon(reset: Bool) {
+            guard onBox != nil else { return }
+            if reset { measured = nil }
+            measureToken += 1
+            let token = measureToken
+            for delay in [1.4, 2.8] {
+                DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+                    guard let self, self.measureToken == token else { return }
+                    self.web.evaluateJavaScript("window.__dtdBox?__dtdBox():null") { r, _ in
+                        guard let a = r as? [Double], a.count == 4, a[2] > a[0], a[3] > a[1] else { return }
+                        let b = CGRect(x: a[0], y: a[1], width: a[2] - a[0], height: a[3] - a[1])
+                        let u = self.measured.map { $0.union(b) } ?? b
+                        self.measured = u
+                        self.onBox?(u)
+                    }
+                }
+            }
+        }
         let web = WKWebView(frame: .zero, configuration: HTMLGraphicsStore.webConfiguration())
         var template: HTMLTemplate?
         var values: [String: String] = [:]
@@ -688,12 +777,13 @@ struct HTMLPreviewView: UIViewRepresentable {
             guard let t = template, let js = HTMLGraphicsStore.pushJS(t, values: values, design: design) else { return }
             web.evaluateJavaScript(js + (play ? ";window.dtdPlay?dtdPlay():(typeof play==='function'&&play())" : ""))
         }
-        func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) { push(play: true) }
+        func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) { push(play: true); measureSoon(reset: true) }
     }
 
     func makeUIView(context: Context) -> Box { Box() }
 
     func updateUIView(_ v: Box, context: Context) {
+        v.onBox = onBox
         v.template = template
         v.values = values
         v.design = design
@@ -712,6 +802,7 @@ struct HTMLPreviewView: UIViewRepresentable {
         } else if playToken != v.playToken {
             v.playToken = playToken
             v.push(play: true)
+            v.measureSoon(reset: false)
         } else {
             v.push(play: false)
         }

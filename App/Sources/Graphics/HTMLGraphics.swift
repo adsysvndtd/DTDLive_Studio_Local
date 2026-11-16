@@ -549,6 +549,26 @@ enum HTMLGraphicsStore {
     (function(){
       var last=0, raf=window.requestAnimationFrame.bind(window);
       window.requestAnimationFrame=function(cb){ last=performance.now(); return raf(cb); };
+      // union of the painted elements (text, pictures, filled / bordered boxes) as [x0,y0,x1,y1] of the viewport
+      window.__dtdBox=function(){
+        var W=innerWidth||1920,H=innerHeight||1080,x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+        var els=document.body?document.body.getElementsByTagName('*'):[];
+        for(var i=0;i<els.length;i++){
+          var e=els[i],r=e.getBoundingClientRect();
+          if(r.width<2||r.height<2||r.right<0||r.bottom<0||r.left>W||r.top>H) continue;
+          var cs=getComputedStyle(e);
+          if(cs.visibility==='hidden'||cs.display==='none'||parseFloat(cs.opacity)===0) continue;
+          var t=e.tagName.toUpperCase(), paint=(t==='IMG'||t==='SVG'||t==='VIDEO'||t==='CANVAS');
+          if(!paint){ var bg=cs.backgroundColor||'';
+            paint=(bg!==''&&bg!=='transparent'&&!/,\\s*0\\)$/.test(bg))||cs.backgroundImage!=='none'
+              ||parseFloat(cs.borderTopWidth)>0||parseFloat(cs.borderBottomWidth)>0; }
+          if(!paint){ for(var n=e.firstChild;n;n=n.nextSibling){ if(n.nodeType===3&&n.nodeValue.trim()){paint=true;break;} } }
+          if(!paint) continue;
+          x0=Math.min(x0,r.left); y0=Math.min(y0,r.top); x1=Math.max(x1,r.right); y1=Math.max(y1,r.bottom);
+        }
+        if(x1<=x0||y1<=y0) return null;
+        return [Math.max(0,x0)/W,Math.max(0,y0)/H,Math.min(W,x1)/W,Math.min(H,y1)/H];
+      };
       window.__dtdBusy=function(){
         try{
           if(performance.now()-last<400) return true;
@@ -902,7 +922,7 @@ final class HTMLGraphics: NSObject, ObservableObject, WKNavigationDelegate {
         // Read access to all of Documents so pages can show images from the Logo library.
         w.loadFileURL(HTMLGraphicsStore.entryURL(t), allowingReadAccessTo: HTMLGraphicsStore.documents)
         loadedID = id
-        feed.image = nil   // no picture of the previous template while the new one loads
+        feed.reset()   // no picture (or crop) of the previous template while the new one loads
         wake()
     }
 
@@ -1024,6 +1044,7 @@ final class HTMLGraphics: NSObject, ObservableObject, WKNavigationDelegate {
                 if self.previewers > 0, now - self.lastPreviewPublish > 0.08 {
                     self.lastPreviewPublish = now
                     self.feed.image = img
+                    self.feed.noteFrame(cg, now: now)
                 }
             }
         }
@@ -1052,7 +1073,7 @@ final class HTMLGraphics: NSObject, ObservableObject, WKNavigationDelegate {
     func endPreview() {
         previewers = max(0, previewers - 1)
         guard previewers == 0 else { return }
-        feed.image = nil
+        feed.reset()
         if previewPlaying, !onAir { web?.evaluateJavaScript("window.dtdStop?dtdStop():stop()") }
         previewPlaying = false
         if !onAir, stopDeadline == nil { link?.invalidate(); link = nil }
@@ -1070,4 +1091,50 @@ final class HTMLGraphics: NSObject, ObservableObject, WKNavigationDelegate {
 @MainActor
 final class HTMLPreviewFeed: ObservableObject {
     @Published var image: UIImage?
+    /// Where the graphic sits in the frame (normalised, top-left origin), for the cropped panel preview.
+    let crop = HTMLCropFeed()
+    private var lastBoxAt: CFTimeInterval = 0
+
+    /// Grows the graphic's box from a new frame (twice a second; sticky, so in/out animations don't make it jump).
+    func noteFrame(_ cg: CGImage, now: CFTimeInterval) {
+        guard now - lastBoxAt > 0.5, let b = HTMLPreviewFeed.alphaBox(cg) else { return }
+        lastBoxAt = now
+        let u = crop.box.map { $0.union(b) } ?? b
+        if let o = crop.box, abs(o.minX - u.minX) < 0.01, abs(o.minY - u.minY) < 0.01,
+           abs(o.maxX - u.maxX) < 0.01, abs(o.maxY - u.maxY) < 0.01 { return }
+        crop.box = u
+    }
+
+    func reset() { image = nil; crop.box = nil; lastBoxAt = 0 }
+
+    /// Bounding box of the opaque pixels (alpha > 8 %), scanned on a 192×108 copy.
+    nonisolated static func alphaBox(_ cg: CGImage) -> CGRect? {
+        let w = 192, h = 108
+        var px = [UInt8](repeating: 0, count: w * h * 4)
+        let found: CGRect? = px.withUnsafeMutableBytes { raw -> CGRect? in
+            guard let ctx = CGContext(data: raw.baseAddress, width: w, height: h, bitsPerComponent: 8, bytesPerRow: w * 4,
+                                      space: CGColorSpaceCreateDeviceRGB(),
+                                      bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { return nil }
+            ctx.draw(cg, in: CGRect(x: 0, y: 0, width: w, height: h))
+            let p = raw.bindMemory(to: UInt8.self)
+            var x0 = w, y0 = h, x1 = -1, y1 = -1
+            for y in 0..<h {
+                let row = y * w * 4
+                for x in 0..<w where p[row + x * 4 + 3] > 20 {
+                    if x < x0 { x0 = x }; if x > x1 { x1 = x }
+                    if y < y0 { y0 = y }; if y > y1 { y1 = y }
+                }
+            }
+            guard x1 >= x0, y1 >= y0 else { return nil }
+            // memory row 0 is the top of the picture
+            return CGRect(x: CGFloat(x0) / CGFloat(w), y: CGFloat(y0) / CGFloat(h),
+                          width: CGFloat(x1 - x0 + 1) / CGFloat(w), height: CGFloat(y1 - y0 + 1) / CGFloat(h))
+        }
+        return found
+    }
+}
+
+@MainActor
+final class HTMLCropFeed: ObservableObject {
+    @Published var box: CGRect?
 }
