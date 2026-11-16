@@ -37,6 +37,11 @@ button.go{background:#d46a00}input,select{font:inherit;padding:8px;border-radius
  <input id="n1" placeholder="Dòng 1"><input id="n2" placeholder="Dòng 2"><button onclick="addTitle()">+ Thêm title</button>
 </div>
 <script>
+// access key from the link (…/?key=…): added to every request and link on this page
+const KEY=new URLSearchParams(location.search).get('key')||'';
+const _fetch=window.fetch.bind(window);
+window.fetch=(u,o)=>_fetch(u+(String(u).includes('?')?'&':'?')+'key='+encodeURIComponent(KEY),o);
+document.querySelectorAll('a[href^="/"]').forEach(a=>a.href=a.getAttribute('href')+'?key='+encodeURIComponent(KEY));
 let S={},ftb=false;
 async function post(u,b){await fetch(u,{method:'POST',body:b?JSON.stringify(b):undefined});refresh()}
 function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}

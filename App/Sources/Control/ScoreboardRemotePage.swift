@@ -31,6 +31,10 @@ button.destructive{background:#5a1a1d;border-color:#8a2a2e}button.air{background
 .foot{display:flex;gap:8px;padding:14px 12px 30px;flex-wrap:wrap}
 .free{display:flex;gap:10px;align-items:center;justify-content:center;padding:12px}.free b{font-size:28px;min-width:40px;text-align:center}
 #msg{color:#ff9500;font-size:13px;padding:0 12px}
+.dlg{position:fixed;inset:0;background:#000b;display:flex;align-items:flex-end;justify-content:center;z-index:9}
+.dlg[hidden]{display:none}.box{background:#1d1e24;width:100%;max-width:520px;border-radius:16px 16px 0 0;padding:16px;display:grid;gap:10px}
+.box b{font-size:16px}.chips{display:flex;flex-wrap:wrap;gap:8px}.chips button{background:#2d3140}
+.btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 </style></head><body>
 <header><b>Bảng tỉ số</b>
  <select id="tpl" onchange="setTpl(this.value)"></select>
@@ -44,10 +48,26 @@ button.destructive{background:#5a1a1d;border-color:#8a2a2e}button.air{background
 <div class="foot">
  <button onclick="act('/api/scoreboard/undo')" id="undo">↶ Hoàn tác</button>
  <button onclick="act('/api/scoreboard/redo')" id="redo">↷ Làm lại</button>
- <button class="destructive" onclick="if(confirm('Bắt đầu lại trận với cùng luật?'))act('/api/scoreboard/restart')">Trận mới</button>
+ <button class="destructive" onclick="restart()">Trận mới</button>
 </div>
+<!-- in-page dialog: window.prompt/confirm are blocked in Zalo / Facebook / Messenger browsers -->
+<div class="dlg" id="dlg" hidden onclick="if(event.target===this)dlgDone(null)"><div class="box">
+ <b id="dlgT"></b><div class="chips" id="dlgC"></div>
+ <input id="dlgI" placeholder="Tên / số áo" autocomplete="off" onkeydown="if(event.key==='Enter')dlgDone(dlgI.value)">
+ <div class="btns"><button onclick="dlgDone(null)">Huỷ</button><button class="primary" style="min-height:44px" id="dlgOK" onclick="dlgDone(dlgI.value)">OK</button></div>
+</div></div>
 <script>
-let S={},busy=false;
+// access key from the link (…/?key=…): added to every request and link on this page
+const KEY=new URLSearchParams(location.search).get('key')||'';
+const _fetch=window.fetch.bind(window);
+window.fetch=(u,o)=>_fetch(u+(String(u).includes('?')?'&':'?')+'key='+encodeURIComponent(KEY),o);
+document.querySelectorAll('a[href^="/"]').forEach(a=>a.href=a.getAttribute('href')+'?key='+encodeURIComponent(KEY));
+let S={},busy=false,CTL=[],dlgCB=null;
+function ask(title,choices,input){ return new Promise(res=>{ dlgCB=res; dlgT.textContent=title;
+ dlgC.innerHTML=''; (choices||[]).forEach(c=>{ const b=document.createElement('button'); b.textContent=c; b.onclick=()=>dlgDone(c); dlgC.appendChild(b); });
+ dlgI.style.display=input?'':'none'; dlgI.value=''; dlg.hidden=false; if(input)setTimeout(()=>dlgI.focus(),50); }); }
+function dlgDone(v){ dlg.hidden=true; const cb=dlgCB; dlgCB=null; if(cb)cb(v); }
+async function restart(){ if(await ask('Bắt đầu lại trận với cùng luật?',[],false)!==null)act('/api/scoreboard/restart'); }
 const E=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 async function load(){ if(busy)return; try{ S=await (await fetch('/api/scoreboard')).json(); draw(); msg.textContent=''; }catch(e){ msg.textContent='Mất kết nối tới DTDStudio…'; } }
 async function act(u){ busy=true; try{ S=await (await fetch(u,{method:'POST'})).json(); draw(); }catch(e){ msg.textContent='Không gửi được lệnh'; } busy=false; }
@@ -55,8 +75,9 @@ function q(o){return Object.entries(o).map(([k,v])=>k+'='+encodeURIComponent(v))
 function setTpl(v){act('/api/scoreboard/template?'+q({t:v}))}
 function teams(){act('/api/scoreboard/teams?'+q({home:home.value,away:away.value}))}
 function air(){act('/api/scoreboard/show?on='+(S.visible?0:1))}
-function ctl(id,prompt){ let p=''; if(prompt){ p=window.prompt(prompt,''); if(p===null)return; }
- if(navigator.vibrate)navigator.vibrate(15); act('/api/scoreboard/action?'+q({id:id,input:p})); }
+async function ctl(i){ const c=CTL[i]; if(!c||!c.enabled)return; let p='';
+ if(c.prompt){ p=await ask(c.title+' — '+c.prompt,c.choices||[],true); if(p===null)return; }
+ if(navigator.vibrate)navigator.vibrate(15); act('/api/scoreboard/action?'+q({id:c.id,input:p})); }
 function draw(){
  if(!tpl.options.length){ const g={}; (S.templates||[]).forEach(t=>(g[t.group]=g[t.group]||[]).push(t));
   tpl.innerHTML='<option value="">Tự do (+/−)</option>'+Object.entries(g).map(([k,a])=>`<optgroup label="${E(k)}">`+a.map(t=>`<option value="${t.id}">${E(t.title)}</option>`).join('')+'</optgroup>').join(''); }
@@ -73,7 +94,7 @@ function draw(){
  board.innerHTML=`<div class="sb"><div class="sbh"><span class="t">${E(d.title)}</span><span>${E(d.period)}</span>${(d.headers||[]).map(h=>`<span class="c">${E(h)}</span>`).join('')}${d.clock?`<span class="ck">${E(d.clock)}</span>`:''}</div>`+
   d.rows.map(r=>`<div class="r"><span class="bar" style="background:${E(r.color)}"></span><span class="n">${E(r.name)}${r.serving?'<span class="dot"></span>':''}${r.badges.map(b=>`<span class="bd ${b.style}">${E(b.text)}</span>`).join('')}</span>${r.columns.map(c=>`<span class="c">${E(c)}</span>`).join('')}<span class="m ${r.winner?'win':''}">${E(r.main)}</span></div>`).join('')+
   (d.callout?`<div class="co">${E(d.callout)}</div>`:(d.detail?`<div class="de">${E(d.detail)}</div>`:''))+'</div>';
- const C=S.controls||[]; const b=c=>`<button class="${c.role}" ${c.enabled?'':'disabled'} onclick="ctl('${E(c.id)}','${E(c.prompt).replace(/'/g,"\\'")}')">${E(c.title)}</button>`;
+ const C=S.controls||[]; CTL=C; const b=c=>`<button class="${c.role}" ${c.enabled?'':'disabled'} onclick="ctl(${C.indexOf(c)})">${E(c.title)}</button>`;
  shared.innerHTML=C.filter(c=>!c.side).map(b).join('');
  sides.innerHTML=['home','away'].map((s,i)=>`<div class="side"><h3><span class="sw" style="background:${E(d.rows[i].color)}"></span>${E(d.rows[i].name)}</h3>${C.filter(c=>c.side==s).map(b).join('')}</div>`).join('');
 }

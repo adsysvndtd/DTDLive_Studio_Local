@@ -7786,6 +7786,26 @@
           }
         }
       }
+    },
+    "Bảng tỉ số (web)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scoreboard (web)"
+          }
+        }
+      }
+    },
+    "Đổi key bảo mật (link cũ hết hiệu lực)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New security key (old links stop working)"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

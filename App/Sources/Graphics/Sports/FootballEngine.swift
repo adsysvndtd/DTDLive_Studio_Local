@@ -82,6 +82,8 @@ enum FootballAction: Codable, Equatable {
     case foul(Side)
     case cancelFoul(Side)
     case card(Side, player: String, kind: CardKind)
+    /// Bớt (huỷ) thẻ: thẻ gần nhất loại đó của cầu thủ (trống = thẻ gần nhất của đội).
+    case removeCard(Side, player: String, kind: CardKind)
     case timeout(Side)
     case endPeriod
     case startNextPeriod
@@ -211,6 +213,18 @@ struct FootballEngine: SportEngine {
                 lastEvent = .card(s, .red)
             } else {
                 lastEvent = .card(s, kind)
+            }
+
+        case .removeCard(let s, let player, let kind):
+            let name = player.trimmedNonEmpty
+            guard let i = cards.lastIndex(where: {
+                $0.side == s && $0.kind == kind && (name == nil || $0.player.caseInsensitiveCompare(name!) == .orderedSame)
+            }) else { return }
+            let removed = cards.remove(at: i)
+            // Huỷ thẻ vàng thứ 2 thì huỷ luôn thẻ đỏ tự động đi kèm (cùng cầu thủ, cùng phút).
+            if kind == .yellow, removed.player != "?",
+               let j = cards.lastIndex(where: { $0.side == s && $0.kind == .red && $0.player == removed.player && $0.minuteLabel == removed.minuteLabel }) {
+                cards.remove(at: j)
             }
 
         case .timeout(let s):
@@ -418,6 +432,18 @@ struct FootballEngine: SportEngine {
             c.append(.init(id: "rc-\(s)", title: lang.t("Thẻ đỏ", "Red"), side: s, role: .destructive,
                            enabled: !isFinished, inputPrompt: lang.t("Tên / số áo", "Name / number"),
                            make: { .card(s, player: $0 ?? "", kind: .red) }))
+            for kind in [CardKind.yellow, .red] {
+                let mine = cards.filter { $0.side == s && $0.kind == kind }
+                var names: [String] = []
+                for r in mine.reversed() where r.player != "?" && !names.contains(r.player) { names.append(r.player) }
+                c.append(.init(id: (kind == .yellow ? "ycx-" : "rcx-") + "\(s)",
+                               title: kind == .yellow ? lang.t("Bớt thẻ vàng", "Yellow −1") : lang.t("Bớt thẻ đỏ", "Red −1"),
+                               side: s, enabled: !mine.isEmpty,
+                               inputPrompt: lang.t("Bớt thẻ của cầu thủ nào? (để trống = thẻ gần nhất)",
+                                                   "Whose card? (empty = most recent)"),
+                               choices: names,
+                               make: { .removeCard(s, player: $0 ?? "", kind: kind) }))
+            }
             if config.timeoutsPerHalf > 0 {
                 c.append(.init(id: "to-\(s)", title: lang.t("Hội ý", "Timeout"), side: s,
                                enabled: playing && timeoutsUsed[s] < config.timeoutsPerHalf,

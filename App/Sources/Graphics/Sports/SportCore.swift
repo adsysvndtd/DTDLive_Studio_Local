@@ -286,16 +286,19 @@ struct SportControl<A>: Identifiable {
     let enabled: Bool
     /// Nếu khác nil, UI hỏi thêm 1 chuỗi (tên cầu thủ) trước khi thực hiện.
     let inputPrompt: String?
+    /// Gợi ý chọn nhanh cho ô nhập (vd. cầu thủ đang có thẻ khi bớt thẻ).
+    let choices: [String]
     let make: (String?) -> A
 
     init(id: String, title: String, side: Side?, role: SportControlRole = .secondary,
-                enabled: Bool = true, inputPrompt: String? = nil, make: @escaping (String?) -> A) {
+                enabled: Bool = true, inputPrompt: String? = nil, choices: [String] = [], make: @escaping (String?) -> A) {
         self.id = id
         self.title = title
         self.side = side
         self.role = role
         self.enabled = enabled
         self.inputPrompt = inputPrompt
+        self.choices = choices
         self.make = make
     }
 

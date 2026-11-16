@@ -1,5 +1,6 @@
 import Foundation
 import Network
+import Security
 
 /// Commands accepted from the LAN (web remote, Bitfocus Companion / Stream Deck, OSC, DTDLive camera tally).
 enum ControlCommand {
@@ -24,7 +25,7 @@ protocol ControlTarget: AnyObject, Sendable {
 
 /// Tiny HTTP/1.1 server (port 8080) + OSC/UDP listener (port 8000).
 ///
-/// HTTP:
+/// HTTP (every page / API needs ?key=<access key> or header X-DTD-Key, except pairing and tally):
 ///   GET  /                       web remote (titles, switching, score)
 ///   GET  /api/state              JSON state
 ///   POST /api/cut | /api/auto | /api/ftb?on=1
@@ -68,6 +69,39 @@ final class ControlServer: @unchecked Sendable {
 
     func stop() { http?.cancel(); osc?.cancel() }
 
+    // MARK: Access key
+
+    /// Secret appended to the web remote link (…:8080/?key=…). Every page and API call must carry it
+    /// (query `key=` or header `X-DTD-Key`), so someone else on the same Wi‑Fi can't drive the show.
+    /// Camera pairing and tally (DTDLive) have their own handshake and stay open.
+    static var accessKey: String {
+        if let k = UserDefaults.standard.string(forKey: keyDefaults), k.count >= 8 { return k }
+        return newAccessKey()
+    }
+    private static let keyDefaults = "dtd.remote.key"
+
+    @discardableResult
+    static func newAccessKey() -> String {
+        let alphabet = Array("abcdefghjkmnpqrstuvwxyz23456789")
+        var bytes = [UInt8](repeating: 0, count: 12)
+        if SecRandomCopyBytes(kSecRandomDefault, bytes.count, &bytes) != errSecSuccess {
+            bytes = (0..<12).map { _ in UInt8.random(in: 0...255) }
+        }
+        let k = String(bytes.map { alphabet[Int($0) % alphabet.count] })
+        UserDefaults.standard.set(k, forKey: keyDefaults)
+        return k
+    }
+
+    private static let openPaths: Set<String> = ["/api/pair/request", "/api/pair/status", "/api/tally", "/favicon.ico"]
+
+    private static func authorized(_ r: HTTPRequest) -> Bool {
+        if openPaths.contains(r.path) { return true }
+        let given = r.query["key"] ?? r.headers["x-dtd-key"] ?? ""
+        let k = accessKey
+        guard given.utf8.count == k.utf8.count else { return false }
+        return zip(given.utf8, k.utf8).reduce(UInt8(0)) { $0 | ($1.0 ^ $1.1) } == 0   // constant time
+    }
+
     // MARK: HTTP
 
     private func serveHTTP(_ c: NWConnection) {
@@ -92,6 +126,16 @@ final class ControlServer: @unchecked Sendable {
 
     private func route(_ r: HTTPRequest) async -> Data {
         guard let target else { return HTTPRequest.response(503, "text/plain", Data("not ready".utf8)) }
+        guard Self.authorized(r) else {
+            if r.method == "GET", !r.path.hasPrefix("/api/") {
+                let page = "<!doctype html><meta charset=utf-8><meta name=viewport content='width=device-width'>"
+                    + "<body style='font:16px -apple-system,sans-serif;background:#111;color:#eee;padding:24px'>"
+                    + "<h3>DTDStudio</h3><p>Liên kết thiếu hoặc sai key bảo mật. Mở đúng đường link trong "
+                    + "DTDStudio › Cài đặt › Điều khiển từ xa (link có <code>?key=…</code>).</p></body>"
+                return HTTPRequest.response(401, "text/html; charset=utf-8", Data(page.utf8))
+            }
+            return HTTPRequest.response(401, "application/json", Data("{\"error\":\"key required\"}".utf8))
+        }
         let q = r.query
         func int(_ k: String) -> Int? { q[k].flatMap(Int.init) }
         func dbl(_ k: String) -> Double { q[k].flatMap(Double.init) ?? 0 }
@@ -186,6 +230,8 @@ struct HTTPRequest {
     var method: String
     var path: String
     var query: [String: String]
+    /// Header names lower-cased.
+    var headers: [String: String] = [:]
     var body: Data
 
     static func parse(_ d: Data) -> HTTPRequest? {
@@ -195,15 +241,18 @@ struct HTTPRequest {
         let first = lines[0].split(separator: " ")
         guard first.count >= 2 else { return nil }
         var length = 0
-        for l in lines.dropFirst() where l.lowercased().hasPrefix("content-length:") {
-            length = Int(l.split(separator: ":")[1].trimmingCharacters(in: .whitespaces)) ?? 0
+        var headers: [String: String] = [:]
+        for l in lines.dropFirst() {
+            guard let c = l.firstIndex(of: ":") else { continue }
+            headers[l[..<c].lowercased()] = l[l.index(after: c)...].trimmingCharacters(in: .whitespaces)
         }
+        length = Int(headers["content-length"] ?? "") ?? 0
         let bodyStart = headEnd.upperBound
         guard d.distance(from: bodyStart, to: d.endIndex) >= length else { return nil }
         let comps = URLComponents(string: String(first[1]))
         var q: [String: String] = [:]
         comps?.queryItems?.forEach { q[$0.name] = $0.value ?? "" }
-        return HTTPRequest(method: String(first[0]), path: comps?.path ?? "/", query: q,
+        return HTTPRequest(method: String(first[0]), path: comps?.path ?? "/", query: q, headers: headers,
                            body: Data(d[bodyStart..<d.index(bodyStart, offsetBy: length)]))
     }
 

@@ -152,6 +152,13 @@ struct SportScorePad: View {
             }
             .alert(Text(verbatim: pending?.inputPrompt ?? ""), isPresented: Binding(get: { pending != nil }, set: { if !$0 { pending = nil } })) {
                 TextField("", text: $input)
+                // quick picks (e.g. players who already have a card, when removing one)
+                ForEach(pending?.choices.prefix(6).map { $0 } ?? [], id: \.self) { name in
+                    Button(name) {
+                        if let p = pending { engine.sportApply(p.make(name)) }
+                        pending = nil
+                    }
+                }
                 Button("OK") {
                     if let p = pending { engine.sportApply(p.make(input)) }
                     pending = nil

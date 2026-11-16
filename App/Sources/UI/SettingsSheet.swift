@@ -1,6 +1,9 @@
 import SwiftUI
 
 struct SettingsSheet: View {
+    /// Access key of the web remote (part of the link); renewing it locks out old links.
+    @State private var remoteKey = ControlServer.accessKey
+
     @ObservedObject var engine: StudioEngine
     @Environment(\.dismiss) private var dismiss
 
@@ -140,7 +143,12 @@ struct SettingsForm: View {
                 }
                 Section(header: SettingsHeader("Điều khiển từ xa & ghép nối")) {
                     let ip = NetworkInfo.wifiIPv4() ?? "—"
-                    LabeledContent("Web remote", value: "http://\(ip):\(engine.controlPort)")
+                    let base = "http://\(ip):\(engine.controlPort)"
+                    remoteLinkRow("Web remote", "\(base)/?key=\(remoteKey)")
+                    remoteLinkRow("Bảng tỉ số (web)", "\(base)/scoreboard?key=\(remoteKey)")
+                    Button("Đổi key bảo mật (link cũ hết hiệu lực)", role: .destructive) {
+                        remoteKey = ControlServer.newAccessKey()
+                    }
                     LabeledContent("OSC (UDP)", value: "\(ip):8000")
                     LabeledContent("Ghép nối camera", value: "Bonjour _dtdstudio._tcp")
                     Toggle("Tự kết nối thiết bị tin cậy", isOn: Binding(get: { engine.pairing.autoAcceptTrusted }, set: { engine.pairing.autoAcceptTrusted = $0 }))
@@ -280,6 +288,21 @@ struct FacebookTargetPicker: View {
                     .font(.caption).foregroundStyle(.secondary)
             }
             if let error { Text(verbatim: error).font(.caption).foregroundStyle(.red) }
+        }
+    }
+}
+
+extension SettingsSheet {
+    /// A web remote link (with its access key): selectable, copyable.
+    func remoteLinkRow(_ title: LocalizedStringKey, _ link: String) -> some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                Text(verbatim: link).font(.caption.monospaced()).foregroundStyle(.secondary).lineLimit(2).textSelection(.enabled)
+            }
+            Spacer(minLength: 8)
+            Button { UIPasteboard.general.string = link } label: { Image(systemName: "doc.on.doc") }
+                .buttonStyle(.borderless)
         }
     }
 }

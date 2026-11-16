@@ -258,7 +258,8 @@ extension StudioEngine {
                 ] as [String: Any]
                 obj["controls"] = sp.controls(lang: lang).map { c in
                     ["id": c.id, "title": c.title, "side": c.side.map { $0 == .home ? "home" : "away" } ?? "",
-                     "role": c.role.rawValue, "enabled": c.enabled, "prompt": c.inputPrompt ?? ""] as [String: Any]
+                     "role": c.role.rawValue, "enabled": c.enabled, "prompt": c.inputPrompt ?? "",
+                     "choices": c.choices] as [String: Any]
                 }
             }
         } else {

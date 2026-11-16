@@ -31,6 +31,7 @@
 "Bản ghi" = "Recordings";
 "Bản tin" = "Newscast";
 "Bảng tỉ số" = "Scoreboard";
+"Bảng tỉ số (web)" = "Scoreboard (web)";
 "Bấm Phát ở đích vừa tạo; sau 10–20 giây trang xem mới có hình." = "The picture appears on the live page 10–20 s after streaming starts.";
 "Bấm ♡ trên một nguồn để thêm vào Yêu thích" = "Tap ♡ on a source to add it to Favorites";
 "BẬT" = "ON";
@@ -730,6 +731,7 @@
 "Đồng hồ" = "Clock";
 "Đổ bóng" = "Drop shadow";
 "Đổi bên (tên, tỉ số, logo)" = "Swap sides (names, scores, logos)";
+"Đổi key bảo mật (link cũ hết hiệu lực)" = "New security key (old links stop working)";
 "Đổi tên" = "Rename";
 "Đổi độ phân giải/fps khi đang phát: các đích tự kết nối lại với thông số mới." = "Changing resolution/fps while live reconnects every destination with the new settings.";
 "Độ dày" = "Thickness";
