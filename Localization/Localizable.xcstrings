@@ -9726,6 +9726,16 @@
           }
         }
       }
+    },
+    "Tỉ giá quy đổi": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exchange rate"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

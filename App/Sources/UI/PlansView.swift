@@ -22,20 +22,31 @@ struct PlansView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section(footer: Text("Gói DTDStudio dùng được cả DTDLive Pro: đăng nhập cùng tài khoản DTD trên DTDLive.")) { statusRow }
+                // App Store builds: only Apple's in-app purchase here — no outside account, sign-up or other way
+                // to pay (App Review 3.1.1 / 5.1.1(v): an app that creates accounts must also delete them in-app).
+                if Distribution.isStoreBuild {
+                    Section { statusRow }
+                } else {
+                    Section(footer: Text("Gói DTDStudio dùng được cả DTDLive Pro: đăng nhập cùng tài khoản DTD trên DTDLive.")) { statusRow }
+                }
 
                 Section(header: SettingsHeader("Mua qua App Store"),
                         footer: Text("Gói tháng / năm tự gia hạn cho tới khi huỷ trong Cài đặt › Apple ID › Đăng ký, ít nhất 24 giờ trước khi hết kỳ; tiền trừ vào tài khoản Apple ID khi xác nhận mua. Gói ngày dùng 24 giờ, không tự gia hạn.")) {
                     // all three plans, always: App Store price when the store has answered, the list price otherwise
                     ForEach(StudioPlanInfo.all) { info in planRow(info, store.products.first { $0.id == info.id }) }
+                    // exchange rate used for the conversions above (refreshed from a public rate feed)
+                    HStack {
+                        Text("Tỉ giá quy đổi").font(.footnote)
+                        Spacer()
+                        Text(verbatim: "1 USD = " + VND.format(Int64(fx.vndPerUSD.rounded())))
+                            .font(.footnote.monospacedDigit()).foregroundStyle(.secondary)
+                    }
                     if store.products.isEmpty {
                         HStack(spacing: 8) {
                             if store.loading { ProgressView() }
                             Text(verbatim: store.loadError ?? L("Đang tải giá từ App Store…")).font(.footnote).foregroundStyle(.secondary)
                         }
                     }
-                    Text(verbatim: LF("Tỉ giá tham khảo: 1 USD ≈ %@", VND.format(Int64(fx.vndPerUSD.rounded()))))
-                        .font(.caption2).foregroundStyle(.secondary)
                     HStack {
                         Button("Khôi phục giao dịch") { Task { error = await store.restore() } }
                         Spacer()
@@ -47,8 +58,10 @@ struct PlansView: View {
                     if let error { Text(verbatim: error).font(.footnote).foregroundStyle(.red) }
                 }
 
-                Section(header: SettingsHeader("Tài khoản DTD")) {
-                    StudioAccountRows(account: account)
+                if !Distribution.isStoreBuild {
+                    Section(header: SettingsHeader("Tài khoản DTD")) {
+                        StudioAccountRows(account: account)
+                    }
                 }
 
                 if !Distribution.isStoreBuild && account.signedIn {
@@ -98,6 +111,7 @@ struct PlansView: View {
     private func planRow(_ info: StudioPlanInfo, _ p: Product?) -> some View {
         let active = store.activeProduct == info.id
         let price = p?.displayPrice ?? VND.format(info.vnd)
+        // VND price → USD; a USD storefront → VND; any other currency → USD of the VND list price
         let other = p.flatMap { fx.other(price: $0.price, currency: $0.priceFormatStyle.currencyCode) }
             ?? "≈ " + fx.usd(fromVND: Double(info.vnd))
         return Button {

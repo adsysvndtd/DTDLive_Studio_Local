@@ -40,15 +40,16 @@ struct HTMLGraphicsPanel: View {
                     smallButton("Next", "forward.frame") { html.next() }
                 }
             }
-            // List on the left, a small preview on the right (stacked when the column is narrow).
+            // List on the left, a large preview on the right: the whole program frame at its real aspect, so the
+            // lower third sits exactly where (and as big as) it will on air. Stacked when the column is narrow.
             ViewThatFits(in: .horizontal) {
                 HStack(alignment: .top, spacing: 10) {
-                    templateList.frame(minWidth: compact ? 170 : 200, maxWidth: .infinity).frame(height: compact ? 210 : 240)
-                    previewPane.frame(width: compact ? 250 : 320)
+                    templateList.frame(width: compact ? 180 : 210).frame(height: compact ? 230 : 280)
+                    previewPane.frame(minWidth: compact ? 300 : 380, maxWidth: .infinity)
                 }
                 VStack(spacing: 8) {
-                    templateList.frame(height: 190)
-                    previewPane.frame(maxWidth: 320)
+                    previewPane
+                    templateList.frame(height: 200)
                 }
             }
             if let t = shown {
