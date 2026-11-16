@@ -79,6 +79,8 @@ enum FootballAction: Codable, Equatable {
     case adjustClock(seconds: Int)
     case setAddedTime(minutes: Int)
     case goal(Side, player: String?, ownGoal: Bool)
+    /// Bớt (huỷ) bàn gần nhất của đội: ownGoal nil = bàn bất kỳ, true/false = chỉ bàn phản lưới / bàn thường.
+    case cancelGoal(Side, ownGoal: Bool?)
     case foul(Side)
     case cancelFoul(Side)
     case card(Side, player: String, kind: CardKind)
@@ -184,14 +186,25 @@ struct FootballEngine: SportEngine {
             clock.adjust(by: TimeInterval(sec), at: now)
 
         case .setAddedTime(let m):
-            addedMinutes = max(0, m)
+            let n = max(0, m)
+            if n > addedMinutes { lastEvent = .addedTime(n) }
+            addedMinutes = n
 
         case .goal(let s, let player, let own):
             guard case .playing = period else { return }
             goals[s] += 1
             goalLog.append(GoalRecord(side: s, minuteLabel: minuteLabel(at: now),
                                       player: player?.trimmedNonEmpty, ownGoal: own))
-            lastEvent = .goal(s)
+            lastEvent = own ? .ownGoal(s) : .goal(s)
+
+        case .cancelGoal(let s, let own):
+            guard goals[s] > 0 else { return }
+            goals[s] -= 1
+            if let i = goalLog.lastIndex(where: { $0.side == s && (own == nil || $0.ownGoal == own!) }) {
+                goalLog.remove(at: i)
+            } else if let i = goalLog.lastIndex(where: { $0.side == s }) {
+                goalLog.remove(at: i)
+            }
 
         case .foul(let s):
             guard case .playing = period else { return }
@@ -388,8 +401,12 @@ struct FootballEngine: SportEngine {
                            action: clock.isRunning ? .stopClock : .startClock))
             c.append(.init(id: "minus10", title: "−10s", side: nil, action: .adjustClock(seconds: -10)))
             c.append(.init(id: "plus10", title: "+10s", side: nil, action: .adjustClock(seconds: 10)))
-            c.append(.init(id: "added", title: lang.t("Bù giờ +1'", "Added +1'"), side: nil,
-                           action: .setAddedTime(minutes: addedMinutes + 1)))
+            // Bù giờ: [ − ] Bù giờ  3'  [ + ]
+            c.append(.init(id: "added", title: lang.t("Bù giờ", "Added time"), side: nil,
+                           value: "+\(addedMinutes)'", action: .setAddedTime(minutes: addedMinutes + 1)))
+            c.append(.init(id: "added-minus", title: lang.t("Bớt bù giờ", "Added time −1"), side: nil,
+                           enabled: addedMinutes > 0, minusOf: "added",
+                           action: .setAddedTime(minutes: addedMinutes - 1)))
             c.append(.init(id: "end", title: lang.t("Hết hiệp", "End period"), side: nil,
                            role: .destructive, action: .endPeriod))
         case .interval(let n):
@@ -416,34 +433,31 @@ struct FootballEngine: SportEngine {
                                role: .destructive, enabled: mine, action: .kick(s, scored: false)))
                 continue
             }
+            // Bàn thắng / phản lưới: [ − ] Tên  số [ + ] — bấm là ghi ngay, không hỏi tên cầu thủ.
+            let og = goalLog.filter { $0.side == s && $0.ownGoal }.count
             c.append(.init(id: "goal-\(s)", title: lang.t("Bàn thắng", "Goal"), side: s, role: .primary,
-                           enabled: playing, inputPrompt: lang.t("Cầu thủ ghi bàn (có thể bỏ trống)", "Scorer (optional)"),
-                           make: { .goal(s, player: $0, ownGoal: false) }))
-            c.append(.init(id: "og-\(s)", title: lang.t("Phản lưới (+1)", "Own goal (+1)"), side: s,
-                           enabled: playing, inputPrompt: lang.t("Cầu thủ đội bạn đá phản", "Player (optional)"),
-                           make: { .goal(s, player: $0, ownGoal: true) }))
+                           enabled: playing, value: "\(goals[s])", action: .goal(s, player: nil, ownGoal: false)))
+            c.append(.init(id: "ungoal-\(s)", title: lang.t("Bớt bàn thắng", "Goal −1"), side: s,
+                           enabled: goals[s] > 0, minusOf: "goal-\(s)", action: .cancelGoal(s, ownGoal: nil)))
+            c.append(.init(id: "og-\(s)", title: lang.t("Phản lưới", "Own goal"), side: s,
+                           enabled: playing, value: "\(og)", action: .goal(s, player: nil, ownGoal: true)))
+            c.append(.init(id: "unog-\(s)", title: lang.t("Bớt phản lưới", "Own goal −1"), side: s,
+                           enabled: og > 0, minusOf: "og-\(s)", action: .cancelGoal(s, ownGoal: true)))
             // Lỗi và thẻ: mỗi loại là một cặp [ − ] Tên  số [ + ] (nút "−" mang minusOf = id nút "+").
             c.append(.init(id: "foul-\(s)", title: lang.t("Lỗi", "Foul"), side: s,
                            enabled: playing, value: "\(fouls[s])", action: .foul(s)))
             c.append(.init(id: "unfoul-\(s)", title: lang.t("Bớt lỗi", "Foul −1"), side: s,
                            enabled: fouls[s] > 0, minusOf: "foul-\(s)", action: .cancelFoul(s)))
             for kind in [CardKind.yellow, .red] {
-                let mine = cards.filter { $0.side == s && $0.kind == kind }
-                var names: [String] = []
-                for r in mine.reversed() where r.player != "?" && !names.contains(r.player) { names.append(r.player) }
+                let n = cards.filter { $0.side == s && $0.kind == kind }.count
                 let plus = (kind == .yellow ? "yc-" : "rc-") + "\(s)"
                 c.append(.init(id: plus, title: kind == .yellow ? lang.t("Thẻ vàng", "Yellow") : lang.t("Thẻ đỏ", "Red"),
                                side: s, role: kind == .red ? .destructive : .secondary,
-                               enabled: !isFinished, inputPrompt: lang.t("Tên / số áo", "Name / number"),
-                               value: "\(mine.count)",
-                               make: { .card(s, player: $0 ?? "", kind: kind) }))
+                               enabled: !isFinished, value: "\(n)", action: .card(s, player: "", kind: kind)))
                 c.append(.init(id: (kind == .yellow ? "ycx-" : "rcx-") + "\(s)",
                                title: kind == .yellow ? lang.t("Bớt thẻ vàng", "Yellow −1") : lang.t("Bớt thẻ đỏ", "Red −1"),
-                               side: s, enabled: !mine.isEmpty,
-                               inputPrompt: lang.t("Bớt thẻ của cầu thủ nào? (để trống = thẻ gần nhất)",
-                                                   "Whose card? (empty = most recent)"),
-                               choices: names, minusOf: plus,
-                               make: { .removeCard(s, player: $0 ?? "", kind: kind) }))
+                               side: s, enabled: n > 0, minusOf: plus,
+                               action: .removeCard(s, player: "", kind: kind)))
             }
             if config.timeoutsPerHalf > 0 {
                 c.append(.init(id: "to-\(s)", title: lang.t("Hội ý", "Timeout"), side: s,

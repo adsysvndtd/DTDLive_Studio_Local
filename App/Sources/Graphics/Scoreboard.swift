@@ -34,6 +34,8 @@ struct ScoreboardData: Codable, Equatable {
     var callout: String? = nil
     var homeColumns: [String] = []
     var awayColumns: [String] = []
+    /// Event overlay (goal, card, added time…) shown for a few seconds while the board is on air (never saved).
+    var flash: SportFlash? = nil
 
     init() {}
     init(from d: Decoder) throws {

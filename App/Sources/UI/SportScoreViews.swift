@@ -102,15 +102,29 @@ struct SportQuickBar: View {
         if let i = engine.scoreboardIndex, let sp = engine.titles[i].sportBoard {
             let t = engine.titles[i]
             let d = sp.display(lang: .current, at: Date())
-            let cs = sp.controls(lang: .current).filter { $0.role == .primary }
+            let all = sp.controls(lang: .current)
+            let cs = all.filter { $0.role == .primary }
             HStack(spacing: 8) {
                 ForEach(Side.allCases, id: \.self) { s in
                     let row = d.rows[s.rawValue]
                     let c = cs.first { $0.side == s } ?? cs.first { $0.side == nil }
+                    // [ − ] when the sport can take a point back (football: goal −1)
+                    if let c, let minus = all.first(where: { $0.minusOf == c.id }) {
+                        Button {
+                            guard minus.enabled else { return }
+                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                            engine.sportApply(minus.make(nil))
+                        } label: {
+                            Image(systemName: "minus").font(.system(size: 11, weight: .bold)).frame(width: 30, height: 36)
+                                .background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
+                        }
+                        .buttonStyle(.plain).disabled(!minus.enabled)
+                        .accessibilityLabel(Text(verbatim: minus.title))
+                    }
                     Button {
                         guard let c, c.enabled else { return }
                         UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                        if c.inputPrompt != nil { engine.sportApply(c.make(nil)) } else { engine.sportApply(c.make(nil)) }
+                        engine.sportApply(c.make(nil))
                     } label: {
                         HStack(spacing: 6) {
                             Circle().fill(DS.accent).frame(width: 7, height: 7).opacity(row.isServing ? 1 : 0)
@@ -217,7 +231,11 @@ struct SportScorePad: View {
         let shared = cs.filter { $0.side == nil }
         if !shared.isEmpty {
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 130), spacing: 8)], spacing: 8) {
-                ForEach(shared.filter { $0.minusOf == nil }) { button($0) }
+                ForEach(shared.filter { c in c.minusOf == nil && !shared.contains(where: { $0.minusOf == c.id }) }) { button($0) }
+            }
+            // counted shared items (football added time): [ − ] Bù giờ +3' [ + ]
+            ForEach(shared.filter { $0.minusOf == nil }) { c in
+                if let m = shared.first(where: { $0.minusOf == c.id }) { stepper(c, minus: m) }
             }
         }
         HStack(alignment: .top, spacing: 12) {
@@ -273,8 +291,9 @@ struct SportScorePad: View {
     /// Counted item (cards, fouls): [ − ]  Thẻ vàng 2  [ + ]
     private func stepper(_ plus: SportControlItem, minus: SportControlItem) -> some View {
         let tint: Color = plus.id.hasPrefix("yc-") ? Color(red: 1, green: 0.84, blue: 0.04)
-            : plus.id.hasPrefix("rc-") ? Color.red.opacity(0.85) : Color.gray.opacity(0.45)
-        let ink: Color = plus.id.hasPrefix("yc-") ? .black : .white
+            : plus.id.hasPrefix("rc-") ? Color.red.opacity(0.85)
+            : plus.role == .primary ? DS.accent : Color.gray.opacity(0.45)
+        let ink: Color = plus.id.hasPrefix("yc-") || plus.role == .primary ? .black : .white
         return HStack(spacing: 6) {
             Button { tap(minus) } label: {
                 Image(systemName: "minus").font(.headline).frame(width: 40, height: 38)

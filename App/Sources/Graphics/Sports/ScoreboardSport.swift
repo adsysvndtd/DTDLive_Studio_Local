@@ -161,7 +161,14 @@ extension StudioEngine {
         var next = before
         next.apply(action, at: now)
         guard next != before else { return }
+        let flash = next.flash(before: before, lang: .current, at: now)
         pushSport(next)
+        // overlay of the event (goal, card, added time…); a correction (goal −1, card −1) takes the last one off air
+        if flash != nil || action.isCorrection { setSportFlash(flash) }
+    }
+
+    private func setSportFlash(_ f: SportFlash?) {
+        updateScoreboard { t in var b = t.sb; b.flash = f; t.sb = b }
     }
 
     /// Thực hiện một nút điều khiển (theo id) – dùng cho bảng nhập điểm, web remote, OSC.
@@ -192,6 +199,7 @@ extension StudioEngine {
         guard let i = scoreboardIndex, let cur = titles[i].sb.sport, let prev = SportHistory.shared.undo.popLast() else { return }
         SportHistory.shared.redo.append(cur)
         setSportState(prev)
+        setSportFlash(nil)
     }
 
     func sportRedo() {

@@ -209,6 +209,8 @@ enum ScoreEvent: Codable, Equatable {
     case matchWon(Side)
     case draw
     case goal(Side)
+    case ownGoal(Side)           // phản lưới: bàn tính cho đội Side
+    case addedTime(Int)          // bù giờ n phút
     case card(Side, CardKind)
     case foulLimit(Side)         // đủ số lỗi tích lũy (futsal)
     case periodEnded
@@ -353,6 +355,8 @@ enum Callouts {
         case .matchWon(let s): return lang.t("\(teams[s].name) THẮNG CHUNG CUỘC", "\(teams[s].name) WINS")
         case .draw: return lang.t("HÒA", "DRAW")
         case .goal(let s): return lang.t("VÀO! · \(teams[s].shortName)", "GOAL! · \(teams[s].shortName)")
+        case .ownGoal(let s): return lang.t("PHẢN LƯỚI · +1 \(teams[s].shortName)", "OWN GOAL · +1 \(teams[s].shortName)")
+        case .addedTime(let m): return lang.t("BÙ GIỜ +\(m)'", "ADDED TIME +\(m)'")
         case .card(let s, let k):
             return k == .red ? lang.t("THẺ ĐỎ · \(teams[s].shortName)", "RED CARD · \(teams[s].shortName)")
                              : lang.t("THẺ VÀNG · \(teams[s].shortName)", "YELLOW CARD · \(teams[s].shortName)")

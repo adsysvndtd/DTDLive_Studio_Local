@@ -38,7 +38,7 @@ button.destructive{background:#5a1a1d;border-color:#8a2a2e}button.air{background
 .stp{display:grid;grid-template-columns:40px minmax(0,1fr) 40px;gap:5px}.stp button{font-size:22px;font-weight:700;padding:6px 0}
 .stp .lbl{display:flex;align-items:center;justify-content:center;gap:6px;border-radius:10px;background:#3a3d48;font-weight:600;min-height:44px;white-space:nowrap;overflow:hidden;font-size:14px;padding:0 4px}
 .stp .lbl b{font-size:18px;font-variant-numeric:tabular-nums}
-.stp .yc{background:#ffd60a;color:#000;border-color:#ffd60a}.stp .rc{background:#e3343c;color:#fff;border-color:#e3343c}
+.stp .yc{background:#ffd60a;color:#000;border-color:#ffd60a}.stp .rc{background:#e3343c;color:#fff;border-color:#e3343c}.stp .pri{background:#1f5fbf;border-color:#2f72d6;color:#fff}.stp.big .lbl,.stp.big button{min-height:60px;font-size:18px}
 </style></head><body>
 <header><b>Bảng tỉ số</b>
  <select id="tpl" onchange="setTpl(this.value);this.blur()"></select>
@@ -115,8 +115,8 @@ function draw(){
  const C=S.controls||[]; CTL=C; const b=c=>`<button class="${c.role}" ${c.enabled?'':'disabled'} onclick="ctl(${C.indexOf(c)})">${E(c.title)}</button>`;
  // counted items (cards, fouls): [ − ]  Thẻ vàng 2  [ + ]
  const st=c=>{ const m=C.find(x=>x.minusOf===c.id); if(!m)return b(c);
-  const k=c.id.startsWith('yc-')?'yc':c.id.startsWith('rc-')?'rc':'';
-  return `<div class="stp"><button ${m.enabled?'':'disabled'} title="${E(m.title)}" onclick="ctl(${C.indexOf(m)})">−</button>`+
+  const k=c.id.startsWith('yc-')?'yc':c.id.startsWith('rc-')?'rc':c.role==='primary'?'pri':'';
+  return `<div class="stp ${c.role==='primary'?'big':''}"><button ${m.enabled?'':'disabled'} title="${E(m.title)}" onclick="ctl(${C.indexOf(m)})">−</button>`+
    `<span class="lbl ${k}">${E(c.title)}${c.value!==''&&c.value!=null?` <b>${E(c.value)}</b>`:''}</span>`+
    `<button class="${k}" ${c.enabled?'':'disabled'} title="${E(c.title)}" onclick="ctl(${C.indexOf(c)})">+</button></div>`; };
  shared.innerHTML=C.filter(c=>!c.side&&!c.minusOf).map(st).join('');

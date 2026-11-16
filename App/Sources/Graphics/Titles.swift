@@ -59,6 +59,7 @@ final class TitleRenderer: @unchecked Sendable {
     private var cache: [UUID: (TitleItem, CGSize, CIImage)] = [:]
     private var tickCache: [UUID: Int] = [:]
     private var boardCache: [UUID: (String, CGSize, CIImage)] = [:]
+    private var flashCache: (UUID, CGSize, CIImage)?
     private var shownAt: [UUID: CFTimeInterval] = [:]
     private var hiddenAt: [UUID: CFTimeInterval] = [:]
     private let lock = NSLock()
@@ -115,6 +116,10 @@ final class TitleRenderer: @unchecked Sendable {
                     "inputBVector": CIVector(x: 0, y: 0, z: alpha, w: 0), "inputAVector": CIVector(x: 0, y: 0, z: 0, w: alpha)])
             }
             out = out.map { img.composited(over: $0) } ?? img
+            // Sport event overlay (goal, card, added time…) while the scoreboard is on air
+            if item.style == .scoreBug, item.visible, let fl = item.board?.flash, let fx = flashImage(fl, canvas: canvas, boardY: item.position.y) {
+                out = out.map { fx.composited(over: $0) } ?? fx
+            }
             // Countdown reached 00:00 → fireworks over the whole frame for a few seconds
             if item.style == .countdown, item.visible, let shown {
                 let past = now - shown - Double(item.scoreA * 60 + item.scoreB)
@@ -124,6 +129,34 @@ final class TitleRenderer: @unchecked Sendable {
             }
         }
         return out?.cropped(to: CGRect(origin: .zero, size: canvas))
+    }
+
+    /// The flash placed and faded for this moment: centred, in the lower third when the scoreboard sits in the
+    /// top half of the frame, otherwise near the top.
+    private func flashImage(_ fl: SportFlash, canvas: CGSize, boardY: CGFloat) -> CIImage? {
+        guard let p = fl.progress(Date()) else { return nil }
+        lock.lock()
+        var base = flashCache?.0 == fl.id && flashCache?.1 == canvas ? flashCache?.2 : nil
+        lock.unlock()
+        if base == nil {
+            guard let cg = SportFlashRenderer.render(fl).cgImage else { return nil }
+            let k = canvas.width / 1920
+            base = CIImage(cgImage: cg).transformed(by: .init(scaleX: k, y: k))
+            lock.lock(); flashCache = (fl.id, canvas, base!); lock.unlock()
+        }
+        guard var img = base else { return nil }
+        let w = img.extent.width, h = img.extent.height
+        let topNorm: CGFloat = boardY < 0.5 ? 0.64 : 0.08
+        let x = (canvas.width - w) / 2 + p.slide * 160 * canvas.width / 1920
+        let y = (1 - topNorm) * canvas.height - h
+        img = img.transformed(by: .init(translationX: x, y: y))
+        if p.alpha < 1 {
+            let a = p.alpha
+            img = img.applyingFilter("CIColorMatrix", parameters: [
+                "inputRVector": CIVector(x: a, y: 0, z: 0, w: 0), "inputGVector": CIVector(x: 0, y: a, z: 0, w: 0),
+                "inputBVector": CIVector(x: 0, y: 0, z: a, w: 0), "inputAVector": CIVector(x: 0, y: 0, z: 0, w: a)])
+        }
+        return img
     }
 
     private func image(for item: TitleItem, canvas: CGSize, now: CFTimeInterval) -> CIImage? {
