@@ -7,24 +7,19 @@ struct SportPickerMenu: View {
     @ObservedObject var engine: StudioEngine
     var compact = false
     @State private var pendingTemplate: SportTemplate?? = nil
+    @State private var showList = false
 
-    private var currentTitle: String {
-        guard let i = engine.scoreboardIndex, let raw = engine.titles[i].sb.sportTemplate,
-              let t = SportTemplate(rawValue: raw) else { return L("Tự do") }
-        return t.title(.current)
+    private var currentTemplate: SportTemplate? {
+        guard let i = engine.scoreboardIndex, let raw = engine.titles[i].sb.sportTemplate else { return nil }
+        return SportTemplate(rawValue: raw)
     }
 
+    private var currentTitle: String { currentTemplate?.title(.current) ?? L("Tự do") }
+
     var body: some View {
-        Menu {
-            Button { choose(nil) } label: { Label("Tự do (+/−)", systemImage: "plusminus") }
-            ForEach(SportTemplate.groups, id: \.0) { group in
-                Section(group.0) {
-                    ForEach(group.1) { t in
-                        Button(t.title(.current)) { choose(t) }
-                    }
-                }
-            }
-        } label: {
+        // A list in a popover, not a Menu: the engine refreshes many times a second and every refresh
+        // rebuilt the Menu, which jumped it back to the top, so sports low in the list could not be picked.
+        Button { showList = true } label: {
             HStack(spacing: 4) {
                 Text(verbatim: currentTitle).lineLimit(1)
                 Image(systemName: "chevron.down").font(.system(size: 9, weight: .bold))
@@ -33,6 +28,16 @@ struct SportPickerMenu: View {
             .padding(.horizontal, 8).padding(.vertical, 4)
             .foregroundStyle(.black)
             .background(DS.accent, in: Capsule())
+        }
+        .buttonStyle(.plain)
+        .popover(isPresented: $showList) {
+            SportPickerList(current: currentTemplate?.rawValue) { t in
+                showList = false
+                // let the popover close before a confirmation dialog can appear
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) { choose(t) }
+            }
+            .frame(minWidth: 300, idealWidth: 340, minHeight: 420, idealHeight: 560)
+            .presentationDetents([.medium, .large])
         }
         .confirmationDialog("Đổi môn sẽ bắt đầu trận mới (tỉ số hiện tại bị xoá).",
                             isPresented: Binding(get: { pendingTemplate != nil }, set: { if !$0 { pendingTemplate = nil } }),
@@ -48,6 +53,42 @@ struct SportPickerMenu: View {
         // hỏi lại nếu đang có trận theo luật đã bắt đầu
         if engine.scoreboardSport != nil && engine.sportCanUndo { pendingTemplate = .some(t) }
         else { engine.setScoreboardSport(t) }
+    }
+}
+
+/// Sports grouped by kind. Takes plain values (no engine), so engine refreshes don't touch its scroll position.
+private struct SportPickerList: View {
+    let current: String?
+    let pick: (SportTemplate?) -> Void
+
+    var body: some View {
+        ScrollViewReader { proxy in
+            List {
+                row(L("Tự do (+/−)"), icon: "plusminus", on: current == nil) { pick(nil) }
+                ForEach(SportTemplate.groups, id: \.0) { group in
+                    Section(group.0) {
+                        ForEach(group.1) { t in
+                            row(t.title(.current), icon: nil, on: current == t.rawValue) { pick(t) }.id(t.rawValue)
+                        }
+                    }
+                }
+            }
+            .listStyle(.insetGrouped)
+            .onAppear { if let c = current { proxy.scrollTo(c, anchor: .center) } }
+        }
+    }
+
+    private func row(_ title: String, icon: String?, on: Bool, _ act: @escaping () -> Void) -> some View {
+        Button(action: act) {
+            HStack {
+                if let icon { Image(systemName: icon) }
+                Text(verbatim: title)
+                Spacer()
+                if on { Image(systemName: "checkmark").foregroundStyle(DS.accent) }
+            }
+            .contentShape(Rectangle())
+        }
+        .foregroundStyle(.primary)
     }
 }
 

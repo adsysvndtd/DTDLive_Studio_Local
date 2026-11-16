@@ -41,7 +41,7 @@ button.destructive{background:#5a1a1d;border-color:#8a2a2e}button.air{background
 .stp .yc{background:#ffd60a;color:#000;border-color:#ffd60a}.stp .rc{background:#e3343c;color:#fff;border-color:#e3343c}
 </style></head><body>
 <header><b>Bảng tỉ số</b>
- <select id="tpl" onchange="setTpl(this.value)"></select>
+ <select id="tpl" onchange="setTpl(this.value);this.blur()"></select>
  <button id="airBtn" onclick="air()">Lên sóng</button>
  <a id="lng" href="#" style="margin-left:auto;color:#aaa"></a><a href="/">← Remote</a></header>
 <div id="board"></div>
@@ -98,7 +98,8 @@ async function ctl(i){ const c=CTL[i]; if(!c||!c.enabled)return; let p='';
 function draw(){
  if(!tpl.options.length){ const g={}; (S.templates||[]).forEach(t=>(g[t.group]=g[t.group]||[]).push(t));
   tpl.innerHTML='<option value="">'+T('Tự do (+/−)')+'</option>'+Object.entries(g).map(([k,a])=>`<optgroup label="${E(k)}">`+a.map(t=>`<option value="${t.id}">${E(t.title)}</option>`).join('')+'</optgroup>').join(''); }
- tpl.value=S.template||'';
+ // don't touch the list while it is open (the 1 s refresh would close it / jump back to the top)
+ if(document.activeElement!==tpl&&tpl.value!==(S.template||''))tpl.value=S.template||'';
  airBtn.textContent=T(S.visible?'● Trên sóng':'Lên sóng'); airBtn.className=S.visible?'air':'';
  if(document.activeElement!==home)home.value=S.home||''; if(document.activeElement!==away)away.value=S.away||'';
  undo.disabled=!S.canUndo; redo.disabled=!S.canRedo;
