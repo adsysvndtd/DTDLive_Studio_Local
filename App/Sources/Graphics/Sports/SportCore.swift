@@ -288,10 +288,15 @@ struct SportControl<A>: Identifiable {
     let inputPrompt: String?
     /// Gợi ý chọn nhanh cho ô nhập (vd. cầu thủ đang có thẻ khi bớt thẻ).
     let choices: [String]
+    /// Nút "−" của một nút khác (id của nút "+"): UI vẽ chung thành [ − ] Tên  số [ + ].
+    let minusOf: String?
+    /// Số đang đếm, hiện giữa nút − / + (vd. số thẻ vàng).
+    let value: String?
     let make: (String?) -> A
 
     init(id: String, title: String, side: Side?, role: SportControlRole = .secondary,
-                enabled: Bool = true, inputPrompt: String? = nil, choices: [String] = [], make: @escaping (String?) -> A) {
+                enabled: Bool = true, inputPrompt: String? = nil, choices: [String] = [],
+                minusOf: String? = nil, value: String? = nil, make: @escaping (String?) -> A) {
         self.id = id
         self.title = title
         self.side = side
@@ -299,13 +304,15 @@ struct SportControl<A>: Identifiable {
         self.enabled = enabled
         self.inputPrompt = inputPrompt
         self.choices = choices
+        self.minusOf = minusOf
+        self.value = value
         self.make = make
     }
 
     init(id: String, title: String, side: Side?, role: SportControlRole = .secondary,
-                enabled: Bool = true, action: A) {
+                enabled: Bool = true, minusOf: String? = nil, value: String? = nil, action: A) {
         self.init(id: id, title: title, side: side, role: role, enabled: enabled,
-                  inputPrompt: nil, make: { _ in action })
+                  inputPrompt: nil, minusOf: minusOf, value: value, make: { _ in action })
     }
 }
 

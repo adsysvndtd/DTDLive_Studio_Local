@@ -422,26 +422,27 @@ struct FootballEngine: SportEngine {
             c.append(.init(id: "og-\(s)", title: lang.t("Phản lưới (+1)", "Own goal (+1)"), side: s,
                            enabled: playing, inputPrompt: lang.t("Cầu thủ đội bạn đá phản", "Player (optional)"),
                            make: { .goal(s, player: $0, ownGoal: true) }))
+            // Lỗi và thẻ: mỗi loại là một cặp [ − ] Tên  số [ + ] (nút "−" mang minusOf = id nút "+").
             c.append(.init(id: "foul-\(s)", title: lang.t("Lỗi", "Foul"), side: s,
-                           enabled: playing, action: .foul(s)))
+                           enabled: playing, value: "\(fouls[s])", action: .foul(s)))
             c.append(.init(id: "unfoul-\(s)", title: lang.t("Bớt lỗi", "Foul −1"), side: s,
-                           enabled: fouls[s] > 0, action: .cancelFoul(s)))
-            c.append(.init(id: "yc-\(s)", title: lang.t("Thẻ vàng", "Yellow"), side: s,
-                           enabled: !isFinished, inputPrompt: lang.t("Tên / số áo", "Name / number"),
-                           make: { .card(s, player: $0 ?? "", kind: .yellow) }))
-            c.append(.init(id: "rc-\(s)", title: lang.t("Thẻ đỏ", "Red"), side: s, role: .destructive,
-                           enabled: !isFinished, inputPrompt: lang.t("Tên / số áo", "Name / number"),
-                           make: { .card(s, player: $0 ?? "", kind: .red) }))
+                           enabled: fouls[s] > 0, minusOf: "foul-\(s)", action: .cancelFoul(s)))
             for kind in [CardKind.yellow, .red] {
                 let mine = cards.filter { $0.side == s && $0.kind == kind }
                 var names: [String] = []
                 for r in mine.reversed() where r.player != "?" && !names.contains(r.player) { names.append(r.player) }
+                let plus = (kind == .yellow ? "yc-" : "rc-") + "\(s)"
+                c.append(.init(id: plus, title: kind == .yellow ? lang.t("Thẻ vàng", "Yellow") : lang.t("Thẻ đỏ", "Red"),
+                               side: s, role: kind == .red ? .destructive : .secondary,
+                               enabled: !isFinished, inputPrompt: lang.t("Tên / số áo", "Name / number"),
+                               value: "\(mine.count)",
+                               make: { .card(s, player: $0 ?? "", kind: kind) }))
                 c.append(.init(id: (kind == .yellow ? "ycx-" : "rcx-") + "\(s)",
                                title: kind == .yellow ? lang.t("Bớt thẻ vàng", "Yellow −1") : lang.t("Bớt thẻ đỏ", "Red −1"),
                                side: s, enabled: !mine.isEmpty,
                                inputPrompt: lang.t("Bớt thẻ của cầu thủ nào? (để trống = thẻ gần nhất)",
                                                    "Whose card? (empty = most recent)"),
-                               choices: names,
+                               choices: names, minusOf: plus,
                                make: { .removeCard(s, player: $0 ?? "", kind: kind) }))
             }
             if config.timeoutsPerHalf > 0 {

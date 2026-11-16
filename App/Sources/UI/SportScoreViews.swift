@@ -176,7 +176,7 @@ struct SportScorePad: View {
         let shared = cs.filter { $0.side == nil }
         if !shared.isEmpty {
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 130), spacing: 8)], spacing: 8) {
-                ForEach(shared) { button($0) }
+                ForEach(shared.filter { $0.minusOf == nil }) { button($0) }
             }
         }
         HStack(alignment: .top, spacing: 12) {
@@ -187,7 +187,10 @@ struct SportScorePad: View {
                             .frame(width: 10, height: 10)
                         Text(verbatim: s == .home ? t.line1 : t.line2).font(.headline).lineLimit(1)
                     }
-                    ForEach(cs.filter { $0.side == s }) { button($0) }
+                    let mine = cs.filter { $0.side == s }
+                    ForEach(mine.filter { $0.minusOf == nil }) { c in
+                        if let m = mine.first(where: { $0.minusOf == c.id }) { stepper(c, minus: m) } else { button(c) }
+                    }
                 }
                 .frame(maxWidth: .infinity)
             }
@@ -221,11 +224,41 @@ struct SportScorePad: View {
         }
     }
 
+    private func tap(_ c: SportControlItem) {
+        UIImpactFeedbackGenerator(style: c.role == .primary ? .medium : .light).impactOccurred()
+        if c.inputPrompt != nil { input = ""; pending = c } else { engine.sportApply(c.make(nil)) }
+    }
+
+    /// Counted item (cards, fouls): [ − ]  Thẻ vàng 2  [ + ]
+    private func stepper(_ plus: SportControlItem, minus: SportControlItem) -> some View {
+        let tint: Color = plus.id.hasPrefix("yc-") ? Color(red: 1, green: 0.84, blue: 0.04)
+            : plus.id.hasPrefix("rc-") ? Color.red.opacity(0.85) : Color.gray.opacity(0.45)
+        let ink: Color = plus.id.hasPrefix("yc-") ? .black : .white
+        return HStack(spacing: 6) {
+            Button { tap(minus) } label: {
+                Image(systemName: "minus").font(.headline).frame(width: 40, height: 38)
+            }
+            .buttonStyle(.bordered).disabled(!minus.enabled)
+            .accessibilityLabel(Text(verbatim: minus.title))
+            HStack(spacing: 6) {
+                Text(verbatim: plus.title).font(.subheadline.weight(.semibold)).lineLimit(1).minimumScaleFactor(0.7)
+                if let v = plus.value {
+                    Text(verbatim: v).font(.headline.monospacedDigit())
+                }
+            }
+            .frame(maxWidth: .infinity, minHeight: 38)
+            .foregroundStyle(ink)
+            .background(tint, in: RoundedRectangle(cornerRadius: 8))
+            Button { tap(plus) } label: {
+                Image(systemName: "plus").font(.headline).frame(width: 40, height: 38)
+            }
+            .buttonStyle(.borderedProminent).tint(tint).foregroundStyle(ink).disabled(!plus.enabled)
+            .accessibilityLabel(Text(verbatim: plus.title))
+        }
+    }
+
     private func button(_ c: SportControlItem) -> some View {
-        Button {
-            UIImpactFeedbackGenerator(style: c.role == .primary ? .medium : .light).impactOccurred()
-            if c.inputPrompt != nil { input = ""; pending = c } else { engine.sportApply(c.make(nil)) }
-        } label: {
+        Button { tap(c) } label: {
             Text(verbatim: c.title)
                 .font(c.role == .primary ? .headline : .subheadline.weight(.semibold))
                 .multilineTextAlignment(.center)

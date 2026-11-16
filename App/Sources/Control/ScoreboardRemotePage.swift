@@ -35,6 +35,10 @@ button.destructive{background:#5a1a1d;border-color:#8a2a2e}button.air{background
 .dlg[hidden]{display:none}.box{background:#1d1e24;width:100%;max-width:520px;border-radius:16px 16px 0 0;padding:16px;display:grid;gap:10px}
 .box b{font-size:16px}.chips{display:flex;flex-wrap:wrap;gap:8px}.chips button{background:#2d3140}
 .btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stp{display:grid;grid-template-columns:40px minmax(0,1fr) 40px;gap:5px}.stp button{font-size:22px;font-weight:700;padding:6px 0}
+.stp .lbl{display:flex;align-items:center;justify-content:center;gap:6px;border-radius:10px;background:#3a3d48;font-weight:600;min-height:44px;white-space:nowrap;overflow:hidden;font-size:14px;padding:0 4px}
+.stp .lbl b{font-size:18px;font-variant-numeric:tabular-nums}
+.stp .yc{background:#ffd60a;color:#000;border-color:#ffd60a}.stp .rc{background:#e3343c;color:#fff;border-color:#e3343c}
 </style></head><body>
 <header><b>Bảng tỉ số</b>
  <select id="tpl" onchange="setTpl(this.value)"></select>
@@ -95,8 +99,14 @@ function draw(){
   d.rows.map(r=>`<div class="r"><span class="bar" style="background:${E(r.color)}"></span><span class="n">${E(r.name)}${r.serving?'<span class="dot"></span>':''}${r.badges.map(b=>`<span class="bd ${b.style}">${E(b.text)}</span>`).join('')}</span>${r.columns.map(c=>`<span class="c">${E(c)}</span>`).join('')}<span class="m ${r.winner?'win':''}">${E(r.main)}</span></div>`).join('')+
   (d.callout?`<div class="co">${E(d.callout)}</div>`:(d.detail?`<div class="de">${E(d.detail)}</div>`:''))+'</div>';
  const C=S.controls||[]; CTL=C; const b=c=>`<button class="${c.role}" ${c.enabled?'':'disabled'} onclick="ctl(${C.indexOf(c)})">${E(c.title)}</button>`;
- shared.innerHTML=C.filter(c=>!c.side).map(b).join('');
- sides.innerHTML=['home','away'].map((s,i)=>`<div class="side"><h3><span class="sw" style="background:${E(d.rows[i].color)}"></span>${E(d.rows[i].name)}</h3>${C.filter(c=>c.side==s).map(b).join('')}</div>`).join('');
+ // counted items (cards, fouls): [ − ]  Thẻ vàng 2  [ + ]
+ const st=c=>{ const m=C.find(x=>x.minusOf===c.id); if(!m)return b(c);
+  const k=c.id.startsWith('yc-')?'yc':c.id.startsWith('rc-')?'rc':'';
+  return `<div class="stp"><button ${m.enabled?'':'disabled'} title="${E(m.title)}" onclick="ctl(${C.indexOf(m)})">−</button>`+
+   `<span class="lbl ${k}">${E(c.title)}${c.value!==''&&c.value!=null?` <b>${E(c.value)}</b>`:''}</span>`+
+   `<button class="${k}" ${c.enabled?'':'disabled'} title="${E(c.title)}" onclick="ctl(${C.indexOf(c)})">+</button></div>`; };
+ shared.innerHTML=C.filter(c=>!c.side&&!c.minusOf).map(st).join('');
+ sides.innerHTML=['home','away'].map((s,i)=>`<div class="side"><h3><span class="sw" style="background:${E(d.rows[i].color)}"></span>${E(d.rows[i].name)}</h3>${C.filter(c=>c.side==s&&!c.minusOf).map(st).join('')}</div>`).join('');
 }
 function score(k,d){const v=Math.max(0,(k=='a'?S.scoreA:S.scoreB)+d);fetch('/api/score?'+k+'='+v,{method:'POST'}).then(load)}
 load();setInterval(load,1000);
