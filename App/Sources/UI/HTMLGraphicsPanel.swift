@@ -40,15 +40,15 @@ struct HTMLGraphicsPanel: View {
                     smallButton("Next", "forward.frame") { html.next() }
                 }
             }
-            // List on the left, preview on the right (stacked when the column is narrow).
+            // List on the left, a small preview on the right (stacked when the column is narrow).
             ViewThatFits(in: .horizontal) {
                 HStack(alignment: .top, spacing: 10) {
-                    templateList.frame(width: compact ? 200 : 240).frame(height: 300)
-                    previewPane.frame(minWidth: 280, maxWidth: .infinity)
+                    templateList.frame(minWidth: compact ? 170 : 200, maxWidth: .infinity).frame(height: compact ? 210 : 240)
+                    previewPane.frame(width: compact ? 250 : 320)
                 }
                 VStack(spacing: 8) {
-                    templateList.frame(height: 210)
-                    previewPane
+                    templateList.frame(height: 190)
+                    previewPane.frame(maxWidth: 320)
                 }
             }
             if let t = shown {
@@ -506,11 +506,9 @@ struct HTMLLivePreview: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            if let background { MonitorView(store: background, maxFPS: 10) } else { Color(white: 0.3) }
-            if let img = html.previewImage {
-                Image(uiImage: img).resizable().aspectRatio(img.size.width / max(img.size.height, 1), contentMode: .fit)
-                    .frame(maxWidth: .infinity)
-            }
+            // PVW underneath at a low rate: it is only a backdrop
+            if let background { MonitorView(store: background, maxFPS: 5) } else { Color(white: 0.3) }
+            HTMLFeedPicture(feed: html.feed)
             // title-safe guide (90 %)
             GeometryReader { g in
                 Rectangle().stroke(Color.white.opacity(0.25), style: StrokeStyle(lineWidth: 1, dash: [4, 4]))
@@ -531,6 +529,21 @@ struct HTMLLivePreview: View {
     }
 }
 
+/// Only this small view observes the preview frames, so the panel around it does not redraw with every frame.
+private struct HTMLFeedPicture: View {
+    @ObservedObject var feed: HTMLPreviewFeed
+
+    var body: some View {
+        if let img = feed.image {
+            Image(uiImage: img).resizable().interpolation(.medium)
+                .aspectRatio(img.size.width / max(img.size.height, 1), contentMode: .fit)
+                .frame(maxWidth: .infinity)
+        } else {
+            ProgressView().tint(.white).frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+    }
+}
+
 /// Preview of a template that is not armed (e.g. choosing the next graphic while another is on air):
 /// its own web page, the 1920×1080 page fitted into a frame with the program's aspect, over PVW.
 struct HTMLTemplatePreview: View {
@@ -543,7 +556,7 @@ struct HTMLTemplatePreview: View {
 
     var body: some View {
         ZStack {
-            if let background { MonitorView(store: background, maxFPS: 10) } else { Color(white: 0.3) }
+            if let background { MonitorView(store: background, maxFPS: 5) } else { Color(white: 0.3) }
             HTMLPreviewView(template: template, source: "", values: values, design: design, playToken: playToken)
                 .aspectRatio(16 / 9, contentMode: .fit)
             GeometryReader { g in

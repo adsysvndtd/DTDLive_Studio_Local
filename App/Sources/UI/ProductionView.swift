@@ -908,7 +908,7 @@ struct TransitionColumn: View {
                         .frame(width: compact ? 30 : 38, height: compact ? 86 : 124)
                 }
                 .padding(.vertical, 4)
-                onKey("SuperFG", on: engine.foregroundOn, enabled: engine.superFGArmed) { engine.foregroundOn.toggle() }
+                onKey("SuperFG", on: engine.foregroundOn, armed: engine.superFGArmed, enabled: engine.superFGArmed) { engine.foregroundOn.toggle() }
                 onKey("Title", on: engine.armedTitleVisible, enabled: !engine.titles.isEmpty) { engine.toggleArmedTitle() }
                 onKey("HTML", on: engine.html.onAir, enabled: engine.html.loadedID != nil) { engine.html.toggle() }
                 onKey("Title 2", on: engine.secondTitle?.visible ?? false, enabled: engine.secondTitle != nil) { engine.toggleSecondTitle() }
@@ -922,15 +922,18 @@ struct TransitionColumn: View {
         .background(DS.surface)
     }
 
-    /// Layer keys styled like hardware: "<name> On", lit white while the layer is on air.
-    private func onKey(_ t: String, on: Bool, enabled: Bool = true, suffix: Bool = true, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
+    /// Layer keys styled like hardware: "<name> On", lit white while the layer is on air;
+    /// `armed` (something selected, ready to go) lights it amber.
+    private func onKey(_ t: String, on: Bool, armed: Bool = false, enabled: Bool = true, suffix: Bool = true, action: @escaping () -> Void) -> some View {
+        let lit = !on && armed
+        let amber = Color(red: 1, green: 0.66, blue: 0.1)
+        return Button(action: action) {
             Text(LocalizedStringKey(suffix ? "\(t) On" : t)).font(.system(size: compact ? 11 : 13, weight: .semibold)).lineLimit(1).minimumScaleFactor(0.7)
                 .frame(maxWidth: .infinity, minHeight: compact ? 29 : 37)
-                .foregroundStyle(on ? .black : DS.text2)
-                .background(on ? Color.white : DS.surface2, in: RoundedRectangle(cornerRadius: 4))
-                .overlay(RoundedRectangle(cornerRadius: 4).stroke(Color.white.opacity(on ? 0 : 0.12)))
-                .shadow(color: on ? .white.opacity(0.35) : .clear, radius: 6)
+                .foregroundStyle(on || lit ? .black : DS.text2)
+                .background(on ? Color.white : (lit ? amber : DS.surface2), in: RoundedRectangle(cornerRadius: 4))
+                .overlay(RoundedRectangle(cornerRadius: 4).stroke(Color.white.opacity(on || lit ? 0 : 0.12)))
+                .shadow(color: on ? .white.opacity(0.35) : (lit ? amber.opacity(0.45) : .clear), radius: 6)
         }
         .buttonStyle(.plain)
         .disabled(!enabled).opacity(enabled ? 1 : 0.4)
