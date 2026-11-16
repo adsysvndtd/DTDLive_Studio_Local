@@ -8,6 +8,7 @@ struct ScoreboardControl: View {
     var compact = false
     @State private var showLayout = false
     @State private var editing = false
+    @State private var showPad = false
 
     var body: some View {
         if let i = engine.scoreboardIndex {
@@ -16,6 +17,7 @@ struct ScoreboardControl: View {
                 HStack(spacing: 8) {
                     Image(systemName: "sportscourt.fill").font(compact ? .caption : .body).foregroundStyle(DS.accent)
                     Text("Bảng tỉ số").font(compact ? .caption.weight(.bold) : .subheadline.weight(.bold))
+                    SportPickerMenu(engine: engine, compact: compact)
                     Spacer()
                     if t.visible { Text("TRÊN SÓNG").font(.caption2.weight(.heavy)).foregroundStyle(DS.pgm) }
                     assign("→ Title", on: (engine.armedTitleID ?? engine.titles.first?.id) == t.id) { engine.armedTitleID = t.id }
@@ -34,7 +36,8 @@ struct ScoreboardControl: View {
                 NavigationStack {
                     ScrollView {
                         ScoreboardEditor(item: Binding(get: { engine.titles.first { $0.id == t.id } ?? t },
-                                                       set: { n in engine.updateScoreboard { $0 = n } }))
+                                                       set: { n in engine.updateScoreboard { $0 = n; StudioEngine.syncSport(&$0) } }),
+                                         engine: engine)
                             .padding()
                     }
                     .background(DS.bg)
@@ -43,6 +46,7 @@ struct ScoreboardControl: View {
                 }
                 .presentationDetents([.large])
             }
+            .sheet(isPresented: $showPad) { SportScorePad(engine: engine) }
         } else {
             Button { engine.ensureScoreboard() } label: {
                 Label("Thêm bảng tỉ số", systemImage: "sportscourt").frame(maxWidth: .infinity)
@@ -51,7 +55,16 @@ struct ScoreboardControl: View {
         }
     }
 
+    @ViewBuilder
     private func teams(_ t: TitleItem) -> some View {
+        if t.sportBoard != nil {
+            SportQuickBar(engine: engine) { showPad = true }
+        } else {
+            freeTeams(t)
+        }
+    }
+
+    private func freeTeams(_ t: TitleItem) -> some View {
         HStack(spacing: 8) {
             team(name: t.line1, score: t.scoreA, home: true)
             Text("–").foregroundStyle(DS.text3)
@@ -76,14 +89,19 @@ struct ScoreboardControl: View {
 
     @ViewBuilder private func clock(_ t: TitleItem) -> some View {
         let b = t.sb
-        if b.showClock {
+        let sport = t.sportBoard
+        // sport mode: the rules engine owns the clock (bóng đá) or shot clock (bi-a); set sports have none
+        let show = sport.map { $0.display(lang: .current, at: Date()).clock != nil } ?? b.showClock
+        let running = sport?.needsTicking ?? b.running
+        if show {
             HStack(spacing: 4) {
                 TimelineView(.periodic(from: .now, by: 1)) { ctx in
-                    Text(b.clockText(ctx.date)).font(.system(size: 15, weight: .semibold, design: .monospaced))
+                    Text(verbatim: t.adaptedForSport(now: ctx.date).sb.clockText(ctx.date))
+                        .font(.system(size: 15, weight: .semibold, design: .monospaced))
                 }
                 Button { engine.scoreboardClockToggle() } label: {
-                    Image(systemName: b.running ? "pause.fill" : "play.fill").font(.system(size: 12)).frame(width: 30, height: 30)
-                        .background(b.running ? DS.pgm.opacity(0.7) : DS.surface2, in: Circle())
+                    Image(systemName: running ? "pause.fill" : "play.fill").font(.system(size: 12)).frame(width: 30, height: 30)
+                        .background(running ? DS.pgm.opacity(0.7) : DS.surface2, in: Circle())
                 }.buttonStyle(.plain)
             }
         }
@@ -94,9 +112,14 @@ struct ScoreboardControl: View {
             iconButton("pencil", on: false) { editing = true }
             iconButton("rectangle.3.group", on: showLayout) { withAnimation(.easeOut(duration: 0.15)) { showLayout.toggle() } }
             Menu {
-                Button("Sửa tên, logo, màu…") { editing = true }
+                Button("Bảng nhập điểm…") { showPad = true }
+                Button("Sửa tên, logo, màu, luật…") { editing = true }
                 Button("Đặt lại đồng hồ") { engine.scoreboardClockReset() }
-                Button("Đặt lại tỉ số 0 - 0") { engine.updateScoreboard { $0.scoreA = 0; $0.scoreB = 0 } }
+                if t.sportBoard != nil {
+                    Button("Trận mới (giữ luật)") { engine.restartSportMatch() }
+                } else {
+                    Button("Đặt lại tỉ số 0 - 0") { engine.updateScoreboard { $0.scoreA = 0; $0.scoreB = 0 } }
+                }
                 Button("Đổi bên (tên, tỉ số, logo)") { engine.updateScoreboard { $0.swapScoreboardSides() } }
                 Divider()
                 Button("Xoá bảng tỉ số", role: .destructive) { engine.removeTitle(t.id) }
@@ -204,6 +227,7 @@ struct ScoreboardControl: View {
 /// colours, period, match clock (count up / count down with duration).
 struct ScoreboardEditor: View {
     @Binding var item: TitleItem
+    var engine: StudioEngine? = nil
     @State private var homePick: PhotosPickerItem?
     @State private var awayPick: PhotosPickerItem?
 
@@ -214,6 +238,7 @@ struct ScoreboardEditor: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             preview
+            if let engine { SportRulesEditor(engine: engine) }
             teamBlock("Đội nhà", name: $item.line1, sub: board.homeSub, score: $item.scoreA, logo: item.sb.homeLogo,
                       pick: $homePick, color: board.homeColor) { var b = item.sb; b.homeLogo = nil; item.sb = b }
             teamBlock("Đội khách", name: $item.line2, sub: board.awaySub, score: $item.scoreB, logo: item.sb.awayLogo,
@@ -275,7 +300,9 @@ struct ScoreboardEditor: View {
                 TextField("Tên đội", text: name).font(.system(size: 14, weight: .semibold))
                     .padding(.horizontal, 8).frame(height: 34)
                     .background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
-                Stepper("\(score.wrappedValue)", value: score, in: 0...999).font(.system(size: 14, weight: .bold)).fixedSize()
+                if item.sb.sport == nil {
+                    Stepper("\(score.wrappedValue)", value: score, in: 0...999).font(.system(size: 14, weight: .bold)).fixedSize()
+                }
             }
             HStack(spacing: 8) {
                 TextField("Dòng phụ (tuỳ chọn)", text: sub).font(.system(size: 13))
