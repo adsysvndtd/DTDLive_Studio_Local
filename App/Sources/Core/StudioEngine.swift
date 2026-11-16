@@ -145,13 +145,16 @@ final class StudioEngine: ObservableObject {
         }
     }
     @Published var fadeToBlack = false { didSet { switcher.setFadeToBlack(fadeToBlack) } }
-    @Published private(set) var audioLevel: Float = -60
+    /// Program peak (dBFS). Lives in `meters` so only the meter views redraw ~10×/s, not the whole studio.
+    var audioLevel: Float { meters.level }
+    /// Channel list and settings (gain, mute, AFV…). Levels are in `meters.levels`; `level` here is not live.
     @Published private(set) var audioChannels: [AudioChannelState] = []
+    let meters = LiveMeters()
     @Published var titles: [TitleItem] = [] { didSet { saveTitles() } }
     @Published private(set) var processing: [UUID: SourceProcessing] = [:]
     @Published var scopeKind: ScopeKind = .waveform
     @Published var scopesEnabled = false
-    @Published private(set) var scopeResult = ScopeAnalyzer.Result()
+    var scopeResult: ScopeAnalyzer.Result { meters.scope }
     @Published var ptz: [UUID: PTZConfig] = [:]
     @Published var externalMode: ExternalMode = .program
     @Published var externalDisplayConnected = false
@@ -266,9 +269,16 @@ final class StudioEngine: ObservableObject {
             Task { @MainActor in
                 guard let self else { return }
                 // Assign only on change: every @Published write re-renders the whole studio view.
+                let m = self.meters
                 let level = (self.audio.peakDB * 2).rounded() / 2
-                if level != self.audioLevel { self.audioLevel = level }
-                let ch = self.audio.channels.map { c -> AudioChannelState in var c = c; c.level = (c.level * 2).rounded() / 2; return c }
+                if level != m.level { m.level = level }
+                var levels: [UUID: Float] = [:]
+                let ch = self.audio.channels.map { c -> AudioChannelState in
+                    levels[c.id] = (c.level * 2).rounded() / 2
+                    var s = c; s.level = -60; return s
+                }
+                if levels != m.levels { m.levels = levels }
+                // the channel list itself only changes when a source, gain, mute… changes
                 if ch != self.audioChannels { self.audioChannels = ch }
             }
         })
@@ -398,6 +408,7 @@ final class StudioEngine: ObservableObject {
         guard program != tally.program || preview != tally.preview else { return }
         let old = tally.program
         tally = (program, preview)
+        layoutSource.setActive(program.contains(layoutSource.id) || preview.contains(layoutSource.id))
         audio.setProgram(program, main: switcher.state.program)
         for id in program.symmetricDifference(old) {
             Task { await ptzControllers[id]?.tally(program.contains(id)) }
@@ -948,7 +959,7 @@ final class StudioEngine: ObservableObject {
         let s = scopes
         Task.detached(priority: .utility) {
             let r = s.analyze(pb)
-            await MainActor.run { [weak self] in self?.scopeResult = r }
+            await MainActor.run { [weak self] in self?.meters.scope = r }
         }
     }
 
@@ -1575,4 +1586,14 @@ extension StudioEngine: ControlTarget {
         let pgm = ids.contains { tally.program.contains($0) }, pvw = ids.contains { tally.preview.contains($0) }
         return Data("{\"program\":\(pgm),\"preview\":\(pvw)}".utf8)
     }
+}
+
+/// Values that change many times a second (audio peaks, scopes). Observed only by the small views that
+/// draw them, so the rest of the interface does not redraw with every meter tick.
+@MainActor
+final class LiveMeters: ObservableObject {
+    @Published var level: Float = -60
+    @Published var levels: [UUID: Float] = [:]
+    @Published var scope = ScopeAnalyzer.Result()
+    func level(_ id: UUID?) -> Float { id.map { levels[$0] ?? -60 } ?? level }
 }

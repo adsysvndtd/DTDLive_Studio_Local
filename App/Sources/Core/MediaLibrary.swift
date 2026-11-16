@@ -125,15 +125,21 @@ final class ImageSource: VideoSource {
     private var buffer: CVPixelBuffer?
 
     init(url: URL) { self.url = url; name = url.deletingPathExtension().lastPathComponent }
+    private static let ci = CIContext(options: [.cacheIntermediates: false])
 
     func start() async {
         guard let img = UIImage(contentsOfFile: url.path)?.normalized(), let cg = img.cgImage else { status = .error("Không đọc được ảnh"); return }
-        let ci = CIImage(cgImage: cg)
+        // A 12 MP photo kept as a full-size BGRA frame is ~48 MB per picture input; the program is at most
+        // 1080p (4K pictures still look sharp scaled from 2× that), so keep it no larger than 3840 px wide.
+        var ci = CIImage(cgImage: cg)
+        let k = min(1, 3840 / CGFloat(cg.width), 2160 / CGFloat(cg.height))
+        if k < 1 { ci = ci.transformed(by: CGAffineTransform(scaleX: k, y: k)) }
+        let w = Int((CGFloat(cg.width) * k).rounded()), h = Int((CGFloat(cg.height) * k).rounded())
         var pb: CVPixelBuffer?
-        CVPixelBufferCreate(nil, cg.width, cg.height, kCVPixelFormatType_32BGRA,
+        CVPixelBufferCreate(nil, w, h, kCVPixelFormatType_32BGRA,
                             [kCVPixelBufferIOSurfacePropertiesKey: [:]] as CFDictionary, &pb)
         guard let pb else { return }
-        CIContext().render(ci, to: pb)
+        Self.ci.render(ci, to: pb)
         buffer = pb
         frames.put(pb)
         // FrameStore treats sources silent for >2 s as "no signal"; refresh the still once a second.

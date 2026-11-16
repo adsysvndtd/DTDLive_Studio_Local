@@ -96,12 +96,21 @@ final class LayoutSource: VideoSource {
         name = "BỐ CỤC \(template.id)"
     }
 
+    /// On PGM / PVW / PiP: 30 fps. Otherwise only the multiview thumbnail and the layout panel watch it,
+    /// so it renders at 10 fps (blur, scaling and compositing of every window used to run at 30 fps forever).
+    func setActive(_ on: Bool) { renderer.setActive(on) }
+
     func start() async {
         status = .live
         let r = renderer, store = frames
         let t = DispatchSource.makeTimerSource(queue: queue)
         t.schedule(deadline: .now(), repeating: 1.0 / 30)
-        t.setEventHandler { if let pb = r.render() { store.put(pb) } }
+        var tick = 0
+        t.setEventHandler {
+            tick &+= 1
+            guard r.isActive || tick % 3 == 0 else { return }
+            if let pb = r.render() { store.put(pb) }
+        }
         t.resume()
         timer = t
     }
@@ -122,6 +131,10 @@ final class LayoutRenderer: @unchecked Sendable {
     fileprivate var frameCache: [String: CIImage] = [:]
     private var pool: CVPixelBufferPool?
     private let ci = CIContext(options: [.cacheIntermediates: false])
+    private var active = true
+
+    var isActive: Bool { os_unfair_lock_lock(&lock); defer { os_unfair_lock_unlock(&lock) }; return active }
+    func setActive(_ on: Bool) { os_unfair_lock_lock(&lock); active = on; os_unfair_lock_unlock(&lock) }
 
     func update(template: LayoutTemplate, inputs: [FrameStore?], size: CGSize, background: FrameStore?,
                 still: CIImage? = nil, color: CIColor? = nil, frame: LayoutFrame = LayoutFrame(), frameImage: CIImage? = nil) {

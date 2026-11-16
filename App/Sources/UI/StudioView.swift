@@ -111,7 +111,7 @@ struct StudioView: View {
             if engine.isRecording { Pill(text: "REC", color: DS.pgm.opacity(0.25), dot: DS.pgm) }
             Spacer(minLength: 4)
             if !compact { Pill(text: String(format: "%.1f Mbps", Double(engine.currentBitrate) / 1e6)) }
-            LevelMeter(db: engine.audioLevel).frame(width: compact ? 50 : 90, height: 5)
+            LiveLevel(meters: engine.meters, id: nil) { LevelMeter(db: $0) }.frame(width: compact ? 50 : 90, height: 5)
             barButton("arrow.uturn.backward", "Hoàn tác") { engine.undo() }.disabled(!engine.canUndo).opacity(engine.canUndo ? 1 : 0.4)
                 .keyboardShortcut("z", modifiers: .command)
             barButton("arrow.uturn.forward", "Làm lại") { engine.redo() }.disabled(!engine.canRedo).opacity(engine.canRedo ? 1 : 0.4)
@@ -252,7 +252,7 @@ struct StudioView: View {
                                          clearToken: $clearDrawing)
                     }
                 } else if scopesOnPreview {
-                    ScopeView(kind: engine.scopeKind, result: engine.scopeResult)
+                    LiveScope(meters: engine.meters, kind: engine.scopeKind)
                         .frame(width: compact ? 130 : 200, height: compact ? 70 : 110)
                         .opacity(0.9)
                         .overlay(alignment: .topTrailing) {
@@ -289,7 +289,9 @@ struct StudioView: View {
     private var monitorInfo: some View {
         VStack(alignment: .leading, spacing: 1) {
             Text("\(engine.format.width)×\(engine.format.height) · \(engine.format.fps) fps · \(engine.encoder.codec.label)")
-            Text(String(format: L("%.1f Mbps · Âm thanh %.0f dBFS"), Double(engine.currentBitrate) / 1e6, engine.audioLevel))
+            LiveLevel(meters: engine.meters, id: nil) { lvl in
+                Text(String(format: L("%.1f Mbps · Âm thanh %.0f dBFS"), Double(engine.currentBitrate) / 1e6, lvl))
+            }
         }
         .font(.system(size: 10, weight: .semibold, design: .monospaced))
         .padding(5).background(Color.black.opacity(0.55), in: Rectangle())
@@ -443,6 +445,20 @@ struct TBarLEDs: View {
         }
         .frame(width: 8)
     }
+}
+
+/// Redraws only its content when a meter changes (see LiveMeters).
+struct LiveLevel<Content: View>: View {
+    @ObservedObject var meters: LiveMeters
+    let id: UUID?
+    @ViewBuilder var content: (Float) -> Content
+    var body: some View { content(meters.level(id)) }
+}
+
+struct LiveScope: View {
+    @ObservedObject var meters: LiveMeters
+    let kind: ScopeKind
+    var body: some View { ScopeView(kind: kind, result: meters.scope) }
 }
 
 struct LevelMeter: View {

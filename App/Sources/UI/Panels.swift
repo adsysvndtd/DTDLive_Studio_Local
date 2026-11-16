@@ -350,7 +350,7 @@ struct AudioPanel: View {
                         }
                         LabeledSlider(title: "Âm lượng", value: Binding(get: { Double(c.gain) }, set: { var n = c; n.gain = Float($0); engine.updateAudioChannel(n) }),
                                       range: 0...2) { String(format: "%+.0f dB", 20 * log10(max($0, 0.001))) }
-                        LevelMeter(db: c.level).frame(height: 6)
+                        LiveLevel(meters: engine.meters, id: c.id) { LevelMeter(db: $0) }.frame(height: 6)
                     }
                     .padding(.vertical, 4)
                     if c.id != engine.audioChannels.last?.id { Divider().overlay(DS.stroke) }
@@ -557,7 +557,7 @@ struct ScopesPanel: View {
             Picker("", selection: $engine.scopeKind) { ForEach(ScopeKind.allCases) { Text($0.label).tag($0) } }
                 .pickerStyle(.segmented)
             if engine.scopesEnabled {
-                ScopeView(kind: engine.scopeKind, result: engine.scopeResult).frame(height: 200)
+                LiveScope(meters: engine.meters, kind: engine.scopeKind).frame(height: 200)
             }
         }
     }

@@ -46,13 +46,9 @@ final class AutoSwitcher: ObservableObject {
             next = inputs.filter { $0 != engine.programID }.randomElement() ?? inputs.first
         case .audio:
             guard Date().timeIntervalSince(lastSwitch) >= holdMinimum else { return }
-            let levels = engine.audioChannels
-            next = inputs.max { a, b in
-                let la = levels.first { $0.id == (audioMap[a] ?? a) }?.level ?? -60
-                let lb = levels.first { $0.id == (audioMap[b] ?? b) }?.level ?? -60
-                return la < lb
-            }
-            if let n = next, let l = levels.first(where: { $0.id == (audioMap[n] ?? n) })?.level, l < -40 { return }
+            let levels = engine.meters.levels
+            next = inputs.max { a, b in (levels[audioMap[a] ?? a] ?? -60) < (levels[audioMap[b] ?? b] ?? -60) }
+            if let n = next, let l = levels[audioMap[n] ?? n], l < -40 { return }
         }
         guard let next, next != engine.programID else { return }
         engine.select(next)

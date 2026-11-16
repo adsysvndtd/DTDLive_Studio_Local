@@ -143,7 +143,7 @@ final class FileSource: VideoSource {
     /// Loop at end of file (default) or hold the last frame.
     var loops = true
 
-    private(set) var isPlaying = false
+    private(set) var isPlaying = false { didSet { if isPlaying != oldValue { updateLinkRate() } } }
 
     init(name: String, url: URL) {
         self.name = name
@@ -255,6 +255,12 @@ final class FileSource: VideoSource {
     func restart() {
         if let b = boundary { player.removeTimeObserver(b); boundary = nil }
         player.seek(to: .zero); player.play(); isPlaying = true
+    }
+
+    /// Paused / ended: the display link only keeps the still alive, a few times a second is plenty.
+    private func updateLinkRate() {
+        link?.preferredFrameRateRange = isPlaying ? CAFrameRateRange(minimum: 24, maximum: 60, preferred: 30)
+                                                  : CAFrameRateRange(minimum: 2, maximum: 8, preferred: 4)
     }
 
     func stop() async {

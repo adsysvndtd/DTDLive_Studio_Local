@@ -100,6 +100,9 @@ final class PairingManager: ObservableObject {
             return json(["status": "accepted-pending", "requestId": req.id.uuidString, "confirmCode": code, "trusted": true])
         }
         pending.append(req)
+        // requests come from the LAN: keep the list (and memory) bounded
+        if pending.count > 20 { pending.removeFirst(pending.count - 20) }
+        if states.count > 200 { states = states.filter { s in pending.contains { $0.id == s.key } } }
         states[req.id] = .pending
         return json(["status": "pending", "requestId": req.id.uuidString, "confirmCode": code,
                      "studioName": "DTDStudio", "studioId": studioID])

@@ -65,15 +65,17 @@ final class LayerMonitorView: UIView {
 
 final class MonitorMTKView: MTKView {
     var store: FrameStore
-    private let ci: CIContext
-    private let queue: MTLCommandQueue
+    /// One Metal device / Core Image context / command queue for every monitor on screen. Each monitor used
+    /// to create its own context (with its own caches and GPU memory) — a full multiview held a dozen.
+    private static let device = MTLCreateSystemDefaultDevice()!
+    private static let sharedCI = CIContext(mtlDevice: device, options: [.cacheIntermediates: false])
+    private static let sharedQueue = device.makeCommandQueue()!
+    private var ci: CIContext { Self.sharedCI }
+    private var queue: MTLCommandQueue { Self.sharedQueue }
 
     init(store: FrameStore) {
         self.store = store
-        let dev = MTLCreateSystemDefaultDevice()!
-        ci = CIContext(mtlDevice: dev, options: [.cacheIntermediates: false])
-        queue = dev.makeCommandQueue()!
-        super.init(frame: .zero, device: dev)
+        super.init(frame: .zero, device: Self.device)
         framebufferOnly = false
         colorPixelFormat = .bgra8Unorm
         clearColor = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 1)

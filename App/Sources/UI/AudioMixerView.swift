@@ -15,10 +15,11 @@ struct AudioMixerView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(alignment: .top, spacing: compact ? 4 : 8) {
                     ForEach(engine.audioChannels) { c in
+                        LiveLevel(meters: engine.meters, id: c.id) { lvl in
                         ChannelStrip(name: c.name,
                                      db: gainMode ? Double(c.trim) : dB(c.gain),
                                      gainMode: gainMode,
-                                     level: c.level, muted: c.muted, solo: c.solo, afv: c.followVideo, compact: compact,
+                                     level: lvl, muted: c.muted, solo: c.solo, afv: c.followVideo, compact: compact,
                                      delayMs: c.id == AudioCapture.micID ? engine.micDelayMs : nil,
                                      onDB: { v in
                                          var n = c
@@ -30,12 +31,15 @@ struct AudioMixerView: View {
                                      onSolo: { var n = c; n.solo.toggle(); engine.updateAudioChannel(n) },
                                      onAFV: { var n = c; n.followVideo.toggle(); engine.updateAudioChannel(n) },
                                      onDelay: { engine.micDelayMs = min(500, max(0, engine.micDelayMs + $0)) })
+                        }
                     }
-                    ChannelStrip(name: "PGM", db: dB(engine.masterGain), gainMode: false, level: engine.audioLevel,
+                    LiveLevel(meters: engine.meters, id: nil) { lvl in
+                    ChannelStrip(name: "PGM", db: dB(engine.masterGain), gainMode: false, level: lvl,
                                  muted: false, solo: false, afv: false, compact: compact, isMaster: true,
                                  onDB: { v in engine.masterGain = v <= -59 ? 0 : Float(pow(10, v / 20)) },
                                  onNudge: { engine.masterNudge(Float($0)) },
                                  onMute: {}, onSolo: {}, onAFV: {}, onDelay: { _ in })
+                    }
                 }
                 .padding(.vertical, 4)
             }
