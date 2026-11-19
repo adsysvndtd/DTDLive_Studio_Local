@@ -9906,6 +9906,146 @@
           }
         }
       }
+    },
+    "Mờ + trượt nhẹ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fade + short slide"
+          }
+        }
+      }
+    },
+    "Cắt (không hiệu ứng)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cut (no effect)"
+          }
+        }
+      }
+    },
+    "Trượt vào từ trái": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slide in from left"
+          }
+        }
+      }
+    },
+    "Trượt vào từ phải": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slide in from right"
+          }
+        }
+      }
+    },
+    "Trượt lên từ dưới": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slide up from below"
+          }
+        }
+      }
+    },
+    "Lau ngang": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wipe"
+          }
+        }
+      }
+    },
+    "Xoá title “%@”?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete title “%@”?"
+          }
+        }
+      }
+    },
+    "Tắt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Off"
+          }
+        }
+      }
+    },
+    "On": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "On"
+          }
+        }
+      }
+    },
+    "FX": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "FX"
+          }
+        }
+      }
+    },
+    "Hiệu ứng vào / ra": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In / out effect"
+          }
+        }
+      }
+    },
+    "Gán phím T1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Assign to T1"
+          }
+        }
+      }
+    },
+    "Gán phím T2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Assign to T2"
+          }
+        }
+      }
+    },
+    "Thêm thao tác": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "More"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

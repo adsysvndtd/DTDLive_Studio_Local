@@ -75,7 +75,12 @@ struct SidePanel: View {
 
 struct TitlesPanel: View {
     @ObservedObject var engine: StudioEngine
-    @State private var editingID: UUID?
+    /// Title open in the editor (the panel's "Thêm" opens a new title here straight away).
+    var editing: Binding<UUID?>? = nil
+    @State private var ownEditing: UUID?
+    @State private var deleting: TitleItem?
+
+    private var editingID: Binding<UUID?> { editing ?? $ownEditing }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -83,36 +88,76 @@ struct TitlesPanel: View {
                 titleRow(item)
             }
         }
-        .sheet(item: Binding(get: { editingID.map { IDBox(id: $0) } }, set: { editingID = $0?.id })) { box in
+        .sheet(item: Binding(get: { editingID.wrappedValue.map { IDBox(id: $0) } }, set: { editingID.wrappedValue = $0?.id })) { box in
             if let i = engine.titles.firstIndex(where: { $0.id == box.id }) {
                 TitleEditorSheet(item: $engine.titles[i], program: engine.switcher.programMonitor) {
-                    editingID = nil; engine.removeTitle(box.id)
+                    editingID.wrappedValue = nil; engine.removeTitle(box.id)
                 }
             }
         }
+        .confirmationDialog(LF("Xoá title “%@”?", deleting.map(preview) ?? ""), isPresented: Binding(
+            get: { deleting != nil }, set: { if !$0 { deleting = nil } }), titleVisibility: .visible) {
+            Button("Xoá", role: .destructive) { if let d = deleting { engine.removeTitle(d.id) }; deleting = nil }
+        }
     }
 
+    /// One title: name / style · On (lên sóng) · Sửa · FX · ⋯ (T1/T2, nhân bản) · Xoá
     private func titleRow(_ item: TitleItem) -> some View {
         HStack(spacing: 6) {
             Image(systemName: icon(item.style)).font(.system(size: 12)).foregroundStyle(DS.accent).frame(width: 16)
             VStack(alignment: .leading, spacing: 0) {
                 Text(verbatim: preview(item)).font(.system(size: 12, weight: .semibold)).lineLimit(1)
-                Text(item.style.label).font(.system(size: 10)).foregroundStyle(DS.text3).lineLimit(1)
+                Text(verbatim: item.style.label + " · " + (item.fx ?? .fadeSlide).label).font(.system(size: 10)).foregroundStyle(DS.text3).lineLimit(1)
             }
             Spacer(minLength: 4)
-            if item.visible { Circle().fill(DS.pgm).frame(width: 7, height: 7) }
-            assignChip("T1", on: (engine.armedTitleID ?? engine.titles.first?.id) == item.id) { engine.armedTitleID = item.id }
-            assignChip("T2", on: engine.secondTitle?.id == item.id) { engine.armedTitle2ID = item.id }
-            Button { editingID = item.id } label: {
-                Image(systemName: "pencil").font(.system(size: 12, weight: .semibold)).frame(width: 26, height: 24)
-                    .foregroundStyle(.white).background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
+            // on air / off air, with the title's own effect
+            Button { engine.setTitleVisible(item.id, !item.visible) } label: {
+                Text(item.visible ? "Tắt" : "On").font(.system(size: 11, weight: .bold)).frame(width: 40, height: 26)
+                    .foregroundStyle(item.visible ? .white : .black)
+                    .background(item.visible ? DS.pgm : Color.white, in: RoundedRectangle(cornerRadius: DS.radius))
             }.buttonStyle(.plain)
+            rowButton("pencil", "Sửa") { editingID.wrappedValue = item.id }
+            Menu {
+                Picker("Hiệu ứng vào / ra", selection: Binding(get: { item.fx ?? .fadeSlide }, set: { v in
+                    var t = item; t.fx = v; engine.upsertTitle(t) })) {
+                    ForEach(TitleFX.allCases) { Label($0.label, systemImage: $0.icon).tag($0) }
+                }
+                Picker("Thời gian", selection: Binding(get: { item.fxDuration ?? 0.35 }, set: { v in
+                    var t = item; t.fxDuration = v; engine.upsertTitle(t) })) {
+                    ForEach([0.2, 0.35, 0.6, 1.0, 1.5], id: \.self) { Text(verbatim: String(format: "%.2g s", $0)).tag($0) }
+                }
+            } label: { rowLabel("sparkles", "FX") }
+            Menu {
+                Button { engine.armedTitleID = item.id } label: { Label("Gán phím T1", systemImage: "1.square") }
+                Button { engine.armedTitle2ID = item.id } label: { Label("Gán phím T2", systemImage: "2.square") }
+                Button {
+                    var t = item; t.id = UUID(); t.visible = false; engine.upsertTitle(t)
+                } label: { Label("Nhân bản", systemImage: "plus.square.on.square") }
+            } label: { rowLabel("ellipsis", "Thêm thao tác") }
+            rowButton("trash", "Xoá", tint: DS.pgm) { deleting = item }
         }
         .padding(.horizontal, 8).padding(.vertical, 5)
         .background(DS.surface, in: RoundedRectangle(cornerRadius: DS.radius))
         .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(item.visible ? DS.pgm : DS.stroke, lineWidth: 1))
+        .overlay(alignment: .topLeading) {
+            let t1 = (engine.armedTitleID ?? engine.titles.first?.id) == item.id, t2 = engine.secondTitle?.id == item.id
+            if t1 || t2 {
+                Text(verbatim: t1 ? "T1" : "T2").font(.system(size: 8, weight: .heavy)).foregroundStyle(.black)
+                    .padding(.horizontal, 3).background(Color.white, in: RoundedRectangle(cornerRadius: 2)).offset(x: -3, y: -4)
+            }
+        }
         .contentShape(Rectangle())
-        .onTapGesture(count: 2) { editingID = item.id }
+        .onTapGesture(count: 2) { editingID.wrappedValue = item.id }
+    }
+
+    private func rowButton(_ icon: String, _ label: String, tint: Color = .white, action: @escaping () -> Void) -> some View {
+        Button(action: action) { rowLabel(icon, label, tint: tint) }.buttonStyle(.plain)
+    }
+
+    private func rowLabel(_ icon: String, _ label: String, tint: Color = .white) -> some View {
+        Image(systemName: icon).font(.system(size: 12, weight: .semibold)).frame(width: 28, height: 26)
+            .foregroundStyle(tint).background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
+            .accessibilityLabel(Text(LocalizedStringKey(label)))
     }
 
     private func preview(_ t: TitleItem) -> String {
@@ -132,14 +177,6 @@ struct TitlesPanel: View {
         }
     }
 
-    private func assignChip(_ t: String, on: Bool, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Text(verbatim: t).font(.system(size: 10, weight: .bold)).frame(width: 26, height: 24)
-                .foregroundStyle(on ? .black : DS.text2)
-                .background(on ? Color.white : DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
-        }
-        .buttonStyle(.plain)
-    }
 }
 
 private struct IDBox: Identifiable { let id: UUID }

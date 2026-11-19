@@ -51,6 +51,39 @@ struct TitleItem: Identifiable, Codable, Equatable {
     var bg1Hex: String? = nil
     var bg2Hex: String? = nil
     var bgOpacity: CGFloat? = nil
+    /// In / out effect (nil = fade + short slide, the original look) and its duration in seconds.
+    var fx: TitleFX? = nil
+    var fxDuration: Double? = nil
+}
+
+/// How a title comes on and goes off.
+enum TitleFX: String, Codable, CaseIterable, Identifiable {
+    case fadeSlide, fade, cut, slideLeft, slideRight, slideUp, wipe, zoom
+    var id: String { rawValue }
+    var label: String {
+        switch self {
+        case .fadeSlide: return L("Mờ + trượt nhẹ")
+        case .fade: return L("Mờ dần")
+        case .cut: return L("Cắt (không hiệu ứng)")
+        case .slideLeft: return L("Trượt vào từ trái")
+        case .slideRight: return L("Trượt vào từ phải")
+        case .slideUp: return L("Trượt lên từ dưới")
+        case .wipe: return L("Lau ngang")
+        case .zoom: return L("Phóng to")
+        }
+    }
+    var icon: String {
+        switch self {
+        case .fadeSlide: return "arrow.right.circle"
+        case .fade: return "circle.lefthalf.filled"
+        case .cut: return "scissors"
+        case .slideLeft: return "arrow.right.to.line"
+        case .slideRight: return "arrow.left.to.line"
+        case .slideUp: return "arrow.up.to.line"
+        case .wipe: return "rectangle.lefthalf.inset.filled.arrow.left"
+        case .zoom: return "arrow.up.left.and.arrow.down.right"
+        }
+    }
 }
 
 /// Renders TitleItems to CIImages (cached; re-rendered only when content changes),
@@ -86,15 +119,35 @@ final class TitleRenderer: @unchecked Sendable {
             lock.lock()
             let shown = shownAt[item.id], hidden = hiddenAt[item.id]
             lock.unlock()
-            var alpha: CGFloat = 1
-            if item.visible, let shown { alpha = min(1, (now - shown) / animation) }
-            else if !item.visible, let hidden { alpha = max(0, 1 - (now - hidden) / animation); if alpha == 0 { continue } }
+            let fx = item.fx ?? .fadeSlide
+            let dur = fx == .cut ? 0 : max(0.05, item.fxDuration ?? animation)
+            var p: CGFloat = 1
+            if item.visible, let shown { p = dur == 0 ? 1 : CGFloat(min(1, (now - shown) / dur)) }
+            else if !item.visible, let hidden { p = dur == 0 ? 0 : CGFloat(max(0, 1 - (now - hidden) / dur)); if p <= 0 { continue } }
             else if !item.visible { continue }
+            let e = 1 - pow(1 - p, 3)              // ease-out
+            var alpha: CGFloat = (fx == .fadeSlide || fx == .fade || fx == .zoom) ? e : 1
 
             guard var img = image(for: item, canvas: canvas, now: now) else { continue }
-            let slide = (1 - alpha) * 40
-            let x = item.position.x * canvas.width - slide
-            let y = (1 - item.position.y) * canvas.height - img.extent.height
+            let w = img.extent.width, h = img.extent.height, k = canvas.width / 1920
+            var x = item.position.x * canvas.width
+            var y = (1 - item.position.y) * canvas.height - h
+            switch fx {
+            case .fadeSlide: x -= (1 - e) * 40 * k
+            case .slideLeft: x -= (1 - e) * (x + w)
+            case .slideRight: x += (1 - e) * (canvas.width - x)
+            case .slideUp: y -= (1 - e) * (y + h)
+            case .wipe:
+                if e < 1 { img = img.cropped(to: CGRect(x: img.extent.minX, y: img.extent.minY, width: w * e, height: h)) }
+                if e <= 0.001 { continue }
+            case .zoom:
+                let s = 0.7 + 0.3 * e
+                img = img.transformed(by: CGAffineTransform(translationX: -w / 2, y: -h / 2)
+                    .concatenating(CGAffineTransform(scaleX: s, y: s))
+                    .concatenating(CGAffineTransform(translationX: w / 2, y: h / 2)))
+            case .fade, .cut: break
+            }
+            if item.style == .ticker { alpha = e }
             if item.style == .ticker {
                 let travel = canvas.width + img.extent.width
                 let offset = CGFloat((now - (shown ?? now))) * item.tickerSpeed * canvas.width / 1920

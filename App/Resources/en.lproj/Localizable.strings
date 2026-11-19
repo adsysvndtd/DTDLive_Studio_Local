@@ -187,6 +187,7 @@
 "Cầu lông" = "Badminton";
 "Cập nhật từ Git" = "Update from Git";
 "Cắm camera USB-C hoặc thiết bị capture (UVC) vào iPad — nó hiện ở đây ngay (iPadOS 17 trở lên)." = "Plug a USB-C camera or UVC capture device into the iPad — it shows up here right away (iPadOS 17 or later).";
+"Cắt (không hiệu ứng)" = "Cut (no effect)";
 "Cổ điển" = "Classic";
 "Cổng RTMP" = "RTMP port";
 "Cổng RTSP" = "RTSP port";
@@ -217,6 +218,7 @@
 "Dừng nhận" = "Stop";
 "Dừng tất cả" = "Stop all";
 "Email" = "Email";
+"FX" = "FX";
 "Facebook giới hạn số lần gọi — tạm dừng 5 phút rồi nhận tiếp" = "Facebook rate limit reached — pausing 5 minutes, then resuming";
 "Facebook phát lên" = "Facebook publishes to";
 "Facebook › Video trực tiếp › Phần mềm phát trực tiếp › Khoá luồng." = "Facebook › Live video › Streaming software › Stream key.";
@@ -251,6 +253,8 @@
 "Giữ đến khi tắt" = "Hold until off";
 "Google OAuth Client ID (loại iOS)" = "Google OAuth Client ID (iOS type)";
 "Gán nguồn" = "Assign sources";
+"Gán phím T1" = "Assign to T1";
+"Gán phím T2" = "Assign to T2";
 "Gán title vào phím Title / Title 2, rồi bấm “Title On” ở cột phải để lên sóng" = "Assign a title to the Title / Title 2 key, then press “Title On” to go on air";
 "Góc" = "Corners";
 "Góc ngắm" = "Viewfinder";
@@ -291,6 +295,7 @@
 "Hiệu ứng chạy cùng chuyển động sẵn có của mẫu; ra bằng hiệu ứng ngược lại." = "The effect runs together with the template's own animation; it leaves with the reverse.";
 "Hiệu ứng chữ" = "Text effect";
 "Hiệu ứng màu" = "Colour finish";
+"Hiệu ứng vào / ra" = "In / out effect";
 "Hiệu ứng âm thanh" = "Sound effects";
 "Hoà trộn" = "Dissolve";
 "Hoàn tác" = "Undo";
@@ -381,6 +386,7 @@
 "LIVE · Xanh đá" = "LIVE · Slate";
 "LIVE · Đỏ" = "LIVE · Red";
 "LUẬT THI ĐẤU" = "MATCH RULES";
+"Lau ngang" = "Wipe";
 "Link xem (tuỳ chọn)" = "Watch link (optional)";
 "Link xem (tuỳ chọn, vd https://youtube.com/@kenh/live)" = "Watch link (optional, e.g. https://youtube.com/@channel/live)";
 "Link xem live" = "Live watch link";
@@ -476,6 +482,7 @@
 "Mỗi giao thức dùng chung một cổng; mỗi camera đặt một stream key riêng (cam1, cam2…) và tự hiện thành một nguồn." = "One port per protocol; each camera uses its own stream key (cam1, cam2…) and appears as a source.";
 "Mỗi hiệp %lld phút" = "%lld minutes per period";
 "Một khung giữa" = "Single centre";
+"Mờ + trượt nhẹ" = "Fade + short slide";
 "Mờ dần" = "Fade";
 "Mờ nét" = "Blur";
 "Mở DTDLive (hoặc app hỗ trợ DTD pairing) trên cùng mạng Wi-Fi → chọn DTDStudio → so ID xác nhận → Chấp nhận. Không cần nhập mã." = "Open DTDLive on the same Wi-Fi → pick DTDStudio → compare the confirmation ID → Accept. No code to type.";
@@ -547,6 +554,7 @@
 "Nội dung (ngăn bằng |)" = "Content (separate with |)";
 "Nội dung chữ chạy" = "Ticker text";
 "Nửa trái" = "Left half";
+"On" = "On";
 "Oswald (cao, hẹp)" = "Oswald (tall, narrow)";
 "PHÁT REPLAY" = "PLAY REPLAY";
 "PNG có tâm trong suốt, lấy từ thư viện SuperFG" = "PNG with a transparent centre, from the SuperFG library";
@@ -652,6 +660,7 @@
 "Thêm khung" = "Add window";
 "Thêm link xem" = "Add watch link";
 "Thêm nguồn" = "Add source";
+"Thêm thao tác" = "More";
 "Thêm title" = "Add title";
 "Thêm đích" = "Add destination";
 "Thông số" = "Info";
@@ -707,8 +716,11 @@
 "Trên phải" = "Top right";
 "Trên sóng" = "On air";
 "Trên trái" = "Top left";
+"Trượt lên từ dưới" = "Slide up from below";
 "Trượt từ phải" = "Slide from right";
 "Trượt từ trái" = "Slide from left";
+"Trượt vào từ phải" = "Slide in from right";
+"Trượt vào từ trái" = "Slide in from left";
 "Trạng thái" = "Status";
 "Trận mới (giữ luật)" = "New match (same rules)";
 "Trễ âm thanh Mic/Line: %@ ms" = "Mic/Line audio delay: %@ ms";
@@ -740,6 +752,7 @@
 "Tải lên %@ kbps · hàng đợi %@ KB" = "Upload %@ kbps · queue %@ KB";
 "Tải lại danh sách Trang" = "Reload Pages";
 "TẮT" = "OFF";
+"Tắt" = "Off";
 "Tắt khi không dùng replay để đỡ nóng máy và tiết kiệm pin." = "Turn off when not using replay to keep the device cool and save battery.";
 "Tắt tự động chuyển cảnh" = "Turn off auto switching";
 "Tệp" = "Files";
@@ -804,6 +817,7 @@
 "Xoá nguồn" = "Remove source";
 "Xoá nét" = "Clear drawing";
 "Xoá title" = "Delete title";
+"Xoá title “%@”?" = "Delete title “%@”?";
 "Xoá tài khoản" = "Delete account";
 "Xoá vĩnh viễn tài khoản này?" = "Delete this account permanently?";
 "Xoá vĩnh viễn tài khoản và dữ liệu đăng nhập. Gói đang dùng trên tài khoản sẽ mất; thuê bao App Store vẫn huỷ trong Cài đặt › Apple ID." = "Permanently deletes the account and its sign-in data. Plans on the account are lost; App Store subscriptions are still cancelled in Settings › Apple ID.";

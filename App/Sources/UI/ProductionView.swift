@@ -112,6 +112,7 @@ struct CategoryContent: View {
     @State private var showOutputs = false
     /// Title category: HTML5 graphics · classic titles · scoreboard, each on its own tab.
     @AppStorage("ui.titleTab") private var titleTab = 0
+    @State private var editingTitle: UUID?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -234,6 +235,7 @@ struct CategoryContent: View {
                                 t.logoFile = engine.currentLogoURL?.lastPathComponent
                             }
                             engine.upsertTitle(t)
+                            editingTitle = t.id      // step 2: edit the new title straight away
                         }
                     }
                 } label: { toolbarLabel("Thêm title", "plus") }
@@ -340,7 +342,7 @@ struct CategoryContent: View {
             .pickerStyle(.segmented)
             switch titleTab {
             case 1:
-                TitlesPanel(engine: engine)
+                TitlesPanel(engine: engine, editing: $editingTitle)
                 if engine.titles.enumerated().allSatisfy({ $0.offset == engine.scoreboardIndex }) {
                     emptyHint("Chưa có title — bấm Thêm title ở góc trên")
                 }

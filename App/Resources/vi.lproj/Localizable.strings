@@ -187,6 +187,7 @@
 "Cầu lông" = "Cầu lông";
 "Cập nhật từ Git" = "Cập nhật từ Git";
 "Cắm camera USB-C hoặc thiết bị capture (UVC) vào iPad — nó hiện ở đây ngay (iPadOS 17 trở lên)." = "Cắm camera USB-C hoặc thiết bị capture (UVC) vào iPad — nó hiện ở đây ngay (iPadOS 17 trở lên).";
+"Cắt (không hiệu ứng)" = "Cắt (không hiệu ứng)";
 "Cổ điển" = "Cổ điển";
 "Cổng RTMP" = "Cổng RTMP";
 "Cổng RTSP" = "Cổng RTSP";
@@ -217,6 +218,7 @@
 "Dừng nhận" = "Dừng nhận";
 "Dừng tất cả" = "Dừng tất cả";
 "Email" = "Email";
+"FX" = "FX";
 "Facebook giới hạn số lần gọi — tạm dừng 5 phút rồi nhận tiếp" = "Facebook giới hạn số lần gọi — tạm dừng 5 phút rồi nhận tiếp";
 "Facebook phát lên" = "Facebook phát lên";
 "Facebook › Video trực tiếp › Phần mềm phát trực tiếp › Khoá luồng." = "Facebook › Video trực tiếp › Phần mềm phát trực tiếp › Khoá luồng.";
@@ -251,6 +253,8 @@
 "Giữ đến khi tắt" = "Giữ đến khi tắt";
 "Google OAuth Client ID (loại iOS)" = "Google OAuth Client ID (loại iOS)";
 "Gán nguồn" = "Gán nguồn";
+"Gán phím T1" = "Gán phím T1";
+"Gán phím T2" = "Gán phím T2";
 "Gán title vào phím Title / Title 2, rồi bấm “Title On” ở cột phải để lên sóng" = "Gán title vào phím Title / Title 2, rồi bấm “Title On” ở cột phải để lên sóng";
 "Góc" = "Góc";
 "Góc ngắm" = "Góc ngắm";
@@ -291,6 +295,7 @@
 "Hiệu ứng chạy cùng chuyển động sẵn có của mẫu; ra bằng hiệu ứng ngược lại." = "Hiệu ứng chạy cùng chuyển động sẵn có của mẫu; ra bằng hiệu ứng ngược lại.";
 "Hiệu ứng chữ" = "Hiệu ứng chữ";
 "Hiệu ứng màu" = "Hiệu ứng màu";
+"Hiệu ứng vào / ra" = "Hiệu ứng vào / ra";
 "Hiệu ứng âm thanh" = "Hiệu ứng âm thanh";
 "Hoà trộn" = "Hoà trộn";
 "Hoàn tác" = "Hoàn tác";
@@ -381,6 +386,7 @@
 "LIVE · Xanh đá" = "LIVE · Xanh đá";
 "LIVE · Đỏ" = "LIVE · Đỏ";
 "LUẬT THI ĐẤU" = "LUẬT THI ĐẤU";
+"Lau ngang" = "Lau ngang";
 "Link xem (tuỳ chọn)" = "Link xem (tuỳ chọn)";
 "Link xem (tuỳ chọn, vd https://youtube.com/@kenh/live)" = "Link xem (tuỳ chọn, vd https://youtube.com/@kenh/live)";
 "Link xem live" = "Link xem live";
@@ -476,6 +482,7 @@
 "Mỗi giao thức dùng chung một cổng; mỗi camera đặt một stream key riêng (cam1, cam2…) và tự hiện thành một nguồn." = "Mỗi giao thức dùng chung một cổng; mỗi camera đặt một stream key riêng (cam1, cam2…) và tự hiện thành một nguồn.";
 "Mỗi hiệp %lld phút" = "Mỗi hiệp %lld phút";
 "Một khung giữa" = "Một khung giữa";
+"Mờ + trượt nhẹ" = "Mờ + trượt nhẹ";
 "Mờ dần" = "Mờ dần";
 "Mờ nét" = "Mờ nét";
 "Mở DTDLive (hoặc app hỗ trợ DTD pairing) trên cùng mạng Wi-Fi → chọn DTDStudio → so ID xác nhận → Chấp nhận. Không cần nhập mã." = "Mở DTDLive (hoặc app hỗ trợ DTD pairing) trên cùng mạng Wi-Fi → chọn DTDStudio → so ID xác nhận → Chấp nhận. Không cần nhập mã.";
@@ -547,6 +554,7 @@
 "Nội dung (ngăn bằng |)" = "Nội dung (ngăn bằng |)";
 "Nội dung chữ chạy" = "Nội dung chữ chạy";
 "Nửa trái" = "Nửa trái";
+"On" = "On";
 "Oswald (cao, hẹp)" = "Oswald (cao, hẹp)";
 "PHÁT REPLAY" = "PHÁT REPLAY";
 "PNG có tâm trong suốt, lấy từ thư viện SuperFG" = "PNG có tâm trong suốt, lấy từ thư viện SuperFG";
@@ -652,6 +660,7 @@
 "Thêm khung" = "Thêm khung";
 "Thêm link xem" = "Thêm link xem";
 "Thêm nguồn" = "Thêm nguồn";
+"Thêm thao tác" = "Thêm thao tác";
 "Thêm title" = "Thêm title";
 "Thêm đích" = "Thêm đích";
 "Thông số" = "Thông số";
@@ -707,8 +716,11 @@
 "Trên phải" = "Trên phải";
 "Trên sóng" = "Trên sóng";
 "Trên trái" = "Trên trái";
+"Trượt lên từ dưới" = "Trượt lên từ dưới";
 "Trượt từ phải" = "Trượt từ phải";
 "Trượt từ trái" = "Trượt từ trái";
+"Trượt vào từ phải" = "Trượt vào từ phải";
+"Trượt vào từ trái" = "Trượt vào từ trái";
 "Trạng thái" = "Trạng thái";
 "Trận mới (giữ luật)" = "Trận mới (giữ luật)";
 "Trễ âm thanh Mic/Line: %@ ms" = "Trễ âm thanh Mic/Line: %@ ms";
@@ -740,6 +752,7 @@
 "Tải lên %@ kbps · hàng đợi %@ KB" = "Tải lên %@ kbps · hàng đợi %@ KB";
 "Tải lại danh sách Trang" = "Tải lại danh sách Trang";
 "TẮT" = "TẮT";
+"Tắt" = "Tắt";
 "Tắt khi không dùng replay để đỡ nóng máy và tiết kiệm pin." = "Tắt khi không dùng replay để đỡ nóng máy và tiết kiệm pin.";
 "Tắt tự động chuyển cảnh" = "Tắt tự động chuyển cảnh";
 "Tệp" = "Tệp";
@@ -804,6 +817,7 @@
 "Xoá nguồn" = "Xoá nguồn";
 "Xoá nét" = "Xoá nét";
 "Xoá title" = "Xoá title";
+"Xoá title “%@”?" = "Xoá title “%@”?";
 "Xoá tài khoản" = "Xoá tài khoản";
 "Xoá vĩnh viễn tài khoản này?" = "Xoá vĩnh viễn tài khoản này?";
 "Xoá vĩnh viễn tài khoản và dữ liệu đăng nhập. Gói đang dùng trên tài khoản sẽ mất; thuê bao App Store vẫn huỷ trong Cài đặt › Apple ID." = "Xoá vĩnh viễn tài khoản và dữ liệu đăng nhập. Gói đang dùng trên tài khoản sẽ mất; thuê bao App Store vẫn huỷ trong Cài đặt › Apple ID.";
