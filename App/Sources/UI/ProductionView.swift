@@ -650,6 +650,41 @@ struct CategoryContent: View {
                 .buttonStyle(.plain)
             }
         }
+        imageStingers
+    }
+
+    /// Image stinger: a still picture (PNG with transparency works best) that sweeps over the frame with the
+    /// chosen motion; the cameras switch while it covers the screen. Uses the SuperFG library.
+    @ViewBuilder private var imageStingers: some View {
+        let images = library.list(.overlay).filter { ["png", "jpg", "jpeg", "heic", "webp"].contains($0.pathExtension.lowercased()) }
+        let active = engine.superFGStingerReady ? engine.libraryCardURL : nil
+        sectionHeader("Stinger ảnh")
+        HStack(spacing: 10) {
+            Picker("Chuyển động", selection: $engine.superFG.libraryMotion) {
+                ForEach(SuperFGMotion.allCases) { Text($0.label).tag($0.rawValue) }
+            }
+            .pickerStyle(.menu)
+            if active != nil {
+                Button("Bỏ stinger") { engine.superFG.asTransition = false }.font(DS.fBodyBold).buttonStyle(.bordered)
+            }
+            Spacer()
+            importImageMenu(.overlay)
+        }
+        if images.isEmpty {
+            emptyHint("Nhập ảnh PNG (nền trong suốt) làm stinger — nó quét qua khung hình, camera chuyển khi ảnh che kín.")
+        } else {
+            Text("Chạm một ảnh để dùng làm chuyển cảnh cho Cut / Auto / T-bar").font(.caption2).foregroundStyle(DS.text3)
+            LazyVGrid(columns: columns, spacing: compact ? 6 : 10) {
+                ForEach(images, id: \.self) { url in
+                    LibraryCell(url: url, kind: .overlay, selected: url == active)
+                        .onTapGesture {
+                            engine.useForeground(url)
+                            if !engine.superFG.asTransition { engine.superFG.asTransition = true }
+                        }
+                        .contextMenu { Button("Xoá khỏi thư viện", role: .destructive) { library.delete(url) } }
+                }
+            }
+        }
     }
 
     // MARK: Media library grids

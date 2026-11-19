@@ -68,6 +68,7 @@
 "Bắt đầu đếm khi bấm LÊN SÓNG" = "Bắt đầu đếm khi bấm LÊN SÓNG";
 "Bỏ SuperFG" = "Bỏ SuperFG";
 "Bỏ logo" = "Bỏ logo";
+"Bỏ stinger" = "Bỏ stinger";
 "Bỏ ảnh nền" = "Bỏ ảnh nền";
 "BỐ CỤC" = "BỐ CỤC";
 "BỐ CỤC %@" = "BỐ CỤC %@";
@@ -97,6 +98,7 @@
 "Chuyển màu dọc" = "Chuyển màu dọc";
 "Chuyển màu ngang" = "Chuyển màu ngang";
 "Chuyển sang 1080×1920" = "Chuyển sang 1080×1920";
+"Chuyển động" = "Chuyển động";
 "Chân trang" = "Chân trang";
 "Chính" = "Chính";
 "Chính + 2 phụ hàng ngang" = "Chính + 2 phụ hàng ngang";
@@ -137,6 +139,7 @@
 "Chạm một mẫu để nạp (đang trên sóng thì thay ngay); bật/tắt bằng SuperFG On ở cột phải. Sửa chữ, màu cập nhật ngay." = "Chạm một mẫu để nạp (đang trên sóng thì thay ngay); bật/tắt bằng SuperFG On ở cột phải. Sửa chữ, màu cập nhật ngay.";
 "Chạm một thẻ hoặc ảnh trong thư viện bên dưới để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh." = "Chạm một thẻ hoặc ảnh trong thư viện bên dưới để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh.";
 "Chạm một thẻ để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh." = "Chạm một thẻ để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh.";
+"Chạm một ảnh để dùng làm chuyển cảnh cho Cut / Auto / T-bar" = "Chạm một ảnh để dùng làm chuyển cảnh cho Cut / Auto / T-bar";
 "Chạm để nạp, bật/tắt bằng phím ở cột phải" = "Chạm để nạp, bật/tắt bằng phím ở cột phải";
 "Chạm để đưa lên PVW, rồi Cut / chuyển cảnh ở cột phải" = "Chạm để đưa lên PVW, rồi Cut / chuyển cảnh ở cột phải";
 "Chạy hiệu ứng" = "Chạy hiệu ứng";
@@ -533,6 +536,7 @@
 "Nhập video" = "Nhập video";
 "Nhập điểm" = "Nhập điểm";
 "Nhập ảnh" = "Nhập ảnh";
+"Nhập ảnh PNG (nền trong suốt) làm stinger — nó quét qua khung hình, camera chuyển khi ảnh che kín." = "Nhập ảnh PNG (nền trong suốt) làm stinger — nó quét qua khung hình, camera chuyển khi ảnh che kín.";
 "Nạp" = "Nạp";
 "Nạp %@" = "Nạp %@";
 "Nạp (tắt mẫu đang phát)" = "Nạp (tắt mẫu đang phát)";
@@ -613,6 +617,7 @@
 "Set đến %lld điểm" = "Set đến %lld điểm";
 "Show đã lưu (Files › DTDStudio › Shows)" = "Show đã lưu (Files › DTDStudio › Shows)";
 "Side-out (chỉ bên giao ghi điểm)" = "Side-out (chỉ bên giao ghi điểm)";
+"Stinger ảnh" = "Stinger ảnh";
 "SuperFG của bạn (PNG trong suốt · video có kênh alpha .mov)" = "SuperFG của bạn (PNG trong suốt · video có kênh alpha .mov)";
 "SuperFG của bạn: ảnh PNG/JPG chạy như thẻ có hiệu ứng · video .mov có kênh alpha" = "SuperFG của bạn: ảnh PNG/JPG chạy như thẻ có hiệu ứng · video .mov có kênh alpha";
 "SuperFG đang trên PGM" = "SuperFG đang trên PGM";

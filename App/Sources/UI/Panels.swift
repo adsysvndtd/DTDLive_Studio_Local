@@ -428,73 +428,50 @@ struct SourcePanel: View {
     var fixedSource: UUID? = nil
     @State private var selected: UUID?
     @State private var importLUT = false
+    @AppStorage("ui.adjustTab") private var tabRaw = AdjustTab.color.rawValue
+
+    /// One group of settings at a time instead of a long column of cards.
+    enum AdjustTab: String, CaseIterable, Identifiable {
+        case color, key, geometry, camera, ptz
+        var id: String { rawValue }
+        var label: String {
+            switch self {
+            case .color: return L("Màu sắc")
+            case .key: return "Key"
+            case .geometry: return L("Hình học")
+            case .camera: return "Camera"
+            case .ptz: return "PTZ"
+            }
+        }
+        var icon: String {
+            switch self {
+            case .color: return "camera.filters"
+            case .key: return "person.crop.rectangle"
+            case .geometry: return "crop.rotate"
+            case .camera: return "camera.aperture"
+            case .ptz: return "move.3d"
+            }
+        }
+    }
 
     var body: some View {
         let id = fixedSource ?? selected ?? engine.previewID
-        VStack(alignment: .leading, spacing: DS.gap) {
-            if fixedSource == nil {
-            SectionCard("Nguồn đang chỉnh", systemImage: "camera") {
-                Picker("Nguồn", selection: Binding(get: { id }, set: { selected = $0 })) {
-                    ForEach(engine.sources, id: \.id) { Text($0.name).tag(Optional($0.id)) }
-                }
-                .pickerStyle(.menu)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            }
+        VStack(alignment: .leading, spacing: 8) {
+            if fixedSource == nil { sourceStrip(current: id) }
             if let id {
-                let p = engine.processingFor(id)
-                SectionCard("Màu sắc", systemImage: "camera.filters",
-                            trailing: AnyView(Button("Đặt lại") { engine.setProcessing(id, SourceProcessing()) }.font(DS.fBody))) {
-                    slider(id, "Phơi sáng", Double(p.exposure), -2...2, { String(format: "%+.1f EV", $0) }) { var n = p; n.exposure = Float($0); return n }
-                    slider(id, "Tương phản", Double(p.contrast), 0.5...1.5, { String(format: "%.2f", $0) }) { var n = p; n.contrast = Float($0); return n }
-                    slider(id, "Bão hoà", Double(p.saturation), 0...2, { String(format: "%.2f", $0) }) { var n = p; n.saturation = Float($0); return n }
-                    slider(id, "Nhiệt độ màu", Double(p.temperature), 3000...10000, { "\(Int($0)) K" }) { var n = p; n.temperature = Float($0); return n }
-                    slider(id, "Tint", Double(p.tint), -100...100, { "\(Int($0))" }) { var n = p; n.tint = Float($0); return n }
-                    HStack {
-                        Text("LUT").font(DS.fBody).foregroundStyle(DS.text2)
-                        Picker("LUT", selection: Binding(get: { p.lutName }, set: { var n = p; n.lutName = $0; engine.setProcessing(id, n) })) {
-                            Text("Không").tag(String?.none)
-                            ForEach(ProcessingRenderer.availableLUTs(), id: \.self) { Text($0).tag(Optional($0)) }
-                        }
-                        .pickerStyle(.menu)
-                        Spacer()
-                        Button("Nạp .cube") { importLUT = true }.font(DS.fBody)
+                let cam = engine.sources.first(where: { $0.id == id }) as? CameraSource
+                let tabs = AdjustTab.allCases.filter { $0 != .camera || cam != nil }
+                let tab = tabs.first { $0.rawValue == tabRaw } ?? .color
+                // preview beside the controls (stacked when the panel is narrow)
+                ViewThatFits(in: .horizontal) {
+                    HStack(alignment: .top, spacing: 12) {
+                        preview(id).frame(width: 240)
+                        controls(id, tab: tab, tabs: tabs, cam: cam).frame(minWidth: 340, maxWidth: .infinity)
                     }
-                }
-                SectionCard("Chroma key", systemImage: "person.crop.rectangle",
-                            trailing: AnyView(Toggle("", isOn: Binding(get: { p.chromaEnabled }, set: { var n = p; n.chromaEnabled = $0; engine.setProcessing(id, n) })).labelsHidden())) {
-                    if p.chromaEnabled {
-                        Picker("Màu nền", selection: Binding(get: { p.keyHue }, set: { var n = p; n.keyHue = $0; engine.setProcessing(id, n) })) {
-                            Text("Xanh lá").tag(Float(120)); Text("Xanh dương").tag(Float(240))
-                        }.pickerStyle(.segmented)
-                        slider(id, "Dung sai", Double(p.keyTolerance), 5...80, { "\(Int($0))°" }) { var n = p; n.keyTolerance = Float($0); return n }
-                        slider(id, "Mềm biên", Double(p.keySoftness), 0...40, { "\(Int($0))°" }) { var n = p; n.keySoftness = Float($0); return n }
-                        HStack {
-                            Text("Nền thay thế").font(DS.fBody).foregroundStyle(DS.text2)
-                            Spacer()
-                            Picker("Nền", selection: Binding(get: { p.keyBackgroundID }, set: { var n = p; n.keyBackgroundID = $0; engine.setProcessing(id, n) })) {
-                                Text("Trong suốt").tag(UUID?.none)
-                                ForEach(engine.sources.filter { $0.id != id }, id: \.id) { Text($0.name).tag(Optional($0.id)) }
-                            }
-                            .pickerStyle(.menu)
-                        }
-                    } else {
-                        Text("Bật để xoá phông xanh lá / xanh dương").font(DS.fBody).foregroundStyle(DS.text3)
+                    VStack(alignment: .leading, spacing: 8) {
+                        preview(id).frame(maxWidth: 320)
+                        controls(id, tab: tab, tabs: tabs, cam: cam)
                     }
-                }
-                SectionCard("Hình học", systemImage: "crop.rotate") {
-                    Toggle("Lật gương", isOn: Binding(get: { p.mirror }, set: { var n = p; n.mirror = $0; engine.setProcessing(id, n) }))
-                    Picker("Xoay", selection: Binding(get: { p.turns }, set: { var n = p; n.rotate180 = false; n.quarterTurns = $0 == 0 ? nil : $0; engine.setProcessing(id, n) })) {
-                        Text(verbatim: "0°").tag(0); Text(verbatim: "90°").tag(1); Text(verbatim: "180°").tag(2); Text(verbatim: "270°").tag(3)
-                    }
-                    .pickerStyle(.segmented)
-                }
-                .font(DS.fBody)
-                if let cam = engine.sources.first(where: { $0.id == id }) as? CameraSource {
-                    CameraControlCard(camera: cam)
-                }
-                SectionCard("Điều khiển PTZ", systemImage: "move.3d") {
-                    PTZPanel(engine: engine, sourceID: id)
                 }
             } else {
                 Text("Chọn một nguồn ở hàng PREVIEW để chỉnh").font(DS.fBody).foregroundStyle(DS.text3)
@@ -506,10 +483,138 @@ struct SourcePanel: View {
         }
     }
 
+    /// Inputs as chips (tally colours); tap one to adjust it.
+    private func sourceStrip(current: UUID?) -> some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 6) {
+                ForEach(engine.sources, id: \.id) { s in
+                    let on = s.id == current
+                    let tally: Color = engine.programID == s.id ? DS.pgm : engine.previewID == s.id ? DS.pvw : .clear
+                    Button { selected = s.id } label: {
+                        HStack(spacing: 5) {
+                            Circle().fill(tally == .clear ? DS.text3.opacity(0.4) : tally).frame(width: 7, height: 7)
+                            Text(verbatim: s.name).font(.system(size: 12, weight: .semibold)).lineLimit(1)
+                        }
+                        .padding(.horizontal, 10).frame(height: 28)
+                        .foregroundStyle(on ? .black : .white)
+                        .background(on ? Color.white : DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
+                        .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(tally == .clear ? DS.stroke : tally, lineWidth: tally == .clear ? 1 : 2))
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+    }
+
+    /// Processed picture: PVW / PGM monitor when the input is there, otherwise the input itself.
+    private func preview(_ id: UUID) -> some View {
+        let store = id == engine.previewID ? engine.switcher.previewMonitor
+            : id == engine.programID ? engine.switcher.programMonitor
+            : engine.sources.first { $0.id == id }?.frames
+        return ZStack {
+            Color.black
+            if let store { MonitorView(store: store, maxFPS: 15) }
+        }
+        .aspectRatio(CGFloat(engine.format.width) / CGFloat(max(engine.format.height, 1)), contentMode: .fit)
+        .clipShape(RoundedRectangle(cornerRadius: DS.radius))
+        .overlay(alignment: .topLeading) {
+            let label = id == engine.programID ? "PGM" : id == engine.previewID ? "PVW" : L("Nguồn")
+            Text(verbatim: label).font(.system(size: 10, weight: .bold)).padding(.horizontal, 5).padding(.vertical, 2)
+                .background(id == engine.programID ? DS.pgm : id == engine.previewID ? DS.pvw : Color.black.opacity(0.6), in: RoundedRectangle(cornerRadius: 3))
+                .padding(4)
+        }
+    }
+
+    @ViewBuilder private func controls(_ id: UUID, tab: AdjustTab, tabs: [AdjustTab], cam: CameraSource?) -> some View {
+        let p = engine.processingFor(id)
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 4) {
+                ForEach(tabs) { t in
+                    Button { tabRaw = t.rawValue } label: {
+                        Label(t.label, systemImage: t.icon).font(.system(size: 12, weight: .semibold)).lineLimit(1)
+                            .padding(.horizontal, 8).frame(height: 28)
+                            .foregroundStyle(t == tab ? .black : DS.text2)
+                            .background(t == tab ? DS.accent : DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
+                    }
+                    .buttonStyle(.plain)
+                }
+                Spacer(minLength: 0)
+                if tab == .color || tab == .geometry || tab == .key {
+                    Button("Đặt lại") {
+                        var n = p
+                        switch tab {
+                        case .color: let d = SourceProcessing(); n.exposure = d.exposure; n.contrast = d.contrast; n.saturation = d.saturation
+                            n.temperature = d.temperature; n.tint = d.tint; n.lutName = nil
+                        case .key: n.chromaEnabled = false
+                        default: n.mirror = false; n.rotate180 = false; n.quarterTurns = nil
+                        }
+                        engine.setProcessing(id, n)
+                    }
+                    .font(.system(size: 12, weight: .semibold))
+                }
+            }
+            switch tab {
+            case .color:
+                slider(id, "Phơi sáng", Double(p.exposure), -2...2, { String(format: "%+.1f EV", $0) }) { var n = p; n.exposure = Float($0); return n }
+                slider(id, "Tương phản", Double(p.contrast), 0.5...1.5, { String(format: "%.2f", $0) }) { var n = p; n.contrast = Float($0); return n }
+                slider(id, "Bão hoà", Double(p.saturation), 0...2, { String(format: "%.2f", $0) }) { var n = p; n.saturation = Float($0); return n }
+                slider(id, "Nhiệt độ màu", Double(p.temperature), 3000...10000, { "\(Int($0)) K" }) { var n = p; n.temperature = Float($0); return n }
+                slider(id, "Tint", Double(p.tint), -100...100, { "\(Int($0))" }) { var n = p; n.tint = Float($0); return n }
+                HStack {
+                    Text("LUT").font(DS.fBody).foregroundStyle(DS.text2).frame(width: 96, alignment: .leading)
+                    Picker("LUT", selection: Binding(get: { p.lutName }, set: { var n = p; n.lutName = $0; engine.setProcessing(id, n) })) {
+                        Text("Không").tag(String?.none)
+                        ForEach(ProcessingRenderer.availableLUTs(), id: \.self) { Text($0).tag(Optional($0)) }
+                    }
+                    .pickerStyle(.menu)
+                    Spacer()
+                    Button("Nạp .cube") { importLUT = true }.font(DS.fBody)
+                }
+            case .key:
+                Toggle("Chroma key", isOn: Binding(get: { p.chromaEnabled }, set: { var n = p; n.chromaEnabled = $0; engine.setProcessing(id, n) }))
+                    .font(DS.fBodyBold)
+                if p.chromaEnabled {
+                    Picker("Màu nền", selection: Binding(get: { p.keyHue }, set: { var n = p; n.keyHue = $0; engine.setProcessing(id, n) })) {
+                        Text("Xanh lá").tag(Float(120)); Text("Xanh dương").tag(Float(240))
+                    }.pickerStyle(.segmented)
+                    slider(id, "Dung sai", Double(p.keyTolerance), 5...80, { "\(Int($0))°" }) { var n = p; n.keyTolerance = Float($0); return n }
+                    slider(id, "Mềm biên", Double(p.keySoftness), 0...40, { "\(Int($0))°" }) { var n = p; n.keySoftness = Float($0); return n }
+                    HStack {
+                        Text("Nền thay thế").font(DS.fBody).foregroundStyle(DS.text2)
+                        Spacer()
+                        Picker("Nền", selection: Binding(get: { p.keyBackgroundID }, set: { var n = p; n.keyBackgroundID = $0; engine.setProcessing(id, n) })) {
+                            Text("Trong suốt").tag(UUID?.none)
+                            ForEach(engine.sources.filter { $0.id != id }, id: \.id) { Text($0.name).tag(Optional($0.id)) }
+                        }
+                        .pickerStyle(.menu)
+                    }
+                } else {
+                    Text("Bật để xoá phông xanh lá / xanh dương").font(DS.fBody).foregroundStyle(DS.text3)
+                }
+            case .geometry:
+                Toggle("Lật gương", isOn: Binding(get: { p.mirror }, set: { var n = p; n.mirror = $0; engine.setProcessing(id, n) })).font(DS.fBody)
+                Picker("Xoay", selection: Binding(get: { p.turns }, set: { var n = p; n.rotate180 = false; n.quarterTurns = $0 == 0 ? nil : $0; engine.setProcessing(id, n) })) {
+                    Text(verbatim: "0°").tag(0); Text(verbatim: "90°").tag(1); Text(verbatim: "180°").tag(2); Text(verbatim: "270°").tag(3)
+                }
+                .pickerStyle(.segmented)
+            case .camera:
+                if let cam { CameraControlRows(camera: cam).id(cam.id) }
+            case .ptz:
+                PTZPanel(engine: engine, sourceID: id)
+            }
+        }
+    }
+
+    /// One-line slider row: label · slider · value.
     private func slider(_ id: UUID, _ title: String, _ v: Double, _ range: ClosedRange<Double>,
                         _ fmt: @escaping (Double) -> String, _ make: @escaping (Double) -> SourceProcessing) -> some View {
-        LabeledSlider(title: title, value: Binding(get: { v }, set: { engine.setProcessing(id, make($0), undoable: false) }),
-                      range: range, format: fmt)
+        HStack(spacing: 8) {
+            Text(LocalizedStringKey(title)).font(.system(size: 13)).foregroundStyle(DS.text2).frame(width: 96, alignment: .leading)
+            Slider(value: Binding(get: { v }, set: { engine.setProcessing(id, make($0), undoable: false) }), in: range)
+                .tint(DS.accent).controlSize(.small)
+            Text(verbatim: fmt(v)).font(.system(size: 12).monospacedDigit()).foregroundStyle(DS.text3).frame(width: 64, alignment: .trailing)
+        }
+        .frame(height: 30)
     }
 }
 
@@ -866,10 +971,17 @@ struct TimelineStrip: View {
 /// Built-in / USB camera controls.
 struct CameraControlCard: View {
     let camera: CameraSource
+    var body: some View {
+        SectionCard("Điều khiển camera", systemImage: "camera.aperture") { CameraControlRows(camera: camera) }
+    }
+}
+
+struct CameraControlRows: View {
+    let camera: CameraSource
     @State private var c = CameraSource.Controls()
 
     var body: some View {
-        SectionCard("Điều khiển camera", systemImage: "camera.aperture") {
+        Group {
             if c.maxZoom > 1 {
                 LabeledSlider(title: "Zoom", value: Binding(get: { c.zoom }, set: { c.zoom = $0; camera.setZoom($0) }),
                               range: 1...c.maxZoom) { String(format: "%.1f×", $0) }

@@ -68,6 +68,7 @@
 "Bắt đầu đếm khi bấm LÊN SÓNG" = "Starts counting when taken on air";
 "Bỏ SuperFG" = "Remove SuperFG";
 "Bỏ logo" = "Clear logo";
+"Bỏ stinger" = "Remove stinger";
 "Bỏ ảnh nền" = "Clear background";
 "BỐ CỤC" = "LAYOUT";
 "BỐ CỤC %@" = "LAYOUT %@";
@@ -97,6 +98,7 @@
 "Chuyển màu dọc" = "Vertical gradient";
 "Chuyển màu ngang" = "Horizontal gradient";
 "Chuyển sang 1080×1920" = "Switch to 1080×1920";
+"Chuyển động" = "Motion";
 "Chân trang" = "Footer";
 "Chính" = "Main";
 "Chính + 2 phụ hàng ngang" = "Main + 2 side by side";
@@ -137,6 +139,7 @@
 "Chạm một mẫu để nạp (đang trên sóng thì thay ngay); bật/tắt bằng SuperFG On ở cột phải. Sửa chữ, màu cập nhật ngay." = "Tap a template to load it (replaces it live if on air); turn it on/off with SuperFG On. Text and colour update instantly.";
 "Chạm một thẻ hoặc ảnh trong thư viện bên dưới để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh." = "Tap a card or a picture in the library below to load it; SuperFG On plays its in-animation, then it leaves by itself (or holds until switched off). The small icon shows the transition type.";
 "Chạm một thẻ để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh." = "Tap a card to load it; SuperFG On plays its in-animation, then it leaves by itself (or holds until switched off). The small icon shows the transition type.";
+"Chạm một ảnh để dùng làm chuyển cảnh cho Cut / Auto / T-bar" = "Tap a picture to use it as the transition for Cut / Auto / T-bar";
 "Chạm để nạp, bật/tắt bằng phím ở cột phải" = "Tap to load; turn on/off with the keys on the right";
 "Chạm để đưa lên PVW, rồi Cut / chuyển cảnh ở cột phải" = "Tap to send to PVW, then Cut / transition on the right";
 "Chạy hiệu ứng" = "Play animation";
@@ -533,6 +536,7 @@
 "Nhập video" = "Import video";
 "Nhập điểm" = "Score entry";
 "Nhập ảnh" = "Import pictures";
+"Nhập ảnh PNG (nền trong suốt) làm stinger — nó quét qua khung hình, camera chuyển khi ảnh che kín." = "Import a PNG (transparent background) as a stinger — it sweeps across the frame and the cameras switch while it covers the screen.";
 "Nạp" = "Load";
 "Nạp %@" = "Load %@";
 "Nạp (tắt mẫu đang phát)" = "Load (takes the current one off air)";
@@ -613,6 +617,7 @@
 "Set đến %lld điểm" = "Set to %lld points";
 "Show đã lưu (Files › DTDStudio › Shows)" = "Saved shows (Files › DTDStudio › Shows)";
 "Side-out (chỉ bên giao ghi điểm)" = "Side-out (only the serving side scores)";
+"Stinger ảnh" = "Image stinger";
 "SuperFG của bạn (PNG trong suốt · video có kênh alpha .mov)" = "Your SuperFG (transparent PNG · alpha video .mov)";
 "SuperFG của bạn: ảnh PNG/JPG chạy như thẻ có hiệu ứng · video .mov có kênh alpha" = "Your SuperFG: PNG/JPG pictures play as cards with a transition · .mov video with alpha";
 "SuperFG đang trên PGM" = "SuperFG on PGM";

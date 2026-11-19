@@ -10046,6 +10046,56 @@
           }
         }
       }
+    },
+    "Stinger ảnh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Image stinger"
+          }
+        }
+      }
+    },
+    "Chuyển động": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Motion"
+          }
+        }
+      }
+    },
+    "Bỏ stinger": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove stinger"
+          }
+        }
+      }
+    },
+    "Nhập ảnh PNG (nền trong suốt) làm stinger — nó quét qua khung hình, camera chuyển khi ảnh che kín.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import a PNG (transparent background) as a stinger — it sweeps across the frame and the cameras switch while it covers the screen."
+          }
+        }
+      }
+    },
+    "Chạm một ảnh để dùng làm chuyển cảnh cho Cut / Auto / T-bar": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap a picture to use it as the transition for Cut / Auto / T-bar"
+          }
+        }
+      }
     }
   },
   "version": "1.0"
