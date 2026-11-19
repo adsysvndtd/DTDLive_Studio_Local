@@ -180,6 +180,7 @@
 "Chữ khi hết giờ" = "Chữ khi hết giờ";
 "Chữ lớn" = "Chữ lớn";
 "Chữ nhãn" = "Chữ nhãn";
+"Chữ nhật bo góc" = "Chữ nhật bo góc";
 "Chữ nhỏ dưới nhãn" = "Chữ nhỏ dưới nhãn";
 "Chữ số giờ" = "Chữ số giờ";
 "Chữ tên" = "Chữ tên";
@@ -321,6 +322,8 @@
 "Hình %@/s · Tiếng %@/s" = "Hình %@/s · Tiếng %@/s";
 "Hình %lf/s · Tiếng %lf/s" = "Hình %lf/s · Tiếng %lf/s";
 "Hình %lld/s · Tiếng %lld/s" = "Hình %lld/s · Tiếng %lld/s";
+"Hình bầu dục" = "Hình bầu dục";
+"Hình chữ nhật" = "Hình chữ nhật";
 "Hình học" = "Hình học";
 "Hạ replay" = "Hạ replay";
 "Hết bộ đệm khung hình — đã tạo lại (khung bị giữ ở bộ mã hoá)" = "Hết bộ đệm khung hình — đã tạo lại (khung bị giữ ở bộ mã hoá)";
@@ -771,6 +774,7 @@
 "Tên đội" = "Tên đội";
 "Tìm nguồn NDI" = "Tìm nguồn NDI";
 "Tính điểm" = "Tính điểm";
+"Tùy chỉnh (nhiều lớp)" = "Tùy chỉnh (nhiều lớp)";
 "Tương phản" = "Tương phản";
 "Tạm dừng" = "Tạm dừng";
 "Tạo live" = "Tạo live";
@@ -967,6 +971,7 @@
 "Đưa lên Preview" = "Đưa lên Preview";
 "Đưa vào Khung %@" = "Đưa vào Khung %@";
 "Đưa vào khung PiP" = "Đưa vào khung PiP";
+"Đường kẻ" = "Đường kẻ";
 "Đường truyền Wi‑Fi (DTDLive)" = "Đường truyền Wi‑Fi (DTDLive)";
 "Đường truyền tốt." = "Đường truyền tốt.";
 "Đầu ra" = "Đầu ra";
@@ -1012,6 +1017,7 @@
 "Đội nhà" = "Đội nhà";
 "đang mở cổng…" = "đang mở cổng…";
 "Ảnh" = "Ảnh";
+"Ảnh / logo" = "Ảnh / logo";
 "Ảnh / video từ Thư viện ảnh" = "Ảnh / video từ Thư viện ảnh";
 "Ảnh PNG" = "Ảnh PNG";
 "Ảnh nền từ Thư viện" = "Ảnh nền từ Thư viện";

@@ -196,7 +196,7 @@ struct TitleEditorSheet: View {
                 }
                 Section {
                     Picker("Kiểu", selection: $item.style) {
-                        ForEach(TitleStyle.allCases.filter { $0 != .scoreBug }) { Text($0.label).tag($0) }
+                        ForEach(TitleStyle.allCases.filter { $0 != .scoreBug && $0 != .custom }) { Text($0.label).tag($0) }
                     }
                     if item.style != .clock {
                         TextField(LocalizedStringKey(item.style == .ticker ? "Nội dung chữ chạy" : item.style == .countdown ? "Nhãn" : "Dòng 1"), text: $item.line1)
@@ -342,6 +342,8 @@ struct TitlePreview: View {
                 case .fullScreen:
                     Image(uiImage: img).resizable().frame(width: img.size.width, height: img.size.height)
                         .offset(x: (W - img.size.width) / 2, y: (H - img.size.height) / 2)
+                case .custom:
+                    Image(uiImage: img).resizable().frame(width: W, height: H)   // full-frame design
                 default:
                     Image(uiImage: img).resizable().frame(width: img.size.width, height: img.size.height)
                         .offset(x: item.position.x * W, y: item.position.y * H)

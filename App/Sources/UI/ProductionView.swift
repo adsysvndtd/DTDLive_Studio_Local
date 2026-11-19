@@ -234,7 +234,7 @@ struct CategoryContent: View {
                 } label: { toolbarLabel("Nhập hiệu ứng", "sparkles") }
             case .title where titleTab == 1:
                 Menu {
-                    ForEach(TitleStyle.allCases) { s in
+                    ForEach(TitleStyle.allCases.filter { $0 != .custom }) { s in
                         Button(s.label) {
                             var t = TitleItem(style: s, line1: s == .clock ? "" : s.label)
                             if s == .logoStrap {   // template: logo + header + name + role, logo = the loaded logo

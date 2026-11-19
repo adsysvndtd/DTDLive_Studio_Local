@@ -180,6 +180,7 @@
 "Chữ khi hết giờ" = "Text when time is up";
 "Chữ lớn" = "Big text";
 "Chữ nhãn" = "Label text";
+"Chữ nhật bo góc" = "Rounded rectangle";
 "Chữ nhỏ dưới nhãn" = "Small text under the tag";
 "Chữ số giờ" = "Time digits";
 "Chữ tên" = "Name text";
@@ -321,6 +322,8 @@
 "Hình %@/s · Tiếng %@/s" = "Video %@/s · Audio %@/s";
 "Hình %lf/s · Tiếng %lf/s" = "Video %lf/s · Audio %lf/s";
 "Hình %lld/s · Tiếng %lld/s" = "Video %lld/s · Audio %lld/s";
+"Hình bầu dục" = "Ellipse";
+"Hình chữ nhật" = "Rectangle";
 "Hình học" = "Geometry";
 "Hạ replay" = "Take replay down";
 "Hết bộ đệm khung hình — đã tạo lại (khung bị giữ ở bộ mã hoá)" = "Out of frame buffers — recreated (frames held by the encoder)";
@@ -771,6 +774,7 @@
 "Tên đội" = "Team name";
 "Tìm nguồn NDI" = "Find NDI sources";
 "Tính điểm" = "Scoring";
+"Tùy chỉnh (nhiều lớp)" = "Custom (multi-layer)";
 "Tương phản" = "Contrast";
 "Tạm dừng" = "Pause";
 "Tạo live" = "Create live";
@@ -967,6 +971,7 @@
 "Đưa lên Preview" = "Send to Preview";
 "Đưa vào Khung %@" = "Into window %@";
 "Đưa vào khung PiP" = "Into PiP";
+"Đường kẻ" = "Line";
 "Đường truyền Wi‑Fi (DTDLive)" = "Wi‑Fi link (DTDLive)";
 "Đường truyền tốt." = "Link is good.";
 "Đầu ra" = "Outputs";
@@ -1012,6 +1017,7 @@
 "Đội nhà" = "Home";
 "đang mở cổng…" = "opening port…";
 "Ảnh" = "Pictures";
+"Ảnh / logo" = "Image / logo";
 "Ảnh / video từ Thư viện ảnh" = "Photo / video from Photos";
 "Ảnh PNG" = "PNG image";
 "Ảnh nền từ Thư viện" = "Background from Photos";

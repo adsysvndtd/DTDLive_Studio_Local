@@ -4,10 +4,11 @@ import SwiftUI
 import UIKit
 
 enum TitleStyle: String, Codable, CaseIterable, Identifiable {
-    case lowerThird, nameStrap, logoStrap, fullScreen, ticker, scoreBug, clock, countdown
+    case lowerThird, nameStrap, logoStrap, fullScreen, ticker, scoreBug, clock, countdown, custom
     var id: String { rawValue }
     var label: String {
         switch self {
+        case .custom: return L("Tùy chỉnh (nhiều lớp)")
         case .lowerThird: return "Lower third"
         case .nameStrap: return L("Tên + chức danh")
         case .logoStrap: return L("Logo + tên + chức danh")
@@ -54,6 +55,8 @@ struct TitleItem: Identifiable, Codable, Equatable {
     /// In / out effect (nil = fade + short slide, the original look) and its duration in seconds.
     var fx: TitleFX? = nil
     var fxDuration: Double? = nil
+    /// Custom style: the design, a stack of layers in 1920×1080 space (back to front). nil for the built-in styles.
+    var layers: [TitleLayer]? = nil
 }
 
 /// How a title comes on and goes off.
@@ -129,6 +132,28 @@ final class TitleRenderer: @unchecked Sendable {
             var alpha: CGFloat = (fx == .fadeSlide || fx == .fade || fx == .zoom) ? e : 1
 
             guard var img = image(for: item, canvas: canvas, now: now) else { continue }
+            // Custom design is already a full-frame image: whole-frame fade / slide / wipe / zoom, no placement.
+            if item.style == .custom {
+                switch fx {
+                case .slideLeft:  img = img.transformed(by: .init(translationX: -(1 - e) * canvas.width, y: 0))
+                case .slideRight: img = img.transformed(by: .init(translationX: (1 - e) * canvas.width, y: 0))
+                case .slideUp:    img = img.transformed(by: .init(translationX: 0, y: (1 - e) * canvas.height))
+                case .fadeSlide:  img = img.transformed(by: .init(translationX: -(1 - e) * 40 * canvas.width / 1920, y: 0))
+                case .wipe:       if e < 1 { img = img.cropped(to: CGRect(x: 0, y: 0, width: canvas.width * e, height: canvas.height)) }; if e <= 0.001 { continue }
+                case .zoom:
+                    let s = 0.85 + 0.15 * e, cx = canvas.width / 2, cy = canvas.height / 2
+                    img = img.transformed(by: CGAffineTransform(translationX: -cx, y: -cy)
+                        .concatenating(.init(scaleX: s, y: s)).concatenating(.init(translationX: cx, y: cy)))
+                case .fade, .cut: break
+                }
+                if alpha < 1 {
+                    img = img.applyingFilter("CIColorMatrix", parameters: [
+                        "inputRVector": CIVector(x: alpha, y: 0, z: 0, w: 0), "inputGVector": CIVector(x: 0, y: alpha, z: 0, w: 0),
+                        "inputBVector": CIVector(x: 0, y: 0, z: alpha, w: 0), "inputAVector": CIVector(x: 0, y: 0, z: 0, w: alpha)])
+                }
+                out = out.map { img.composited(over: $0) } ?? img
+                continue
+            }
             let w = img.extent.width, h = img.extent.height, k = canvas.width / 1920
             var x = item.position.x * canvas.width
             var y = (1 - item.position.y) * canvas.height - h
@@ -213,6 +238,15 @@ final class TitleRenderer: @unchecked Sendable {
     }
 
     private func image(for item: TitleItem, canvas: CGSize, now: CFTimeInterval) -> CIImage? {
+        if item.style == .custom {
+            lock.lock()
+            if let c = cache[item.id], c.0 == item, c.1 == canvas { lock.unlock(); return c.2 }
+            lock.unlock()
+            guard let cg = Self.drawCustom(item, canvas: canvas)?.cgImage else { return nil }
+            let ci = CIImage(cgImage: cg)
+            lock.lock(); cache[item.id] = (item, canvas, ci); tickCache[item.id] = -1; lock.unlock()
+            return ci
+        }
         if item.style == .scoreBug {
             // Scoreboard: re-drawn only when its signature (scores, names, clock second…) changes.
             let sig = ScoreboardRenderer.signature(item) + "|\(item.scale)"
@@ -268,6 +302,8 @@ final class TitleRenderer: @unchecked Sendable {
         }
         let fmt = UIGraphicsImageRendererFormat(); fmt.scale = 1; fmt.opaque = false
         switch t.style {
+        case .custom:
+            return drawCustom(t, canvas: CGSize(width: 1920 * k, height: 1080 * k)) ?? UIImage()
         case .lowerThird, .nameStrap:
             let a = attr(t.line1, big, text1 ?? .white), b = attr(t.line2, small, text2 ?? .white)
             let w = fixedW.map { max(60 * k, $0 - 12 * k) } ?? (max(a.size().width, b.size().width) + 60 * k)
