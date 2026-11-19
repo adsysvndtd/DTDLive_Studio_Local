@@ -42,6 +42,7 @@
 "Bitrate thấp so với độ phân giải → hình trên YouTube/Facebook sẽ mờ, nhất là cảnh chuyển động." = "Bitrate thấp so với độ phân giải → hình trên YouTube/Facebook sẽ mờ, nhất là cảnh chuyển động.";
 "Bitrate video" = "Bitrate video";
 "Bo góc" = "Bo góc";
+"Bo tròn" = "Bo tròn";
 "Bàn thắng" = "Bàn thắng";
 "Bãi biển" = "Bãi biển";
 "Bão hoà" = "Bão hoà";
@@ -59,6 +60,7 @@
 "Bảng tỉ số" = "Bảng tỉ số";
 "Bảng tỉ số (web)" = "Bảng tỉ số (web)";
 "Bấm Phát ở đích vừa tạo; sau 10–20 giây trang xem mới có hình." = "Bấm Phát ở đích vừa tạo; sau 10–20 giây trang xem mới có hình.";
+"Bấm “Thêm lớp” để bắt đầu thiết kế" = "Bấm “Thêm lớp” để bắt đầu thiết kế";
 "Bấm ♡ trên một nguồn để thêm vào Yêu thích" = "Bấm ♡ trên một nguồn để thêm vào Yêu thích";
 "BẬT" = "BẬT";
 "Bật bộ đệm replay (60 giây gần nhất)" = "Bật bộ đệm replay (60 giây gần nhất)";
@@ -67,10 +69,12 @@
 "Bật để xoá phông xanh lá / xanh dương" = "Bật để xoá phông xanh lá / xanh dương";
 "Bật: hình nét hơn ~10–15 % ở cùng bitrate (YouTube khuyến nghị), trễ thêm ~2 khung. Tắt: trễ thấp nhất, tương thích mọi máy chủ. Đổi khi đang phát: các đích tự kết nối lại." = "Bật: hình nét hơn ~10–15 % ở cùng bitrate (YouTube khuyến nghị), trễ thêm ~2 khung. Tắt: trễ thấp nhất, tương thích mọi máy chủ. Đổi khi đang phát: các đích tự kết nối lại.";
 "Bật: mạng chậm thì tự giảm bitrate (hình mềm hơn nhưng không đứng). Tắt: giữ nét, mạng chậm thì bỏ khung hình." = "Bật: mạng chậm thì tự giảm bitrate (hình mềm hơn nhưng không đứng). Tắt: giữ nét, mạng chậm thì bỏ khung hình.";
+"Bắt dóng" = "Bắt dóng";
 "Bắt đầu" = "Bắt đầu";
 "Bắt đầu sau" = "Bắt đầu sau";
 "Bắt đầu đếm khi bấm LÊN SÓNG" = "Bắt đầu đếm khi bấm LÊN SÓNG";
 "Bỏ SuperFG" = "Bỏ SuperFG";
+"Bỏ chọn" = "Bỏ chọn";
 "Bỏ logo" = "Bỏ logo";
 "Bỏ stinger" = "Bỏ stinger";
 "Bỏ ảnh nền" = "Bỏ ảnh nền";
@@ -88,6 +92,7 @@
 "Bộ đệm trống — replay ghi lại tín hiệu Program khi app đang mã hoá (đang phát hoặc ghi)." = "Bộ đệm trống — replay ghi lại tín hiệu Program khi app đang mã hoá (đang phát hoặc ghi).";
 "CAM 1 · Sân khấu" = "CAM 1 · Sân khấu";
 "CAM 3 · Khán giả" = "CAM 3 · Khán giả";
+"CHỮ HOA" = "CHỮ HOA";
 "Camera" = "Camera";
 "Camera / USB-C" = "Camera / USB-C";
 "Camera gửi %@ Mbps — thấp so với bitrate phát %@ Mbps: hình bị nén hai lần nên mờ. Cập nhật DTDLive (tự gửi ~12 Mbps cho 1080p30 qua Wi‑Fi) hoặc tăng bitrate trên DTDLive." = "Camera gửi %@ Mbps — thấp so với bitrate phát %@ Mbps: hình bị nén hai lần nên mờ. Cập nhật DTDLive (tự gửi ~12 Mbps cho 1080p30 qua Wi‑Fi) hoặc tăng bitrate trên DTDLive.";
@@ -114,6 +119,7 @@
 "Chính sách quyền riêng tư" = "Chính sách quyền riêng tư";
 "Chưa bật — bật \"Cho phép DTDLive tìm và ghép nối\" trong Cài đặt › Ingest" = "Chưa bật — bật \"Cho phép DTDLive tìm và ghép nối\" trong Cài đặt › Ingest";
 "Chưa cho phép dùng camera" = "Chưa cho phép dùng camera";
+"Chưa chọn lớp" = "Chưa chọn lớp";
 "Chưa chọn nguồn NDI" = "Chưa chọn nguồn NDI";
 "Chưa chọn nguồn NDI cho N-Title" = "Chưa chọn nguồn NDI cho N-Title";
 "Chưa có" = "Chưa có";
@@ -125,7 +131,9 @@
 "Chưa có gói DTDStudio trên máy chủ." = "Chưa có gói DTDStudio trên máy chủ.";
 "Chưa có hình" = "Chưa có hình";
 "Chưa có kênh nào" = "Chưa có kênh nào";
+"Chưa có lớp nào" = "Chưa có lớp nào";
 "Chưa có mẫu" = "Chưa có mẫu";
+"Chưa có mẫu nào" = "Chưa có mẫu nào";
 "Chưa có thiết bị nào được ghép nối" = "Chưa có thiết bị nào được ghép nối";
 "Chưa có title — bấm Thêm title ở góc trên" = "Chưa có title — bấm Thêm title ở góc trên";
 "Chưa có đích phát" = "Chưa có đích phát";
@@ -149,6 +157,7 @@
 "Chạm một thẻ hoặc ảnh trong thư viện bên dưới để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh." = "Chạm một thẻ hoặc ảnh trong thư viện bên dưới để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh.";
 "Chạm một thẻ để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh." = "Chạm một thẻ để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh.";
 "Chạm một ảnh để dùng làm chuyển cảnh cho Cut / Auto / T-bar" = "Chạm một ảnh để dùng làm chuyển cảnh cho Cut / Auto / T-bar";
+"Chạm vào một lớp trên khung vẽ để chọn (chạm đúp vào chữ để sửa nội dung), hoặc thêm lớp mới:" = "Chạm vào một lớp trên khung vẽ để chọn (chạm đúp vào chữ để sửa nội dung), hoặc thêm lớp mới:";
 "Chạm để nạp, bật/tắt bằng phím ở cột phải" = "Chạm để nạp, bật/tắt bằng phím ở cột phải";
 "Chạm để đưa lên PVW, rồi Cut / chuyển cảnh ở cột phải" = "Chạm để đưa lên PVW, rồi Cut / chuyển cảnh ở cột phải";
 "Chạy hiệu ứng" = "Chạy hiệu ứng";
@@ -173,6 +182,7 @@
 "Chọn ảnh / logo" = "Chọn ảnh / logo";
 "Chống rung" = "Chống rung";
 "Chớp sáng" = "Chớp sáng";
+"Chụm 2 ngón trên khung để đổi cỡ" = "Chụm 2 ngón trên khung để đổi cỡ";
 "Chủ repo (owner)" = "Chủ repo (owner)";
 "Chủ tài khoản" = "Chủ tài khoản";
 "Chức danh" = "Chức danh";
@@ -199,8 +209,16 @@
 "Cách mép" = "Cách mép";
 "Cách đáy" = "Cách đáy";
 "Có" = "Có";
+"Có chân" = "Có chân";
+"Có nền" = "Có nền";
+"Có viền" = "Có viền";
 "Công khai" = "Công khai";
 "Căn" = "Căn";
+"Căn chỉnh" = "Căn chỉnh";
+"Căn dưới" = "Căn dưới";
+"Căn phải" = "Căn phải";
+"Căn trái" = "Căn trái";
+"Căn trên" = "Căn trên";
 "CẢM ƠN" = "CẢM ƠN";
 "Cảm ơn" = "Cảm ơn";
 "Cần iPadOS/iOS 17.4 trở lên cho đăng nhập Facebook" = "Cần iPadOS/iOS 17.4 trở lên cho đăng nhập Facebook";
@@ -219,6 +237,7 @@
 "Cỡ logo" = "Cỡ logo";
 "Dung lượng" = "Dung lượng";
 "Dày viền" = "Dày viền";
+"Dày viền chữ" = "Dày viền chữ";
 "Dòng 1" = "Dòng 1";
 "Dòng 2" = "Dòng 2";
 "Dòng 2 (để trống = 1 dòng)" = "Dòng 2 (để trống = 1 dòng)";
@@ -235,6 +254,7 @@
 "Dưới phải" = "Dưới phải";
 "Dưới trái" = "Dưới trái";
 "Dải ngang" = "Dải ngang";
+"Dịch" = "Dịch";
 "Dọc" = "Dọc";
 "Dừng" = "Dừng";
 "Dừng nhận" = "Dừng nhận";
@@ -274,7 +294,10 @@
 "Giữ %@ giây" = "Giữ %@ giây";
 "Giữ hình" = "Giữ hình";
 "Giữ hình rồi bước từng khung để soi tình huống; ‹ › trên bàn phím cũng bước 1 khung." = "Giữ hình rồi bước từng khung để soi tình huống; ‹ › trên bàn phím cũng bước 1 khung.";
+"Giữ tỉ lệ khi kéo góc" = "Giữ tỉ lệ khi kéo góc";
 "Giữ đến khi tắt" = "Giữ đến khi tắt";
+"Giữa dọc" = "Giữa dọc";
+"Giữa ngang" = "Giữa ngang";
 "Giữa phải" = "Giữa phải";
 "Giữa trái" = "Giữa trái";
 "Google OAuth Client ID (loại iOS)" = "Google OAuth Client ID (loại iOS)";
@@ -311,6 +334,7 @@
 "Hai khung so le" = "Hai khung so le";
 "Hai trên + ba dưới" = "Hai trên + ba dưới";
 "Hiện" = "Hiện";
+"Hiện lớp" = "Hiện lớp";
 "Hiện mọi tính năng vẫn dùng được." = "Hiện mọi tính năng vẫn dùng được.";
 "Hiện trên PGM" = "Hiện trên PGM";
 "Hiệp (vd H1, Q2)" = "Hiệp (vd H1, Q2)";
@@ -322,6 +346,7 @@
 "Hiệu ứng chữ" = "Hiệu ứng chữ";
 "Hiệu ứng màu" = "Hiệu ứng màu";
 "Hiệu ứng vào / ra" = "Hiệu ứng vào / ra";
+"Hiệu ứng vào / ra của title" = "Hiệu ứng vào / ra của title";
 "Hiệu ứng âm thanh" = "Hiệu ứng âm thanh";
 "Hoà trộn" = "Hoà trộn";
 "Hoàn tác" = "Hoàn tác";
@@ -331,11 +356,15 @@
 "Hình %@/s · Tiếng %@/s" = "Hình %@/s · Tiếng %@/s";
 "Hình %lf/s · Tiếng %lf/s" = "Hình %lf/s · Tiếng %lf/s";
 "Hình %lld/s · Tiếng %lld/s" = "Hình %lld/s · Tiếng %lld/s";
+"Hình Program" = "Hình Program";
 "Hình bầu dục" = "Hình bầu dục";
 "Hình chữ nhật" = "Hình chữ nhật";
 "Hình học" = "Hình học";
+"Hơi đậm" = "Hơi đậm";
 "Hạ replay" = "Hạ replay";
+"Hẹp" = "Hẹp";
 "Hết bộ đệm khung hình — đã tạo lại (khung bị giữ ở bộ mã hoá)" = "Hết bộ đệm khung hình — đã tạo lại (khung bị giữ ở bộ mã hoá)";
+"Hệ thống" = "Hệ thống";
 "Hệ điểm" = "Hệ điểm";
 "Họ và tên" = "Họ và tên";
 "Hội ý mỗi game: %lld" = "Hội ý mỗi game: %lld";
@@ -345,6 +374,8 @@
 "IN HOA" = "IN HOA";
 "Khi hoà" = "Khi hoà";
 "Khoá cân bằng trắng" = "Khoá cân bằng trắng";
+"Khoá lớp" = "Khoá lớp";
+"Khoá lớp (không chọn / kéo trên khung vẽ)" = "Khoá lớp (không chọn / kéo trên khung vẽ)";
 "Khung LIVE" = "Khung LIVE";
 "Khung PiP đơn đè lên Program" = "Khung PiP đơn đè lên Program";
 "Khung an toàn" = "Khung an toàn";
@@ -358,6 +389,7 @@
 "Khung phối cảnh" = "Khung phối cảnh";
 "Khung replay (VAR)" = "Khung replay (VAR)";
 "Khung viền" = "Khung viền";
+"Khung ôm theo chữ" = "Khung ôm theo chữ";
 "Khung đôi" = "Khung đôi";
 "Khuyến nghị cho %@×%@ %@ fps: %@ Mbps" = "Khuyến nghị cho %@×%@ %@ fps: %@ Mbps";
 "Khách mời (trống = ẩn)" = "Khách mời (trống = ẩn)";
@@ -405,6 +437,7 @@
 "Kiểu" = "Kiểu";
 "Kéo cho tiếng khớp với hình khi camera mạng bị trễ." = "Kéo cho tiếng khớp với hình khi camera mạng bị trễ.";
 "Kéo logo trên khung để di chuyển, kéo chấm ở góc để đổi cỡ." = "Kéo logo trên khung để di chuyển, kéo chấm ở góc để đổi cỡ.";
+"Kéo title trên khung để đặt vị trí · chụm 2 ngón để đổi cỡ" = "Kéo title trên khung để đặt vị trí · chụm 2 ngón để đổi cỡ";
 "Kéo để di chuyển · kéo góc để đổi cỡ" = "Kéo để di chuyển · kéo góc để đổi cỡ";
 "Kênh âm thanh" = "Kênh âm thanh";
 "Kích thước" = "Kích thước";
@@ -434,6 +467,7 @@
 "Logo + tên + chức danh" = "Logo + tên + chức danh";
 "Logo đang trên PGM" = "Logo đang trên PGM";
 "Logo đã nạp — bấm Logo On" = "Logo đã nạp — bấm Logo On";
+"Lower third cơ bản" = "Lower third cơ bản";
 "Lower third kính mờ" = "Lower third kính mờ";
 "Lower third neon" = "Lower third neon";
 "Lower third trượt" = "Lower third trượt";
@@ -444,13 +478,17 @@
 "Luôn giữ màn hình sáng" = "Luôn giữ màn hình sáng";
 "Làm lại" = "Làm lại";
 "Làm mới" = "Làm mới";
+"Lên 1 lớp" = "Lên 1 lớp";
 "Lên Preview" = "Lên Preview";
 "Lên sóng" = "Lên sóng";
 "Lên sóng ngay" = "Lên sóng ngay";
+"Lên trước" = "Lên trước";
 "Lưu" = "Lưu";
 "Lưu clip" = "Lưu clip";
 "Lưu cấu hình hiện tại" = "Lưu cấu hình hiện tại";
 "Lưu mẫu này" = "Lưu mẫu này";
+"Lưu thiết kế này" = "Lưu thiết kế này";
+"Lưu thành mẫu…" = "Lưu thành mẫu…";
 "Lưới 2×2" = "Lưới 2×2";
 "Lưới 3×3" = "Lưới 3×3";
 "Lượt cân bằng (người sau được đánh lượt cuối)" = "Lượt cân bằng (người sau được đánh lượt cuối)";
@@ -469,7 +507,9 @@
 "Lỗi: %lld" = "Lỗi: %lld";
 "Lớn giữa phải" = "Lớn giữa phải";
 "Lớp" = "Lớp";
+"Lớp (%lld)" = "Lớp (%lld)";
 "Lớp phủ" = "Lớp phủ";
+"Lớp trên cùng nằm phía trước. Chạm để chọn, kéo trên khung vẽ để di chuyển." = "Lớp trên cùng nằm phía trước. Chạm để chọn, kéo trên khung vẽ để di chuyển.";
 "Lớp đang chọn · %@" = "Lớp đang chọn · %@";
 "Lửa đỏ" = "Lửa đỏ";
 "Mua gói ngày / tháng / năm" = "Mua gói ngày / tháng / năm";
@@ -486,6 +526,7 @@
 "Màu 1" = "Màu 1";
 "Màu 2" = "Màu 2";
 "Màu 3" = "Màu 3";
+"Màu bóng" = "Màu bóng";
 "Màu chữ" = "Màu chữ";
 "Màu dải" = "Màu dải";
 "Màu nguồn PVW" = "Màu nguồn PVW";
@@ -494,6 +535,8 @@
 "Màu sắc" = "Màu sắc";
 "Màu tô" = "Màu tô";
 "Màu viền" = "Màu viền";
+"Màu viền chữ" = "Màu viền chữ";
+"Màu đường kẻ" = "Màu đường kẻ";
 "Màu, key, PTZ…" = "Màu, key, PTZ…";
 "Máy chủ chưa cấu hình tài khoản nhận tiền." = "Máy chủ chưa cấu hình tài khoản nhận tiền.";
 "Máy chủ trả lỗi %@" = "Máy chủ trả lỗi %@";
@@ -508,7 +551,9 @@
 "Mạng tải lên không kịp (hàng đợi %@ KB) — tạm bỏ khung hình để bắt kịp" = "Mạng tải lên không kịp (hàng đợi %@ KB) — tạm bỏ khung hình để bắt kịp";
 "Mất gói (2 s gần nhất)" = "Mất gói (2 s gần nhất)";
 "Mất kết nối — thử lại" = "Mất kết nối — thử lại";
+"Mẫu" = "Mẫu";
 "Mẫu bố cục" = "Mẫu bố cục";
+"Mẫu có sẵn" = "Mẫu có sẵn";
 "Mẫu này chưa có lớp nào: đánh dấu khối bằng data-layer=\"tên\" trong HTML." = "Mẫu này chưa có lớp nào: đánh dấu khối bằng data-layer=\"tên\" trong HTML.";
 "Mẫu đã lưu" = "Mẫu đã lưu";
 "Mật khẩu" = "Mật khẩu";
@@ -527,6 +572,7 @@
 "Mờ nét" = "Mờ nét";
 "Mở DTDLive (hoặc app hỗ trợ DTD pairing) trên cùng mạng Wi-Fi → chọn DTDStudio → so ID xác nhận → Chấp nhận. Không cần nhập mã." = "Mở DTDLive (hoặc app hỗ trợ DTD pairing) trên cùng mạng Wi-Fi → chọn DTDStudio → so ID xác nhận → Chấp nhận. Không cần nhập mã.";
 "Mở dọc" = "Mở dọc";
+"Mở khoá lớp" = "Mở khoá lớp";
 "Mở ngang" = "Mở ngang";
 "Mở trang xem live" = "Mở trang xem live";
 "Mở trong Replay (mark in/out)" = "Mở trong Replay (mark in/out)";
@@ -586,11 +632,13 @@
 "Nạp (tắt mẫu đang phát)" = "Nạp (tắt mẫu đang phát)";
 "Nạp .cube" = "Nạp .cube";
 "Nạp mẫu" = "Nạp mẫu";
+"Nạp mẫu sẽ thay toàn bộ thiết kế hiện tại (có thể Hoàn tác)." = "Nạp mẫu sẽ thay toàn bộ thiết kế hiện tại (có thể Hoàn tác).";
 "Nạp show sẽ dừng phát và thay toàn bộ nguồn, đầu ra, title." = "Nạp show sẽ dừng phát và thay toàn bộ nguồn, đầu ra, title.";
 "Nền" = "Nền";
 "Nền bố cục" = "Nền bố cục";
 "Nền dòng 1" = "Nền dòng 1";
 "Nền dòng 2" = "Nền dòng 2";
+"Nền khung vẽ" = "Nền khung vẽ";
 "Nền là nguồn video (làm mờ): %@" = "Nền là nguồn video (làm mờ): %@";
 "Nền là nguồn video (làm mờ): %lf" = "Nền là nguồn video (làm mờ): %lf";
 "Nền là nguồn video (làm mờ): %lld" = "Nền là nguồn video (làm mờ): %lld";
@@ -622,6 +670,7 @@
 "Phát trực tiếp" = "Phát trực tiếp";
 "Phát tất cả" = "Phát tất cả";
 "Phóng to" = "Phóng to";
+"Phông" = "Phông";
 "Phút %@" = "Phút %@";
 "Phút %lf" = "Phút %lf";
 "Phút %lld" = "Phút %lld";
@@ -647,6 +696,7 @@
 "RTSP (ANNOUNCE/RECORD, nhiều đường dẫn)" = "RTSP (ANNOUNCE/RECORD, nhiều đường dẫn)";
 "RTT" = "RTT";
 "Ra mắt" = "Ra mắt";
+"Ra sau" = "Ra sau";
 "Rally (mọi rally đều ra điểm)" = "Rally (mọi rally đều ra điểm)";
 "Replay" = "Replay";
 "Replay đang phát trên PGM — bấm DỪNG trước khi đưa đoạn khác lên Preview" = "Replay đang phát trên PGM — bấm DỪNG trước khi đưa đoạn khác lên Preview";
@@ -654,7 +704,10 @@
 "Resize" = "Resize";
 "Rèm" = "Rèm";
 "Rơi xuống" = "Rơi xuống";
+"Rất hẹp" = "Rất hẹp";
+"Rất đậm" = "Rất đậm";
 "Rộng" = "Rộng";
+"Rộng ra" = "Rộng ra";
 "Rộng tối đa" = "Rộng tối đa";
 "SF (hệ thống)" = "SF (hệ thống)";
 "SRT (một cổng, nhiều streamid)" = "SRT (một cổng, nhiều streamid)";
@@ -707,6 +760,7 @@
 "Thiết kế Title" = "Thiết kế Title";
 "Thiết kế nhiều lớp" = "Thiết kế nhiều lớp";
 "Thu gọn" = "Thu gọn";
+"Thuộc tính" = "Thuộc tính";
 "Thêm" = "Thêm";
 "Thêm %@" = "Thêm %@";
 "Thêm %lf" = "Thêm %lf";
@@ -732,6 +786,7 @@
 "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTDStudio › Library › %lf" = "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTDStudio › Library › %lf";
 "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTDStudio › Library › %lld" = "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTDStudio › Library › %lld";
 "Thư viện ảnh" = "Thư viện ảnh";
+"Thường" = "Thường";
 "Thắng %@/%@" = "Thắng %@/%@";
 "Thắng rack được phá" = "Thắng rack được phá";
 "Thẻ vàng" = "Thẻ vàng";
@@ -848,6 +903,7 @@
 "VideoToolbox lỗi %@ %@ — tạo lại bộ mã hoá" = "VideoToolbox lỗi %@ %@ — tạo lại bộ mã hoá";
 "Viền" = "Viền";
 "Viền chữ" = "Viền chữ";
+"Viền khung" = "Viền khung";
 "Vuốt 1 ngón trên PVW về phía PGM = CUT · 2 ngón = AUTO" = "Vuốt 1 ngón trên PVW về phía PGM = CUT · 2 ngón = AUTO";
 "Vuốt PVW → PGM để chuyển" = "Vuốt PVW → PGM để chuyển";
 "Vào trận" = "Vào trận";
@@ -855,6 +911,7 @@
 "Vòng tròn" = "Vòng tròn";
 "Vạch nhấn" = "Vạch nhấn";
 "Vẽ" = "Vẽ";
+"Về 0°" = "Về 0°";
 "Về gốc" = "Về gốc";
 "Về màu mặc định của kiểu" = "Về màu mặc định của kiểu";
 "Về mặc định lớp" = "Về mặc định lớp";
@@ -864,12 +921,15 @@
 "Vị trí & cỡ" = "Vị trí & cỡ";
 "Vị trí & kích thước" = "Vị trí & kích thước";
 "Vị trí đặt" = "Vị trí đặt";
+"Vừa" = "Vừa";
 "Wi‑Fi chập chờn: SRT đang gửi lại gói, hình vẫn đủ." = "Wi‑Fi chập chờn: SRT đang gửi lại gói, hình vẫn đủ.";
 "Xanh dương" = "Xanh dương";
 "Xanh lá" = "Xanh lá";
 "Xem live" = "Xem live";
 "Xem mã đang sửa" = "Xem mã đang sửa";
 "Xem nhật ký" = "Xem nhật ký";
+"Xem thử" = "Xem thử";
+"Xem thử trên khung vẽ" = "Xem thử trên khung vẽ";
 "Xem trước" = "Xem trước";
 "Xem trước · chưa nạp" = "Xem trước · chưa nạp";
 "Xoay" = "Xoay";
@@ -890,6 +950,7 @@
 "Xoá nét" = "Xoá nét";
 "Xoá title" = "Xoá title";
 "Xoá title này" = "Xoá title này";
+"Xoá title này?" = "Xoá title này?";
 "Xoá title “%@”?" = "Xoá title “%@”?";
 "Xoá tài khoản" = "Xoá tài khoản";
 "Xoá vĩnh viễn tài khoản này?" = "Xoá vĩnh viễn tài khoản này?";
@@ -898,6 +959,9 @@
 "Xuất thất bại: %@" = "Xuất thất bại: %@";
 "Xuất thất bại: %lf" = "Xuất thất bại: %lf";
 "Xuất thất bại: %lld" = "Xuất thất bại: %lld";
+"Xuống 1 lớp" = "Xuống 1 lớp";
+"Xuống dưới cùng" = "Xuống dưới cùng";
+"Xám" = "Xám";
 "YouTube Studio › Phát trực tiếp › Khoá luồng." = "YouTube Studio › Phát trực tiếp › Khoá luồng.";
 "YouTube: đã hết hạn mức API hôm nay (đặt lại lúc nửa đêm giờ Thái Bình Dương, khoảng 14–15 giờ VN) — xin tăng hạn mức trong Google Cloud" = "YouTube: đã hết hạn mức API hôm nay (đặt lại lúc nửa đêm giờ Thái Bình Dương, khoảng 14–15 giờ VN) — xin tăng hạn mức trong Google Cloud";
 "Yêu thích" = "Yêu thích";
@@ -926,6 +990,7 @@
 "Âm thanh" = "Âm thanh";
 "Âm thanh của video trong Ảnh" = "Âm thanh của video trong Ảnh";
 "Ô tỉ số" = "Ô tỉ số";
+"Ô vuông (trong suốt)" = "Ô vuông (trong suốt)";
 "Ô đầu vào" = "Ô đầu vào";
 "ĐANG REPLAY · DỪNG" = "ĐANG REPLAY · DỪNG";
 "Đang chờ ngân hàng xác nhận…" = "Đang chờ ngân hàng xác nhận…";
@@ -951,6 +1016,7 @@
 "Đang tìm…" = "Đang tìm…";
 "Đang tải giá từ App Store…" = "Đang tải giá từ App Store…";
 "Đang tải…" = "Đang tải…";
+"Đen" = "Đen";
 "Điều khiển PTZ" = "Điều khiển PTZ";
 "Điều khiển camera" = "Điều khiển camera";
 "Điều khiển title từ điện thoại/laptop: http://<IP máy>:8080" = "Điều khiển title từ điện thoại/laptop: http://<IP máy>:8080";
@@ -1001,9 +1067,11 @@
 "Đăng nhập để dùng gói trên mọi thiết bị và với DTDLive." = "Đăng nhập để dùng gói trên mọi thiết bị và với DTDLive.";
 "Đăng xuất" = "Đăng xuất";
 "Đơn" = "Đơn";
+"Đơn cách" = "Đơn cách";
 "Đơn đã hết hạn hoặc bị huỷ" = "Đơn đã hết hạn hoặc bị huỷ";
 "Đưa N-Title lên PGM" = "Đưa N-Title lên PGM";
 "Đưa lên Preview" = "Đưa lên Preview";
+"Đưa lên trên cùng" = "Đưa lên trên cùng";
 "Đưa vào Khung %@" = "Đưa vào Khung %@";
 "Đưa vào khung PiP" = "Đưa vào khung PiP";
 "Đường kẻ" = "Đường kẻ";
@@ -1036,8 +1104,11 @@
 "Đổi sân giữa game quyết định" = "Đổi sân giữa game quyết định";
 "Đổi tên" = "Đổi tên";
 "Đổi độ phân giải/fps khi đang phát: các đích tự kết nối lại với thông số mới." = "Đổi độ phân giải/fps khi đang phát: các đích tự kết nối lại với thông số mới.";
+"Đổi ảnh" = "Đổi ảnh";
 "Độ dày" = "Độ dày";
+"Độ nhoè" = "Độ nhoè";
 "Độ phân giải" = "Độ phân giải";
+"Độ rộng chữ" = "Độ rộng chữ";
 "Độ trong" = "Độ trong";
 "Độ trễ SRT %@ ms" = "Độ trễ SRT %@ ms";
 "Độ trễ SRT %lf ms" = "Độ trễ SRT %lf ms";
@@ -1062,6 +1133,7 @@
 "Ảnh từ Thư viện" = "Ảnh từ Thư viện";
 "Ảnh đại diện" = "Ảnh đại diện";
 "Ảnh đại diện / logo" = "Ảnh đại diện / logo";
+"Ẩn lớp" = "Ẩn lớp";
 "Ẩn tất cả" = "Ẩn tất cả";
 "Ứng dụng" = "Ứng dụng";
 "Ứng dụng khác (HTTP): %@" = "Ứng dụng khác (HTTP): %@";

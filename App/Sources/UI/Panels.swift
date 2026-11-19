@@ -88,17 +88,20 @@ struct TitlesPanel: View {
                 titleRow(item)
             }
         }
-        .sheet(item: Binding(get: { editingID.wrappedValue.map { IDBox(id: $0) } }, set: { editingID.wrappedValue = $0?.id })) { box in
+        // built-in styles: the form editor in a sheet
+        .sheet(item: Binding(get: { editingID.wrappedValue.flatMap { isCustom($0) ? nil : IDBox(id: $0) } },
+                             set: { editingID.wrappedValue = $0?.id })) { box in
             if let i = engine.titles.firstIndex(where: { $0.id == box.id }) {
-                if engine.titles[i].style == .custom {
-                    TitleDesignerSheet(item: $engine.titles[i], program: engine.switcher.programMonitor) {
-                        editingID.wrappedValue = nil; engine.removeTitle(box.id)
-                    }
-                } else {
-                    TitleEditorSheet(item: $engine.titles[i], program: engine.switcher.programMonitor) {
-                        editingID.wrappedValue = nil; engine.removeTitle(box.id)
-                    }
+                TitleEditorSheet(item: $engine.titles[i], program: engine.switcher.programMonitor) {
+                    editingID.wrappedValue = nil; engine.removeTitle(box.id)
                 }
+            }
+        }
+        // custom (multi-layer) titles: the designer, full screen
+        .fullScreenCover(item: Binding(get: { editingID.wrappedValue.flatMap { isCustom($0) ? IDBox(id: $0) : nil } },
+                                       set: { editingID.wrappedValue = $0?.id })) { box in
+            TitleDesignerSheet(item: titleBinding(box.id), program: engine.switcher.programMonitor) {
+                editingID.wrappedValue = nil; engine.removeTitle(box.id)
             }
         }
         .confirmationDialog(LF("Xoá title “%@”?", deleting.map(preview) ?? ""), isPresented: Binding(
@@ -162,6 +165,19 @@ struct TitlesPanel: View {
         Image(systemName: icon).font(.system(size: 12, weight: .semibold)).frame(width: 28, height: 26)
             .foregroundStyle(tint).background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
             .accessibilityLabel(Text(LocalizedStringKey(label)))
+    }
+
+    private func isCustom(_ id: UUID) -> Bool { engine.titles.first { $0.id == id }?.style == .custom }
+
+    /// Binding by id (not by index): safe if the list changes or the title is deleted while it is open.
+    private func titleBinding(_ id: UUID) -> Binding<TitleItem> {
+        Binding(get: { engine.titles.first { $0.id == id } ?? TitleItem(style: .custom) },
+                set: { nv in
+                    guard let i = engine.titles.firstIndex(where: { $0.id == id }) else { return }
+                    // the designer never changes on-air state: keep the live value (Title On / remote may change it meanwhile)
+                    var v = nv; v.visible = engine.titles[i].visible
+                    if engine.titles[i] != v { engine.titles[i] = v }
+                })
     }
 
     private func preview(_ t: TitleItem) -> String {
@@ -259,8 +275,12 @@ struct TitleEditorSheet: View {
             Form {
                 // Live preview on top of the current Program picture: see position / size while adjusting
                 Section {
-                    TitlePreview(item: item, program: program)
+                    let movable = item.style != .ticker && item.style != .fullScreen
+                    TitlePreview(item: item, program: program,
+                                 position: movable ? $item.position : nil, scale: $item.scale)
                         .listRowInsets(EdgeInsets(top: 6, leading: 6, bottom: 6, trailing: 6))
+                    Text(LocalizedStringKey(movable ? "Kéo title trên khung để đặt vị trí · chụm 2 ngón để đổi cỡ" : "Chụm 2 ngón trên khung để đổi cỡ"))
+                        .font(.caption2).foregroundStyle(DS.text3)
                 }
                 Section {
                     Picker("Kiểu", selection: $item.style) {
@@ -388,6 +408,11 @@ struct TitleEditorSheet: View {
 struct TitlePreview: View {
     let item: TitleItem
     var program: FrameStore?
+    /// When set, the title can be dragged on the preview (position) and pinched (size).
+    var position: Binding<CGPoint>? = nil
+    var scale: Binding<CGFloat>? = nil
+    @State private var dragStart: CGPoint?
+    @State private var scaleStart: CGFloat?
 
     var body: some View {
         GeometryReader { g in
@@ -418,9 +443,36 @@ struct TitlePreview: View {
                 }
             }
             .frame(width: W, height: H).clipped()
+            .contentShape(Rectangle())
+            .gesture(moveGesture(W: W, H: H), including: position == nil ? .none : .all)
+            .simultaneousGesture(pinchGesture, including: scale == nil ? .none : .all)
         }
         .aspectRatio(16 / 9, contentMode: .fit)
         .overlay(Rectangle().stroke(DS.stroke))
+    }
+
+    private func moveGesture(W: CGFloat, H: CGFloat) -> some Gesture {
+        DragGesture(minimumDistance: 2)
+            .onChanged { v in
+                guard let position else { return }
+                if dragStart == nil { dragStart = position.wrappedValue }
+                guard let p = dragStart, W > 0, H > 0 else { return }
+                let x = min(max(p.x + v.translation.width / W, 0), 0.95)
+                let y = min(max(p.y + v.translation.height / H, 0), 0.95)
+                position.wrappedValue = CGPoint(x: (x * 200).rounded() / 200, y: (y * 200).rounded() / 200)
+            }
+            .onEnded { _ in dragStart = nil }
+    }
+
+    private var pinchGesture: some Gesture {
+        MagnifyGesture()
+            .onChanged { v in
+                guard let scale else { return }
+                if scaleStart == nil { scaleStart = scale.wrappedValue }
+                let k = (scaleStart ?? 1) * v.magnification
+                scale.wrappedValue = min(max((k * 20).rounded() / 20, 0.5), 2)
+            }
+            .onEnded { _ in scaleStart = nil }
     }
 }
 

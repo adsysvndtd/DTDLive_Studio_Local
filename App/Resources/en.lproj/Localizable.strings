@@ -42,6 +42,7 @@
 "Bitrate thấp so với độ phân giải → hình trên YouTube/Facebook sẽ mờ, nhất là cảnh chuyển động." = "Bitrate is low for this resolution → the picture on YouTube/Facebook will look soft, especially in motion.";
 "Bitrate video" = "Video bitrate";
 "Bo góc" = "Corner radius";
+"Bo tròn" = "Rounded";
 "Bàn thắng" = "Goal";
 "Bãi biển" = "Beach";
 "Bão hoà" = "Saturation";
@@ -59,6 +60,7 @@
 "Bảng tỉ số" = "Scoreboard";
 "Bảng tỉ số (web)" = "Scoreboard (web)";
 "Bấm Phát ở đích vừa tạo; sau 10–20 giây trang xem mới có hình." = "The picture appears on the live page 10–20 s after streaming starts.";
+"Bấm “Thêm lớp” để bắt đầu thiết kế" = "Tap “Add layer” to start designing";
 "Bấm ♡ trên một nguồn để thêm vào Yêu thích" = "Tap ♡ on a source to add it to Favorites";
 "BẬT" = "ON";
 "Bật bộ đệm replay (60 giây gần nhất)" = "Replay buffer on (last 60 seconds)";
@@ -67,10 +69,12 @@
 "Bật để xoá phông xanh lá / xanh dương" = "Turn on to remove a green / blue screen";
 "Bật: hình nét hơn ~10–15 % ở cùng bitrate (YouTube khuyến nghị), trễ thêm ~2 khung. Tắt: trễ thấp nhất, tương thích mọi máy chủ. Đổi khi đang phát: các đích tự kết nối lại." = "On: ~10–15 % sharper at the same bitrate (recommended by YouTube), ~2 frames more latency. Off: lowest latency, works with every server. Changing it while live reconnects the destinations.";
 "Bật: mạng chậm thì tự giảm bitrate (hình mềm hơn nhưng không đứng). Tắt: giữ nét, mạng chậm thì bỏ khung hình." = "On: lowers bitrate when the network is slow (softer but no freezing). Off: stays sharp, drops frames when the network is slow.";
+"Bắt dóng" = "Snap";
 "Bắt đầu" = "Game starts";
 "Bắt đầu sau" = "Starts in";
 "Bắt đầu đếm khi bấm LÊN SÓNG" = "Starts counting when taken on air";
 "Bỏ SuperFG" = "Remove SuperFG";
+"Bỏ chọn" = "Deselect";
 "Bỏ logo" = "Clear logo";
 "Bỏ stinger" = "Remove stinger";
 "Bỏ ảnh nền" = "Clear background";
@@ -88,6 +92,7 @@
 "Bộ đệm trống — replay ghi lại tín hiệu Program khi app đang mã hoá (đang phát hoặc ghi)." = "Buffer empty — replay records Program while the app is encoding (streaming or recording).";
 "CAM 1 · Sân khấu" = "CAM 1 · Stage";
 "CAM 3 · Khán giả" = "CAM 3 · Audience";
+"CHỮ HOA" = "UPPERCASE";
 "Camera" = "Camera";
 "Camera / USB-C" = "Camera / USB-C";
 "Camera gửi %@ Mbps — thấp so với bitrate phát %@ Mbps: hình bị nén hai lần nên mờ. Cập nhật DTDLive (tự gửi ~12 Mbps cho 1080p30 qua Wi‑Fi) hoặc tăng bitrate trên DTDLive." = "Camera sends %@ Mbps — low for the %@ Mbps output: the picture is compressed twice and looks soft. Update DTDLive (sends ~12 Mbps for 1080p30 over Wi‑Fi) or raise the bitrate in DTDLive.";
@@ -114,6 +119,7 @@
 "Chính sách quyền riêng tư" = "Privacy policy";
 "Chưa bật — bật \"Cho phép DTDLive tìm và ghép nối\" trong Cài đặt › Ingest" = "Off — turn on \"Let DTDLive find and pair\" in Settings › Ingest";
 "Chưa cho phép dùng camera" = "Camera access not allowed";
+"Chưa chọn lớp" = "No layer selected";
 "Chưa chọn nguồn NDI" = "No NDI source chosen";
 "Chưa chọn nguồn NDI cho N-Title" = "No NDI source chosen for N-Title";
 "Chưa có" = "None";
@@ -125,7 +131,9 @@
 "Chưa có gói DTDStudio trên máy chủ." = "No DTDStudio plans on the server.";
 "Chưa có hình" = "No picture";
 "Chưa có kênh nào" = "No channels yet";
+"Chưa có lớp nào" = "No layers yet";
 "Chưa có mẫu" = "No templates yet";
+"Chưa có mẫu nào" = "No templates yet";
 "Chưa có thiết bị nào được ghép nối" = "No paired devices yet";
 "Chưa có title — bấm Thêm title ở góc trên" = "No titles yet — tap Add title at the top";
 "Chưa có đích phát" = "No destinations yet";
@@ -149,6 +157,7 @@
 "Chạm một thẻ hoặc ảnh trong thư viện bên dưới để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh." = "Tap a card or a picture in the library below to load it; SuperFG On plays its in-animation, then it leaves by itself (or holds until switched off). The small icon shows the transition type.";
 "Chạm một thẻ để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh." = "Tap a card to load it; SuperFG On plays its in-animation, then it leaves by itself (or holds until switched off). The small icon shows the transition type.";
 "Chạm một ảnh để dùng làm chuyển cảnh cho Cut / Auto / T-bar" = "Tap a picture to use it as the transition for Cut / Auto / T-bar";
+"Chạm vào một lớp trên khung vẽ để chọn (chạm đúp vào chữ để sửa nội dung), hoặc thêm lớp mới:" = "Tap a layer on the canvas to select it (double-tap text to edit it), or add a new layer:";
 "Chạm để nạp, bật/tắt bằng phím ở cột phải" = "Tap to load; turn on/off with the keys on the right";
 "Chạm để đưa lên PVW, rồi Cut / chuyển cảnh ở cột phải" = "Tap to send to PVW, then Cut / transition on the right";
 "Chạy hiệu ứng" = "Play animation";
@@ -173,6 +182,7 @@
 "Chọn ảnh / logo" = "Choose image / logo";
 "Chống rung" = "Stabilization";
 "Chớp sáng" = "Flash";
+"Chụm 2 ngón trên khung để đổi cỡ" = "Pinch on the preview to resize";
 "Chủ repo (owner)" = "Repo owner";
 "Chủ tài khoản" = "Account name";
 "Chức danh" = "Title";
@@ -199,8 +209,16 @@
 "Cách mép" = "Margin";
 "Cách đáy" = "From bottom";
 "Có" = "Yes";
+"Có chân" = "Serif";
+"Có nền" = "Background";
+"Có viền" = "Border";
 "Công khai" = "Public";
 "Căn" = "Align";
+"Căn chỉnh" = "Align";
+"Căn dưới" = "Align bottom";
+"Căn phải" = "Align right";
+"Căn trái" = "Align left";
+"Căn trên" = "Align top";
 "CẢM ƠN" = "THANK YOU";
 "Cảm ơn" = "Thank you";
 "Cần iPadOS/iOS 17.4 trở lên cho đăng nhập Facebook" = "Facebook sign-in needs iPadOS/iOS 17.4 or later";
@@ -219,6 +237,7 @@
 "Cỡ logo" = "Logo size";
 "Dung lượng" = "Size";
 "Dày viền" = "Border width";
+"Dày viền chữ" = "Outline width";
 "Dòng 1" = "Line 1";
 "Dòng 2" = "Line 2";
 "Dòng 2 (để trống = 1 dòng)" = "Line 2 (empty = one line)";
@@ -235,6 +254,7 @@
 "Dưới phải" = "Bottom right";
 "Dưới trái" = "Bottom left";
 "Dải ngang" = "Wide strip";
+"Dịch" = "Nudge";
 "Dọc" = "Vertical";
 "Dừng" = "Stop";
 "Dừng nhận" = "Stop";
@@ -274,7 +294,10 @@
 "Giữ %@ giây" = "Hold %@ s";
 "Giữ hình" = "Hold";
 "Giữ hình rồi bước từng khung để soi tình huống; ‹ › trên bàn phím cũng bước 1 khung." = "Hold, then step frame by frame to check the incident; ‹ › on a keyboard also step 1 frame.";
+"Giữ tỉ lệ khi kéo góc" = "Keep proportions on corner drag";
 "Giữ đến khi tắt" = "Hold until off";
+"Giữa dọc" = "Centre vertically";
+"Giữa ngang" = "Centre horizontally";
 "Giữa phải" = "Middle right";
 "Giữa trái" = "Middle left";
 "Google OAuth Client ID (loại iOS)" = "Google OAuth Client ID (iOS type)";
@@ -311,6 +334,7 @@
 "Hai khung so le" = "Two staggered";
 "Hai trên + ba dưới" = "Two over three";
 "Hiện" = "Show";
+"Hiện lớp" = "Show layer";
 "Hiện mọi tính năng vẫn dùng được." = "All features are available for now.";
 "Hiện trên PGM" = "Show on PGM";
 "Hiệp (vd H1, Q2)" = "Period (e.g. H1, Q2)";
@@ -322,6 +346,7 @@
 "Hiệu ứng chữ" = "Text effect";
 "Hiệu ứng màu" = "Colour finish";
 "Hiệu ứng vào / ra" = "In / out effect";
+"Hiệu ứng vào / ra của title" = "Title in / out effect";
 "Hiệu ứng âm thanh" = "Sound effects";
 "Hoà trộn" = "Dissolve";
 "Hoàn tác" = "Undo";
@@ -331,11 +356,15 @@
 "Hình %@/s · Tiếng %@/s" = "Video %@/s · Audio %@/s";
 "Hình %lf/s · Tiếng %lf/s" = "Video %lf/s · Audio %lf/s";
 "Hình %lld/s · Tiếng %lld/s" = "Video %lld/s · Audio %lld/s";
+"Hình Program" = "Program picture";
 "Hình bầu dục" = "Ellipse";
 "Hình chữ nhật" = "Rectangle";
 "Hình học" = "Geometry";
+"Hơi đậm" = "Semibold";
 "Hạ replay" = "Take replay down";
+"Hẹp" = "Condensed";
 "Hết bộ đệm khung hình — đã tạo lại (khung bị giữ ở bộ mã hoá)" = "Out of frame buffers — recreated (frames held by the encoder)";
+"Hệ thống" = "System";
 "Hệ điểm" = "Scoring system";
 "Họ và tên" = "Full name";
 "Hội ý mỗi game: %lld" = "Timeouts per game: %lld";
@@ -345,6 +374,8 @@
 "IN HOA" = "UPPERCASE";
 "Khi hoà" = "If tied";
 "Khoá cân bằng trắng" = "Lock white balance";
+"Khoá lớp" = "Lock layer";
+"Khoá lớp (không chọn / kéo trên khung vẽ)" = "Lock layer (not picked / dragged on the canvas)";
 "Khung LIVE" = "LIVE frame";
 "Khung PiP đơn đè lên Program" = "Single PiP window over Program";
 "Khung an toàn" = "Safe area";
@@ -358,6 +389,7 @@
 "Khung phối cảnh" = "Perspective";
 "Khung replay (VAR)" = "Replay window (VAR)";
 "Khung viền" = "Window frame";
+"Khung ôm theo chữ" = "Box fits the text";
 "Khung đôi" = "Split frame";
 "Khuyến nghị cho %@×%@ %@ fps: %@ Mbps" = "Recommended for %@×%@ %@ fps: %@ Mbps";
 "Khách mời (trống = ẩn)" = "Guest (empty = hidden)";
@@ -405,6 +437,7 @@
 "Kiểu" = "Style";
 "Kéo cho tiếng khớp với hình khi camera mạng bị trễ." = "Delays the sound to match late network-camera video.";
 "Kéo logo trên khung để di chuyển, kéo chấm ở góc để đổi cỡ." = "Drag the logo on the frame to move it, drag the corner dot to resize it.";
+"Kéo title trên khung để đặt vị trí · chụm 2 ngón để đổi cỡ" = "Drag the title on the preview to place it · pinch to resize";
 "Kéo để di chuyển · kéo góc để đổi cỡ" = "Drag to move · drag a corner to resize";
 "Kênh âm thanh" = "Audio channels";
 "Kích thước" = "Size";
@@ -434,6 +467,7 @@
 "Logo + tên + chức danh" = "Logo + name + title";
 "Logo đang trên PGM" = "Logo is on PGM";
 "Logo đã nạp — bấm Logo On" = "Logo loaded — press Logo On";
+"Lower third cơ bản" = "Basic lower third";
 "Lower third kính mờ" = "Frosted-glass lower third";
 "Lower third neon" = "Neon lower third";
 "Lower third trượt" = "Sliding lower third";
@@ -444,13 +478,17 @@
 "Luôn giữ màn hình sáng" = "Keep the screen on";
 "Làm lại" = "Redo";
 "Làm mới" = "Refresh";
+"Lên 1 lớp" = "Up one layer";
 "Lên Preview" = "To Preview";
 "Lên sóng" = "On air";
 "Lên sóng ngay" = "Take now";
+"Lên trước" = "Forward";
 "Lưu" = "Save";
 "Lưu clip" = "Save clip";
 "Lưu cấu hình hiện tại" = "Save current setup";
 "Lưu mẫu này" = "Save this template";
+"Lưu thiết kế này" = "Save this design";
+"Lưu thành mẫu…" = "Save as template…";
 "Lưới 2×2" = "2×2 grid";
 "Lưới 3×3" = "3×3 grid";
 "Lượt cân bằng (người sau được đánh lượt cuối)" = "Equalizing inning (second player gets the last turn)";
@@ -469,7 +507,9 @@
 "Lỗi: %lld" = "Error: %lld";
 "Lớn giữa phải" = "Large centre-right";
 "Lớp" = "Layers";
+"Lớp (%lld)" = "Layers (%lld)";
 "Lớp phủ" = "Overlay";
+"Lớp trên cùng nằm phía trước. Chạm để chọn, kéo trên khung vẽ để di chuyển." = "The top layer is in front. Tap to select, drag on the canvas to move.";
 "Lớp đang chọn · %@" = "Selected layer · %@";
 "Lửa đỏ" = "Red flame";
 "Mua gói ngày / tháng / năm" = "Buy a day / month / year plan";
@@ -486,6 +526,7 @@
 "Màu 1" = "Colour 1";
 "Màu 2" = "Colour 2";
 "Màu 3" = "Colour 3";
+"Màu bóng" = "Shadow colour";
 "Màu chữ" = "Text colour";
 "Màu dải" = "Strip colour";
 "Màu nguồn PVW" = "PVW source colour";
@@ -494,6 +535,8 @@
 "Màu sắc" = "Colour";
 "Màu tô" = "Fill colour";
 "Màu viền" = "Border colour";
+"Màu viền chữ" = "Outline colour";
+"Màu đường kẻ" = "Line colour";
 "Màu, key, PTZ…" = "Colour, key, PTZ…";
 "Máy chủ chưa cấu hình tài khoản nhận tiền." = "The server has no receiving bank account yet.";
 "Máy chủ trả lỗi %@" = "Server error %@";
@@ -508,7 +551,9 @@
 "Mạng tải lên không kịp (hàng đợi %@ KB) — tạm bỏ khung hình để bắt kịp" = "Upload can't keep up (queue %@ KB) — dropping video frames to catch up";
 "Mất gói (2 s gần nhất)" = "Packet loss (last 2 s)";
 "Mất kết nối — thử lại" = "Connection lost — retrying";
+"Mẫu" = "Templates";
 "Mẫu bố cục" = "Layouts";
+"Mẫu có sẵn" = "Built-in templates";
 "Mẫu này chưa có lớp nào: đánh dấu khối bằng data-layer=\"tên\" trong HTML." = "This template has no layers yet: mark blocks with data-layer=\"name\" in the HTML.";
 "Mẫu đã lưu" = "Saved templates";
 "Mật khẩu" = "Password";
@@ -527,6 +572,7 @@
 "Mờ nét" = "Blur";
 "Mở DTDLive (hoặc app hỗ trợ DTD pairing) trên cùng mạng Wi-Fi → chọn DTDStudio → so ID xác nhận → Chấp nhận. Không cần nhập mã." = "Open DTDLive on the same Wi-Fi → pick DTDStudio → compare the confirmation ID → Accept. No code to type.";
 "Mở dọc" = "Open vertical";
+"Mở khoá lớp" = "Unlock layer";
 "Mở ngang" = "Open horizontal";
 "Mở trang xem live" = "Open live page";
 "Mở trong Replay (mark in/out)" = "Open in Replay (mark in/out)";
@@ -586,11 +632,13 @@
 "Nạp (tắt mẫu đang phát)" = "Load (takes the current one off air)";
 "Nạp .cube" = "Load .cube";
 "Nạp mẫu" = "Load template";
+"Nạp mẫu sẽ thay toàn bộ thiết kế hiện tại (có thể Hoàn tác)." = "Loading a template replaces the whole current design (you can Undo).";
 "Nạp show sẽ dừng phát và thay toàn bộ nguồn, đầu ra, title." = "Loading a show stops streaming and replaces all sources, outputs and titles.";
 "Nền" = "Background";
 "Nền bố cục" = "Layout background";
 "Nền dòng 1" = "Line 1 background";
 "Nền dòng 2" = "Line 2 background";
+"Nền khung vẽ" = "Canvas background";
 "Nền là nguồn video (làm mờ): %@" = "Background is a video source (blurred): %@";
 "Nền là nguồn video (làm mờ): %lf" = "Background is a video source (blurred): %lf";
 "Nền là nguồn video (làm mờ): %lld" = "Background is a video source (blurred): %lld";
@@ -622,6 +670,7 @@
 "Phát trực tiếp" = "Streaming";
 "Phát tất cả" = "Start all";
 "Phóng to" = "Zoom";
+"Phông" = "Font";
 "Phút %@" = "Minutes %@";
 "Phút %lf" = "Minutes %lf";
 "Phút %lld" = "Minutes %lld";
@@ -647,6 +696,7 @@
 "RTSP (ANNOUNCE/RECORD, nhiều đường dẫn)" = "RTSP (ANNOUNCE/RECORD, many paths)";
 "RTT" = "RTT";
 "Ra mắt" = "Premiere";
+"Ra sau" = "Backward";
 "Rally (mọi rally đều ra điểm)" = "Rally (every rally scores)";
 "Replay" = "Replay";
 "Replay đang phát trên PGM — bấm DỪNG trước khi đưa đoạn khác lên Preview" = "A replay is on PGM — press STOP before cueing another one to Preview";
@@ -654,7 +704,10 @@
 "Resize" = "Resize";
 "Rèm" = "Blinds";
 "Rơi xuống" = "Drop";
+"Rất hẹp" = "Compressed";
+"Rất đậm" = "Heavy";
 "Rộng" = "Width";
+"Rộng ra" = "Expanded";
 "Rộng tối đa" = "Max width";
 "SF (hệ thống)" = "SF (system)";
 "SRT (một cổng, nhiều streamid)" = "SRT (one port, many streamids)";
@@ -707,6 +760,7 @@
 "Thiết kế Title" = "Title designer";
 "Thiết kế nhiều lớp" = "Multi-layer design";
 "Thu gọn" = "Collapse";
+"Thuộc tính" = "Properties";
 "Thêm" = "Add";
 "Thêm %@" = "Add %@";
 "Thêm %lf" = "Add %lf";
@@ -732,6 +786,7 @@
 "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTDStudio › Library › %lf" = "Library empty — use the import button above. Files live in Files › DTDStudio › Library › %lf";
 "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTDStudio › Library › %lld" = "Library empty — use the import button above. Files live in Files › DTDStudio › Library › %lld";
 "Thư viện ảnh" = "Photos";
+"Thường" = "Regular";
 "Thắng %@/%@" = "Best %@ of %@";
 "Thắng rack được phá" = "Winner breaks";
 "Thẻ vàng" = "Yellow card";
@@ -848,6 +903,7 @@
 "VideoToolbox lỗi %@ %@ — tạo lại bộ mã hoá" = "VideoToolbox error %@ %@ — recreating the encoder";
 "Viền" = "Line";
 "Viền chữ" = "Outline";
+"Viền khung" = "Box border";
 "Vuốt 1 ngón trên PVW về phía PGM = CUT · 2 ngón = AUTO" = "Swipe PVW toward PGM: 1 finger = CUT · 2 fingers = AUTO";
 "Vuốt PVW → PGM để chuyển" = "Swipe PVW → PGM to switch";
 "Vào trận" = "Game on";
@@ -855,6 +911,7 @@
 "Vòng tròn" = "Iris";
 "Vạch nhấn" = "Accent tab";
 "Vẽ" = "Draw";
+"Về 0°" = "Reset to 0°";
 "Về gốc" = "Reset";
 "Về màu mặc định của kiểu" = "Reset to the style's colours";
 "Về mặc định lớp" = "Reset layer";
@@ -864,12 +921,15 @@
 "Vị trí & cỡ" = "Position & size";
 "Vị trí & kích thước" = "Position & size";
 "Vị trí đặt" = "Position";
+"Vừa" = "Medium";
 "Wi‑Fi chập chờn: SRT đang gửi lại gói, hình vẫn đủ." = "Wi‑Fi is unsteady: SRT is resending packets, the picture is still complete.";
 "Xanh dương" = "Blue";
 "Xanh lá" = "Green";
 "Xem live" = "Watch live";
 "Xem mã đang sửa" = "Preview edited code";
 "Xem nhật ký" = "Show log";
+"Xem thử" = "Preview";
+"Xem thử trên khung vẽ" = "Preview on the canvas";
 "Xem trước" = "Preview";
 "Xem trước · chưa nạp" = "Preview · not loaded";
 "Xoay" = "Spin";
@@ -890,6 +950,7 @@
 "Xoá nét" = "Clear drawing";
 "Xoá title" = "Delete title";
 "Xoá title này" = "Delete this title";
+"Xoá title này?" = "Delete this title?";
 "Xoá title “%@”?" = "Delete title “%@”?";
 "Xoá tài khoản" = "Delete account";
 "Xoá vĩnh viễn tài khoản này?" = "Delete this account permanently?";
@@ -898,6 +959,9 @@
 "Xuất thất bại: %@" = "Export failed: %@";
 "Xuất thất bại: %lf" = "Export failed: %lf";
 "Xuất thất bại: %lld" = "Export failed: %lld";
+"Xuống 1 lớp" = "Down one layer";
+"Xuống dưới cùng" = "Send to back";
+"Xám" = "Grey";
 "YouTube Studio › Phát trực tiếp › Khoá luồng." = "YouTube Studio › Go live › Stream key.";
 "YouTube: đã hết hạn mức API hôm nay (đặt lại lúc nửa đêm giờ Thái Bình Dương, khoảng 14–15 giờ VN) — xin tăng hạn mức trong Google Cloud" = "YouTube: today's API quota is used up (resets at midnight Pacific time) — request more quota in Google Cloud";
 "Yêu thích" = "Favorites";
@@ -926,6 +990,7 @@
 "Âm thanh" = "Audio";
 "Âm thanh của video trong Ảnh" = "Sound of a video in Photos";
 "Ô tỉ số" = "Score box";
+"Ô vuông (trong suốt)" = "Checkerboard (transparent)";
 "Ô đầu vào" = "Input tiles";
 "ĐANG REPLAY · DỪNG" = "REPLAY ON AIR · STOP";
 "Đang chờ ngân hàng xác nhận…" = "Waiting for the bank…";
@@ -951,6 +1016,7 @@
 "Đang tìm…" = "Searching…";
 "Đang tải giá từ App Store…" = "Loading prices from the App Store…";
 "Đang tải…" = "Loading…";
+"Đen" = "Black";
 "Điều khiển PTZ" = "PTZ control";
 "Điều khiển camera" = "Camera control";
 "Điều khiển title từ điện thoại/laptop: http://<IP máy>:8080" = "Control titles from a phone/laptop: http://<device IP>:8080";
@@ -1001,9 +1067,11 @@
 "Đăng nhập để dùng gói trên mọi thiết bị và với DTDLive." = "Sign in to use your plan on all your devices and with DTDLive.";
 "Đăng xuất" = "Sign out";
 "Đơn" = "Singles";
+"Đơn cách" = "Monospaced";
 "Đơn đã hết hạn hoặc bị huỷ" = "Order expired or cancelled";
 "Đưa N-Title lên PGM" = "Put N-Title on PGM";
 "Đưa lên Preview" = "Send to Preview";
+"Đưa lên trên cùng" = "Bring to front";
 "Đưa vào Khung %@" = "Into window %@";
 "Đưa vào khung PiP" = "Into PiP";
 "Đường kẻ" = "Line";
@@ -1036,8 +1104,11 @@
 "Đổi sân giữa game quyết định" = "Switch ends in the deciding game";
 "Đổi tên" = "Rename";
 "Đổi độ phân giải/fps khi đang phát: các đích tự kết nối lại với thông số mới." = "Changing resolution/fps while live reconnects every destination with the new settings.";
+"Đổi ảnh" = "Change image";
 "Độ dày" = "Thickness";
+"Độ nhoè" = "Blur";
 "Độ phân giải" = "Resolution";
+"Độ rộng chữ" = "Letter width";
 "Độ trong" = "Opacity";
 "Độ trễ SRT %@ ms" = "SRT latency %@ ms";
 "Độ trễ SRT %lf ms" = "SRT latency %lf ms";
@@ -1062,6 +1133,7 @@
 "Ảnh từ Thư viện" = "From Photos";
 "Ảnh đại diện" = "Avatars";
 "Ảnh đại diện / logo" = "Avatar / logo";
+"Ẩn lớp" = "Hide layer";
 "Ẩn tất cả" = "Hide all";
 "Ứng dụng" = "App";
 "Ứng dụng khác (HTTP): %@" = "Other apps (HTTP): %@";
