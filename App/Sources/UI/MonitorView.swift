@@ -84,16 +84,17 @@ final class MonitorMTKView: MTKView {
 
     required init(coder: NSCoder) { fatalError() }
 
-    private weak var lastBuffer: CVPixelBuffer?
-    private var lastSize: CGSize = .zero
-    private var lastWasEmpty = false
+    /// What was drawn last: which store, its frame counter (nil = no signal) and the drawable size.
+    private var drawn: (store: ObjectIdentifier, seq: UInt64?, size: CGSize)?
 
     override func draw(_ rect: CGRect) {
-        // Battery: skip the GPU work when nothing changed (same frame, same size).
-        let pb = store.latest()
-        if let pb, pb === lastBuffer, drawableSize == lastSize { return }
-        if pb == nil, lastWasEmpty, drawableSize == lastSize { return }
-        lastBuffer = pb; lastSize = drawableSize; lastWasEmpty = pb == nil
+        // Battery: skip the GPU work when nothing changed (same store, same frame number, same size).
+        // Compared by the store's frame counter, not the buffer object: pools recycle buffer objects.
+        let frame = store.latestFrame()
+        let now = (store: ObjectIdentifier(store), seq: frame?.seq, size: drawableSize)
+        if let d = drawn, d.store == now.store, d.seq == now.seq, d.size == now.size { return }
+        drawn = now
+        let pb = frame?.buffer
         guard let drawable = currentDrawable, let cb = queue.makeCommandBuffer() else { return }
         let size = drawableSize
         let bounds = CGRect(origin: .zero, size: size)

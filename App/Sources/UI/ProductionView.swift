@@ -350,7 +350,6 @@ struct CategoryContent: View {
                 ScoreboardControl(engine: engine, compact: true)
             default:
                 HTMLGraphicsPanel(html: engine.html, repo: engine.graphicsRepo, compact: true,
-                                  background: engine.switcher.previewMonitor,
                                   aspect: CGFloat(engine.format.width) / CGFloat(max(engine.format.height, 1)))
             }
         case .logo:

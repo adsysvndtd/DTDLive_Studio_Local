@@ -44,13 +44,15 @@ struct HTMLGraphicsPanel: View {
             // lower third sits exactly where (and as big as) it will on air. Stacked when the column is narrow.
             // List · small preview (the whole program frame at its real aspect) on top; below it the text fields
             // and the design (layout / layers / effects) side by side, so the preview stays in view while editing.
+            // The preview is a card showing the lower third itself (no camera picture behind it) and gets the
+            // larger share of the row; the list keeps a fixed width beside it.
             ViewThatFits(in: .horizontal) {
                 HStack(alignment: .top, spacing: 10) {
-                    templateList.frame(minWidth: compact ? 170 : 200, maxWidth: .infinity).frame(height: compact ? 190 : 220)
-                    previewPane.frame(width: compact ? 250 : 300)
+                    templateList.frame(width: compact ? 190 : 230).frame(height: compact ? 250 : 290)
+                    previewPane.frame(minWidth: 340, maxWidth: 620)
                 }
                 VStack(spacing: 8) {
-                    previewPane.frame(maxWidth: 300)
+                    previewPane.frame(maxWidth: 620)
                     templateList.frame(height: 180)
                 }
             }
@@ -574,8 +576,7 @@ struct HTMLLivePreview: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            // PVW underneath at a low rate: it is only a backdrop
-            if let background { MonitorView(store: background, maxFPS: 5) } else { Color(white: 0.3) }
+            HTMLCardBackground()
             HTMLFeedPicture(feed: html.feed)
             // title-safe guide (90 %)
             GeometryReader { g in
@@ -594,6 +595,13 @@ struct HTMLLivePreview: View {
         }
         .onAppear { html.beginPreview() }
         .onDisappear { html.endPreview() }
+    }
+}
+
+/// Backdrop of the panel preview card: a plain dark studio grey (no camera picture — it only shows the graphic).
+struct HTMLCardBackground: View {
+    var body: some View {
+        LinearGradient(colors: [Color(white: 0.24), Color(white: 0.14)], startPoint: .top, endPoint: .bottom)
     }
 }
 
@@ -624,7 +632,7 @@ struct HTMLTemplatePreview: View {
 
     var body: some View {
         ZStack {
-            if let background { MonitorView(store: background, maxFPS: 5) } else { Color(white: 0.3) }
+            HTMLCardBackground()
             HTMLPreviewView(template: template, source: "", values: values, design: design, playToken: playToken)
                 .aspectRatio(16 / 9, contentMode: .fit)
             GeometryReader { g in
