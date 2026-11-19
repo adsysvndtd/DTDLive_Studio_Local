@@ -11,6 +11,7 @@ struct StudioView: View {
     @State private var drawing = false
     @State private var clearDrawing = 0
     @State private var showShows = false
+    @State private var showMultiview = false
     @State private var tbarValue = 0.0
     // SceneStorage: survives the root rebuild done on a language switch
     @SceneStorage("ui.category") private var category: ProdCategory = ProdCategory(rawValue: DemoMode.arg("-category") ?? "") ?? .camera
@@ -78,6 +79,7 @@ struct StudioView: View {
         .sheet(isPresented: $showAddSource) { AddSourceSheet(engine: engine) }
         .sheet(isPresented: $showOutputs) { OutputsSheet(engine: engine) }
         .sheet(isPresented: $showShows) { ShowsSheet(engine: engine) }
+        .fullScreenCover(isPresented: $showMultiview) { MultiviewScreen(engine: engine) }
         .sheet(isPresented: $showSettings) { SettingsSheet(engine: engine) }
         .alert(engine.message ?? "", isPresented: Binding(get: { engine.message != nil }, set: { if !$0 { engine.message = nil } })) {
             Button("OK", role: .cancel) {}
@@ -117,6 +119,7 @@ struct StudioView: View {
             barButton("arrow.uturn.forward", "Làm lại") { engine.redo() }.disabled(!engine.canRedo).opacity(engine.canRedo ? 1 : 0.4)
                 .keyboardShortcut("z", modifiers: [.command, .shift])
             barButton(engine.isRecording ? "record.circle.fill" : "record.circle", "Ghi", tint: engine.isRecording ? DS.pgm : .white) { engine.toggleRecording() }
+            barButton("square.grid.3x3", "Multiview") { showMultiview = true }
             barButton("folder", "Show") { showShows = true }
             barButton("gearshape", "Cài đặt") { showSettings = true }
             if engine.externalDisplayConnected {

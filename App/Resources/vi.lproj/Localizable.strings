@@ -26,6 +26,7 @@
 "AFV2" = "AFV2";
 "Ai được xem" = "Ai được xem";
 "Anton (tiêu đề đậm)" = "Anton (tiêu đề đậm)";
+"Auto" = "Auto";
 "B-frame" = "B-frame";
 "Ba khung dọc" = "Ba khung dọc";
 "Ba khung ngang" = "Ba khung ngang";
@@ -175,6 +176,7 @@
 "Clip đã lưu" = "Clip đã lưu";
 "Copy link" = "Copy link";
 "Copy nhật ký" = "Copy nhật ký";
+"Cut" = "Cut";
 "Cài đặt" = "Cài đặt";
 "Cách đáy" = "Cách đáy";
 "Có" = "Có";
@@ -430,6 +432,7 @@
 "Lửa đỏ" = "Lửa đỏ";
 "Mua gói ngày / tháng / năm" = "Mua gói ngày / tháng / năm";
 "Mua qua App Store" = "Mua qua App Store";
+"Multiview" = "Multiview";
 "Màn chờ · Quay lại ngay" = "Màn chờ · Quay lại ngay";
 "Màn chờ · Sắp bắt đầu" = "Màn chờ · Sắp bắt đầu";
 "Màn hình" = "Màn hình";
@@ -835,6 +838,7 @@
 "Âm lượng" = "Âm lượng";
 "Âm thanh" = "Âm thanh";
 "Ô tỉ số" = "Ô tỉ số";
+"Ô đầu vào" = "Ô đầu vào";
 "ĐANG REPLAY · DỪNG" = "ĐANG REPLAY · DỪNG";
 "Đang chờ ngân hàng xác nhận…" = "Đang chờ ngân hàng xác nhận…";
 "Đang chờ · %@ · cổng ghép nối %@ (tự tìm, không cần nhập)" = "Đang chờ · %@ · cổng ghép nối %@ (tự tìm, không cần nhập)";

@@ -157,6 +157,17 @@ final class StudioEngine: ObservableObject {
     var scopeResult: ScopeAnalyzer.Result { meters.scope }
     @Published var ptz: [UUID: PTZConfig] = [:]
     @Published var externalMode: ExternalMode = .program
+    /// Number of input tiles in the multiview (fixed slots; inputs beyond them are not shown).
+    enum MultiviewLayout: Int, CaseIterable, Identifiable {
+        case four = 4, eight = 8, ten = 10, sixteen = 16
+        var id: Int { rawValue }
+        var slots: Int { rawValue }
+        var columns: Int { self == .ten ? 5 : 4 }
+        var label: String { "2 + \(rawValue)" }
+    }
+    @Published var multiviewLayout: MultiviewLayout = MultiviewLayout(rawValue: UserDefaults.standard.integer(forKey: "dtd.multiview.layout")) ?? .eight {
+        didSet { UserDefaults.standard.set(multiviewLayout.rawValue, forKey: "dtd.multiview.layout") }
+    }
     @Published var externalDisplayConnected = false
     @Published private(set) var canUndo = false
     @Published private(set) var canRedo = false

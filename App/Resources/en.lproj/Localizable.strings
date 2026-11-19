@@ -26,6 +26,7 @@
 "AFV2" = "AFV2";
 "Ai được xem" = "Who can watch";
 "Anton (tiêu đề đậm)" = "Anton (bold headline)";
+"Auto" = "Auto";
 "B-frame" = "B-frames";
 "Ba khung dọc" = "Three tall";
 "Ba khung ngang" = "Three across";
@@ -175,6 +176,7 @@
 "Clip đã lưu" = "Saved clips";
 "Copy link" = "Copy link";
 "Copy nhật ký" = "Copy log";
+"Cut" = "Cut";
 "Cài đặt" = "Settings";
 "Cách đáy" = "From bottom";
 "Có" = "Yes";
@@ -430,6 +432,7 @@
 "Lửa đỏ" = "Red flame";
 "Mua gói ngày / tháng / năm" = "Buy a day / month / year plan";
 "Mua qua App Store" = "Buy on the App Store";
+"Multiview" = "Multiview";
 "Màn chờ · Quay lại ngay" = "Standby · Be right back";
 "Màn chờ · Sắp bắt đầu" = "Standby · Starting soon";
 "Màn hình" = "Display";
@@ -835,6 +838,7 @@
 "Âm lượng" = "Volume";
 "Âm thanh" = "Audio";
 "Ô tỉ số" = "Score box";
+"Ô đầu vào" = "Input tiles";
 "ĐANG REPLAY · DỪNG" = "REPLAY ON AIR · STOP";
 "Đang chờ ngân hàng xác nhận…" = "Waiting for the bank…";
 "Đang chờ · %@ · cổng ghép nối %@ (tự tìm, không cần nhập)" = "Waiting · %@ · pairing port %@ (found automatically, nothing to type)";
