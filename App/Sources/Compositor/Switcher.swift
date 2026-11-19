@@ -275,7 +275,7 @@ final class Switcher: @unchecked Sendable {
     // MARK: Render clock
 
     func start() { queue.async { self.restartClock() } }
-    func stop() { timer?.cancel(); timer = nil }
+    func stop() { queue.async { self.timer?.cancel(); self.timer = nil } }
 
     private func restartClock() {
         timer?.cancel()

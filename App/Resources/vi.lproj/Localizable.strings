@@ -428,6 +428,7 @@
 "Loại" = "Loại";
 "Luân lưu %lld lượt rồi đột tử" = "Luân lưu %lld lượt rồi đột tử";
 "Luân phiên" = "Luân phiên";
+"Luôn giữ màn hình sáng" = "Luôn giữ màn hình sáng";
 "Làm lại" = "Làm lại";
 "Làm mới" = "Làm mới";
 "Lên Preview" = "Lên Preview";
@@ -780,6 +781,7 @@
 "Tải lại danh sách Trang" = "Tải lại danh sách Trang";
 "TẮT" = "TẮT";
 "Tắt" = "Tắt";
+"Tắt (tiết kiệm pin): màn hình chỉ luôn sáng khi đang phát / ghi; lúc khác iPad tự khoá theo Tự động khoá. Khi app ở nền hoặc màn hình tắt mà không phát, sau 15 giây app dừng camera, micro, xử lý hình và kết nối để không tốn pin; mở lại app là chạy tiếp." = "Tắt (tiết kiệm pin): màn hình chỉ luôn sáng khi đang phát / ghi; lúc khác iPad tự khoá theo Tự động khoá. Khi app ở nền hoặc màn hình tắt mà không phát, sau 15 giây app dừng camera, micro, xử lý hình và kết nối để không tốn pin; mở lại app là chạy tiếp.";
 "Tắt khi không dùng replay để đỡ nóng máy và tiết kiệm pin." = "Tắt khi không dùng replay để đỡ nóng máy và tiết kiệm pin.";
 "Tắt tự động chuyển cảnh" = "Tắt tự động chuyển cảnh";
 "Tệp" = "Tệp";
@@ -1019,6 +1021,7 @@
 "Ẩn tất cả" = "Ẩn tất cả";
 "Ứng dụng" = "Ứng dụng";
 "Ứng dụng khác (HTTP): %@" = "Ứng dụng khác (HTTP): %@";
+"Ứng dụng đã chạy nền trong lúc phát: iPad dừng camera và xử lý hình khi app không ở phía trước, chỉ âm thanh tiếp tục. Hãy giữ DTDStudio mở khi đang phát." = "Ứng dụng đã chạy nền trong lúc phát: iPad dừng camera và xử lý hình khi app không ở phía trước, chỉ âm thanh tiếp tục. Hãy giữ DTDStudio mở khi đang phát.";
 "→ Title" = "→ Title";
 "→ Title 2" = "→ Title 2";
 "−1 khung" = "−1 khung";

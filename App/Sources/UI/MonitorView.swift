@@ -10,19 +10,24 @@ struct MonitorView: UIViewRepresentable {
     let store: FrameStore
     var maxFPS = 30
 
+    /// Low Power Mode on: monitors redraw at most 15 times a second (the program itself is not affected).
+    static func fps(_ maxFPS: Int) -> Int {
+        ProcessInfo.processInfo.isLowPowerModeEnabled ? min(maxFPS, 15) : maxFPS
+    }
+
     #if targetEnvironment(simulator)
     func makeUIView(context: Context) -> LayerMonitorView { LayerMonitorView(store: store, fps: min(maxFPS, DemoMode.isUITest ? 2 : 10)) }
     func updateUIView(_ v: LayerMonitorView, context: Context) { v.store = store }
     #else
     func makeUIView(context: Context) -> MonitorMTKView {
         let v = MonitorMTKView(store: store)
-        v.preferredFramesPerSecond = maxFPS
+        v.preferredFramesPerSecond = Self.fps(maxFPS)
         return v
     }
 
     func updateUIView(_ v: MonitorMTKView, context: Context) {
         v.store = store
-        v.preferredFramesPerSecond = maxFPS
+        v.preferredFramesPerSecond = Self.fps(maxFPS)
     }
     #endif
 }

@@ -10436,6 +10436,36 @@
           }
         }
       }
+    },
+    "Luôn giữ màn hình sáng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep the screen on"
+          }
+        }
+      }
+    },
+    "Tắt (tiết kiệm pin): màn hình chỉ luôn sáng khi đang phát / ghi; lúc khác iPad tự khoá theo Tự động khoá. Khi app ở nền hoặc màn hình tắt mà không phát, sau 15 giây app dừng camera, micro, xử lý hình và kết nối để không tốn pin; mở lại app là chạy tiếp.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Off (saves battery): the screen stays on only while streaming / recording; otherwise the iPad locks by Auto-Lock. When the app is in the background or the screen is off and nothing is on air, after 15 seconds the app stops cameras, microphone, picture processing and connections to save battery; open the app again to continue."
+          }
+        }
+      }
+    },
+    "Ứng dụng đã chạy nền trong lúc phát: iPad dừng camera và xử lý hình khi app không ở phía trước, chỉ âm thanh tiếp tục. Hãy giữ DTDStudio mở khi đang phát.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The app was in the background while on air: the iPad stops cameras and picture processing when the app is not in front, only sound continues. Keep DTDStudio open while streaming."
+          }
+        }
+      }
     }
   },
   "version": "1.0"

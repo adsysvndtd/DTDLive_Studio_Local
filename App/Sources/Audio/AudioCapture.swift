@@ -133,6 +133,21 @@ final class AudioCapture: @unchecked Sendable {
         engine.stop()
     }
 
+    /// App in the background with nothing on air: stop the microphone / audio I/O and give the session up,
+    /// so iOS can suspend the app (an active play-and-record session keeps it running — and the mic on).
+    func suspend() {
+        guard engine.isRunning else { return }
+        engine.pause()
+        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+    }
+
+    /// Back in the foreground: the graph (channels, taps) is unchanged, only the I/O restarts.
+    func resume() throws {
+        guard !engine.isRunning else { return }
+        try AVAudioSession.sharedInstance().setActive(true)
+        try engine.start()
+    }
+
     @discardableResult
     private func makeChannel(_ id: UUID, name: String) -> AVAudioMixerNode {
         let m = AVAudioMixerNode()

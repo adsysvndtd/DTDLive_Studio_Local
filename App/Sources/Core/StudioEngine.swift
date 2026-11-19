@@ -291,6 +291,7 @@ final class StudioEngine: ObservableObject {
             control.target = self
             try? control.start()
         }
+        updateIdleTimer()
 
         replay.onFinished = { [weak self] in self?.replayFinished() }
         pairing.engine = self
@@ -1670,6 +1671,7 @@ final class StudioEngine: ObservableObject {
     private func setOutputStatus(_ id: UUID, _ st: OutputStatus) {
         let was = outputStatus[id]
         outputStatus[id] = st
+        if (st == .live) != (was == .live) { updateIdleTimer() }
         guard st == .live, was != .live, let o = outputs.first(where: { $0.id == id }), o.proto != .record else { return }
         let u = o.url.lowercased()
         let live = PlatformLive.shared
@@ -1680,6 +1682,69 @@ final class StudioEngine: ObservableObject {
         }
     }
     var isRecording: Bool { outputs.contains { $0.proto == .record && outputStatus[$0.id] == .live } }
+
+    // MARK: Background / screen off (battery)
+
+    /// "Luôn giữ màn hình sáng": off = the screen stays on only while streaming or recording,
+    /// otherwise it follows the iPad's Auto-Lock.
+    @Published var keepScreenOn = UserDefaults.standard.bool(forKey: "dtd.keepScreenOn") {
+        didSet { UserDefaults.standard.set(keepScreenOn, forKey: "dtd.keepScreenOn"); updateIdleTimer() }
+    }
+    /// Work stopped because the app went to the background with nothing on air.
+    private(set) var suspendedInBackground = false
+    private var wentBackgroundWhileLive = false
+    private var backgroundTask: Task<Void, Never>?
+
+    func updateIdleTimer() {
+        let on = keepScreenOn || isAnyLive || isRecording
+        if UIApplication.shared.isIdleTimerDisabled != on { UIApplication.shared.isIdleTimerDisabled = on }
+    }
+
+    /// Home button, app switch or screen locked. Nothing on air → after a short grace period (a quick look at
+    /// another app keeps everything connected) the render clock, microphone, media players and network
+    /// listeners stop and iOS suspends the app: no battery use while it is not in front.
+    /// Streaming / recording → keep running: the sound goes on, but iOS stops the cameras and the GPU for apps
+    /// in the background, so the picture holds until the app is back in front.
+    func appDidEnterBackground() {
+        guard !DemoMode.isOn else { return }
+        if isAnyLive || isRecording { wentBackgroundWhileLive = true; return }
+        backgroundTask?.cancel()
+        backgroundTask = Task { @MainActor [weak self] in
+            try? await Task.sleep(nanoseconds: 15_000_000_000)
+            guard let self, !Task.isCancelled, !self.isAnyLive, !self.isRecording else { return }
+            self.suspendForBackground()
+        }
+    }
+
+    func appDidBecomeActive() {
+        backgroundTask?.cancel(); backgroundTask = nil
+        if suspendedInBackground { resumeFromBackground() }
+        if wentBackgroundWhileLive {
+            wentBackgroundWhileLive = false
+            message = L("Ứng dụng đã chạy nền trong lúc phát: iPad dừng camera và xử lý hình khi app không ở phía trước, chỉ âm thanh tiếp tục. Hãy giữ DTDStudio mở khi đang phát.")
+        }
+        updateIdleTimer()
+    }
+
+    private func suspendForBackground() {
+        guard !suspendedInBackground else { return }
+        suspendedInBackground = true
+        switcher.stop()
+        for case let f as FileSource in sources where f.isPlaying { f.pause() }
+        audio.suspend()
+        control.stop()
+        ingest.stop()
+    }
+
+    private func resumeFromBackground() {
+        suspendedInBackground = false
+        try? audio.resume()
+        control.stop()
+        try? control.start()
+        ingest.start()
+        switcher.start()
+        updateMediaPlayback()
+    }
 
     func toggleRecording() {
         if let r = outputs.first(where: { $0.proto == .record }) {
