@@ -165,7 +165,7 @@ struct CategoryContent: View {
             importing = nil
         }
         .photosPicker(isPresented: Binding(get: { photoKind != nil }, set: { if !$0 { photoKind = nil } }),
-                      selection: $photoItems, matching: .images)
+                      selection: $photoItems, matching: .images, preferredItemEncoding: .current)
         // .current: the video as stored (no re-encode to H.264 before it is handed over — much faster for 4K / HEVC)
         .photosPicker(isPresented: $videoPick, selection: $videoItems, maxSelectionCount: 20,
                       matching: .videos, preferredItemEncoding: .current)
@@ -177,17 +177,7 @@ struct CategoryContent: View {
         .onChange(of: photoItems) { _, items in
             guard !items.isEmpty else { return }
             let k = photoTarget
-            Task {
-                var failed = 0
-                for (n, i) in items.enumerated() {
-                    importStatus = LF("Đang nhập từ Ảnh %@/%@…", "\(n + 1)", "\(items.count)")
-                    let d = try? await i.loadTransferable(type: Data.self)
-                    if d.flatMap({ library.importImage($0, into: k, name: k == .logo ? "Logo" : k == .overlay ? "SuperFG" : L("Ảnh")) }) == nil { failed += 1 }
-                }
-                importStatus = nil
-                if failed > 0 { engine.message = LF("Không nhập được %@ mục từ Ảnh", "\(failed)") }
-                photoItems = []
-            }
+            Task { await importPictures(items, into: k); photoItems = [] }
         }
         .sheet(item: Binding(get: { adjustingSource.map(IDBox.init) }, set: { adjustingSource = $0?.id })) { box in
             NavigationStack {
@@ -288,19 +278,56 @@ struct CategoryContent: View {
         headerButton("Từ Tệp", "folder") { fileTarget = k; importing = k }.id("f" + k.rawValue)
     }
 
+    /// Pictures picked in Photos: three at a time (Photos hands them over in parallel), each decoded,
+    /// scaled and saved off the main thread; the library refreshes once at the end.
+    private func importPictures(_ items: [PhotosPickerItem], into k: LibraryKind) async {
+        let name = k == .logo ? "Logo" : k == .overlay ? "SuperFG" : L("Ảnh")
+        let stamp = MediaLibrary.stamp(), total = items.count
+        var done = 0, failed = 0
+        importStatus = LF("Đang nhập từ Ảnh %@/%@…", "0", "\(total)")
+        await withTaskGroup(of: Bool.self) { g in
+            func finished(_ ok: Bool) {
+                done += 1; if !ok { failed += 1 }
+                importStatus = LF("Đang nhập từ Ảnh %@/%@…", "\(done)", "\(total)")
+            }
+            for (i, item) in items.enumerated() {
+                if i >= 3, let ok = await g.next() { finished(ok) }
+                let base = total > 1 ? "\(name)-\(stamp)-\(i + 1)" : "\(name)-\(stamp)"
+                g.addTask {
+                    guard let d = try? await item.loadTransferable(type: Data.self) else { return false }
+                    return MediaLibrary.storeImage(d, into: k, base: base) != nil
+                }
+            }
+            for await ok in g { finished(ok) }
+        }
+        library.refresh()
+        importStatus = nil
+        if failed > 0 { engine.message = LF("Không nhập được %@ mục từ Ảnh", "\(failed)") }
+    }
+
     /// Videos picked in Photos → the Video library, or only their sound → Nhạc / Hiệu ứng âm thanh.
+    /// Shows the download percentage (videos kept in iCloud are fetched first).
     private func importVideos(_ items: [PhotosPickerItem], into k: LibraryKind) async {
         var failed = 0, silent = 0
         for (n, item) in items.enumerated() {
-            importStatus = LF("Đang nhập từ Ảnh %@/%@…", "\(n + 1)", "\(items.count)")
-            guard let mv = try? await item.loadTransferable(type: PickedMovie.self) else { failed += 1; continue }
-            if k == .movie {
-                if library.importFiles([mv.url], into: .movie) != nil { failed += 1 }
-            } else if await library.importAudio(fromMovie: mv.url, into: k, name: mv.url.deletingPathExtension().lastPathComponent) == nil {
-                silent += 1
+            let head = LF("Đang nhập từ Ảnh %@/%@…", "\(n + 1)", "\(items.count)")
+            importStatus = head
+            let mv = await PhotosLoad.movie(item) { f in
+                importStatus = f > 0 && f < 1 ? head + " \(Int(f * 100))%" : head
             }
-            try? FileManager.default.removeItem(at: mv.url)
+            guard let mv else { failed += 1; continue }
+            if k == .movie {
+                let u = mv.url
+                if await Task.detached(operation: { MediaLibrary.adoptMovie(u) }).value == nil { failed += 1 }
+            } else {
+                if await library.importAudio(fromMovie: mv.url, into: k, name: mv.url.deletingPathExtension().lastPathComponent) == nil {
+                    silent += 1
+                }
+                try? FileManager.default.removeItem(at: mv.url)
+                MediaLibrary.removeTempFolder(of: mv.url)
+            }
         }
+        library.refresh()
         importStatus = nil
         if failed > 0 { engine.message = LF("Không nhập được %@ mục từ Ảnh", "\(failed)") }
         else if silent > 0 { engine.message = LF("%@ video không có âm thanh", "\(silent)") }
@@ -444,7 +471,7 @@ struct CategoryContent: View {
                     .font(DS.fBodyBold).buttonStyle(.bordered)
             }
             Spacer()
-            PhotosPicker(selection: $bgPhoto, matching: .images) { toolbarLabel("Ảnh nền từ Thư viện", "photo.on.rectangle") }
+            PhotosPicker(selection: $bgPhoto, matching: .images, preferredItemEncoding: .current) { toolbarLabel("Ảnh nền từ Thư viện", "photo.on.rectangle") }
                 .buttonStyle(.plain)
             toolbarButton("Tệp", "folder") { bgFile = true }
         }
@@ -452,7 +479,7 @@ struct CategoryContent: View {
             guard let item else { return }
             Task {
                 if let d = try? await item.loadTransferable(type: Data.self),
-                   let url = library.importImage(d, into: .picture, name: "Nen") {
+                   let url = await library.importImage(d, into: .picture, name: "Nen") {
                     engine.layoutBackground = .picture(url.lastPathComponent)
                 }
                 bgPhoto = nil
@@ -462,8 +489,8 @@ struct CategoryContent: View {
             if case .success(let u) = r {
                 let scoped = u.startAccessingSecurityScopedResource()
                 defer { if scoped { u.stopAccessingSecurityScopedResource() } }
-                if let d = try? Data(contentsOf: u), let url = library.importImage(d, into: .picture, name: "Nen") {
-                    engine.layoutBackground = .picture(url.lastPathComponent)
+                if let d = try? Data(contentsOf: u) {
+                    Task { if let url = await library.importImage(d, into: .picture, name: "Nen") { engine.layoutBackground = .picture(url.lastPathComponent) } }
                 }
             }
         }
@@ -1286,7 +1313,7 @@ struct MediaInputPicker: View {
             if !hint.isEmpty {
                 Text(hint).font(DS.fBody).foregroundStyle(DS.text3).lineLimit(1)
             }
-            PhotosPicker(selection: $item, matching: .any(of: [.images, .videos])) {
+            PhotosPicker(selection: $item, matching: .any(of: [.images, .videos]), preferredItemEncoding: .current) {
                 label(loading ? L("Đang tải…") : L("Ảnh / video từ Thư viện ảnh"), loading ? "hourglass" : "photo.on.rectangle")
             }
             .buttonStyle(.plain).disabled(loading)
@@ -1324,13 +1351,14 @@ struct MediaInputPicker: View {
         loading = true
         defer { loading = false }
         if it.supportedContentTypes.contains(where: { $0.conforms(to: .movie) }) {
-            if let mv = try? await it.loadTransferable(type: PickedMovie.self) {
-                let dest = library.importFile(mv.url, into: .movie)
-                try? FileManager.default.removeItem(at: mv.url)
+            if let mv = await PhotosLoad.movie(it, progress: { _ in }) {
+                let u = mv.url
+                let dest = await Task.detached(operation: { MediaLibrary.adoptMovie(u) }).value
+                library.refresh()
                 if let dest { use(dest, movie: true); return }
             }
             engine.message = L("Không đọc được video từ Thư viện ảnh")
-        } else if let d = try? await it.loadTransferable(type: Data.self), let url = library.importImage(d, into: .picture) {
+        } else if let d = try? await it.loadTransferable(type: Data.self), let url = await library.importImage(d, into: .picture) {
             use(url, movie: false)
         } else {
             engine.message = L("Không đọc được ảnh từ Thư viện ảnh")
@@ -1352,12 +1380,31 @@ struct MediaInputPicker: View {
 }
 
 /// A video picked from Photos, copied to a temp file the library then imports.
-struct PickedMovie: Transferable {
+/// Loading from Photos with the transfer progress (iCloud downloads can take a while for long videos).
+enum PhotosLoad {
+    @MainActor
+    static func movie(_ item: PhotosPickerItem, progress: @escaping @MainActor (Double) -> Void) async -> PickedMovie? {
+        var obs: NSKeyValueObservation?
+        defer { obs?.invalidate() }
+        return await withCheckedContinuation { (cont: CheckedContinuation<PickedMovie?, Never>) in
+            let p = item.loadTransferable(type: PickedMovie.self) { r in cont.resume(returning: (try? r.get()) ?? nil) }
+            obs = p.observe(\.fractionCompleted) { p, _ in
+                let f = p.fractionCompleted
+                Task { @MainActor in progress(f) }
+            }
+        }
+    }
+}
+
+struct PickedMovie: Transferable, Sendable {
     let url: URL
     static var transferRepresentation: some TransferRepresentation {
         FileRepresentation(contentType: .movie) { m in SentTransferredFile(m.url) } importing: { r in
-            let dst = FileManager.default.temporaryDirectory.appendingPathComponent(r.file.lastPathComponent)
-            try? FileManager.default.removeItem(at: dst)
+            // Own folder per video (same names from Photos never collide); on the app's volume this copy is an
+            // APFS clone, and the library then takes the file by renaming it — no full copies of the video.
+            let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+            try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+            let dst = dir.appendingPathComponent(r.file.lastPathComponent)
             try FileManager.default.copyItem(at: r.file, to: dst)
             return PickedMovie(url: dst)
         }

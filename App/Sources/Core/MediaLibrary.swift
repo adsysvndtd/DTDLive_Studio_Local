@@ -1,4 +1,6 @@
 import AVFoundation
+import ImageIO
+import UniformTypeIdentifiers
 import CoreImage
 import CoreVideo
 import Foundation
@@ -85,19 +87,49 @@ final class MediaLibrary: ObservableObject {
         return (err == nil && copyErr == nil) ? dest : nil
     }
 
-    /// A picture from Photos. Photos (HEIC / JPEG) are kept as JPEG in "Ảnh" (a 12 MP PNG is ~25 MB);
-    /// PNG sources and logos / overlays stay PNG (transparency). Every picture gets its own file name —
-    /// several photos picked at once used to share one time-stamped name and overwrite each other.
+    /// A picture from Photos (main-actor convenience; the work itself runs off the main thread).
     @discardableResult
-    func importImage(_ data: Data, into k: LibraryKind, name: String = "Ảnh") -> URL? {
-        guard let img = UIImage(data: data)?.normalized() else { return nil }
-        let isPNG = data.starts(with: [0x89, 0x50, 0x4E, 0x47])
-        let jpeg = k == .picture && !isPNG
-        guard let out = jpeg ? img.jpegData(compressionQuality: 0.92) : img.pngData() else { return nil }
-        let url = uniqueURL(in: k, base: "\(name)-\(Self.stamp())", ext: jpeg ? "jpg" : "png")
-        guard (try? out.write(to: url)) != nil else { return nil }
+    func importImage(_ data: Data, into k: LibraryKind, name: String = "Ảnh") async -> URL? {
+        let base = "\(name)-\(Self.stamp())"
+        let url = await Task.detached(priority: .userInitiated) { Self.storeImage(data, into: k, base: base) }.value
         refresh()
         return url
+    }
+
+    /// Decodes, scales and saves one picture — call off the main thread. ImageIO decodes straight to at most
+    /// 3840×2160 (the most a picture input ever uses) with the EXIF rotation applied, instead of decoding the
+    /// full 12–48 MP photo, redrawing it upright and PNG-encoding it on the main thread (seconds per photo).
+    /// Opaque pictures in "Ảnh" are saved as JPEG; logos / overlays and pictures with transparency as PNG.
+    nonisolated static func storeImage(_ data: Data, into k: LibraryKind, base: String) -> URL? {
+        guard let src = CGImageSourceCreateWithData(data as CFData, [kCGImageSourceShouldCache: false] as CFDictionary),
+              let cg = PictureIO.downsample(src, maxWidth: 3840, maxHeight: 2160) else { return nil }
+        let jpeg = k == .picture && !PictureIO.hasAlpha(cg)
+        guard let out = PictureIO.encode(cg, jpeg: jpeg) else { return nil }
+        let url = uniqueURL(in: k, base: base, ext: jpeg ? "jpg" : "png")
+        guard (try? out.write(to: url, options: .withoutOverwriting)) != nil else { return nil }
+        thumbCache.removeObject(forKey: url as NSURL)
+        return url
+    }
+
+    /// Moves a video Photos handed over (already a private temporary copy) into the Video library —
+    /// a rename on the same volume, instead of a second coordinated copy of a multi-GB file on the main thread.
+    nonisolated static func adoptMovie(_ tmp: URL) -> URL? {
+        let base = tmp.deletingPathExtension().lastPathComponent
+        let url = uniqueURL(in: .movie, base: base, ext: tmp.pathExtension.isEmpty ? "mov" : tmp.pathExtension)
+        do { try FileManager.default.moveItem(at: tmp, to: url) } catch {
+            guard (try? FileManager.default.copyItem(at: tmp, to: url)) != nil else { return nil }
+            try? FileManager.default.removeItem(at: tmp)
+        }
+        removeTempFolder(of: tmp)
+        return url
+    }
+
+    /// Removes the per-pick folder a Photos transfer was put in (only inside the app's temporary directory).
+    nonisolated static func removeTempFolder(of tmp: URL) {
+        let dir = tmp.deletingLastPathComponent()
+        guard dir.deletingLastPathComponent().standardizedFileURL.path
+                == FileManager.default.temporaryDirectory.standardizedFileURL.path else { return }
+        try? FileManager.default.removeItem(at: dir)
     }
 
     /// The sound of a video (e.g. one from Photos) saved as an .m4a in Nhạc / Hiệu ứng âm thanh.
@@ -106,7 +138,7 @@ final class MediaLibrary: ObservableObject {
         let asset = AVURLAsset(url: src)
         guard let tracks = try? await asset.loadTracks(withMediaType: .audio), !tracks.isEmpty,
               let ex = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetAppleM4A) else { return nil }
-        let url = uniqueURL(in: k, base: name, ext: "m4a")
+        let url = Self.uniqueURL(in: k, base: name, ext: "m4a")
         ex.outputURL = url
         ex.outputFileType = .m4a
         await ex.export()
@@ -115,12 +147,12 @@ final class MediaLibrary: ObservableObject {
         return url
     }
 
-    private static func stamp() -> String {
+    nonisolated static func stamp() -> String {
         let df = DateFormatter(); df.dateFormat = "yyyyMMdd-HHmmss"
         return df.string(from: Date())
     }
 
-    private func uniqueURL(in k: LibraryKind, base: String, ext: String) -> URL {
+    nonisolated static func uniqueURL(in k: LibraryKind, base: String, ext: String) -> URL {
         var url = Self.directory(k).appendingPathComponent("\(base).\(ext)")
         var n = 2
         while FileManager.default.fileExists(atPath: url.path) {
@@ -129,21 +161,37 @@ final class MediaLibrary: ObservableObject {
         return url
     }
 
-    func delete(_ url: URL) { try? FileManager.default.removeItem(at: url); refresh() }
+    func delete(_ url: URL) {
+        try? FileManager.default.removeItem(at: url)
+        Self.thumbCache.removeObject(forKey: url as NSURL)
+        refresh()
+    }
 
-    /// Small thumbnail for grids (images directly; videos via first frame).
+    /// Grid thumbnails, kept so switching categories does not decode every picture / video again.
+    nonisolated(unsafe) static let thumbCache: NSCache<NSURL, UIImage> = {
+        let c = NSCache<NSURL, UIImage>(); c.countLimit = 300; return c
+    }()
+
+    /// Small thumbnail for grids (pictures via ImageIO at thumbnail size; videos via an early frame). Cached.
     nonisolated static func thumbnail(_ url: URL, kind: LibraryKind) -> UIImage? {
+        if let t = thumbCache.object(forKey: url as NSURL) { return t }
+        var out: UIImage?
         switch kind {
         case .picture, .overlay, .logo:
-            return UIImage(contentsOfFile: url.path)?.preparingThumbnail(of: CGSize(width: 320, height: 180))
+            if let src = CGImageSourceCreateWithURL(url as CFURL, [kCGImageSourceShouldCache: false] as CFDictionary),
+               let cg = PictureIO.downsample(src, maxWidth: 480, maxHeight: 270) { out = UIImage(cgImage: cg) }
         case .movie:
             let gen = AVAssetImageGenerator(asset: AVURLAsset(url: url))
             gen.appliesPreferredTrackTransform = true
-            gen.maximumSize = CGSize(width: 320, height: 180)
-            return (try? gen.copyCGImage(at: CMTime(seconds: 1, preferredTimescale: 600), actualTime: nil)).map(UIImage.init(cgImage:))
+            gen.maximumSize = CGSize(width: 480, height: 270)
+            gen.requestedTimeToleranceBefore = .positiveInfinity
+            gen.requestedTimeToleranceAfter = .positiveInfinity
+            out = (try? gen.copyCGImage(at: CMTime(seconds: 1, preferredTimescale: 600), actualTime: nil)).map(UIImage.init(cgImage:))
         case .music, .sound:
             return nil
         }
+        if let out { thumbCache.setObject(out, forKey: url as NSURL) }
+        return out
     }
 }
 
@@ -160,21 +208,13 @@ final class ImageSource: VideoSource {
     private var buffer: CVPixelBuffer?
 
     init(url: URL) { self.url = url; name = url.deletingPathExtension().lastPathComponent }
-    private static let ci = CIContext(options: [.cacheIntermediates: false])
 
     func start() async {
-        guard let img = UIImage(contentsOfFile: url.path)?.normalized(), let cg = img.cgImage else { status = .error("Không đọc được ảnh"); return }
-        // A 12 MP photo kept as a full-size BGRA frame is ~48 MB per picture input; the program is at most
-        // 1080p (4K pictures still look sharp scaled from 2× that), so keep it no larger than 3840 px wide.
-        var ci = CIImage(cgImage: cg)
-        let k = min(1, 3840 / CGFloat(cg.width), 2160 / CGFloat(cg.height))
-        if k < 1 { ci = ci.transformed(by: CGAffineTransform(scaleX: k, y: k)) }
-        let w = Int((CGFloat(cg.width) * k).rounded()), h = Int((CGFloat(cg.height) * k).rounded())
-        var pb: CVPixelBuffer?
-        CVPixelBufferCreate(nil, w, h, kCVPixelFormatType_32BGRA,
-                            [kCVPixelBufferIOSurfacePropertiesKey: [:]] as CFDictionary, &pb)
-        guard let pb else { return }
-        Self.ci.render(ci, to: pb)
+        // Decode + scale + upload off the main thread (a 12–48 MP photo took the UI with it for a moment).
+        let u = url
+        guard let pb = await Task.detached(priority: .userInitiated, operation: { PictureIO.frame(u).map(FrameBox.init) }).value?.pb else {
+            status = .error("Không đọc được ảnh"); return
+        }
         buffer = pb
         frames.put(pb)
         // FrameStore treats sources silent for >2 s as "no signal"; refresh the still once a second.
@@ -185,6 +225,65 @@ final class ImageSource: VideoSource {
     }
 
     func stop() async { timer?.invalidate(); timer = nil; frames.clear(); status = .idle }
+}
+
+/// Hands a freshly made frame from a background task to the main actor (nothing else holds it).
+struct FrameBox: @unchecked Sendable { let pb: CVPixelBuffer }
+
+/// Picture decoding without the main thread: ImageIO thumbnails (decode at the target size, EXIF rotation applied).
+enum PictureIO {
+    private static let ci = CIContext(options: [.cacheIntermediates: false])
+
+    /// Size in pixels after the EXIF rotation.
+    static func orientedSize(_ src: CGImageSource) -> CGSize? {
+        guard let p = CGImageSourceCopyPropertiesAtIndex(src, 0, nil) as? [CFString: Any],
+              let w = p[kCGImagePropertyPixelWidth] as? Int, let h = p[kCGImagePropertyPixelHeight] as? Int else { return nil }
+        let o = p[kCGImagePropertyOrientation] as? Int ?? 1
+        return o >= 5 ? CGSize(width: h, height: w) : CGSize(width: w, height: h)
+    }
+
+    /// Upright picture no larger than maxWidth × maxHeight (never enlarged).
+    static func downsample(_ src: CGImageSource, maxWidth: CGFloat, maxHeight: CGFloat) -> CGImage? {
+        guard let sz = orientedSize(src), sz.width > 0, sz.height > 0 else { return nil }
+        let k = min(1, maxWidth / sz.width, maxHeight / sz.height)
+        let opts: [CFString: Any] = [
+            kCGImageSourceCreateThumbnailFromImageAlways: true,
+            kCGImageSourceCreateThumbnailWithTransform: true,
+            kCGImageSourceShouldCacheImmediately: true,
+            kCGImageSourceThumbnailMaxPixelSize: Int((max(sz.width, sz.height) * k).rounded(.up))
+        ]
+        return CGImageSourceCreateThumbnailAtIndex(src, 0, opts as CFDictionary)
+    }
+
+    static func hasAlpha(_ cg: CGImage) -> Bool {
+        switch cg.alphaInfo { case .none, .noneSkipFirst, .noneSkipLast: return false; default: return true }
+    }
+
+    static func encode(_ cg: CGImage, jpeg: Bool) -> Data? {
+        let d = NSMutableData()
+        let type = (jpeg ? UTType.jpeg : UTType.png).identifier as CFString
+        guard let dst = CGImageDestinationCreateWithData(d, type, 1, nil) else { return nil }
+        CGImageDestinationAddImage(dst, cg, jpeg ? [kCGImageDestinationLossyCompressionQuality: 0.9] as CFDictionary : nil)
+        return CGImageDestinationFinalize(dst) ? d as Data : nil
+    }
+
+    /// A library picture as a switcher frame (≤ 3840×2160, upright, BGRA).
+    static func frame(_ url: URL) -> CVPixelBuffer? {
+        guard let src = CGImageSourceCreateWithURL(url as CFURL, [kCGImageSourceShouldCache: false] as CFDictionary),
+              let cg = downsample(src, maxWidth: 3840, maxHeight: 2160) else { return nil }
+        var pb: CVPixelBuffer?
+        CVPixelBufferCreate(nil, cg.width, cg.height, kCVPixelFormatType_32BGRA,
+                            [kCVPixelBufferIOSurfacePropertiesKey: [:]] as CFDictionary, &pb)
+        guard let pb else { return nil }
+        ci.render(CIImage(cgImage: cg), to: pb)
+        return pb
+    }
+
+    /// Whether the file is a picture ImageIO can read (header only, no decode).
+    static func isReadable(_ url: URL) -> Bool {
+        guard let src = CGImageSourceCreateWithURL(url as CFURL, nil) else { return false }
+        return CGImageSourceGetCount(src) > 0
+    }
 }
 
 extension UIImage {

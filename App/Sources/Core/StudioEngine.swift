@@ -528,7 +528,7 @@ final class StudioEngine: ObservableObject {
             add(s); return s.id
         }
         if let s = sources.first(where: { ($0 as? ImageSource)?.url == url }) { return s.id }
-        guard UIImage(contentsOfFile: url.path) != nil else { message = LF("Không đọc được ảnh %@", "\(url.lastPathComponent)"); return nil }
+        guard PictureIO.isReadable(url) else { message = LF("Không đọc được ảnh %@", "\(url.lastPathComponent)"); return nil }
         let s = ImageSource(url: url)
         add(s); return s.id
     }
