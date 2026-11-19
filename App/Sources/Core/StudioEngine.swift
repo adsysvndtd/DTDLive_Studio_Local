@@ -234,6 +234,7 @@ final class StudioEngine: ObservableObject {
         Self.shared = self
 
         let om = outputManager, rb = replayBuffer, titlesR = titleRenderer, ann = annotation, chatR = liveChat.renderer
+        let nt = nTitle
         #if targetEnvironment(simulator)
         // No hardware encoder in the Simulator: skip encoding in UI-test/demo runs (outputs can't work there anyway).
         let encodeOn = !DemoMode.isOn
@@ -266,6 +267,23 @@ final class StudioEngine: ObservableObject {
                 let hs = h.transformed(by: CGAffineTransform(scaleX: k, y: k))
                 img = img.map { hs.composited(over: $0) } ?? hs
             }
+            // N-Title: an NDI source with alpha, scaled to fill the frame, with its own fade
+            if let (pb, a) = nt.current(now: now) {
+                var n = CIImage(cvPixelBuffer: pb)
+                let ext = n.extent
+                if ext.width > 0, ext.height > 0 {
+                    let k = max(size.width / ext.width, size.height / ext.height)
+                    n = n.transformed(by: .init(scaleX: k, y: k))
+                    n = n.transformed(by: .init(translationX: (size.width - ext.width * k) / 2, y: (size.height - ext.height * k) / 2))
+                    if a < 1 {
+                        n = n.applyingFilter("CIColorMatrix", parameters: [
+                            "inputRVector": CIVector(x: a, y: 0, z: 0, w: 0), "inputGVector": CIVector(x: 0, y: a, z: 0, w: 0),
+                            "inputBVector": CIVector(x: 0, y: 0, z: a, w: 0), "inputAVector": CIVector(x: 0, y: 0, z: 0, w: a)])
+                    }
+                    n = n.cropped(to: CGRect(origin: .zero, size: size))
+                    img = img.map { n.composited(over: $0) } ?? n
+                }
+            }
             if let c = chatR.render(canvas: size, now: now) { img = img.map { c.composited(over: $0) } ?? c }
             if let a = ann.current { img = img.map { a.composited(over: $0) } ?? a }
             return img
@@ -281,6 +299,7 @@ final class StudioEngine: ObservableObject {
         titles = Self.load([TitleItem].self, key: "dtd.titles.v1") ?? Self.defaultTitles
         titlesSnapshot = titles
         MainActorBox.setTitles(titles)
+        if !DemoMode.isOn, let n = nTitleName, !n.isEmpty { setNTitleSource(n) }
         switcher.start()
         // Demo/screenshot mode: no microphone or LAN listeners, so no permission alerts cover the UI.
         if !DemoMode.isOn {
@@ -1272,6 +1291,39 @@ final class StudioEngine: ObservableObject {
         add(NDIInputSource(ndiName: name))
         #endif
     }
+
+    // MARK: N-Title (an NDI source with alpha used as a title layer over PGM)
+
+    let nTitle = NTitleFeed()
+    private var nTitleRecv: (any VideoSource)?
+    /// The chosen NDI title source (nil = none). Persisted; the receiver is (re)started when set.
+    @Published var nTitleName: String? = UserDefaults.standard.string(forKey: "dtd.ntitle.name") {
+        didSet { UserDefaults.standard.set(nTitleName, forKey: "dtd.ntitle.name") }
+    }
+    /// On-air state of the N-Title (its own key / toggle), with a fade in NTitleFeed.
+    @Published private(set) var nTitleVisible = false
+
+    /// Point the N-Title at an NDI source (or nil to clear); starts a dedicated receiver with alpha.
+    func setNTitleSource(_ name: String?) {
+        if let old = nTitleRecv { Task { await old.stop() } }
+        nTitleRecv = nil; nTitle.setStore(nil)
+        nTitleName = name
+        guard let name, !name.isEmpty else { return }
+        #if NDI_SDK
+        let r = NDIInputSource(ndiName: name)
+        nTitleRecv = r
+        Task { await r.start(); nTitle.setStore(r.frames) }
+        #else
+        message = L("NDI chưa khả dụng trong bản này")
+        #endif
+    }
+
+    func setNTitleVisible(_ on: Bool) {
+        guard nTitleRecv != nil || !on else { message = L("Chưa chọn nguồn NDI cho N-Title"); return }
+        nTitleVisible = on
+        nTitle.setOn(on)
+    }
+    func toggleNTitle() { setNTitleVisible(!nTitleVisible) }
 
     /// Writes a line into the diagnostic log of every destination that is running.
     func logToLiveOutputs(_ text: String) {

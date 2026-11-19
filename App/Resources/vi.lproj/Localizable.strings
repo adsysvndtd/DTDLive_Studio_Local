@@ -114,6 +114,8 @@
 "Chính sách quyền riêng tư" = "Chính sách quyền riêng tư";
 "Chưa bật — bật \"Cho phép DTDLive tìm và ghép nối\" trong Cài đặt › Ingest" = "Chưa bật — bật \"Cho phép DTDLive tìm và ghép nối\" trong Cài đặt › Ingest";
 "Chưa cho phép dùng camera" = "Chưa cho phép dùng camera";
+"Chưa chọn nguồn NDI" = "Chưa chọn nguồn NDI";
+"Chưa chọn nguồn NDI cho N-Title" = "Chưa chọn nguồn NDI cho N-Title";
 "Chưa có" = "Chưa có";
 "Chưa có NDI SDK. Trên Mac: cài \"NDI SDK for Apple\" từ ndi.video, chạy scripts/ndi-setup.sh rồi build lại — nhận & phát NDI sẽ tự bật." = "Chưa có NDI SDK. Trên Mac: cài \"NDI SDK for Apple\" từ ndi.video, chạy scripts/ndi-setup.sh rồi build lại — nhận & phát NDI sẽ tự bật.";
 "Chưa có Wi-Fi" = "Chưa có Wi-Fi";
@@ -163,6 +165,7 @@
 "Chọn lại gói" = "Chọn lại gói";
 "Chọn một mẫu trong danh sách để xem trước" = "Chọn một mẫu trong danh sách để xem trước";
 "Chọn một nguồn ở hàng PREVIEW để chỉnh" = "Chọn một nguồn ở hàng PREVIEW để chỉnh";
+"Chọn nguồn" = "Chọn nguồn";
 "Chọn tay" = "Chọn tay";
 "Chọn từ thư viện Logo" = "Chọn từ thư viện Logo";
 "Chọn video…" = "Chọn video…";
@@ -379,6 +382,7 @@
 "Không thấy buổi live đang chạy trên kênh đã đăng nhập — dán link video live vào ô bên trên" = "Không thấy buổi live đang chạy trên kênh đã đăng nhập — dán link video live vào ô bên trên";
 "Không thấy live Facebook đang chạy — dán link/ID video live vào ô Facebook" = "Không thấy live Facebook đang chạy — dán link/ID video live vào ô Facebook";
 "Không thấy live đang chạy trên Trang %@ — dán link/ID video live vào ô Facebook" = "Không thấy live đang chạy trên Trang %@ — dán link/ID video live vào ô Facebook";
+"Không thấy nguồn NDI nào trên mạng" = "Không thấy nguồn NDI nào trên mạng";
 "Không tìm thấy gói DTDStudio đã mua với Apple ID này" = "Không tìm thấy gói DTDStudio đã mua với Apple ID này";
 "Không xác thực được giao dịch" = "Không xác thực được giao dịch";
 "Không đọc được %@" = "Không đọc được %@";
@@ -526,12 +530,17 @@
 "Mở ngang" = "Mở ngang";
 "Mở trang xem live" = "Mở trang xem live";
 "Mở trong Replay (mark in/out)" = "Mở trong Replay (mark in/out)";
+"N-Title (NDI có alpha)" = "N-Title (NDI có alpha)";
+"N-Title đang trên PGM — bấm để hạ" = "N-Title đang trên PGM — bấm để hạ";
+"NDI chưa khả dụng trong bản này" = "NDI chưa khả dụng trong bản này";
 "NDI® trong mạng" = "NDI® trong mạng";
 "Ngang" = "Ngang";
 "Nghe Program (tai nghe)" = "Nghe Program (tai nghe)";
 "Nghe nhạc, hiệu ứng, video trên loa máy" = "Nghe nhạc, hiệu ứng, video trên loa máy";
 "Nghiêng" = "Nghiêng";
 "Nguồn" = "Nguồn";
+"Nguồn NDI cho N-Title" = "Nguồn NDI cho N-Title";
+"Nguồn NDI phải có kênh alpha (nền trong suốt). Phần trong suốt cho thấy Program, phần có hình là lớp chữ." = "Nguồn NDI phải có kênh alpha (nền trong suốt). Phần trong suốt cho thấy Program, phần có hình là lớp chữ.";
 "Nguồn nhỏ hơn chương trình (%@×%@): hình bị phóng to nên mềm trên YouTube/Facebook. Đặt camera/DTDLive cùng độ phân giải với chương trình." = "Nguồn nhỏ hơn chương trình (%@×%@): hình bị phóng to nên mềm trên YouTube/Facebook. Đặt camera/DTDLive cùng độ phân giải với chương trình.";
 "Nguồn này đã có trong danh sách đầu vào." = "Nguồn này đã có trong danh sách đầu vào.";
 "Nguồn tham gia" = "Nguồn tham gia";
@@ -938,6 +947,7 @@
 "Đang nhập từ Ảnh %@/%@…" = "Đang nhập từ Ảnh %@/%@…";
 "Đang phát" = "Đang phát";
 "Đang tìm buổi live…" = "Đang tìm buổi live…";
+"Đang tìm nguồn NDI…" = "Đang tìm nguồn NDI…";
 "Đang tìm…" = "Đang tìm…";
 "Đang tải giá từ App Store…" = "Đang tải giá từ App Store…";
 "Đang tải…" = "Đang tải…";
@@ -992,6 +1002,7 @@
 "Đăng xuất" = "Đăng xuất";
 "Đơn" = "Đơn";
 "Đơn đã hết hạn hoặc bị huỷ" = "Đơn đã hết hạn hoặc bị huỷ";
+"Đưa N-Title lên PGM" = "Đưa N-Title lên PGM";
 "Đưa lên Preview" = "Đưa lên Preview";
 "Đưa vào Khung %@" = "Đưa vào Khung %@";
 "Đưa vào khung PiP" = "Đưa vào khung PiP";

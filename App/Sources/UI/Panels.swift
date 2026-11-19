@@ -189,6 +189,64 @@ struct TitlesPanel: View {
 
 private struct IDBox: Identifiable { let id: UUID }
 
+/// N-Title: use an NDI source that carries an alpha channel (a CG machine, vMix, OBS… on the LAN)
+/// as a title layer over Program. Picked here, faded on / off with its own key.
+struct NTitlePanel: View {
+    @ObservedObject var engine: StudioEngine
+    @State private var searching = false
+    @State private var found: [String] = []
+    @State private var picking = false
+
+    var body: some View {
+        SectionCard("N-Title (NDI có alpha)", systemImage: "square.stack.3d.up") {
+            HStack(spacing: 8) {
+                Image(systemName: "dot.radiowaves.left.and.right").foregroundStyle(engine.nTitleName != nil ? DS.accent : DS.text3)
+                Text(verbatim: engine.nTitleName ?? L("Chưa chọn nguồn NDI")).font(DS.fBody).lineLimit(1)
+                Spacer()
+                Button { picking = true; searching = true; Task { found = await engine.findNDISources(); searching = false } } label: {
+                    Label("Chọn nguồn", systemImage: "magnifyingglass").font(.system(size: 12))
+                }
+                if engine.nTitleName != nil {
+                    Button { engine.setNTitleVisible(false); engine.setNTitleSource(nil) } label: {
+                        Image(systemName: "xmark.circle").font(.system(size: 14)).foregroundStyle(DS.text3)
+                    }.buttonStyle(.plain)
+                }
+            }
+            Button { engine.toggleNTitle() } label: {
+                Text(engine.nTitleVisible ? "N-Title đang trên PGM — bấm để hạ" : "Đưa N-Title lên PGM")
+                    .font(.system(size: 13, weight: .semibold)).frame(maxWidth: .infinity).frame(height: 36)
+                    .background(engine.nTitleVisible ? DS.pgm : DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
+                    .foregroundStyle(engine.nTitleVisible ? .black : .white)
+            }
+            .buttonStyle(.plain).disabled(engine.nTitleName == nil)
+            Text("Nguồn NDI phải có kênh alpha (nền trong suốt). Phần trong suốt cho thấy Program, phần có hình là lớp chữ.")
+                .font(.caption2).foregroundStyle(DS.text3)
+        }
+        .sheet(isPresented: $picking) {
+            NavigationStack {
+                List {
+                    if searching { HStack { ProgressView().controlSize(.small); Text("Đang tìm nguồn NDI…") } }
+                    ForEach(found, id: \.self) { n in
+                        Button { engine.setNTitleSource(n); picking = false } label: {
+                            HStack { Text(verbatim: n); Spacer(); if engine.nTitleName == n { Image(systemName: "checkmark") } }
+                        }
+                    }
+                    if !searching && found.isEmpty { Text("Không thấy nguồn NDI nào trên mạng").foregroundStyle(DS.text3) }
+                }
+                .navigationTitle("Nguồn NDI cho N-Title")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) { Button("Đóng") { picking = false } }
+                    ToolbarItem(placement: .primaryAction) {
+                        Button { searching = true; Task { found = await engine.findNDISources(); searching = false } } label: { Image(systemName: "arrow.clockwise") }
+                    }
+                }
+            }
+            .presentationDetents([.medium])
+        }
+    }
+}
+
 /// Full editor for one title / lower third.
 struct TitleEditorSheet: View {
     @Binding var item: TitleItem

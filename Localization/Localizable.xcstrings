@@ -10796,6 +10796,116 @@
           }
         }
       }
+    },
+    "NDI chưa khả dụng trong bản này": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "NDI is not available in this build"
+          }
+        }
+      }
+    },
+    "Chưa chọn nguồn NDI cho N-Title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No NDI source chosen for N-Title"
+          }
+        }
+      }
+    },
+    "N-Title (NDI có alpha)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "N-Title (NDI with alpha)"
+          }
+        }
+      }
+    },
+    "Chưa chọn nguồn NDI": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No NDI source chosen"
+          }
+        }
+      }
+    },
+    "Chọn nguồn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose source"
+          }
+        }
+      }
+    },
+    "N-Title đang trên PGM — bấm để hạ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "N-Title is on PGM — tap to take down"
+          }
+        }
+      }
+    },
+    "Đưa N-Title lên PGM": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Put N-Title on PGM"
+          }
+        }
+      }
+    },
+    "Nguồn NDI phải có kênh alpha (nền trong suốt). Phần trong suốt cho thấy Program, phần có hình là lớp chữ.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The NDI source must carry an alpha channel (transparent background). Transparent areas show Program; the opaque part is the title layer."
+          }
+        }
+      }
+    },
+    "Đang tìm nguồn NDI…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Searching for NDI sources…"
+          }
+        }
+      }
+    },
+    "Nguồn NDI cho N-Title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "NDI source for N-Title"
+          }
+        }
+      }
+    },
+    "Không thấy nguồn NDI nào trên mạng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No NDI sources found on the network"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

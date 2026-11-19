@@ -411,6 +411,7 @@ struct CategoryContent: View {
                 if engine.titles.enumerated().allSatisfy({ $0.offset == engine.scoreboardIndex }) {
                     emptyHint("Chưa có title — bấm Thêm title ở góc trên")
                 }
+                NTitlePanel(engine: engine)
             case 2:
                 ScoreboardControl(engine: engine, compact: true)
             default:

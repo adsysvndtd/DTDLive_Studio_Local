@@ -114,6 +114,8 @@
 "Chính sách quyền riêng tư" = "Privacy policy";
 "Chưa bật — bật \"Cho phép DTDLive tìm và ghép nối\" trong Cài đặt › Ingest" = "Off — turn on \"Let DTDLive find and pair\" in Settings › Ingest";
 "Chưa cho phép dùng camera" = "Camera access not allowed";
+"Chưa chọn nguồn NDI" = "No NDI source chosen";
+"Chưa chọn nguồn NDI cho N-Title" = "No NDI source chosen for N-Title";
 "Chưa có" = "None";
 "Chưa có NDI SDK. Trên Mac: cài \"NDI SDK for Apple\" từ ndi.video, chạy scripts/ndi-setup.sh rồi build lại — nhận & phát NDI sẽ tự bật." = "No NDI SDK yet. On the Mac: install \"NDI SDK for Apple\" from ndi.video, run scripts/ndi-setup.sh and rebuild — NDI input & output turn on automatically.";
 "Chưa có Wi-Fi" = "No Wi-Fi";
@@ -163,6 +165,7 @@
 "Chọn lại gói" = "Choose again";
 "Chọn một mẫu trong danh sách để xem trước" = "Pick a template in the list to preview it";
 "Chọn một nguồn ở hàng PREVIEW để chỉnh" = "Pick a source on PREVIEW to adjust";
+"Chọn nguồn" = "Choose source";
 "Chọn tay" = "Manual";
 "Chọn từ thư viện Logo" = "Choose from Logo library";
 "Chọn video…" = "Choose video…";
@@ -379,6 +382,7 @@
 "Không thấy buổi live đang chạy trên kênh đã đăng nhập — dán link video live vào ô bên trên" = "No live running on the signed-in channel — paste the live video link above";
 "Không thấy live Facebook đang chạy — dán link/ID video live vào ô Facebook" = "No Facebook live running — paste the live video link/ID in the Facebook box";
 "Không thấy live đang chạy trên Trang %@ — dán link/ID video live vào ô Facebook" = "No live running on Page %@ — paste the live video link/ID into the Facebook field";
+"Không thấy nguồn NDI nào trên mạng" = "No NDI sources found on the network";
 "Không tìm thấy gói DTDStudio đã mua với Apple ID này" = "No DTDStudio purchase found for this Apple ID";
 "Không xác thực được giao dịch" = "Couldn't verify the transaction";
 "Không đọc được %@" = "Couldn't read %@";
@@ -526,12 +530,17 @@
 "Mở ngang" = "Open horizontal";
 "Mở trang xem live" = "Open live page";
 "Mở trong Replay (mark in/out)" = "Open in Replay (mark in/out)";
+"N-Title (NDI có alpha)" = "N-Title (NDI with alpha)";
+"N-Title đang trên PGM — bấm để hạ" = "N-Title is on PGM — tap to take down";
+"NDI chưa khả dụng trong bản này" = "NDI is not available in this build";
 "NDI® trong mạng" = "NDI® on the network";
 "Ngang" = "Horizontal";
 "Nghe Program (tai nghe)" = "Listen to Program (headphones)";
 "Nghe nhạc, hiệu ứng, video trên loa máy" = "Play music, effects and video on the device speaker";
 "Nghiêng" = "Italic";
 "Nguồn" = "Source";
+"Nguồn NDI cho N-Title" = "NDI source for N-Title";
+"Nguồn NDI phải có kênh alpha (nền trong suốt). Phần trong suốt cho thấy Program, phần có hình là lớp chữ." = "The NDI source must carry an alpha channel (transparent background). Transparent areas show Program; the opaque part is the title layer.";
 "Nguồn nhỏ hơn chương trình (%@×%@): hình bị phóng to nên mềm trên YouTube/Facebook. Đặt camera/DTDLive cùng độ phân giải với chương trình." = "Source is smaller than the program (%@×%@): it is upscaled and looks soft on YouTube/Facebook. Set the camera/DTDLive to the program resolution.";
 "Nguồn này đã có trong danh sách đầu vào." = "This source is already an input.";
 "Nguồn tham gia" = "Sources";
@@ -938,6 +947,7 @@
 "Đang nhập từ Ảnh %@/%@…" = "Importing from Photos %@/%@…";
 "Đang phát" = "Live";
 "Đang tìm buổi live…" = "Looking for the live…";
+"Đang tìm nguồn NDI…" = "Searching for NDI sources…";
 "Đang tìm…" = "Searching…";
 "Đang tải giá từ App Store…" = "Loading prices from the App Store…";
 "Đang tải…" = "Loading…";
@@ -992,6 +1002,7 @@
 "Đăng xuất" = "Sign out";
 "Đơn" = "Singles";
 "Đơn đã hết hạn hoặc bị huỷ" = "Order expired or cancelled";
+"Đưa N-Title lên PGM" = "Put N-Title on PGM";
 "Đưa lên Preview" = "Send to Preview";
 "Đưa vào Khung %@" = "Into window %@";
 "Đưa vào khung PiP" = "Into PiP";
