@@ -11626,6 +11626,36 @@
           }
         }
       }
+    },
+    "Lower third có tiêu đề": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lower third with header"
+          }
+        }
+      }
+    },
+    "CHƯƠNG TRÌNH": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PROGRAMME"
+          }
+        }
+      }
+    },
+    "Chữ logo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logo text"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

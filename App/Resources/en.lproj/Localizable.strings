@@ -92,6 +92,7 @@
 "Bộ đệm trống — replay ghi lại tín hiệu Program khi app đang mã hoá (đang phát hoặc ghi)." = "Buffer empty — replay records Program while the app is encoding (streaming or recording).";
 "CAM 1 · Sân khấu" = "CAM 1 · Stage";
 "CAM 3 · Khán giả" = "CAM 3 · Audience";
+"CHƯƠNG TRÌNH" = "PROGRAMME";
 "CHỮ HOA" = "UPPERCASE";
 "Camera" = "Camera";
 "Camera / USB-C" = "Camera / USB-C";
@@ -194,6 +195,7 @@
 "Chữ dòng 1" = "Line 1 text";
 "Chữ dòng 2" = "Line 2 text";
 "Chữ khi hết giờ" = "Text when time is up";
+"Chữ logo" = "Logo text";
 "Chữ lớn" = "Big text";
 "Chữ nhãn" = "Label text";
 "Chữ nhật bo góc" = "Rounded rectangle";
@@ -467,6 +469,7 @@
 "Logo + tên + chức danh" = "Logo + name + title";
 "Logo đang trên PGM" = "Logo is on PGM";
 "Logo đã nạp — bấm Logo On" = "Logo loaded — press Logo On";
+"Lower third có tiêu đề" = "Lower third with header";
 "Lower third cơ bản" = "Basic lower third";
 "Lower third kính mờ" = "Frosted-glass lower third";
 "Lower third neon" = "Neon lower third";

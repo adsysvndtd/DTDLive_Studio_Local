@@ -84,12 +84,37 @@ struct TitleLayer: Identifiable, Equatable {
     static func starter(accent: String) -> [TitleLayer] {
         var bar = make(.roundRect); bar.name = L("Nền"); bar.x = 560; bar.y = 760; bar.w = 820; bar.h = 150; bar.fillHex = "#101418"; bar.fillOpacity = 0.9
         var tab = make(.rect); tab.name = L("Vạch nhấn"); tab.x = 560; tab.y = 760; tab.w = 14; tab.h = 150; tab.fillHex = accent; tab.fillOpacity = 1
-        var name = make(.text); name.name = L("Tên"); name.text = L("Họ và tên"); name.fontSize = 56; name.align = 0
-        name.x = 600; name.y = 776
+        // text boxes hug the text; placed by their vertical centre so the two lines sit balanced in the 150 px bar
+        var name = make(.text); name.name = L("Tên"); name.text = L("Họ và tên"); name.fontSize = 56; name.align = 0; name.x = 600
+        TitleRenderer.refit(&name); name.y = (804 - name.h / 2).rounded()
         var role = make(.text); role.name = L("Chức danh"); role.text = L("Chức danh"); role.fontSize = 32; role.weight = 0; role.align = 0
-        role.textHex = "#D9D9D9"; role.x = 600; role.y = 852
-        TitleRenderer.refit(&name); TitleRenderer.refit(&role)
+        role.textHex = "#D9D9D9"; role.x = 600
+        TitleRenderer.refit(&role); role.y = (868 - role.h / 2).rounded()
         return [bar, tab, name, role]
+    }
+
+    /// Richer lower third: accent header tab (uppercase), round logo badge, name with shadow, role, accent rule.
+    static func starterHeader(accent: String) -> [TitleLayer] {
+        func centred(_ l: inout TitleLayer, cy: CGFloat) { TitleRenderer.refit(&l); l.y = (cy - l.h / 2).rounded() }
+        var bar = make(.roundRect); bar.name = L("Nền"); bar.x = 520; bar.y = 770; bar.w = 900; bar.h = 140
+        bar.fillHex = "#0E1116"; bar.fillOpacity = 0.92; bar.cornerRadius = 14
+        var rule = make(.line); rule.name = L("Vạch nhấn"); rule.x = 520; rule.y = 906; rule.w = 900; rule.h = 4
+        rule.fillHex = accent; rule.fillOpacity = 1
+        var head = make(.text); head.name = L("Tiêu đề"); head.text = L("CHƯƠNG TRÌNH"); head.uppercase = true
+        head.fontSize = 24; head.weight = 4; head.letterSpacing = 3; head.align = 0; head.x = 520
+        head.fillHex = accent; head.fillOpacity = 1; head.cornerRadius = 8
+        centred(&head, cy: 742)
+        var badge = make(.ellipse); badge.name = L("Logo"); badge.x = 544; badge.y = 790; badge.w = 100; badge.h = 100
+        badge.fillHex = "#FFFFFF"; badge.fillOpacity = 1
+        var mark = make(.text); mark.name = L("Chữ logo"); mark.text = "DTD"; mark.fontSize = 30; mark.weight = 5
+        mark.textHex = "#0E1116"; mark.align = 1; mark.fitText = false; mark.x = 544; mark.y = 790; mark.w = 100; mark.h = 100
+        var name = make(.text); name.name = L("Tên"); name.text = L("Họ và tên"); name.fontSize = 54; name.weight = 3
+        name.align = 0; name.x = 664; name.shadow = true; name.shadowBlur = 8
+        centred(&name, cy: 818)
+        var role = make(.text); role.name = L("Chức danh"); role.text = L("Chức danh"); role.fontSize = 30; role.weight = 0
+        role.align = 0; role.x = 664; role.textHex = "#C9CED6"
+        centred(&role, cy: 872)
+        return [bar, rule, head, badge, mark, name, role]
     }
 
     static func make(_ kind: Kind) -> TitleLayer {

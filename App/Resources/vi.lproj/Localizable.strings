@@ -92,6 +92,7 @@
 "Bộ đệm trống — replay ghi lại tín hiệu Program khi app đang mã hoá (đang phát hoặc ghi)." = "Bộ đệm trống — replay ghi lại tín hiệu Program khi app đang mã hoá (đang phát hoặc ghi).";
 "CAM 1 · Sân khấu" = "CAM 1 · Sân khấu";
 "CAM 3 · Khán giả" = "CAM 3 · Khán giả";
+"CHƯƠNG TRÌNH" = "CHƯƠNG TRÌNH";
 "CHỮ HOA" = "CHỮ HOA";
 "Camera" = "Camera";
 "Camera / USB-C" = "Camera / USB-C";
@@ -194,6 +195,7 @@
 "Chữ dòng 1" = "Chữ dòng 1";
 "Chữ dòng 2" = "Chữ dòng 2";
 "Chữ khi hết giờ" = "Chữ khi hết giờ";
+"Chữ logo" = "Chữ logo";
 "Chữ lớn" = "Chữ lớn";
 "Chữ nhãn" = "Chữ nhãn";
 "Chữ nhật bo góc" = "Chữ nhật bo góc";
@@ -467,6 +469,7 @@
 "Logo + tên + chức danh" = "Logo + tên + chức danh";
 "Logo đang trên PGM" = "Logo đang trên PGM";
 "Logo đã nạp — bấm Logo On" = "Logo đã nạp — bấm Logo On";
+"Lower third có tiêu đề" = "Lower third có tiêu đề";
 "Lower third cơ bản" = "Lower third cơ bản";
 "Lower third kính mờ" = "Lower third kính mờ";
 "Lower third neon" = "Lower third neon";

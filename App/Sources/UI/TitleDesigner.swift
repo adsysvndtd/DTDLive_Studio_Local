@@ -924,6 +924,9 @@ struct TitleDesignerSheet: View {
                 templateRow(L("Lower third cơ bản"), deletable: false) {
                     TitleLayer.starter(accent: draft.accentHex)
                 }
+                templateRow(L("Lower third có tiêu đề"), deletable: false) {
+                    TitleLayer.starterHeader(accent: draft.accentHex)
+                }
             }
             card("Mẫu đã lưu") {
                 let names = TitleTemplateStore.names()
