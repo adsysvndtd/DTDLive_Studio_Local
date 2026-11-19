@@ -141,7 +141,7 @@ final class ReplaySource: VideoSource {
         // a little past outPTS: with B-frames the last shown frames reference a later P-frame
         let clip = Array(samples[startIdx...]).filter { $0.presentationTimeStamp.seconds <= outPTS + 0.25 }
         isPlaying = true
-        let store = frames, head = head
+        let store = frames, ph = head
         task = Task.detached(priority: .userInitiated) { [weak self] in
             repeat {
                 let decoder = FrameDecoder(format: fd)
@@ -153,7 +153,7 @@ final class ReplaySource: VideoSource {
                     if Task.isCancelled { return }
                     previousPTS = f.pts
                     store.put(f.pb)
-                    head.value = f.pts
+                    ph.value = f.pts
                 }
                 for sb in clip {
                     if Task.isCancelled { break }
@@ -194,7 +194,7 @@ final class ReplaySource: VideoSource {
         if !isPaused { pause() }
         let cur = frameTimes.firstIndex { $0 >= head.value - 0.0005 } ?? 0
         let target = frameTimes[min(max(cur + n, 0), frameTimes.count - 1)]
-        let samples = curSamples, store = frames, head = head
+        let samples = curSamples, store = frames, ph = head
         guard let fd = samples.first?.formatDescription else { return }
         task = Task.detached(priority: .userInitiated) {
             // decode from the keyframe before the target up to it (display order), show only the target
@@ -205,10 +205,10 @@ final class ReplaySource: VideoSource {
                 if Task.isCancelled { return }
                 guard let pb = decoder.decode(sb) else { continue }
                 if let f = reorder.push(sb.presentationTimeStamp.seconds, pb), abs(f.pts - target) < 0.0005 {
-                    store.put(f.pb); head.value = f.pts; return
+                    store.put(f.pb); ph.value = f.pts; return
                 }
             }
-            for f in reorder.drain() where abs(f.pts - target) < 0.0005 { store.put(f.pb); head.value = f.pts; return }
+            for f in reorder.drain() where abs(f.pts - target) < 0.0005 { store.put(f.pb); ph.value = f.pts; return }
         }
     }
 
