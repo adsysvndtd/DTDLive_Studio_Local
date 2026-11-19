@@ -83,6 +83,7 @@
 "CAM 1 · Sân khấu" = "CAM 1 · Sân khấu";
 "CAM 3 · Khán giả" = "CAM 3 · Khán giả";
 "Camera" = "Camera";
+"Camera / USB-C" = "Camera / USB-C";
 "Camera gửi %@ Mbps — thấp so với bitrate phát %@ Mbps: hình bị nén hai lần nên mờ. Cập nhật DTDLive (tự gửi ~12 Mbps cho 1080p30 qua Wi‑Fi) hoặc tăng bitrate trên DTDLive." = "Camera gửi %@ Mbps — thấp so với bitrate phát %@ Mbps: hình bị nén hai lần nên mờ. Cập nhật DTDLive (tự gửi ~12 Mbps cho 1080p30 qua Wi‑Fi) hoặc tăng bitrate trên DTDLive.";
 "Camera mạng (SRT · RTSP · RTMP · DTDLive)" = "Camera mạng (SRT · RTSP · RTMP · DTDLive)";
 "Camera trong máy & USB" = "Camera trong máy & USB";
@@ -104,6 +105,7 @@
 "Chính + phụ phải" = "Chính + phụ phải";
 "Chính sách quyền riêng tư" = "Chính sách quyền riêng tư";
 "Chưa bật — bật \"Cho phép DTDLive tìm và ghép nối\" trong Cài đặt › Ingest" = "Chưa bật — bật \"Cho phép DTDLive tìm và ghép nối\" trong Cài đặt › Ingest";
+"Chưa cho phép dùng camera" = "Chưa cho phép dùng camera";
 "Chưa có" = "Chưa có";
 "Chưa có NDI SDK. Trên Mac: cài \"NDI SDK for Apple\" từ ndi.video, chạy scripts/ndi-setup.sh rồi build lại — nhận & phát NDI sẽ tự bật." = "Chưa có NDI SDK. Trên Mac: cài \"NDI SDK for Apple\" từ ndi.video, chạy scripts/ndi-setup.sh rồi build lại — nhận & phát NDI sẽ tự bật.";
 "Chưa có Wi-Fi" = "Chưa có Wi-Fi";
@@ -119,6 +121,7 @@
 "Chưa có ảnh nền — bấm Ảnh nền từ Thư viện hoặc Tệp" = "Chưa có ảnh nền — bấm Ảnh nền từ Thư viện hoặc Tệp";
 "Chưa có ảnh — nhập ảnh nền ở mục Ảnh (Thư viện ảnh / Tệp)" = "Chưa có ảnh — nhập ảnh nền ở mục Ảnh (Thư viện ảnh / Tệp)";
 "Chưa có ảnh — nhập ở mục Ảnh" = "Chưa có ảnh — nhập ở mục Ảnh";
+"Chưa cắm camera USB-C" = "Chưa cắm camera USB-C";
 "Chưa mở bán trên App Store" = "Chưa mở bán trên App Store";
 "Chưa nhập Facebook App ID — vào Cài đặt › Phát trực tiếp, hoặc dùng 'Thêm đích' với stream key Facebook" = "Chưa nhập Facebook App ID — vào Cài đặt › Phát trực tiếp, hoặc dùng 'Thêm đích' với stream key Facebook";
 "Chưa nhập Google OAuth Client ID (iOS) — vào Cài đặt › Phát trực tiếp, hoặc dùng 'Thêm đích' với stream key YouTube" = "Chưa nhập Google OAuth Client ID (iOS) — vào Cài đặt › Phát trực tiếp, hoặc dùng 'Thêm đích' với stream key YouTube";
@@ -181,6 +184,7 @@
 "Cần iPadOS/iOS 17.4 trở lên cho đăng nhập Facebook" = "Cần iPadOS/iOS 17.4 trở lên cho đăng nhập Facebook";
 "Cầu lông" = "Cầu lông";
 "Cập nhật từ Git" = "Cập nhật từ Git";
+"Cắm camera USB-C hoặc thiết bị capture (UVC) vào iPad — nó hiện ở đây ngay (iPadOS 17 trở lên)." = "Cắm camera USB-C hoặc thiết bị capture (UVC) vào iPad — nó hiện ở đây ngay (iPadOS 17 trở lên).";
 "Cổ điển" = "Cổ điển";
 "Cổng RTMP" = "Cổng RTMP";
 "Cổng RTSP" = "Cổng RTSP";
@@ -328,6 +332,7 @@
 "Không dùng" = "Không dùng";
 "Không lấy được quyền của Trang — đăng nhập lại Facebook và chọn Trang khi được hỏi" = "Không lấy được quyền của Trang — đăng nhập lại Facebook và chọn Trang khi được hỏi";
 "Không muốn đăng ký app: dùng Đầu ra › Thêm đích › YouTube/Facebook (stream key)." = "Không muốn đăng ký app: dùng Đầu ra › Thêm đích › YouTube/Facebook (stream key).";
+"Không mở được camera" = "Không mở được camera";
 "Không mở được micro/bộ trộn âm thanh — đang phát kèm âm thanh câm. Kiểm tra quyền Micro trong Cài đặt iOS." = "Không mở được micro/bộ trộn âm thanh — đang phát kèm âm thanh câm. Kiểm tra quyền Micro trong Cài đặt iOS.";
 "Không mở được tệp: %@" = "Không mở được tệp: %@";
 "Không mở được tệp: %lf" = "Không mở được tệp: %lf";
@@ -481,6 +486,7 @@
 "Nghe nhạc, hiệu ứng, video trên loa máy" = "Nghe nhạc, hiệu ứng, video trên loa máy";
 "Nguồn" = "Nguồn";
 "Nguồn nhỏ hơn chương trình (%@×%@): hình bị phóng to nên mềm trên YouTube/Facebook. Đặt camera/DTDLive cùng độ phân giải với chương trình." = "Nguồn nhỏ hơn chương trình (%@×%@): hình bị phóng to nên mềm trên YouTube/Facebook. Đặt camera/DTDLive cùng độ phân giải với chương trình.";
+"Nguồn này đã có trong danh sách đầu vào." = "Nguồn này đã có trong danh sách đầu vào.";
 "Nguồn tham gia" = "Nguồn tham gia";
 "Nguồn đang chỉnh" = "Nguồn đang chỉnh";
 "Ngân hàng" = "Ngân hàng";
@@ -884,6 +890,8 @@
 "Đã nạp" = "Đã nạp";
 "Đã nạp logo — bấm Logo ở cột phải để lên PGM" = "Đã nạp logo — bấm Logo ở cột phải để lên PGM";
 "Đã nạp — bấm SuperFG On ở cột phải" = "Đã nạp — bấm SuperFG On ở cột phải";
+"Đã rút camera" = "Đã rút camera";
+"Đã thêm" = "Đã thêm";
 "Đã tạo và đang phát tới" = "Đã tạo và đang phát tới";
 "Đã tối ưu: %@ Mbps, %@, GOP 2 s" = "Đã tối ưu: %@ Mbps, %@, GOP 2 s";
 "Đã xuất %@ vào thư viện Video" = "Đã xuất %@ vào thư viện Video";

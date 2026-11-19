@@ -74,7 +74,7 @@ final class NDIInputSource: VideoSource {
     private(set) var status: SourceStatus = .idle
     private var receiver: NDIlib_recv_instance_t?
     private var task: Task<Void, Never>?
-    private let ndiName: String
+    let ndiName: String
 
     init(ndiName: String) { self.ndiName = ndiName; self.name = ndiName }
 

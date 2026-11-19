@@ -9786,6 +9786,86 @@
           }
         }
       }
+    },
+    "Chưa cho phép dùng camera": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Camera access not allowed"
+          }
+        }
+      }
+    },
+    "Chưa cắm camera USB-C": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "USB-C camera not plugged in"
+          }
+        }
+      }
+    },
+    "Không mở được camera": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't open the camera"
+          }
+        }
+      }
+    },
+    "Đã rút camera": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Camera unplugged"
+          }
+        }
+      }
+    },
+    "Đã thêm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Added"
+          }
+        }
+      }
+    },
+    "Cắm camera USB-C hoặc thiết bị capture (UVC) vào iPad — nó hiện ở đây ngay (iPadOS 17 trở lên).": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plug a USB-C camera or UVC capture device into the iPad — it shows up here right away (iPadOS 17 or later)."
+          }
+        }
+      }
+    },
+    "Nguồn này đã có trong danh sách đầu vào.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This source is already an input."
+          }
+        }
+      }
+    },
+    "Camera / USB-C": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Camera / USB-C"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

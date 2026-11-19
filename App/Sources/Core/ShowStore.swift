@@ -100,7 +100,10 @@ extension StudioEngine {
             let source: (any VideoSource)?
             switch c.kind {
             case .camera:
-                source = c.deviceID.flatMap { AVCaptureDevice(uniqueID: $0) }.map { CameraSource(device: $0) }
+                // a USB-C camera that is not plugged in now keeps its input and starts when it is plugged in
+                source = c.deviceID.map { id in
+                    AVCaptureDevice(uniqueID: id).map { CameraSource(device: $0) } ?? CameraSource(deviceID: id, name: c.name)
+                }
             case .srt: source = c.url.flatMap(URL.init(string:)).map { SRTInputSource(name: c.name, url: $0) }
             case .rtmpPull: source = c.url.flatMap(URL.init(string:)).map { RTMPInputSource(name: c.name, url: $0) }
             case .rtsp: source = c.url.flatMap(URL.init(string:)).map { RTSPInputSource(name: c.name, url: $0) }

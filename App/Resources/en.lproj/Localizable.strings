@@ -83,6 +83,7 @@
 "CAM 1 · Sân khấu" = "CAM 1 · Stage";
 "CAM 3 · Khán giả" = "CAM 3 · Audience";
 "Camera" = "Camera";
+"Camera / USB-C" = "Camera / USB-C";
 "Camera gửi %@ Mbps — thấp so với bitrate phát %@ Mbps: hình bị nén hai lần nên mờ. Cập nhật DTDLive (tự gửi ~12 Mbps cho 1080p30 qua Wi‑Fi) hoặc tăng bitrate trên DTDLive." = "Camera sends %@ Mbps — low for the %@ Mbps output: the picture is compressed twice and looks soft. Update DTDLive (sends ~12 Mbps for 1080p30 over Wi‑Fi) or raise the bitrate in DTDLive.";
 "Camera mạng (SRT · RTSP · RTMP · DTDLive)" = "Network cameras (SRT · RTSP · RTMP · DTDLive)";
 "Camera trong máy & USB" = "Built-in & USB cameras";
@@ -104,6 +105,7 @@
 "Chính + phụ phải" = "Main + right";
 "Chính sách quyền riêng tư" = "Privacy policy";
 "Chưa bật — bật \"Cho phép DTDLive tìm và ghép nối\" trong Cài đặt › Ingest" = "Off — turn on \"Let DTDLive find and pair\" in Settings › Ingest";
+"Chưa cho phép dùng camera" = "Camera access not allowed";
 "Chưa có" = "None";
 "Chưa có NDI SDK. Trên Mac: cài \"NDI SDK for Apple\" từ ndi.video, chạy scripts/ndi-setup.sh rồi build lại — nhận & phát NDI sẽ tự bật." = "No NDI SDK yet. On the Mac: install \"NDI SDK for Apple\" from ndi.video, run scripts/ndi-setup.sh and rebuild — NDI input & output turn on automatically.";
 "Chưa có Wi-Fi" = "No Wi-Fi";
@@ -119,6 +121,7 @@
 "Chưa có ảnh nền — bấm Ảnh nền từ Thư viện hoặc Tệp" = "No background picture — tap Background from Photos or Files";
 "Chưa có ảnh — nhập ảnh nền ở mục Ảnh (Thư viện ảnh / Tệp)" = "No pictures — import one in Pictures (Photos / Files)";
 "Chưa có ảnh — nhập ở mục Ảnh" = "No pictures — import in Pictures";
+"Chưa cắm camera USB-C" = "USB-C camera not plugged in";
 "Chưa mở bán trên App Store" = "Not on sale in the App Store yet";
 "Chưa nhập Facebook App ID — vào Cài đặt › Phát trực tiếp, hoặc dùng 'Thêm đích' với stream key Facebook" = "No Facebook App ID — set it in Settings › Live, or use 'Add destination' with a Facebook stream key";
 "Chưa nhập Google OAuth Client ID (iOS) — vào Cài đặt › Phát trực tiếp, hoặc dùng 'Thêm đích' với stream key YouTube" = "No Google OAuth Client ID (iOS) — set it in Settings › Live, or use 'Add destination' with a YouTube stream key";
@@ -181,6 +184,7 @@
 "Cần iPadOS/iOS 17.4 trở lên cho đăng nhập Facebook" = "Facebook sign-in needs iPadOS/iOS 17.4 or later";
 "Cầu lông" = "Badminton";
 "Cập nhật từ Git" = "Update from Git";
+"Cắm camera USB-C hoặc thiết bị capture (UVC) vào iPad — nó hiện ở đây ngay (iPadOS 17 trở lên)." = "Plug a USB-C camera or UVC capture device into the iPad — it shows up here right away (iPadOS 17 or later).";
 "Cổ điển" = "Classic";
 "Cổng RTMP" = "RTMP port";
 "Cổng RTSP" = "RTSP port";
@@ -328,6 +332,7 @@
 "Không dùng" = "None";
 "Không lấy được quyền của Trang — đăng nhập lại Facebook và chọn Trang khi được hỏi" = "Could not get access to the Page — sign in to Facebook again and select the Page when asked";
 "Không muốn đăng ký app: dùng Đầu ra › Thêm đích › YouTube/Facebook (stream key)." = "No app registration: use Outputs › Add destination › YouTube/Facebook (stream key).";
+"Không mở được camera" = "Couldn't open the camera";
 "Không mở được micro/bộ trộn âm thanh — đang phát kèm âm thanh câm. Kiểm tra quyền Micro trong Cài đặt iOS." = "Couldn't open the microphone/audio mixer — streaming with silent audio. Check Microphone permission in iOS Settings.";
 "Không mở được tệp: %@" = "Couldn't open file: %@";
 "Không mở được tệp: %lf" = "Couldn't open file: %lf";
@@ -481,6 +486,7 @@
 "Nghe nhạc, hiệu ứng, video trên loa máy" = "Play music, effects and video on the device speaker";
 "Nguồn" = "Source";
 "Nguồn nhỏ hơn chương trình (%@×%@): hình bị phóng to nên mềm trên YouTube/Facebook. Đặt camera/DTDLive cùng độ phân giải với chương trình." = "Source is smaller than the program (%@×%@): it is upscaled and looks soft on YouTube/Facebook. Set the camera/DTDLive to the program resolution.";
+"Nguồn này đã có trong danh sách đầu vào." = "This source is already an input.";
 "Nguồn tham gia" = "Sources";
 "Nguồn đang chỉnh" = "Adjusting";
 "Ngân hàng" = "Bank";
@@ -884,6 +890,8 @@
 "Đã nạp" = "Loaded";
 "Đã nạp logo — bấm Logo ở cột phải để lên PGM" = "Logo loaded — press Logo in the right column to put it on PGM";
 "Đã nạp — bấm SuperFG On ở cột phải" = "Loaded — press SuperFG On in the right column";
+"Đã rút camera" = "Camera unplugged";
+"Đã thêm" = "Added";
 "Đã tạo và đang phát tới" = "Created and streaming to";
 "Đã tối ưu: %@ Mbps, %@, GOP 2 s" = "Optimized: %@ Mbps, %@, 2 s GOP";
 "Đã xuất %@ vào thư viện Video" = "Exported %@ to the Video library";

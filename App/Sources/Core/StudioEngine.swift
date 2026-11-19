@@ -322,7 +322,23 @@ final class StudioEngine: ObservableObject {
 
     // MARK: Sources
 
+    /// The same camera / stream / NDI source is already an input (a second copy would fight for the device
+    /// or the port and show the same picture twice).
+    func isDuplicate(_ source: any VideoSource) -> Bool {
+        sources.contains { s in
+            if let a = s as? CameraSource, let b = source as? CameraSource { return a.deviceID == b.deviceID }
+            if let a = s as? SRTInputSource, let b = source as? SRTInputSource { return a.url == b.url }
+            if let a = s as? RTMPInputSource, let b = source as? RTMPInputSource { return a.url == b.url }
+            if let a = s as? RTSPInputSource, let b = source as? RTSPInputSource { return a.url == b.url }
+            #if NDI_SDK
+            if let a = s as? NDIInputSource, let b = source as? NDIInputSource { return a.ndiName == b.ndiName }
+            #endif
+            return false
+        }
+    }
+
     func add(_ source: any VideoSource) {
+        guard !isDuplicate(source) else { return }
         sources.append(source)
         switcher.register(source.id, store: source.frames)
         let a = audio, id = source.id, name = source.name

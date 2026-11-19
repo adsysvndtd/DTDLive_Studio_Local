@@ -483,6 +483,8 @@ struct AddSourceSheet: View {
     @State private var showFile = false
     @State private var ndiFound: [String] = []
     @State private var ndiSearching = false
+    @StateObject private var cameras = CameraDeviceList()
+    @State private var duplicate = false
 
     var body: some View {
         NavigationStack {
@@ -500,8 +502,22 @@ struct AddSourceSheet: View {
                 Picker("Loại", selection: $kind) { ForEach(SourceKind.allCases) { Text($0.label).tag($0) } }
                 switch kind {
                 case .camera:
-                    ForEach(CameraSource.availableDevices(), id: \.uniqueID) { d in
-                        Button(d.localizedName) { engine.add(CameraSource(device: d)); dismiss() }
+                    // built-in cameras and USB-C cameras / capture cards (iPadOS 17+); one input per device
+                    ForEach(cameras.devices, id: \.uniqueID) { d in
+                        let added = engine.sources.contains { ($0 as? CameraSource)?.deviceID == d.uniqueID }
+                        Button { engine.add(CameraSource(device: d)); dismiss() } label: {
+                            HStack {
+                                Label(d.localizedName, systemImage: CameraSource.isExternal(d) ? "cable.connector" : "camera")
+                                Spacer()
+                                if added { Text("Đã thêm").font(.caption).foregroundStyle(.secondary) }
+                                else if CameraSource.isExternal(d) { Text("USB-C").font(.caption.bold()).foregroundStyle(DS.accent) }
+                            }
+                        }
+                        .disabled(added)
+                    }
+                    if !cameras.devices.contains(where: CameraSource.isExternal) {
+                        Text("Cắm camera USB-C hoặc thiết bị capture (UVC) vào iPad — nó hiện ở đây ngay (iPadOS 17 trở lên).")
+                            .font(.footnote).foregroundStyle(.secondary)
                     }
                 case .srt, .rtmpPull, .rtsp:
                     TextField("Tên", text: $name)
@@ -511,13 +527,17 @@ struct AddSourceSheet: View {
                     Button("Thêm") {
                         guard let u = URL(string: url) else { return }
                         let n = name.isEmpty ? kind.label : name
+                        let s: any VideoSource
                         switch kind {
-                        case .srt: engine.add(SRTInputSource(name: n, url: u))
-                        case .rtsp: engine.add(RTSPInputSource(name: n, url: u))
-                        default: engine.add(RTMPInputSource(name: n, url: u))
+                        case .srt: s = SRTInputSource(name: n, url: u)
+                        case .rtsp: s = RTSPInputSource(name: n, url: u)
+                        default: s = RTMPInputSource(name: n, url: u)
                         }
+                        if engine.isDuplicate(s) { duplicate = true; return }
+                        engine.add(s)
                         dismiss()
                     }
+                    if duplicate { Text("Nguồn này đã có trong danh sách đầu vào.").font(.footnote).foregroundStyle(.orange) }
                 case .file:
                     Button("Chọn video…") { showFile = true }
                 }

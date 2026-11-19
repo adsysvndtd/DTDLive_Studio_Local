@@ -23,9 +23,26 @@ final class CameraSource: NSObject, VideoSource {
     private var rotation: AVCaptureDevice.RotationCoordinator?
     private var rotationObservation: NSKeyValueObservation?
 
+    /// USB-C (UVC) camera / capture card, iPadOS 17+.
+    let isExternal: Bool
+    private var plugObservers: [NSObjectProtocol] = []
+
     init(device: AVCaptureDevice) {
         self.deviceID = device.uniqueID
         self.name = device.localizedName
+        self.isExternal = Self.isExternal(device)
+    }
+
+    /// A saved camera whose device is not connected (only a USB-C camera can be missing).
+    init(deviceID: String, name: String) {
+        self.deviceID = deviceID
+        self.name = name
+        self.isExternal = true
+    }
+
+    static func isExternal(_ d: AVCaptureDevice) -> Bool {
+        if #available(iOS 17.0, *) { return d.deviceType == .external }
+        return false
     }
 
     static func availableDevices() -> [AVCaptureDevice] {
@@ -35,14 +52,23 @@ final class CameraSource: NSObject, VideoSource {
     }
 
     func start() async {
-        guard await AVCaptureDevice.requestAccess(for: .video),
-              let device = AVCaptureDevice(uniqueID: deviceID),
+        guard await AVCaptureDevice.requestAccess(for: .video) else { status = .error(L("Chưa cho phép dùng camera")); return }
+        watchPlug()
+        guard let device = AVCaptureDevice(uniqueID: deviceID),
               let input = try? AVCaptureDeviceInput(device: device) else {
-            status = .error("camera unavailable"); return
+            // a USB-C camera that isn't plugged in yet starts by itself when it is
+            status = .error(isExternal ? L("Chưa cắm camera USB-C") : L("Không mở được camera")); return
         }
         session.beginConfiguration()
-        session.sessionPreset = .hd1920x1080
+        session.inputs.forEach { session.removeInput($0) }
+        if isExternal {
+            // UVC cameras / capture cards don't take the 1080p preset: pick their best format up to 1080p30
+            session.sessionPreset = .inputPriority
+        } else {
+            session.sessionPreset = session.canSetSessionPreset(.hd1920x1080) ? .hd1920x1080 : .high
+        }
         if session.canAddInput(input) { session.addInput(input) }
+        if isExternal { Self.chooseFormat(device) }
         output.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA]
         output.alwaysDiscardsLateVideoFrames = true
         output.setSampleBufferDelegate(delegate, queue: queue)
@@ -54,11 +80,47 @@ final class CameraSource: NSObject, VideoSource {
             c.isVideoMirrored = false
         }
         session.commitConfiguration()
-        startRotationTracking(device)
+        if !isExternal { startRotationTracking(device) }   // a USB-C camera doesn't turn with the iPad
         let s = session
-        queue.async { s.startRunning() }
+        queue.async { if !s.isRunning { s.startRunning() } }
         refreshControls()
         status = .live
+    }
+
+    /// Largest format up to 1920×1080 (preferring 16:9 and ≥ 30 fps), frame rate 30 when it can.
+    private static func chooseFormat(_ d: AVCaptureDevice) {
+        func dims(_ f: AVCaptureDevice.Format) -> CMVideoDimensions { CMVideoFormatDescriptionGetDimensions(f.formatDescription) }
+        let ok = d.formats.filter { f in
+            let s = dims(f)
+            return s.width <= 1920 && s.height <= 1080 && f.videoSupportedFrameRateRanges.contains { $0.maxFrameRate >= 29 }
+        }
+        let best = ok.max { a, b in
+            let x = dims(a), y = dims(b)
+            let wa = abs(Double(x.width) / Double(max(x.height, 1)) - 16.0 / 9) < 0.05, wb = abs(Double(y.width) / Double(max(y.height, 1)) - 16.0 / 9) < 0.05
+            if wa != wb { return !wa }
+            return Int(x.width) * Int(x.height) < Int(y.width) * Int(y.height)
+        }
+        guard let f = best ?? d.formats.last, (try? d.lockForConfiguration()) != nil else { return }
+        d.activeFormat = f
+        if f.videoSupportedFrameRateRanges.contains(where: { $0.minFrameRate <= 30 && $0.maxFrameRate >= 30 }) {
+            d.activeVideoMinFrameDuration = CMTime(value: 1, timescale: 30)
+            d.activeVideoMaxFrameDuration = CMTime(value: 1, timescale: 30)
+        }
+        d.unlockForConfiguration()
+    }
+
+    /// Unplugging a USB-C camera shows it as disconnected; plugging it back in restarts it.
+    private func watchPlug() {
+        guard plugObservers.isEmpty else { return }
+        let nc = NotificationCenter.default, id = deviceID
+        plugObservers.append(nc.addObserver(forName: AVCaptureDevice.wasDisconnectedNotification, object: nil, queue: .main) { [weak self] n in
+            guard (n.object as? AVCaptureDevice)?.uniqueID == id else { return }
+            MainActor.assumeIsolated { self?.status = .error(L("Đã rút camera")) }
+        })
+        plugObservers.append(nc.addObserver(forName: AVCaptureDevice.wasConnectedNotification, object: nil, queue: .main) { [weak self] n in
+            guard (n.object as? AVCaptureDevice)?.uniqueID == id else { return }
+            MainActor.assumeIsolated { Task { await self?.start() } }
+        })
     }
 
     // MARK: Camera control (zoom, focus, exposure, white balance, torch)
@@ -162,6 +224,7 @@ final class CameraSource: NSObject, VideoSource {
     }
 
     func stop() async {
+        plugObservers.forEach { NotificationCenter.default.removeObserver($0) }; plugObservers = []
         rotationObservation?.invalidate(); rotationObservation = nil; rotation = nil
         let s = session
         queue.async { s.stopRunning() }
@@ -176,4 +239,21 @@ final class CameraSource: NSObject, VideoSource {
             if let pb = sampleBuffer.imageBuffer { store.put(pb) }
         }
     }
+}
+
+/// Cameras the iPad can use right now, refreshed when a USB-C camera is plugged in or out.
+@MainActor
+final class CameraDeviceList: ObservableObject {
+    @Published private(set) var devices: [AVCaptureDevice] = CameraSource.availableDevices()
+    private var observers: [NSObjectProtocol] = []
+
+    init() {
+        let nc = NotificationCenter.default
+        for name in [AVCaptureDevice.wasConnectedNotification, AVCaptureDevice.wasDisconnectedNotification] {
+            observers.append(nc.addObserver(forName: name, object: nil, queue: .main) { [weak self] _ in
+                MainActor.assumeIsolated { self?.devices = CameraSource.availableDevices() }
+            })
+        }
+    }
+    deinit { observers.forEach { NotificationCenter.default.removeObserver($0) } }
 }

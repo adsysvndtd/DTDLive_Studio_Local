@@ -6,7 +6,7 @@ enum SourceKind: String, Codable, CaseIterable, Identifiable {
     var id: String { rawValue }
     var label: String {
         switch self {
-        case .camera: return "Camera / UVC"
+        case .camera: return "Camera / USB-C"
         case .srt: return "SRT"
         case .rtmpPull: return "RTMP (play)"
         case .rtsp: return "RTSP (IP camera)"
