@@ -784,8 +784,9 @@ struct ReplayEditorView: View {
             // Transport + marks
             HStack(spacing: 6) {
                 transport("backward.end.fill") { editor.scrub(to: editor.markIn ?? 0) }
-                transport("backward.frame.fill") { editor.step(-1) }.keyboardShortcut(.leftArrow, modifiers: [])
-                transport("forward.frame.fill") { editor.step(1) }.keyboardShortcut(.rightArrow, modifiers: [])
+                // while a replay is on air the arrow keys step the replay on air (VAR), otherwise the editor
+                transport("backward.frame.fill") { engine.replayOnAir ? engine.replayStep(-1) : editor.step(-1) }.keyboardShortcut(.leftArrow, modifiers: [])
+                transport("forward.frame.fill") { engine.replayOnAir ? engine.replayStep(1) : editor.step(1) }.keyboardShortcut(.rightArrow, modifiers: [])
                 transport("forward.end.fill") { editor.scrub(to: editor.markOut ?? editor.duration) }
                 Spacer(minLength: 8)
                 markKey("MARK IN", value: editor.markIn, color: DS.pvw) { editor.setIn() }.keyboardShortcut("i", modifiers: [])
@@ -821,6 +822,8 @@ struct ReplayEditorView: View {
             }
 
             if let m = editor.message { Text(m).font(DS.fBody).foregroundStyle(DS.text2) }
+
+            ReplayVARSection(engine: engine)
 
             SectionCard("Clip đã lưu", systemImage: "film.stack") {
                 if editor.clips.isEmpty { Text("Đặt MARK IN / MARK OUT rồi bấm Lưu clip").font(DS.fBody).foregroundStyle(DS.text3) }
@@ -999,5 +1002,108 @@ struct CameraControlRows: View {
         }
         .font(DS.fBody)
         .onAppear { camera.refreshControls(); c = camera.controls }
+    }
+}
+
+/// VAR: where the replay goes on air (whole frame or one window of a PiP layout — it comes down by itself
+/// when the replay ends) and frame-accurate control while it is on air.
+struct ReplayVARSection: View {
+    @ObservedObject var engine: StudioEngine
+
+    var body: some View {
+        SectionCard("Khung replay (VAR)", systemImage: "rectangle.inset.topright.filled") {
+            Picker("", selection: $engine.replayPlacement.inLayout) {
+                Text("Toàn màn hình").tag(false)
+                Text("Trong khung layout PiP").tag(true)
+            }
+            .pickerStyle(.segmented)
+            if engine.replayPlacement.inLayout {
+                let tpl = LayoutTemplate.all.first { $0.id == engine.replayPlacement.layoutID } ?? LayoutTemplate.all[0]
+                HStack(alignment: .top, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Menu {
+                            ForEach(LayoutTemplate.all) { t in
+                                Button(t.name) { engine.replayPlacement.layoutID = t.id; engine.replayPlacement.slot = 0 }
+                            }
+                        } label: {
+                            Label(tpl.name, systemImage: "rectangle.split.2x1").font(DS.fBodyBold).lineLimit(1)
+                                .padding(.horizontal, 10).frame(height: 30)
+                                .background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
+                        }
+                        Text("Chạm một khung trong sơ đồ để chọn chỗ đặt replay. Hết replay, khung tự hạ và layout trước đó trở lại.")
+                            .font(.caption2).foregroundStyle(DS.text3).fixedSize(horizontal: false, vertical: true)
+                    }
+                    slotPicker(tpl).frame(width: 200)
+                }
+            }
+            if engine.replayOnAir { varControls }
+        }
+    }
+
+    /// Mini diagram of the layout; tap a window to put the replay there.
+    private func slotPicker(_ t: LayoutTemplate) -> some View {
+        GeometryReader { g in
+            ZStack(alignment: .topLeading) {
+                Color.black
+                ForEach(Array(t.slots.enumerated()), id: \.offset) { i, s in
+                    let on = engine.replayPlacement.slot == i
+                    Button { engine.replayPlacement.slot = i } label: {
+                        ZStack {
+                            Rectangle().fill(on ? DS.pgm.opacity(0.75) : DS.surface2)
+                            Rectangle().stroke(on ? DS.pgm : Color.white.opacity(0.35), lineWidth: on ? 2 : 1)
+                            Text(on ? "REPLAY" : "\(i + 1)").font(.system(size: 9, weight: .heavy)).foregroundStyle(.white)
+                        }
+                    }
+                    .buttonStyle(.plain)
+                    .frame(width: s.rect.width * g.size.width, height: s.rect.height * g.size.height)
+                    .offset(x: s.rect.minX * g.size.width, y: s.rect.minY * g.size.height)
+                }
+            }
+        }
+        .aspectRatio(16 / 9, contentMode: .fit)
+        .clipShape(RoundedRectangle(cornerRadius: 4))
+    }
+
+    /// On air: hold / play on, step 1 or 5 frames, stop (back to the previous source and layout).
+    private var varControls: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 6) {
+                Text(engine.replayHeld ? "VAR · ĐANG GIỮ HÌNH" : "VAR · ĐANG PHÁT").font(.system(size: 11, weight: .heavy))
+                    .foregroundStyle(engine.replayHeld ? .orange : DS.pvw)
+                Spacer()
+            }
+            HStack(spacing: 6) {
+                key("backward.end.alt", "−5 khung") { engine.replayStep(-5) }
+                key("backward.frame", "−1 khung") { engine.replayStep(-1) }
+                Button { engine.replayHoldToggle() } label: {
+                    Image(systemName: engine.replayHeld ? "play.fill" : "pause.fill").font(.system(size: 16, weight: .bold))
+                        .frame(width: 56, height: 36).foregroundStyle(.black)
+                        .background(engine.replayHeld ? DS.pvw : Color.orange, in: RoundedRectangle(cornerRadius: DS.radius))
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(Text(engine.replayHeld ? "Phát tiếp" : "Giữ hình"))
+                key("forward.frame", "+1 khung") { engine.replayStep(1) }
+                key("forward.end.alt", "+5 khung") { engine.replayStep(5) }
+                Spacer(minLength: 8)
+                Button { engine.stopReplay() } label: {
+                    Label("Hạ replay", systemImage: "stop.fill").font(.system(size: 12, weight: .heavy))
+                        .padding(.horizontal, 12).frame(height: 36).foregroundStyle(.white)
+                        .background(DS.pgm, in: RoundedRectangle(cornerRadius: DS.radius))
+                }
+                .buttonStyle(.plain)
+            }
+            Text("Giữ hình rồi bước từng khung để soi tình huống; ‹ › trên bàn phím cũng bước 1 khung.")
+                .font(.caption2).foregroundStyle(DS.text3)
+        }
+        .padding(.top, 4)
+    }
+
+    private func key(_ icon: String, _ label: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: icon).font(.system(size: 14, weight: .bold)).frame(width: 44, height: 36)
+                .foregroundStyle(.white).background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(Text(LocalizedStringKey(label)))
     }
 }

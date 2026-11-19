@@ -1464,6 +1464,40 @@ final class StudioEngine: ObservableObject {
 
     /// True while a replay is on PGM (drives the PLAY REPLAY / STOP button).
     @Published private(set) var replayOnAir = false
+    /// Replay held on a frame (VAR): it stays on air until played on or stopped.
+    @Published private(set) var replayHeld = false
+
+    /// Where a replay goes on air: the whole frame, or one window of a PiP layout (the other windows keep
+    /// their inputs). When the replay ends the previous source and the previous layout come back.
+    struct ReplayPlacement: Codable, Equatable {
+        var inLayout = false
+        var layoutID = 4          // "main + side": replay big, live small
+        var slot = 0
+    }
+    @Published var replayPlacement: ReplayPlacement = StudioEngine.load(ReplayPlacement.self, key: "dtd.replay.placement") ?? ReplayPlacement() {
+        didSet { UserDefaults.standard.set(try? JSONEncoder().encode(replayPlacement), forKey: "dtd.replay.placement") }
+    }
+    private var preReplayLayout: (id: Int, slots: [UUID?])?
+    private var replayInLayout = false
+
+    /// VAR: hold the replay on its frame / play on.
+    func replayHoldToggle() {
+        if let f = replayFile {
+            if replayHeld { f.resumeRange(); replayHeld = false } else { f.pause(); f.heldByUser = true; replayHeld = true }
+        } else if replay.isPlaying {
+            if replayHeld { replay.resume(speed: replayEditor.speed); replayHeld = false } else { replay.pause(); replayHeld = true }
+        }
+    }
+
+    /// VAR: exactly `n` frames forward / back (holds the replay).
+    func replayStep(_ n: Int) {
+        if let f = replayFile { f.stepFrames(n); replayHeld = true }
+        else if replay.isPlaying { replay.step(n); replayHeld = true }
+    }
+
+    private var replayFile: FileSource? {
+        replayFileID.flatMap { id in sources.first { $0.id == id } as? FileSource }
+    }
     /// Program source before the replay was taken to air; restored when the replay ends or is stopped.
     private var preReplayProgram: UUID?
     private var replayFileID: UUID?
@@ -1477,16 +1511,52 @@ final class StudioEngine: ObservableObject {
     /// Takes the previous source back to air (if the replay is still on PGM) and clears the replay state.
     private func returnFromReplay() {
         let onAir = programID == replay.id || (replayFileID != nil && programID == replayFileID)
+            || (replayInLayout && programID == layoutSource.id)
         if onAir, let back = preReplayProgram, sources.contains(where: { $0.id == back }) {
             switcher.setPreview(back); syncState()
             autoTransition()
         }
-        replayOnAir = false; preReplayProgram = nil; replayFileID = nil
+        // the replay window is taken down: the layout as it was before, once the transition back is over
+        if replayInLayout, let saved = preReplayLayout {
+            DispatchQueue.main.asyncAfter(deadline: .now() + transitionDuration + 0.15) { [weak self] in
+                guard let self else { return }
+                self.layoutTemplateID = saved.id
+                self.layoutSlots = saved.slots
+                self.refreshLayout()
+            }
+        }
+        replayOnAir = false; replayHeld = false; preReplayProgram = nil; replayFileID = nil
+        replayInLayout = false; preReplayLayout = nil
     }
 
     private func beginReplayOnAir(_ id: UUID) {
         if programID != id { preReplayProgram = programID }
-        replayOnAir = true
+        replayOnAir = true; replayHeld = false
+        if replayPlacement.inLayout {
+            // replay into the chosen window of the chosen layout; other windows: what they showed, else live inputs
+            preReplayLayout = (layoutTemplateID, layoutSlots)
+            let sameLayout = layoutTemplateID == replayPlacement.layoutID
+            layoutTemplateID = replayPlacement.layoutID
+            let n = layoutTemplate.slots.count
+            var slots = sameLayout ? Array(layoutSlots.prefix(n)) : []
+            let pool = ([preReplayProgram, programID, previewID] + sources.map(\.id)).compactMap { $0 }
+                .filter { $0 != layoutSource.id && $0 != replay.id && $0 != id }
+            var unique: [UUID] = []
+            for p in pool where !unique.contains(p) { unique.append(p) }
+            while slots.count < n { slots.append(unique.first { u in !slots.contains(u) }) }
+            let k = min(max(replayPlacement.slot, 0), n - 1)
+            slots = slots.map { $0 == id ? nil : $0 }
+            slots[k] = id
+            if !sources.contains(where: { $0.id == layoutSource.id }) {
+                sources.append(layoutSource)
+                switcher.register(layoutSource.id, store: layoutSource.frames)
+                Task { await layoutSource.start() }
+            }
+            layoutSlots = slots
+            refreshLayout()
+            replayInLayout = true
+            switcher.setPreview(layoutSource.id); syncState()
+        }
         autoTransition()
     }
 

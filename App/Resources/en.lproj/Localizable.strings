@@ -11,6 +11,8 @@
 "(phiên mã hoá mất hiệu lực — app vào nền / bị gián đoạn)" = "(encoder session invalidated — app in background / interrupted)";
 "(phần cứng mã hoá đang bận)" = "(hardware encoder busy)";
 "(tham số/thời gian khung không hợp lệ)" = "(invalid parameter / frame timing)";
+"+1 khung" = "+1 frame";
+"+5 khung" = "+5 frames";
 "0.25×" = "0.25×";
 "0.5×" = "0.5×";
 "0.75×" = "0.75×";
@@ -137,6 +139,7 @@
 "Chương trình (Program)" = "Program";
 "Chạm %lld rack" = "Race to %lld racks";
 "Chạm một bình luận để đưa lên PGM." = "Tap a comment to put it on PGM.";
+"Chạm một khung trong sơ đồ để chọn chỗ đặt replay. Hết replay, khung tự hạ và layout trước đó trở lại." = "Tap a window in the diagram to place the replay there. When the replay ends the window comes down and the previous layout returns.";
 "Chạm một mẫu để nạp (đang trên sóng thì thay ngay); bật/tắt bằng SuperFG On ở cột phải. Sửa chữ, màu cập nhật ngay." = "Tap a template to load it (replaces it live if on air); turn it on/off with SuperFG On. Text and colour update instantly.";
 "Chạm một thẻ hoặc ảnh trong thư viện bên dưới để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh." = "Tap a card or a picture in the library below to load it; SuperFG On plays its in-animation, then it leaves by itself (or holds until switched off). The small icon shows the transition type.";
 "Chạm một thẻ để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh." = "Tap a card to load it; SuperFG On plays its in-animation, then it leaves by itself (or holds until switched off). The small icon shows the transition type.";
@@ -258,6 +261,8 @@
 "Giờ (trống = giờ thực)" = "Time (empty = real time)";
 "Giờ (trống = giờ thực, - = ẩn)" = "Time (empty = real time, - = hidden)";
 "Giữ %@ giây" = "Hold %@ s";
+"Giữ hình" = "Hold";
+"Giữ hình rồi bước từng khung để soi tình huống; ‹ › trên bàn phím cũng bước 1 khung." = "Hold, then step frame by frame to check the incident; ‹ › on a keyboard also step 1 frame.";
 "Giữ đến khi tắt" = "Hold until off";
 "Giữa phải" = "Middle right";
 "Giữa trái" = "Middle left";
@@ -316,6 +321,7 @@
 "Hình %lf/s · Tiếng %lf/s" = "Video %lf/s · Audio %lf/s";
 "Hình %lld/s · Tiếng %lld/s" = "Video %lld/s · Audio %lld/s";
 "Hình học" = "Geometry";
+"Hạ replay" = "Take replay down";
 "Hết bộ đệm khung hình — đã tạo lại (khung bị giữ ở bộ mã hoá)" = "Out of frame buffers — recreated (frames held by the encoder)";
 "Hệ điểm" = "Scoring system";
 "Họ và tên" = "Full name";
@@ -337,6 +343,7 @@
 "Khung hình/giây: dựng %@ · vào mã hoá %@ · ra %@ · dựng TB %@ ms, max %@ ms, quá hạn %@ · %@×%@ %@/%@ kbps%@" = "Frames/s: rendered %@ · into encoder %@ · out %@ · render avg %@ ms, max %@ ms, late %@ · %@×%@ %@/%@ kbps%@";
 "Khung neon livestream" = "Neon livestream frame";
 "Khung phối cảnh" = "Perspective";
+"Khung replay (VAR)" = "Replay window (VAR)";
 "Khung viền" = "Window frame";
 "Khung đôi" = "Split frame";
 "Khuyến nghị cho %@×%@ %@ fps: %@ Mbps" = "Recommended for %@×%@ %@ fps: %@ Mbps";
@@ -581,6 +588,7 @@
 "Phát lại" = "Replay";
 "Phát lại từ đầu" = "Restart";
 "Phát sáng" = "Glow";
+"Phát tiếp" = "Play on";
 "Phát trực tiếp" = "Streaming";
 "Phát tất cả" = "Start all";
 "Phóng to" = "Zoom";
@@ -725,6 +733,7 @@
 "Toàn màn hình" = "Full screen";
 "Trang cá nhân" = "Personal profile";
 "Trang người xem mở để xem buổi live (YouTube: youtube.com/@kenh/live · Facebook: link bài live)." = "The page viewers open to watch (YouTube: youtube.com/@channel/live · Facebook: the live post link).";
+"Trong khung layout PiP" = "In a PiP layout window";
 "Trong nhà" = "Indoor";
 "Trong suốt" = "Transparent";
 "Trên PGM" = "On PGM";
@@ -790,6 +799,8 @@
 "Tự kết nối thiết bị tin cậy" = "Auto-connect trusted devices";
 "Tự động" = "Auto";
 "Tự động chuyển cảnh" = "Auto switching";
+"VAR · ĐANG GIỮ HÌNH" = "VAR · HOLDING";
+"VAR · ĐANG PHÁT" = "VAR · PLAYING";
 "Video" = "Video";
 "Video này không có chat trực tiếp đang mở" = "This video has no open live chat";
 "Video đang dùng làm nguồn" = "Videos in use";
@@ -1003,3 +1014,5 @@
 "Ứng dụng khác (HTTP): %@" = "Other apps (HTTP): %@";
 "→ Title" = "→ Title";
 "→ Title 2" = "→ Title 2";
+"−1 khung" = "−1 frame";
+"−5 khung" = "−5 frames";

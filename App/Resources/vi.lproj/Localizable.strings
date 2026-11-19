@@ -11,6 +11,8 @@
 "(phiên mã hoá mất hiệu lực — app vào nền / bị gián đoạn)" = "(phiên mã hoá mất hiệu lực — app vào nền / bị gián đoạn)";
 "(phần cứng mã hoá đang bận)" = "(phần cứng mã hoá đang bận)";
 "(tham số/thời gian khung không hợp lệ)" = "(tham số/thời gian khung không hợp lệ)";
+"+1 khung" = "+1 khung";
+"+5 khung" = "+5 khung";
 "0.25×" = "0.25×";
 "0.5×" = "0.5×";
 "0.75×" = "0.75×";
@@ -137,6 +139,7 @@
 "Chương trình (Program)" = "Chương trình (Program)";
 "Chạm %lld rack" = "Chạm %lld rack";
 "Chạm một bình luận để đưa lên PGM." = "Chạm một bình luận để đưa lên PGM.";
+"Chạm một khung trong sơ đồ để chọn chỗ đặt replay. Hết replay, khung tự hạ và layout trước đó trở lại." = "Chạm một khung trong sơ đồ để chọn chỗ đặt replay. Hết replay, khung tự hạ và layout trước đó trở lại.";
 "Chạm một mẫu để nạp (đang trên sóng thì thay ngay); bật/tắt bằng SuperFG On ở cột phải. Sửa chữ, màu cập nhật ngay." = "Chạm một mẫu để nạp (đang trên sóng thì thay ngay); bật/tắt bằng SuperFG On ở cột phải. Sửa chữ, màu cập nhật ngay.";
 "Chạm một thẻ hoặc ảnh trong thư viện bên dưới để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh." = "Chạm một thẻ hoặc ảnh trong thư viện bên dưới để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh.";
 "Chạm một thẻ để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh." = "Chạm một thẻ để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh.";
@@ -258,6 +261,8 @@
 "Giờ (trống = giờ thực)" = "Giờ (trống = giờ thực)";
 "Giờ (trống = giờ thực, - = ẩn)" = "Giờ (trống = giờ thực, - = ẩn)";
 "Giữ %@ giây" = "Giữ %@ giây";
+"Giữ hình" = "Giữ hình";
+"Giữ hình rồi bước từng khung để soi tình huống; ‹ › trên bàn phím cũng bước 1 khung." = "Giữ hình rồi bước từng khung để soi tình huống; ‹ › trên bàn phím cũng bước 1 khung.";
 "Giữ đến khi tắt" = "Giữ đến khi tắt";
 "Giữa phải" = "Giữa phải";
 "Giữa trái" = "Giữa trái";
@@ -316,6 +321,7 @@
 "Hình %lf/s · Tiếng %lf/s" = "Hình %lf/s · Tiếng %lf/s";
 "Hình %lld/s · Tiếng %lld/s" = "Hình %lld/s · Tiếng %lld/s";
 "Hình học" = "Hình học";
+"Hạ replay" = "Hạ replay";
 "Hết bộ đệm khung hình — đã tạo lại (khung bị giữ ở bộ mã hoá)" = "Hết bộ đệm khung hình — đã tạo lại (khung bị giữ ở bộ mã hoá)";
 "Hệ điểm" = "Hệ điểm";
 "Họ và tên" = "Họ và tên";
@@ -337,6 +343,7 @@
 "Khung hình/giây: dựng %@ · vào mã hoá %@ · ra %@ · dựng TB %@ ms, max %@ ms, quá hạn %@ · %@×%@ %@/%@ kbps%@" = "Khung hình/giây: dựng %@ · vào mã hoá %@ · ra %@ · dựng TB %@ ms, max %@ ms, quá hạn %@ · %@×%@ %@/%@ kbps%@";
 "Khung neon livestream" = "Khung neon livestream";
 "Khung phối cảnh" = "Khung phối cảnh";
+"Khung replay (VAR)" = "Khung replay (VAR)";
 "Khung viền" = "Khung viền";
 "Khung đôi" = "Khung đôi";
 "Khuyến nghị cho %@×%@ %@ fps: %@ Mbps" = "Khuyến nghị cho %@×%@ %@ fps: %@ Mbps";
@@ -581,6 +588,7 @@
 "Phát lại" = "Phát lại";
 "Phát lại từ đầu" = "Phát lại từ đầu";
 "Phát sáng" = "Phát sáng";
+"Phát tiếp" = "Phát tiếp";
 "Phát trực tiếp" = "Phát trực tiếp";
 "Phát tất cả" = "Phát tất cả";
 "Phóng to" = "Phóng to";
@@ -725,6 +733,7 @@
 "Toàn màn hình" = "Toàn màn hình";
 "Trang cá nhân" = "Trang cá nhân";
 "Trang người xem mở để xem buổi live (YouTube: youtube.com/@kenh/live · Facebook: link bài live)." = "Trang người xem mở để xem buổi live (YouTube: youtube.com/@kenh/live · Facebook: link bài live).";
+"Trong khung layout PiP" = "Trong khung layout PiP";
 "Trong nhà" = "Trong nhà";
 "Trong suốt" = "Trong suốt";
 "Trên PGM" = "Trên PGM";
@@ -790,6 +799,8 @@
 "Tự kết nối thiết bị tin cậy" = "Tự kết nối thiết bị tin cậy";
 "Tự động" = "Tự động";
 "Tự động chuyển cảnh" = "Tự động chuyển cảnh";
+"VAR · ĐANG GIỮ HÌNH" = "VAR · ĐANG GIỮ HÌNH";
+"VAR · ĐANG PHÁT" = "VAR · ĐANG PHÁT";
 "Video" = "Video";
 "Video này không có chat trực tiếp đang mở" = "Video này không có chat trực tiếp đang mở";
 "Video đang dùng làm nguồn" = "Video đang dùng làm nguồn";
@@ -1003,3 +1014,5 @@
 "Ứng dụng khác (HTTP): %@" = "Ứng dụng khác (HTTP): %@";
 "→ Title" = "→ Title";
 "→ Title 2" = "→ Title 2";
+"−1 khung" = "−1 khung";
+"−5 khung" = "−5 khung";

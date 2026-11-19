@@ -10236,6 +10236,136 @@
           }
         }
       }
+    },
+    "Khung replay (VAR)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Replay window (VAR)"
+          }
+        }
+      }
+    },
+    "Trong khung layout PiP": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In a PiP layout window"
+          }
+        }
+      }
+    },
+    "Chạm một khung trong sơ đồ để chọn chỗ đặt replay. Hết replay, khung tự hạ và layout trước đó trở lại.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap a window in the diagram to place the replay there. When the replay ends the window comes down and the previous layout returns."
+          }
+        }
+      }
+    },
+    "VAR · ĐANG GIỮ HÌNH": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "VAR · HOLDING"
+          }
+        }
+      }
+    },
+    "VAR · ĐANG PHÁT": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "VAR · PLAYING"
+          }
+        }
+      }
+    },
+    "−5 khung": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "−5 frames"
+          }
+        }
+      }
+    },
+    "−1 khung": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "−1 frame"
+          }
+        }
+      }
+    },
+    "+1 khung": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "+1 frame"
+          }
+        }
+      }
+    },
+    "+5 khung": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "+5 frames"
+          }
+        }
+      }
+    },
+    "Phát tiếp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Play on"
+          }
+        }
+      }
+    },
+    "Giữ hình": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hold"
+          }
+        }
+      }
+    },
+    "Hạ replay": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Take replay down"
+          }
+        }
+      }
+    },
+    "Giữ hình rồi bước từng khung để soi tình huống; ‹ › trên bàn phím cũng bước 1 khung.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hold, then step frame by frame to check the incident; ‹ › on a keyboard also step 1 frame."
+          }
+        }
+      }
     }
   },
   "version": "1.0"

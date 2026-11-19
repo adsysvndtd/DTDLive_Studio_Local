@@ -249,6 +249,22 @@ final class FileSource: VideoSource {
             }
         }
         player.rate = rate
+        rangeRate = rate
+        isPlaying = true
+    }
+    private var rangeRate: Float = 1
+
+    /// VAR: hold and move exactly `n` frames (AVPlayerItem.step is frame-accurate).
+    func stepFrames(_ n: Int) {
+        if isPlaying { player.pause(); isPlaying = false }
+        heldByUser = true
+        item.step(byCount: n)
+    }
+
+    /// VAR: play on from the held frame at the replay speed (to the OUT point, if a range is playing).
+    func resumeRange() {
+        heldByUser = false
+        player.rate = rangeRate
         isPlaying = true
     }
 
