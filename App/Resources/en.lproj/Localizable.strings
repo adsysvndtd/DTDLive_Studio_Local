@@ -152,6 +152,7 @@
 "Chỉ chấp nhận nếu ID này trùng với ID trên màn hình thiết bị" = "Accept only if this ID matches the one on the device";
 "Chỉ mình tôi" = "Only me";
 "Chỉnh khung" = "Edit windows";
+"Chỉnh nhích" = "Nudge";
 "Chọn lại gói" = "Choose again";
 "Chọn một mẫu trong danh sách để xem trước" = "Pick a template in the list to preview it";
 "Chọn một nguồn ở hàng PREVIEW để chỉnh" = "Pick a source on PREVIEW to adjust";
@@ -164,6 +165,7 @@
 "Chủ repo (owner)" = "Repo owner";
 "Chủ tài khoản" = "Account name";
 "Chức danh" = "Title";
+"Chữ" = "Text";
 "Chữ LIVE (trống = ẩn)" = "LIVE text (empty = hidden)";
 "Chữ chạy" = "Ticker";
 "Chữ chạy (ngăn bằng |, trống = ẩn)" = "Ticker (separate with |, empty = hidden)";
@@ -449,6 +451,7 @@
 "Màn ngoài" = "External";
 "Màu" = "Colours";
 "Màu & PTZ" = "Colour & PTZ";
+"Màu & hiệu ứng" = "Colour & effects";
 "Màu 1" = "Colour 1";
 "Màu 2" = "Colour 2";
 "Màu 3" = "Colour 3";
@@ -555,6 +558,7 @@
 "Nền tảng này hiển thị dọc 9:16" = "This platform shows vertical 9:16";
 "Nổi" = "Emboss";
 "Nội dung" = "Content";
+"Nội dung & thiết kế" = "Content & design";
 "Nội dung (ngăn bằng |)" = "Content (separate with |)";
 "Nội dung chữ chạy" = "Ticker text";
 "Nửa trái" = "Left half";
@@ -795,9 +799,11 @@
 "Về gốc" = "Reset";
 "Về màu mặc định của kiểu" = "Reset to the style's colours";
 "Về mặc định lớp" = "Reset layer";
+"Về vị trí gốc" = "Back to origin";
 "Vệt sáng lướt qua sau khi vào" = "Light sweep after it comes in";
 "Vị trí" = "Position";
 "Vị trí & cỡ" = "Position & size";
+"Vị trí & kích thước" = "Position & size";
 "Wi‑Fi chập chờn: SRT đang gửi lại gói, hình vẫn đủ." = "Wi‑Fi is unsteady: SRT is resending packets, the picture is still complete.";
 "Xanh dương" = "Blue";
 "Xanh lá" = "Green";

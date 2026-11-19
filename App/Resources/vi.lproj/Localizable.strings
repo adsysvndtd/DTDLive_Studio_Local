@@ -152,6 +152,7 @@
 "Chỉ chấp nhận nếu ID này trùng với ID trên màn hình thiết bị" = "Chỉ chấp nhận nếu ID này trùng với ID trên màn hình thiết bị";
 "Chỉ mình tôi" = "Chỉ mình tôi";
 "Chỉnh khung" = "Chỉnh khung";
+"Chỉnh nhích" = "Chỉnh nhích";
 "Chọn lại gói" = "Chọn lại gói";
 "Chọn một mẫu trong danh sách để xem trước" = "Chọn một mẫu trong danh sách để xem trước";
 "Chọn một nguồn ở hàng PREVIEW để chỉnh" = "Chọn một nguồn ở hàng PREVIEW để chỉnh";
@@ -164,6 +165,7 @@
 "Chủ repo (owner)" = "Chủ repo (owner)";
 "Chủ tài khoản" = "Chủ tài khoản";
 "Chức danh" = "Chức danh";
+"Chữ" = "Chữ";
 "Chữ LIVE (trống = ẩn)" = "Chữ LIVE (trống = ẩn)";
 "Chữ chạy" = "Chữ chạy";
 "Chữ chạy (ngăn bằng |, trống = ẩn)" = "Chữ chạy (ngăn bằng |, trống = ẩn)";
@@ -449,6 +451,7 @@
 "Màn ngoài" = "Màn ngoài";
 "Màu" = "Màu";
 "Màu & PTZ" = "Màu & PTZ";
+"Màu & hiệu ứng" = "Màu & hiệu ứng";
 "Màu 1" = "Màu 1";
 "Màu 2" = "Màu 2";
 "Màu 3" = "Màu 3";
@@ -555,6 +558,7 @@
 "Nền tảng này hiển thị dọc 9:16" = "Nền tảng này hiển thị dọc 9:16";
 "Nổi" = "Nổi";
 "Nội dung" = "Nội dung";
+"Nội dung & thiết kế" = "Nội dung & thiết kế";
 "Nội dung (ngăn bằng |)" = "Nội dung (ngăn bằng |)";
 "Nội dung chữ chạy" = "Nội dung chữ chạy";
 "Nửa trái" = "Nửa trái";
@@ -795,9 +799,11 @@
 "Về gốc" = "Về gốc";
 "Về màu mặc định của kiểu" = "Về màu mặc định của kiểu";
 "Về mặc định lớp" = "Về mặc định lớp";
+"Về vị trí gốc" = "Về vị trí gốc";
 "Vệt sáng lướt qua sau khi vào" = "Vệt sáng lướt qua sau khi vào";
 "Vị trí" = "Vị trí";
 "Vị trí & cỡ" = "Vị trí & cỡ";
+"Vị trí & kích thước" = "Vị trí & kích thước";
 "Wi‑Fi chập chờn: SRT đang gửi lại gói, hình vẫn đủ." = "Wi‑Fi chập chờn: SRT đang gửi lại gói, hình vẫn đủ.";
 "Xanh dương" = "Xanh dương";
 "Xanh lá" = "Xanh lá";

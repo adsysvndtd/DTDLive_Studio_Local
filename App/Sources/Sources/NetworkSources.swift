@@ -142,6 +142,8 @@ final class FileSource: VideoSource {
 
     /// Loop at end of file (default) or hold the last frame.
     var loops = true
+    /// Paused by the operator: automatic play-when-seen leaves it paused until it is played or cued again.
+    var heldByUser = false
 
     private(set) var isPlaying = false { didSet { if isPlaying != oldValue { updateLinkRate() } } }
 

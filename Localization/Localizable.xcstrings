@@ -10096,6 +10096,66 @@
           }
         }
       }
+    },
+    "Vị trí & kích thước": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Position & size"
+          }
+        }
+      }
+    },
+    "Chữ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Text"
+          }
+        }
+      }
+    },
+    "Màu & hiệu ứng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Colour & effects"
+          }
+        }
+      }
+    },
+    "Chỉnh nhích": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nudge"
+          }
+        }
+      }
+    },
+    "Về vị trí gốc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back to origin"
+          }
+        }
+      }
+    },
+    "Nội dung & thiết kế": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Content & design"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

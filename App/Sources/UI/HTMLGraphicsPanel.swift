@@ -42,18 +42,32 @@ struct HTMLGraphicsPanel: View {
             }
             // List on the left, a large preview on the right: the whole program frame at its real aspect, so the
             // lower third sits exactly where (and as big as) it will on air. Stacked when the column is narrow.
+            // List · small preview (the whole program frame at its real aspect) on top; below it the text fields
+            // and the design (layout / layers / effects) side by side, so the preview stays in view while editing.
             ViewThatFits(in: .horizontal) {
                 HStack(alignment: .top, spacing: 10) {
-                    templateList.frame(width: compact ? 180 : 210).frame(height: compact ? 230 : 280)
-                    previewPane.frame(minWidth: compact ? 300 : 380, maxWidth: .infinity)
+                    templateList.frame(minWidth: compact ? 170 : 200, maxWidth: .infinity).frame(height: compact ? 190 : 220)
+                    previewPane.frame(width: compact ? 250 : 300)
                 }
                 VStack(spacing: 8) {
-                    previewPane
-                    templateList.frame(height: 200)
+                    previewPane.frame(maxWidth: 300)
+                    templateList.frame(height: 180)
                 }
             }
             if let t = shown {
-                HTMLFieldRows(html: html, template: t, compact: compact, background: background, aspect: aspect, showPreview: false)
+                ViewThatFits(in: .horizontal) {
+                    HStack(alignment: .top, spacing: 12) {
+                        VStack(alignment: .leading, spacing: 6) {
+                            HTMLFieldRows(html: html, template: t, compact: compact, showPreview: false, showDesign: false)
+                        }
+                        .frame(minWidth: 260, maxWidth: .infinity, alignment: .topLeading)
+                        HTMLResizeRows(html: html, template: t, compact: compact, showPreview: false)
+                            .frame(minWidth: 340, maxWidth: .infinity, alignment: .topLeading)
+                    }
+                    VStack(alignment: .leading, spacing: 6) {
+                        HTMLFieldRows(html: html, template: t, compact: compact, background: background, aspect: aspect, showPreview: false)
+                    }
+                }
             }
           }
         }
@@ -201,11 +215,15 @@ struct HTMLFieldRows: View {
     var aspect: CGFloat = 16 / 9
     /// The panel already shows a large preview next to the list.
     var showPreview = true
+    /// The panel shows the design editor in its own column.
+    var showDesign = true
     static let presets = ["#5172BE", "#3E5068", "#D98A2B", "#C84B33", "#2E9E6A", "#7A4FC2", "#111418"]
 
     var body: some View {
         let t = template
-        HTMLResizeRows(html: html, template: t, compact: compact, background: background, aspect: aspect, showPreview: showPreview)
+        if showDesign {
+            HTMLResizeRows(html: html, template: t, compact: compact, background: background, aspect: aspect, showPreview: showPreview)
+        }
         ForEach(t.fields) { f in
             if f.isColor {
                 HStack(spacing: 6) {
@@ -259,8 +277,8 @@ struct HTMLResizeRows: View {
     var background: FrameStore? = nil
     var aspect: CGFloat = 16 / 9
     var showPreview = true
-    @State private var open = false
-    @State private var tab = 0
+    @AppStorage("ui.html.designOpen") private var open = true
+    @AppStorage("ui.html.designTab") private var tab = 0
     @State private var layerKey: String?
 
     var body: some View {
@@ -284,9 +302,9 @@ struct HTMLResizeRows: View {
             if open {
                 if showPreview { HTMLLivePreview(html: html, background: background, aspect: aspect) }
                 Picker("", selection: $tab) {
-                    Text("Bố cục").tag(0)
-                    Text("Lớp").tag(1)
-                    Text("Hiệu ứng").tag(2)
+                    Label("Bố cục", systemImage: "arrow.up.and.down.and.arrow.left.and.right").tag(0)
+                    Label("Lớp", systemImage: "square.3.layers.3d").tag(1)
+                    Label("Hiệu ứng", systemImage: "sparkles").tag(2)
                 }
                 .pickerStyle(.segmented)
                 switch tab {
@@ -302,9 +320,14 @@ struct HTMLResizeRows: View {
 
     @ViewBuilder private func layoutRows(_ t: HTMLTemplate, _ d: HTMLDesign) -> some View {
         let l = d.layout
-        row("Kích thước", Binding(get: { l.scale }, set: { var n = html.layout(t); n.scale = $0; html.setLayout(t, n) }), 0.3...2.5) { "\(Int(($0 * 100).rounded()))%" }
-        row("Ngang", Binding(get: { l.x }, set: { var n = html.layout(t); n.x = $0; html.setLayout(t, n) }), -1200...1200) { "\(Int($0)) px" }
-        row("Dọc", Binding(get: { l.y }, set: { var n = html.layout(t); n.y = $0; html.setLayout(t, n) }), -800...800) { "\(Int($0)) px" }
+        let bx = Binding(get: { l.x }, set: { var n = html.layout(t); n.x = $0; html.setLayout(t, n) })
+        let by = Binding(get: { l.y }, set: { var n = html.layout(t); n.y = $0; html.setLayout(t, n) })
+        grid {
+            row("Kích thước", Binding(get: { l.scale }, set: { var n = html.layout(t); n.scale = $0; html.setLayout(t, n) }), 0.3...2.5) { "\(Int(($0 * 100).rounded()))%" }
+            row("Ngang", bx, -1200...1200) { "\(Int($0)) px" }
+            row("Dọc", by, -800...800) { "\(Int($0)) px" }
+            nudgeRow(bx, by)
+        }
         HStack(spacing: 8) {
             label("Điểm neo")
             LazyVGrid(columns: Array(repeating: GridItem(.fixed(26), spacing: 3), count: 3), spacing: 3) {
@@ -356,10 +379,17 @@ struct HTMLResizeRows: View {
                 Spacer()
                 if !st.isDefault { Button("Về mặc định lớp") { set { $0 = HTMLLayerStyle() } }.font(DS.fBody).buttonStyle(.borderless) }
             }
-            row("Ngang", Binding(get: { st.x }, set: { v in set { $0.x = v } }), -800...800) { "\(Int($0)) px" }
-            row("Dọc", Binding(get: { st.y }, set: { v in set { $0.y = v } }), -500...500) { "\(Int($0)) px" }
-            row("Kích thước", Binding(get: { st.scale }, set: { v in set { $0.scale = v } }), 0.3...3) { "\(Int(($0 * 100).rounded()))%" }
-            row("Độ đậm", Binding(get: { st.opacity }, set: { v in set { $0.opacity = v } }), 0...1) { "\(Int($0 * 100))%" }
+            groupTitle("Vị trí & kích thước")
+            let lx = Binding(get: { st.x }, set: { v in set { $0.x = v } })
+            let lyB = Binding(get: { st.y }, set: { v in set { $0.y = v } })
+            grid {
+                row("Ngang", lx, -800...800) { "\(Int($0)) px" }
+                row("Dọc", lyB, -500...500) { "\(Int($0)) px" }
+                row("Kích thước", Binding(get: { st.scale }, set: { v in set { $0.scale = v } }), 0.3...3) { "\(Int(($0 * 100).rounded()))%" }
+                row("Độ đậm", Binding(get: { st.opacity }, set: { v in set { $0.opacity = v } }), 0...1) { "\(Int($0 * 100))%" }
+                nudgeRow(lx, lyB)
+            }
+            groupTitle("Chữ")
             HStack(spacing: 8) {
                 label("Font")
                 Menu {
@@ -395,12 +425,17 @@ struct HTMLResizeRows: View {
                 }
                 Spacer(minLength: 0)
             }
-            row("Cỡ chữ", Binding(get: { st.fontSize ?? 0 }, set: { v in set { $0.fontSize = v < 8 ? nil : v.rounded() } }), 0...200) { $0 < 8 ? L("Theo mẫu") : "\(Int($0)) px" }
-            row("Giãn chữ", Binding(get: { st.letterSpacing ?? 0 }, set: { v in set { $0.letterSpacing = abs(v) < 0.2 ? nil : v } }), -5...20) { String(format: "%.1f", $0) }
-            colorRow("Màu chữ", st.color) { c in set { $0.color = c } }
-            colorRow("Màu nền", st.background) { c in set { $0.background = c } }
-            if st.background != nil {
-                row("Độ đậm nền", Binding(get: { st.bgAlpha }, set: { v in set { $0.bgAlpha = v } }), 0...1) { "\(Int($0 * 100))%" }
+            grid {
+                row("Cỡ chữ", Binding(get: { st.fontSize ?? 0 }, set: { v in set { $0.fontSize = v < 8 ? nil : v.rounded() } }), 0...200) { $0 < 8 ? L("Theo mẫu") : "\(Int($0)) px" }
+                row("Giãn chữ", Binding(get: { st.letterSpacing ?? 0 }, set: { v in set { $0.letterSpacing = abs(v) < 0.2 ? nil : v } }), -5...20) { String(format: "%.1f", $0) }
+            }
+            groupTitle("Màu & hiệu ứng")
+            grid {
+                colorRow("Màu chữ", st.color) { c in set { $0.color = c } }
+                colorRow("Màu nền", st.background) { c in set { $0.background = c } }
+                if st.background != nil {
+                    row("Độ đậm nền", Binding(get: { st.bgAlpha }, set: { v in set { $0.bgAlpha = v } }), 0...1) { "\(Int($0 * 100))%" }
+                }
             }
             HStack(spacing: 8) {
                 label("Hiệu ứng màu")
@@ -467,6 +502,38 @@ struct HTMLResizeRows: View {
     }
 
     // MARK: Rows
+
+    /// Two columns of rows when there is room, one otherwise.
+    private func grid<C: View>(@ViewBuilder _ content: () -> C) -> some View {
+        LazyVGrid(columns: [GridItem(.adaptive(minimum: 250), spacing: 14, alignment: .leading)], alignment: .leading, spacing: 2) {
+            content()
+        }
+    }
+
+    private func groupTitle(_ s: LocalizedStringKey) -> some View {
+        Text(s).font(.system(size: 11, weight: .bold)).textCase(.uppercase).foregroundStyle(DS.text3).padding(.top, 6)
+    }
+
+    /// Fine positioning: 2 px per tap (the sliders are coarse on a touch screen).
+    private func nudgeRow(_ x: Binding<Double>, _ y: Binding<Double>) -> some View {
+        HStack(spacing: 6) {
+            label("Chỉnh nhích")
+            ForEach([("arrow.left", -2.0, 0.0), ("arrow.right", 2, 0), ("arrow.up", 0, -2), ("arrow.down", 0, 2)], id: \.0) { n in
+                Button { x.wrappedValue += n.1; y.wrappedValue += n.2 } label: {
+                    Image(systemName: n.0).font(.system(size: 12, weight: .bold)).frame(width: 32, height: 26)
+                        .background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
+                }
+                .buttonStyle(.plain)
+            }
+            Button { x.wrappedValue = 0; y.wrappedValue = 0 } label: {
+                Image(systemName: "scope").font(.system(size: 12, weight: .bold)).frame(width: 32, height: 26)
+                    .background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
+            }
+            .buttonStyle(.plain).accessibilityLabel(Text("Về vị trí gốc"))
+            Spacer(minLength: 0)
+        }
+        .frame(height: 30)
+    }
 
     private func label(_ s: LocalizedStringKey) -> some View {
         Text(s).font(DS.fBody).foregroundStyle(DS.text2).frame(width: 84, alignment: .leading)
@@ -591,36 +658,16 @@ struct HTMLEditorSheet: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 8) {
-                ZStack {
-                    HTMLCheckerBackground()
-                    HTMLPreviewView(template: current, source: previewSource, values: html.values(for: current),
-                                    design: html.design(current), playToken: playToken)
-                }
-                .aspectRatio(16 / 9, contentMode: .fit)
-                .clipShape(RoundedRectangle(cornerRadius: DS.radius))
-                HStack(spacing: 8) {
-                    Button { playToken += 1 } label: { Label("Chạy hiệu ứng", systemImage: "play.fill") }
-                    Button { previewSource = source; playToken += 1 } label: { Label("Xem mã đang sửa", systemImage: "eye") }
-                    Spacer()
-                    Picker("", selection: $tab) {
-                        Text("Nội dung").tag(0)
-                        Text("Mã HTML").tag(1)
+            // Wide screen: preview + its buttons on the left, the editing column on the right (both visible);
+            // narrow: stacked.
+            GeometryReader { g in
+                if g.size.width > 900 {
+                    HStack(alignment: .top, spacing: 14) {
+                        previewColumn.frame(width: g.size.width * 0.46)
+                        editColumn
                     }
-                    .pickerStyle(.segmented).frame(width: 220)
-                }
-                .font(DS.fBodyBold).buttonStyle(.bordered)
-                if let error { Text(error).font(.caption).foregroundStyle(.red) }
-                if tab == 0 {
-                    ScrollView { VStack(spacing: 6) { HTMLFieldRows(html: html, template: current) } }
                 } else {
-                    TextEditor(text: $source)
-                        .font(.system(size: 12, design: .monospaced))
-                        .textInputAutocapitalization(.never).autocorrectionDisabled()
-                        .scrollContentBackground(.hidden).background(DS.surface2)
-                        .clipShape(RoundedRectangle(cornerRadius: DS.radius))
-                    Text("Phần tử có data-field=\"tên\" sẽ thành ô sửa chữ; biến màu CSS (--accent: #…) thành ô chọn màu.")
-                        .font(.caption2).foregroundStyle(DS.text3)
+                    VStack(spacing: 8) { previewColumn; editColumn }
                 }
             }
             .padding(12)
@@ -637,6 +684,48 @@ struct HTMLEditorSheet: View {
                 }
             }
             .onAppear { source = (try? String(contentsOf: HTMLGraphicsStore.entryURL(template), encoding: .utf8)) ?? "" }
+        }
+    }
+
+    private var previewColumn: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            ZStack {
+                HTMLCheckerBackground()
+                HTMLPreviewView(template: current, source: previewSource, values: html.values(for: current),
+                                design: html.design(current), playToken: playToken)
+            }
+            .aspectRatio(16 / 9, contentMode: .fit)
+            .clipShape(RoundedRectangle(cornerRadius: DS.radius))
+            HStack(spacing: 8) {
+                Button { playToken += 1 } label: { Label("Chạy hiệu ứng", systemImage: "play.fill") }
+                Button { previewSource = source; playToken += 1 } label: { Label("Xem mã đang sửa", systemImage: "eye") }
+                    .disabled(tab != 1)
+                Spacer(minLength: 0)
+            }
+            .font(DS.fBodyBold).buttonStyle(.bordered)
+            if let error { Text(error).font(.caption).foregroundStyle(.red) }
+        }
+    }
+
+    private var editColumn: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Picker("", selection: $tab) {
+                Label("Nội dung & thiết kế", systemImage: "slider.horizontal.3").tag(0)
+                Label("Mã HTML", systemImage: "chevron.left.forwardslash.chevron.right").tag(1)
+            }
+            .pickerStyle(.segmented)
+            if tab == 0 {
+                // the preview is beside / above: no second preview inside the design editor
+                ScrollView { VStack(alignment: .leading, spacing: 6) { HTMLFieldRows(html: html, template: current, showPreview: false) } }
+            } else {
+                TextEditor(text: $source)
+                    .font(.system(size: 12, design: .monospaced))
+                    .textInputAutocapitalization(.never).autocorrectionDisabled()
+                    .scrollContentBackground(.hidden).background(DS.surface2)
+                    .clipShape(RoundedRectangle(cornerRadius: DS.radius))
+                Text("Phần tử có data-field=\"tên\" sẽ thành ô sửa chữ; biến màu CSS (--accent: #…) thành ô chọn màu.")
+                    .font(.caption2).foregroundStyle(DS.text3)
+            }
         }
     }
 }

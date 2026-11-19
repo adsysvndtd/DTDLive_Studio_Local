@@ -794,7 +794,10 @@ struct SourceCell: View {
                     Button { engine.setPiP(source.id) } label: { Label("Dùng làm PiP", systemImage: "pip") }
                     Button(action: onAdjust) { Label("Màu, key, PTZ…", systemImage: "slider.horizontal.3") }
                     if let f = source as? FileSource {
-                        Button { f.isPlaying ? f.pause() : f.play(); engine.objectWillChange.send() } label: {
+                        Button {
+                            if f.isPlaying { f.pause(); f.heldByUser = true } else { f.heldByUser = false; f.play() }
+                            engine.objectWillChange.send()
+                        } label: {
                             Label(f.isPlaying ? "Tạm dừng" : "Phát", systemImage: f.isPlaying ? "pause" : "play")
                         }
                         Button { f.restart() } label: { Label("Phát lại từ đầu", systemImage: "backward.end") }

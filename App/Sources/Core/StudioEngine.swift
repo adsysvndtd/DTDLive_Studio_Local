@@ -58,7 +58,7 @@ final class StudioEngine: ObservableObject {
     @Published var layoutSingleScale: Double = UserDefaults.standard.object(forKey: "dtd.layout.single") as? Double ?? 0.7 {
         didSet { UserDefaults.standard.set(layoutSingleScale, forKey: "dtd.layout.single"); refreshLayout() }
     }
-    @Published var layoutSlots: [UUID?] = []
+    @Published var layoutSlots: [UUID?] = [] { didSet { updateMediaPlayback() } }
     @Published var layoutSelectedSlot = 0
     var controlPort: UInt16 { control.httpPort }
     /// Lets any view jump the studio to a category (e.g. "open in Replay" from the Video library).
@@ -357,7 +357,7 @@ final class StudioEngine: ObservableObject {
         if let s = source as? RTMPInputSource { s.sink.onAudio = { a.feed(sourceID: id, name: name, buffer: $0) } }
         if let s = source as? RTSPInputSource { s.onAudio = { a.feed(sourceID: id, name: name, buffer: $0) } }
         if let s = source as? FileSource { s.onAudio = { a.feed(sourceID: id, name: name, buffer: $0) } }
-        Task { await source.start(); objectWillChange.send() }
+        Task { await source.start(); updateMediaPlayback(); objectWillChange.send() }
         if programID == nil { switcher.take(source.id) } else if previewID == nil { switcher.setPreview(source.id) }
         syncState()
     }
@@ -375,7 +375,12 @@ final class StudioEngine: ObservableObject {
 
     // MARK: Switching
 
-    func select(_ id: UUID) { switcher.setPreview(id); syncState() }
+    func select(_ id: UUID) {
+        // choosing a video for PVW plays it (also one the operator had paused)
+        (sources.first { $0.id == id } as? FileSource)?.heldByUser = false
+        switcher.setPreview(id); syncState()
+        updateMediaPlayback()
+    }
     func take(_ id: UUID) { switcher.take(id); syncState(); autoSwitcher.noteManualTake() }
     func cut() {
         guard takeAllowed() else { return }
@@ -439,6 +444,7 @@ final class StudioEngine: ObservableObject {
         let old = tally.program
         tally = (program, preview)
         layoutSource.setActive(program.contains(layoutSource.id) || preview.contains(layoutSource.id))
+        updateMediaPlayback()
         audio.setProgram(program, main: switcher.state.program)
         for id in program.symmetricDifference(old) {
             Task { await ptzControllers[id]?.tally(program.contains(id)) }
@@ -447,6 +453,19 @@ final class StudioEngine: ObservableObject {
         for case let s as NDIInputSource in sources { s.setTally(program: program.contains(s.id), preview: preview.contains(s.id)) }
         #endif
         syncState()
+    }
+
+    /// Movie inputs play only while they are seen: on PVW or PGM (also as PiP, inside a layout window that
+    /// is on PVW / PGM, or as the chroma background of a source there). Clicking a video puts it on PVW and
+    /// it plays; the other videos in "Video đang dùng" wait paused where they were (no sound, no decoding).
+    func updateMediaPlayback() {
+        var active = tally.program.union(tally.preview)
+        if active.contains(layoutSource.id) { active.formUnion(layoutSlots.compactMap { $0 }) }
+        for id in active { if let bg = processing[id]?.keyBackgroundID { active.insert(bg) } }
+        for case let f as FileSource in sources {
+            let on = active.contains(f.id)
+            if on && !f.isPlaying && !f.heldByUser { f.play() } else if !on && f.isPlaying { f.pause() }
+        }
     }
 
     // MARK: Graphics
@@ -459,7 +478,10 @@ final class StudioEngine: ObservableObject {
 
     /// Adds (or reuses) a movie as an input and puts it on preview.
     func cueMovie(_ url: URL) {
-        if let s = sources.first(where: { ($0 as? FileSource)?.url == url }) { select(s.id); (s as? FileSource)?.restart(); return }
+        if let s = sources.first(where: { ($0 as? FileSource)?.url == url }) {
+            (s as? FileSource)?.heldByUser = false
+            select(s.id); (s as? FileSource)?.restart(); return
+        }
         guard FileManager.default.isReadableFile(atPath: url.path) else { message = LF("Không đọc được video %@", "\(url.lastPathComponent)"); return }
         let s = FileSource(name: url.deletingPathExtension().lastPathComponent, url: url)
         add(s); select(s.id)
