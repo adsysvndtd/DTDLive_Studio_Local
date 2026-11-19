@@ -459,6 +459,7 @@
 "Mẫu này chưa có lớp nào: đánh dấu khối bằng data-layer=\"tên\" trong HTML." = "This template has no layers yet: mark blocks with data-layer=\"name\" in the HTML.";
 "Mật khẩu" = "Password";
 "Mật khẩu SRT (để trống = không mã hoá, 10–79 ký tự)" = "SRT passphrase (empty = unencrypted, 10–79 characters)";
+"Mật khẩu để xác nhận" = "Password to confirm";
 "Mặc định" = "Default";
 "Mềm biên" = "Edge softness";
 "Mỗi %@ giây" = "Every %@ s";
@@ -794,6 +795,9 @@
 "Xoá nguồn" = "Remove source";
 "Xoá nét" = "Clear drawing";
 "Xoá title" = "Delete title";
+"Xoá tài khoản" = "Delete account";
+"Xoá vĩnh viễn tài khoản này?" = "Delete this account permanently?";
+"Xoá vĩnh viễn tài khoản và dữ liệu đăng nhập. Gói đang dùng trên tài khoản sẽ mất; thuê bao App Store vẫn huỷ trong Cài đặt › Apple ID." = "Permanently deletes the account and its sign-in data. Plans on the account are lost; App Store subscriptions are still cancelled in Settings › Apple ID.";
 "Xuất MP4 vào thư viện" = "Export MP4 to library";
 "Xuất thất bại: %@" = "Export failed: %@";
 "Xuất thất bại: %lf" = "Export failed: %lf";
@@ -892,6 +896,7 @@
 "Đôi" = "Double";
 "Đăng nhập" = "Sign in";
 "Đăng nhập một lần; ở Đầu ra bấm Tạo live YouTube/Facebook để tự lấy URL + stream key." = "Sign in once; in Outputs tap Create YouTube/Facebook live to get the URL + stream key automatically.";
+"Đăng nhập để dùng gói trên mọi thiết bị và với DTDLive." = "Sign in to use your plan on all your devices and with DTDLive.";
 "Đăng xuất" = "Sign out";
 "Đơn" = "Singles";
 "Đơn đã hết hạn hoặc bị huỷ" = "Order expired or cancelled";

@@ -459,6 +459,7 @@
 "Mẫu này chưa có lớp nào: đánh dấu khối bằng data-layer=\"tên\" trong HTML." = "Mẫu này chưa có lớp nào: đánh dấu khối bằng data-layer=\"tên\" trong HTML.";
 "Mật khẩu" = "Mật khẩu";
 "Mật khẩu SRT (để trống = không mã hoá, 10–79 ký tự)" = "Mật khẩu SRT (để trống = không mã hoá, 10–79 ký tự)";
+"Mật khẩu để xác nhận" = "Mật khẩu để xác nhận";
 "Mặc định" = "Mặc định";
 "Mềm biên" = "Mềm biên";
 "Mỗi %@ giây" = "Mỗi %@ giây";
@@ -794,6 +795,9 @@
 "Xoá nguồn" = "Xoá nguồn";
 "Xoá nét" = "Xoá nét";
 "Xoá title" = "Xoá title";
+"Xoá tài khoản" = "Xoá tài khoản";
+"Xoá vĩnh viễn tài khoản này?" = "Xoá vĩnh viễn tài khoản này?";
+"Xoá vĩnh viễn tài khoản và dữ liệu đăng nhập. Gói đang dùng trên tài khoản sẽ mất; thuê bao App Store vẫn huỷ trong Cài đặt › Apple ID." = "Xoá vĩnh viễn tài khoản và dữ liệu đăng nhập. Gói đang dùng trên tài khoản sẽ mất; thuê bao App Store vẫn huỷ trong Cài đặt › Apple ID.";
 "Xuất MP4 vào thư viện" = "Xuất MP4 vào thư viện";
 "Xuất thất bại: %@" = "Xuất thất bại: %@";
 "Xuất thất bại: %lf" = "Xuất thất bại: %lf";
@@ -892,6 +896,7 @@
 "Đôi" = "Đôi";
 "Đăng nhập" = "Đăng nhập";
 "Đăng nhập một lần; ở Đầu ra bấm Tạo live YouTube/Facebook để tự lấy URL + stream key." = "Đăng nhập một lần; ở Đầu ra bấm Tạo live YouTube/Facebook để tự lấy URL + stream key.";
+"Đăng nhập để dùng gói trên mọi thiết bị và với DTDLive." = "Đăng nhập để dùng gói trên mọi thiết bị và với DTDLive.";
 "Đăng xuất" = "Đăng xuất";
 "Đơn" = "Đơn";
 "Đơn đã hết hạn hoặc bị huỷ" = "Đơn đã hết hạn hoặc bị huỷ";

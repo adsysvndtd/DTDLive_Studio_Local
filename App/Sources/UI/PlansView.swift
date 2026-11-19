@@ -22,25 +22,12 @@ struct PlansView: View {
     var body: some View {
         NavigationStack {
             Form {
-                // App Store builds: only Apple's in-app purchase here — no outside account, sign-up or other way
-                // to pay (App Review 3.1.1 / 5.1.1(v): an app that creates accounts must also delete them in-app).
-                if Distribution.isStoreBuild {
-                    Section { statusRow }
-                } else {
-                    Section(footer: Text("Gói DTDStudio dùng được cả DTDLive Pro: đăng nhập cùng tài khoản DTD trên DTDLive.")) { statusRow }
-                }
+                Section(footer: Text("Gói DTDStudio dùng được cả DTDLive Pro: đăng nhập cùng tài khoản DTD trên DTDLive.")) { statusRow }
 
                 Section(header: SettingsHeader("Mua qua App Store"),
                         footer: Text("Gói tháng / năm tự gia hạn cho tới khi huỷ trong Cài đặt › Apple ID › Đăng ký, ít nhất 24 giờ trước khi hết kỳ; tiền trừ vào tài khoản Apple ID khi xác nhận mua. Gói ngày dùng 24 giờ, không tự gia hạn.")) {
                     // all three plans, always: App Store price when the store has answered, the list price otherwise
                     ForEach(StudioPlanInfo.all) { info in planRow(info, store.products.first { $0.id == info.id }) }
-                    // exchange rate used for the conversions above (refreshed from a public rate feed)
-                    HStack {
-                        Text("Tỉ giá quy đổi").font(.footnote)
-                        Spacer()
-                        Text(verbatim: "1 USD = " + VND.format(Int64(fx.vndPerUSD.rounded())))
-                            .font(.footnote.monospacedDigit()).foregroundStyle(.secondary)
-                    }
                     if store.products.isEmpty {
                         HStack(spacing: 8) {
                             if store.loading { ProgressView() }
@@ -58,10 +45,10 @@ struct PlansView: View {
                     if let error { Text(verbatim: error).font(.footnote).foregroundStyle(.red) }
                 }
 
-                if !Distribution.isStoreBuild {
-                    Section(header: SettingsHeader("Tài khoản DTD")) {
-                        StudioAccountRows(account: account)
-                    }
+                // Account in every build. App Store rules it follows: it can be deleted in the app (5.1.1(v)),
+                // and nothing here points to paying outside Apple (3.1.1) — bank transfer is internal builds only.
+                Section(header: SettingsHeader("Tài khoản DTD")) {
+                    StudioAccountRows(account: account)
                 }
 
                 if !Distribution.isStoreBuild && account.signedIn {
@@ -149,6 +136,8 @@ struct StudioAccountRows: View {
     @State private var email = ""
     @State private var password = ""
     @State private var error: String?
+    @State private var deletePw = ""
+    @State private var confirmDelete = false
 
     var body: some View {
         if let me = account.me, account.signedIn {
@@ -160,8 +149,24 @@ struct StudioAccountRows: View {
             }
             Button("Làm mới") { Task { await account.refresh() } }
             Button("Đăng xuất", role: .destructive) { account.signOut() }
+            // delete the account (App Store Review 5.1.1(v)): password, then a confirmation
+            DisclosureGroup("Xoá tài khoản") {
+                Text("Xoá vĩnh viễn tài khoản và dữ liệu đăng nhập. Gói đang dùng trên tài khoản sẽ mất; thuê bao App Store vẫn huỷ trong Cài đặt › Apple ID.")
+                    .font(.footnote).foregroundStyle(.secondary)
+                SecureField("Mật khẩu để xác nhận", text: $deletePw).textContentType(.password)
+                Button("Xoá tài khoản", role: .destructive) { confirmDelete = true }.disabled(deletePw.isEmpty || account.busy)
+            }
+            .confirmationDialog("Xoá vĩnh viễn tài khoản này?", isPresented: $confirmDelete, titleVisibility: .visible) {
+                Button("Xoá tài khoản", role: .destructive) {
+                    Task {
+                        do { try await account.deleteAccount(password: deletePw); deletePw = "" }
+                        catch { self.error = error.localizedDescription }
+                    }
+                }
+            }
+            if let error { Text(verbatim: error).font(.footnote).foregroundStyle(.red) }
         } else {
-            Text("Đã có gói DTDStudio trên tài khoản DTD? Đăng nhập để dùng.").font(.footnote).foregroundStyle(.secondary)
+            Text("Đăng nhập để dùng gói trên mọi thiết bị và với DTDLive.").font(.footnote).foregroundStyle(.secondary)
             TextField("Email", text: $email)
                 .keyboardType(.emailAddress).textContentType(.username).textInputAutocapitalization(.never).autocorrectionDisabled()
             SecureField("Mật khẩu", text: $password).textContentType(.password)

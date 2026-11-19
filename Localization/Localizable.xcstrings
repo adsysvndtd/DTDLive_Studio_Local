@@ -9736,6 +9736,56 @@
           }
         }
       }
+    },
+    "Xoá tài khoản": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete account"
+          }
+        }
+      }
+    },
+    "Xoá vĩnh viễn tài khoản và dữ liệu đăng nhập. Gói đang dùng trên tài khoản sẽ mất; thuê bao App Store vẫn huỷ trong Cài đặt › Apple ID.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Permanently deletes the account and its sign-in data. Plans on the account are lost; App Store subscriptions are still cancelled in Settings › Apple ID."
+          }
+        }
+      }
+    },
+    "Mật khẩu để xác nhận": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Password to confirm"
+          }
+        }
+      }
+    },
+    "Xoá vĩnh viễn tài khoản này?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete this account permanently?"
+          }
+        }
+      }
+    },
+    "Đăng nhập để dùng gói trên mọi thiết bị và với DTDLive.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign in to use your plan on all your devices and with DTDLive."
+          }
+        }
+      }
     }
   },
   "version": "1.0"

@@ -288,6 +288,12 @@ final class StudioAccount: ObservableObject {
         if let m: StudioMe = try? await call("GET", "api/me", query: ["app": Self.app]) { setMe(m) }
     }
 
+    /// Deletes the account on the server for good (App Store Review 5.1.1(v)), then signs out.
+    func deleteAccount(password: String) async throws {
+        let _: Empty = try await call("POST", "api/me/delete", body: ["password": password])
+        signOut()
+    }
+
     func signOut() {
         Keychain.set("", for: Self.tokenKey)
         UserDefaults.standard.removeObject(forKey: Self.cacheKey)

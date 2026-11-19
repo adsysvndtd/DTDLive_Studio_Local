@@ -434,15 +434,16 @@ struct FootballEngine: SportEngine {
                 continue
             }
             // Bàn thắng / phản lưới: [ − ] Tên  số [ + ] — bấm là ghi ngay, không hỏi tên cầu thủ.
-            let og = goalLog.filter { $0.side == s && $0.ownGoal }.count
+            // Phản lưới bấm ở đội gây ra: bàn được tính cho đội bên kia; số hiển thị = số bàn phản lưới đội này đá.
+            let og = goalLog.filter { $0.side == s.other && $0.ownGoal }.count
             c.append(.init(id: "goal-\(s)", title: lang.t("Bàn thắng", "Goal"), side: s, role: .primary,
                            enabled: playing, value: "\(goals[s])", action: .goal(s, player: nil, ownGoal: false)))
             c.append(.init(id: "ungoal-\(s)", title: lang.t("Bớt bàn thắng", "Goal −1"), side: s,
                            enabled: goals[s] > 0, minusOf: "goal-\(s)", action: .cancelGoal(s, ownGoal: nil)))
             c.append(.init(id: "og-\(s)", title: lang.t("Phản lưới", "Own goal"), side: s,
-                           enabled: playing, value: "\(og)", action: .goal(s, player: nil, ownGoal: true)))
+                           enabled: playing, value: "\(og)", action: .goal(s.other, player: nil, ownGoal: true)))
             c.append(.init(id: "unog-\(s)", title: lang.t("Bớt phản lưới", "Own goal −1"), side: s,
-                           enabled: og > 0, minusOf: "og-\(s)", action: .cancelGoal(s, ownGoal: true)))
+                           enabled: og > 0, minusOf: "og-\(s)", action: .cancelGoal(s.other, ownGoal: true)))
             // Lỗi và thẻ: mỗi loại là một cặp [ − ] Tên  số [ + ] (nút "−" mang minusOf = id nút "+").
             c.append(.init(id: "foul-\(s)", title: lang.t("Lỗi", "Foul"), side: s,
                            enabled: playing, value: "\(fouls[s])", action: .foul(s)))
