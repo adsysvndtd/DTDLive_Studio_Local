@@ -234,6 +234,12 @@ struct CategoryContent: View {
                 } label: { toolbarLabel("Nhập hiệu ứng", "sparkles") }
             case .title where titleTab == 1:
                 Menu {
+                    Button {
+                        var t = TitleItem(style: .custom)
+                        t.layers = TitleLayer.starter(accent: t.accentHex)
+                        engine.upsertTitle(t); editingTitle = t.id
+                    } label: { Label("Tùy chỉnh (nhiều lớp)…", systemImage: "square.3.layers.3d") }
+                    Divider()
                     ForEach(TitleStyle.allCases.filter { $0 != .custom }) { s in
                         Button(s.label) {
                             var t = TitleItem(style: s, line1: s == .clock ? "" : s.label)

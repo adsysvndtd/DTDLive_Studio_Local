@@ -68,6 +68,15 @@ struct TitleLayer: Identifiable, Codable, Equatable {
         set { x = newValue.minX; y = newValue.minY; w = newValue.width; h = newValue.height }
     }
 
+    /// A ready-made lower-third design to start from: dark bar, accent tab, name, role.
+    static func starter(accent: String) -> [TitleLayer] {
+        var bar = make(.roundRect); bar.name = "Nền"; bar.x = 560; bar.y = 760; bar.w = 820; bar.h = 150; bar.fillHex = "#101418"; bar.fillOpacity = 0.9
+        var tab = make(.rect); tab.name = "Vạch nhấn"; tab.x = 560; tab.y = 760; tab.w = 14; tab.h = 150; tab.fillHex = accent; tab.fillOpacity = 1
+        var name = make(.text); name.name = "Tên"; name.text = L("Họ và tên"); name.x = 600; name.y = 778; name.w = 760; name.h = 70; name.fontSize = 56; name.align = 0; name.fillHex = nil
+        var role = make(.text); role.name = "Chức danh"; role.text = L("Chức danh"); role.x = 600; role.y = 850; role.w = 760; role.h = 46; role.fontSize = 32; role.bold = false; role.align = 0; role.textHex = "#D9D9D9"; role.fillHex = nil
+        return [bar, tab, name, role]
+    }
+
     static func make(_ kind: Kind) -> TitleLayer {
         var l = TitleLayer(); l.kind = kind
         switch kind {

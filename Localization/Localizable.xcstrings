@@ -10526,6 +10526,276 @@
           }
         }
       }
+    },
+    "Thiết kế Title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Title designer"
+          }
+        }
+      }
+    },
+    "Thêm lớp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add layer"
+          }
+        }
+      }
+    },
+    "Các lớp (trên = trước)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Layers (top = front)"
+          }
+        }
+      }
+    },
+    "Xoá lớp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete layer"
+          }
+        }
+      }
+    },
+    "Mẫu đã lưu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saved templates"
+          }
+        }
+      }
+    },
+    "Lưu mẫu này": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save this template"
+          }
+        }
+      }
+    },
+    "Chưa có mẫu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No templates yet"
+          }
+        }
+      }
+    },
+    "Nạp mẫu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Load template"
+          }
+        }
+      }
+    },
+    "Tên mẫu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Template name"
+          }
+        }
+      }
+    },
+    "Xoá title này": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete this title"
+          }
+        }
+      }
+    },
+    "Đậm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bold"
+          }
+        }
+      }
+    },
+    "Nghiêng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Italic"
+          }
+        }
+      }
+    },
+    "Căn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Align"
+          }
+        }
+      }
+    },
+    "Chọn ảnh / logo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose image / logo"
+          }
+        }
+      }
+    },
+    "Nền sau chữ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Background behind text"
+          }
+        }
+      }
+    },
+    "Tô màu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fill"
+          }
+        }
+      }
+    },
+    "Màu tô": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fill colour"
+          }
+        }
+      }
+    },
+    "Độ đục": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Opacity"
+          }
+        }
+      }
+    },
+    "Bo góc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Corner radius"
+          }
+        }
+      }
+    },
+    "Màu viền": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Border colour"
+          }
+        }
+      }
+    },
+    "Dày viền": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Border width"
+          }
+        }
+      }
+    },
+    "Độ đục lớp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Layer opacity"
+          }
+        }
+      }
+    },
+    "Thiết kế nhiều lớp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Multi-layer design"
+          }
+        }
+      }
+    },
+    "Tùy chỉnh (nhiều lớp)…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Custom (multi-layer)…"
+          }
+        }
+      }
+    },
+    "Vạch nhấn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Accent tab"
+          }
+        }
+      }
+    },
+    "Nhập ảnh / logo ở các mục Ảnh và Logo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import images / logos in the Pictures and Logo sections"
+          }
+        }
+      }
+    },
+    "Lớp đang chọn · %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selected layer · %@"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

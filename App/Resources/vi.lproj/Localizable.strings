@@ -41,6 +41,7 @@
 "Bitrate thích ứng: tăng lại %@ → %@ kbps (trễ %@ s)" = "Bitrate thích ứng: tăng lại %@ → %@ kbps (trễ %@ s)";
 "Bitrate thấp so với độ phân giải → hình trên YouTube/Facebook sẽ mờ, nhất là cảnh chuyển động." = "Bitrate thấp so với độ phân giải → hình trên YouTube/Facebook sẽ mờ, nhất là cảnh chuyển động.";
 "Bitrate video" = "Bitrate video";
+"Bo góc" = "Bo góc";
 "Bàn thắng" = "Bàn thắng";
 "Bãi biển" = "Bãi biển";
 "Bão hoà" = "Bão hoà";
@@ -122,6 +123,7 @@
 "Chưa có gói DTDStudio trên máy chủ." = "Chưa có gói DTDStudio trên máy chủ.";
 "Chưa có hình" = "Chưa có hình";
 "Chưa có kênh nào" = "Chưa có kênh nào";
+"Chưa có mẫu" = "Chưa có mẫu";
 "Chưa có thiết bị nào được ghép nối" = "Chưa có thiết bị nào được ghép nối";
 "Chưa có title — bấm Thêm title ở góc trên" = "Chưa có title — bấm Thêm title ở góc trên";
 "Chưa có đích phát" = "Chưa có đích phát";
@@ -165,6 +167,7 @@
 "Chọn từ thư viện Logo" = "Chọn từ thư viện Logo";
 "Chọn video…" = "Chọn video…";
 "Chọn ít nhất một nền tảng" = "Chọn ít nhất một nền tảng";
+"Chọn ảnh / logo" = "Chọn ảnh / logo";
 "Chống rung" = "Chống rung";
 "Chớp sáng" = "Chớp sáng";
 "Chủ repo (owner)" = "Chủ repo (owner)";
@@ -189,10 +192,12 @@
 "Copy nhật ký" = "Copy nhật ký";
 "Cut" = "Cut";
 "Cài đặt" = "Cài đặt";
+"Các lớp (trên = trước)" = "Các lớp (trên = trước)";
 "Cách mép" = "Cách mép";
 "Cách đáy" = "Cách đáy";
 "Có" = "Có";
 "Công khai" = "Công khai";
+"Căn" = "Căn";
 "CẢM ƠN" = "CẢM ƠN";
 "Cảm ơn" = "Cảm ơn";
 "Cần iPadOS/iOS 17.4 trở lên cho đăng nhập Facebook" = "Cần iPadOS/iOS 17.4 trở lên cho đăng nhập Facebook";
@@ -210,6 +215,7 @@
 "Cỡ khung" = "Cỡ khung";
 "Cỡ logo" = "Cỡ logo";
 "Dung lượng" = "Dung lượng";
+"Dày viền" = "Dày viền";
 "Dòng 1" = "Dòng 1";
 "Dòng 2" = "Dòng 2";
 "Dòng 2 (để trống = 1 dòng)" = "Dòng 2 (để trống = 1 dòng)";
@@ -440,6 +446,7 @@
 "Lưu" = "Lưu";
 "Lưu clip" = "Lưu clip";
 "Lưu cấu hình hiện tại" = "Lưu cấu hình hiện tại";
+"Lưu mẫu này" = "Lưu mẫu này";
 "Lưới 2×2" = "Lưới 2×2";
 "Lưới 3×3" = "Lưới 3×3";
 "Lượt cân bằng (người sau được đánh lượt cuối)" = "Lượt cân bằng (người sau được đánh lượt cuối)";
@@ -459,6 +466,7 @@
 "Lớn giữa phải" = "Lớn giữa phải";
 "Lớp" = "Lớp";
 "Lớp phủ" = "Lớp phủ";
+"Lớp đang chọn · %@" = "Lớp đang chọn · %@";
 "Lửa đỏ" = "Lửa đỏ";
 "Mua gói ngày / tháng / năm" = "Mua gói ngày / tháng / năm";
 "Mua qua App Store" = "Mua qua App Store";
@@ -480,6 +488,8 @@
 "Màu nhấn" = "Màu nhấn";
 "Màu nền" = "Màu nền";
 "Màu sắc" = "Màu sắc";
+"Màu tô" = "Màu tô";
+"Màu viền" = "Màu viền";
 "Màu, key, PTZ…" = "Màu, key, PTZ…";
 "Máy chủ chưa cấu hình tài khoản nhận tiền." = "Máy chủ chưa cấu hình tài khoản nhận tiền.";
 "Máy chủ trả lỗi %@" = "Máy chủ trả lỗi %@";
@@ -496,6 +506,7 @@
 "Mất kết nối — thử lại" = "Mất kết nối — thử lại";
 "Mẫu bố cục" = "Mẫu bố cục";
 "Mẫu này chưa có lớp nào: đánh dấu khối bằng data-layer=\"tên\" trong HTML." = "Mẫu này chưa có lớp nào: đánh dấu khối bằng data-layer=\"tên\" trong HTML.";
+"Mẫu đã lưu" = "Mẫu đã lưu";
 "Mật khẩu" = "Mật khẩu";
 "Mật khẩu SRT (để trống = không mã hoá, 10–79 ký tự)" = "Mật khẩu SRT (để trống = không mã hoá, 10–79 ký tự)";
 "Mật khẩu để xác nhận" = "Mật khẩu để xác nhận";
@@ -519,6 +530,7 @@
 "Ngang" = "Ngang";
 "Nghe Program (tai nghe)" = "Nghe Program (tai nghe)";
 "Nghe nhạc, hiệu ứng, video trên loa máy" = "Nghe nhạc, hiệu ứng, video trên loa máy";
+"Nghiêng" = "Nghiêng";
 "Nguồn" = "Nguồn";
 "Nguồn nhỏ hơn chương trình (%@×%@): hình bị phóng to nên mềm trên YouTube/Facebook. Đặt camera/DTDLive cùng độ phân giải với chương trình." = "Nguồn nhỏ hơn chương trình (%@×%@): hình bị phóng to nên mềm trên YouTube/Facebook. Đặt camera/DTDLive cùng độ phân giải với chương trình.";
 "Nguồn này đã có trong danh sách đầu vào." = "Nguồn này đã có trong danh sách đầu vào.";
@@ -558,11 +570,13 @@
 "Nhập video" = "Nhập video";
 "Nhập điểm" = "Nhập điểm";
 "Nhập ảnh" = "Nhập ảnh";
+"Nhập ảnh / logo ở các mục Ảnh và Logo" = "Nhập ảnh / logo ở các mục Ảnh và Logo";
 "Nhập ảnh PNG (nền trong suốt) làm stinger — nó quét qua khung hình, camera chuyển khi ảnh che kín." = "Nhập ảnh PNG (nền trong suốt) làm stinger — nó quét qua khung hình, camera chuyển khi ảnh che kín.";
 "Nạp" = "Nạp";
 "Nạp %@" = "Nạp %@";
 "Nạp (tắt mẫu đang phát)" = "Nạp (tắt mẫu đang phát)";
 "Nạp .cube" = "Nạp .cube";
+"Nạp mẫu" = "Nạp mẫu";
 "Nạp show sẽ dừng phát và thay toàn bộ nguồn, đầu ra, title." = "Nạp show sẽ dừng phát và thay toàn bộ nguồn, đầu ra, title.";
 "Nền" = "Nền";
 "Nền bố cục" = "Nền bố cục";
@@ -571,6 +585,7 @@
 "Nền là nguồn video (làm mờ): %@" = "Nền là nguồn video (làm mờ): %@";
 "Nền là nguồn video (làm mờ): %lf" = "Nền là nguồn video (làm mờ): %lf";
 "Nền là nguồn video (làm mờ): %lld" = "Nền là nguồn video (làm mờ): %lld";
+"Nền sau chữ" = "Nền sau chữ";
 "Nền thanh chạy" = "Nền thanh chạy";
 "Nền thay thế" = "Nền thay thế";
 "Nền tên" = "Nền tên";
@@ -680,6 +695,8 @@
 "Theo âm thanh" = "Theo âm thanh";
 "Thiết bị muốn kết nối" = "Thiết bị muốn kết nối";
 "Thiết kế" = "Thiết kế";
+"Thiết kế Title" = "Thiết kế Title";
+"Thiết kế nhiều lớp" = "Thiết kế nhiều lớp";
 "Thu gọn" = "Thu gọn";
 "Thêm" = "Thêm";
 "Thêm %@" = "Thêm %@";
@@ -688,6 +705,7 @@
 "Thêm bảng tỉ số" = "Thêm bảng tỉ số";
 "Thêm khung" = "Thêm khung";
 "Thêm link xem" = "Thêm link xem";
+"Thêm lớp" = "Thêm lớp";
 "Thêm nguồn" = "Thêm nguồn";
 "Thêm thao tác" = "Thêm thao tác";
 "Thêm title" = "Thêm title";
@@ -769,12 +787,15 @@
 "Tên chương trình" = "Tên chương trình";
 "Tên khách mời" = "Tên khách mời";
 "Tên kênh" = "Tên kênh";
+"Tên mẫu" = "Tên mẫu";
 "Tên nguồn NDI" = "Tên nguồn NDI";
 "Tên show" = "Tên show";
 "Tên đội" = "Tên đội";
 "Tìm nguồn NDI" = "Tìm nguồn NDI";
 "Tính điểm" = "Tính điểm";
+"Tô màu" = "Tô màu";
 "Tùy chỉnh (nhiều lớp)" = "Tùy chỉnh (nhiều lớp)";
+"Tùy chỉnh (nhiều lớp)…" = "Tùy chỉnh (nhiều lớp)…";
 "Tương phản" = "Tương phản";
 "Tạm dừng" = "Tạm dừng";
 "Tạo live" = "Tạo live";
@@ -823,6 +844,7 @@
 "Vào trận" = "Vào trận";
 "Vát góc" = "Vát góc";
 "Vòng tròn" = "Vòng tròn";
+"Vạch nhấn" = "Vạch nhấn";
 "Vẽ" = "Vẽ";
 "Về gốc" = "Về gốc";
 "Về màu mặc định của kiểu" = "Về màu mặc định của kiểu";
@@ -854,9 +876,11 @@
 "Xoá khung %lf" = "Xoá khung %lf";
 "Xoá khung %lld" = "Xoá khung %lld";
 "Xoá khỏi thư viện" = "Xoá khỏi thư viện";
+"Xoá lớp" = "Xoá lớp";
 "Xoá nguồn" = "Xoá nguồn";
 "Xoá nét" = "Xoá nét";
 "Xoá title" = "Xoá title";
+"Xoá title này" = "Xoá title này";
 "Xoá title “%@”?" = "Xoá title “%@”?";
 "Xoá tài khoản" = "Xoá tài khoản";
 "Xoá vĩnh viễn tài khoản này?" = "Xoá vĩnh viễn tài khoản này?";
@@ -976,6 +1000,7 @@
 "Đường truyền tốt." = "Đường truyền tốt.";
 "Đầu ra" = "Đầu ra";
 "Đầu vào" = "Đầu vào";
+"Đậm" = "Đậm";
 "Đậm %@" = "Đậm %@";
 "Đặt MARK IN / MARK OUT rồi bấm Lưu clip" = "Đặt MARK IN / MARK OUT rồi bấm Lưu clip";
 "Đặt bitrate cao nhất YouTube khuyến nghị (Facebook: không vượt mức tối đa Facebook nhận), GOP 2 s, H.264 nếu có Facebook, bitrate thích ứng không xuống dưới 70 %." = "Đặt bitrate cao nhất YouTube khuyến nghị (Facebook: không vượt mức tối đa Facebook nhận), GOP 2 s, H.264 nếu có Facebook, bitrate thích ứng không xuống dưới 70 %.";
@@ -1011,6 +1036,8 @@
 "Độ đậm" = "Độ đậm";
 "Độ đậm chữ" = "Độ đậm chữ";
 "Độ đậm nền" = "Độ đậm nền";
+"Độ đục" = "Độ đục";
+"Độ đục lớp" = "Độ đục lớp";
 "Đội A" = "Đội A";
 "Đội B" = "Đội B";
 "Đội khách" = "Đội khách";

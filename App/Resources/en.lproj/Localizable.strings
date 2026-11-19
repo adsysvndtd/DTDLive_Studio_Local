@@ -41,6 +41,7 @@
 "Bitrate thích ứng: tăng lại %@ → %@ kbps (trễ %@ s)" = "Adaptive bitrate: back up %@ → %@ kbps (%@ s behind)";
 "Bitrate thấp so với độ phân giải → hình trên YouTube/Facebook sẽ mờ, nhất là cảnh chuyển động." = "Bitrate is low for this resolution → the picture on YouTube/Facebook will look soft, especially in motion.";
 "Bitrate video" = "Video bitrate";
+"Bo góc" = "Corner radius";
 "Bàn thắng" = "Goal";
 "Bãi biển" = "Beach";
 "Bão hoà" = "Saturation";
@@ -122,6 +123,7 @@
 "Chưa có gói DTDStudio trên máy chủ." = "No DTDStudio plans on the server.";
 "Chưa có hình" = "No picture";
 "Chưa có kênh nào" = "No channels yet";
+"Chưa có mẫu" = "No templates yet";
 "Chưa có thiết bị nào được ghép nối" = "No paired devices yet";
 "Chưa có title — bấm Thêm title ở góc trên" = "No titles yet — tap Add title at the top";
 "Chưa có đích phát" = "No destinations yet";
@@ -165,6 +167,7 @@
 "Chọn từ thư viện Logo" = "Choose from Logo library";
 "Chọn video…" = "Choose video…";
 "Chọn ít nhất một nền tảng" = "Pick at least one platform";
+"Chọn ảnh / logo" = "Choose image / logo";
 "Chống rung" = "Stabilization";
 "Chớp sáng" = "Flash";
 "Chủ repo (owner)" = "Repo owner";
@@ -189,10 +192,12 @@
 "Copy nhật ký" = "Copy log";
 "Cut" = "Cut";
 "Cài đặt" = "Settings";
+"Các lớp (trên = trước)" = "Layers (top = front)";
 "Cách mép" = "Margin";
 "Cách đáy" = "From bottom";
 "Có" = "Yes";
 "Công khai" = "Public";
+"Căn" = "Align";
 "CẢM ƠN" = "THANK YOU";
 "Cảm ơn" = "Thank you";
 "Cần iPadOS/iOS 17.4 trở lên cho đăng nhập Facebook" = "Facebook sign-in needs iPadOS/iOS 17.4 or later";
@@ -210,6 +215,7 @@
 "Cỡ khung" = "Window size";
 "Cỡ logo" = "Logo size";
 "Dung lượng" = "Size";
+"Dày viền" = "Border width";
 "Dòng 1" = "Line 1";
 "Dòng 2" = "Line 2";
 "Dòng 2 (để trống = 1 dòng)" = "Line 2 (empty = one line)";
@@ -440,6 +446,7 @@
 "Lưu" = "Save";
 "Lưu clip" = "Save clip";
 "Lưu cấu hình hiện tại" = "Save current setup";
+"Lưu mẫu này" = "Save this template";
 "Lưới 2×2" = "2×2 grid";
 "Lưới 3×3" = "3×3 grid";
 "Lượt cân bằng (người sau được đánh lượt cuối)" = "Equalizing inning (second player gets the last turn)";
@@ -459,6 +466,7 @@
 "Lớn giữa phải" = "Large centre-right";
 "Lớp" = "Layers";
 "Lớp phủ" = "Overlay";
+"Lớp đang chọn · %@" = "Selected layer · %@";
 "Lửa đỏ" = "Red flame";
 "Mua gói ngày / tháng / năm" = "Buy a day / month / year plan";
 "Mua qua App Store" = "Buy on the App Store";
@@ -480,6 +488,8 @@
 "Màu nhấn" = "Accent colour";
 "Màu nền" = "Background colour";
 "Màu sắc" = "Colour";
+"Màu tô" = "Fill colour";
+"Màu viền" = "Border colour";
 "Màu, key, PTZ…" = "Colour, key, PTZ…";
 "Máy chủ chưa cấu hình tài khoản nhận tiền." = "The server has no receiving bank account yet.";
 "Máy chủ trả lỗi %@" = "Server error %@";
@@ -496,6 +506,7 @@
 "Mất kết nối — thử lại" = "Connection lost — retrying";
 "Mẫu bố cục" = "Layouts";
 "Mẫu này chưa có lớp nào: đánh dấu khối bằng data-layer=\"tên\" trong HTML." = "This template has no layers yet: mark blocks with data-layer=\"name\" in the HTML.";
+"Mẫu đã lưu" = "Saved templates";
 "Mật khẩu" = "Password";
 "Mật khẩu SRT (để trống = không mã hoá, 10–79 ký tự)" = "SRT passphrase (empty = unencrypted, 10–79 characters)";
 "Mật khẩu để xác nhận" = "Password to confirm";
@@ -519,6 +530,7 @@
 "Ngang" = "Horizontal";
 "Nghe Program (tai nghe)" = "Listen to Program (headphones)";
 "Nghe nhạc, hiệu ứng, video trên loa máy" = "Play music, effects and video on the device speaker";
+"Nghiêng" = "Italic";
 "Nguồn" = "Source";
 "Nguồn nhỏ hơn chương trình (%@×%@): hình bị phóng to nên mềm trên YouTube/Facebook. Đặt camera/DTDLive cùng độ phân giải với chương trình." = "Source is smaller than the program (%@×%@): it is upscaled and looks soft on YouTube/Facebook. Set the camera/DTDLive to the program resolution.";
 "Nguồn này đã có trong danh sách đầu vào." = "This source is already an input.";
@@ -558,11 +570,13 @@
 "Nhập video" = "Import video";
 "Nhập điểm" = "Score entry";
 "Nhập ảnh" = "Import pictures";
+"Nhập ảnh / logo ở các mục Ảnh và Logo" = "Import images / logos in the Pictures and Logo sections";
 "Nhập ảnh PNG (nền trong suốt) làm stinger — nó quét qua khung hình, camera chuyển khi ảnh che kín." = "Import a PNG (transparent background) as a stinger — it sweeps across the frame and the cameras switch while it covers the screen.";
 "Nạp" = "Load";
 "Nạp %@" = "Load %@";
 "Nạp (tắt mẫu đang phát)" = "Load (takes the current one off air)";
 "Nạp .cube" = "Load .cube";
+"Nạp mẫu" = "Load template";
 "Nạp show sẽ dừng phát và thay toàn bộ nguồn, đầu ra, title." = "Loading a show stops streaming and replaces all sources, outputs and titles.";
 "Nền" = "Background";
 "Nền bố cục" = "Layout background";
@@ -571,6 +585,7 @@
 "Nền là nguồn video (làm mờ): %@" = "Background is a video source (blurred): %@";
 "Nền là nguồn video (làm mờ): %lf" = "Background is a video source (blurred): %lf";
 "Nền là nguồn video (làm mờ): %lld" = "Background is a video source (blurred): %lld";
+"Nền sau chữ" = "Background behind text";
 "Nền thanh chạy" = "Ticker bar";
 "Nền thay thế" = "Replacement background";
 "Nền tên" = "Name background";
@@ -680,6 +695,8 @@
 "Theo âm thanh" = "By audio";
 "Thiết bị muốn kết nối" = "Device wants to connect";
 "Thiết kế" = "Design";
+"Thiết kế Title" = "Title designer";
+"Thiết kế nhiều lớp" = "Multi-layer design";
 "Thu gọn" = "Collapse";
 "Thêm" = "Add";
 "Thêm %@" = "Add %@";
@@ -688,6 +705,7 @@
 "Thêm bảng tỉ số" = "Add scoreboard";
 "Thêm khung" = "Add window";
 "Thêm link xem" = "Add watch link";
+"Thêm lớp" = "Add layer";
 "Thêm nguồn" = "Add source";
 "Thêm thao tác" = "More";
 "Thêm title" = "Add title";
@@ -769,12 +787,15 @@
 "Tên chương trình" = "Show name";
 "Tên khách mời" = "Guest name";
 "Tên kênh" = "Channel name";
+"Tên mẫu" = "Template name";
 "Tên nguồn NDI" = "NDI source name";
 "Tên show" = "Show name";
 "Tên đội" = "Team name";
 "Tìm nguồn NDI" = "Find NDI sources";
 "Tính điểm" = "Scoring";
+"Tô màu" = "Fill";
 "Tùy chỉnh (nhiều lớp)" = "Custom (multi-layer)";
+"Tùy chỉnh (nhiều lớp)…" = "Custom (multi-layer)…";
 "Tương phản" = "Contrast";
 "Tạm dừng" = "Pause";
 "Tạo live" = "Create live";
@@ -823,6 +844,7 @@
 "Vào trận" = "Game on";
 "Vát góc" = "Angled";
 "Vòng tròn" = "Iris";
+"Vạch nhấn" = "Accent tab";
 "Vẽ" = "Draw";
 "Về gốc" = "Reset";
 "Về màu mặc định của kiểu" = "Reset to the style's colours";
@@ -854,9 +876,11 @@
 "Xoá khung %lf" = "Remove window %lf";
 "Xoá khung %lld" = "Remove window %lld";
 "Xoá khỏi thư viện" = "Remove from library";
+"Xoá lớp" = "Delete layer";
 "Xoá nguồn" = "Remove source";
 "Xoá nét" = "Clear drawing";
 "Xoá title" = "Delete title";
+"Xoá title này" = "Delete this title";
 "Xoá title “%@”?" = "Delete title “%@”?";
 "Xoá tài khoản" = "Delete account";
 "Xoá vĩnh viễn tài khoản này?" = "Delete this account permanently?";
@@ -976,6 +1000,7 @@
 "Đường truyền tốt." = "Link is good.";
 "Đầu ra" = "Outputs";
 "Đầu vào" = "Inputs";
+"Đậm" = "Bold";
 "Đậm %@" = "Weight %@";
 "Đặt MARK IN / MARK OUT rồi bấm Lưu clip" = "Set MARK IN / MARK OUT, then Save clip";
 "Đặt bitrate cao nhất YouTube khuyến nghị (Facebook: không vượt mức tối đa Facebook nhận), GOP 2 s, H.264 nếu có Facebook, bitrate thích ứng không xuống dưới 70 %." = "Sets YouTube's highest recommended bitrate (never above Facebook's maximum when Facebook is used), 2 s GOP, H.264 when Facebook is used, adaptive bitrate floor at 70 %.";
@@ -1011,6 +1036,8 @@
 "Độ đậm" = "Opacity";
 "Độ đậm chữ" = "Weight";
 "Độ đậm nền" = "Background opacity";
+"Độ đục" = "Opacity";
+"Độ đục lớp" = "Layer opacity";
 "Đội A" = "Team A";
 "Đội B" = "Team B";
 "Đội khách" = "Away";

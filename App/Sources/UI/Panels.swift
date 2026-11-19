@@ -90,8 +90,14 @@ struct TitlesPanel: View {
         }
         .sheet(item: Binding(get: { editingID.wrappedValue.map { IDBox(id: $0) } }, set: { editingID.wrappedValue = $0?.id })) { box in
             if let i = engine.titles.firstIndex(where: { $0.id == box.id }) {
-                TitleEditorSheet(item: $engine.titles[i], program: engine.switcher.programMonitor) {
-                    editingID.wrappedValue = nil; engine.removeTitle(box.id)
+                if engine.titles[i].style == .custom {
+                    TitleDesignerSheet(item: $engine.titles[i], program: engine.switcher.programMonitor) {
+                        editingID.wrappedValue = nil; engine.removeTitle(box.id)
+                    }
+                } else {
+                    TitleEditorSheet(item: $engine.titles[i], program: engine.switcher.programMonitor) {
+                        editingID.wrappedValue = nil; engine.removeTitle(box.id)
+                    }
                 }
             }
         }
@@ -159,6 +165,10 @@ struct TitlesPanel: View {
     }
 
     private func preview(_ t: TitleItem) -> String {
+        if t.style == .custom {
+            let txt = (t.layers ?? []).first { $0.kind == .text && !$0.text.isEmpty }?.text
+            return txt ?? L("Thiết kế nhiều lớp")
+        }
         if t.style == .clock { return "00:00:00" }
         if t.style == .countdown { return "\(t.line1) \(t.scoreA):" + String(format: "%02d", t.scoreB) }
         return t.line2.isEmpty ? t.line1 : "\(t.line1) · \(t.line2)"
