@@ -101,7 +101,7 @@ struct TitlesPanel: View {
         }
     }
 
-    /// One title: name / style · On (lên sóng) · Sửa · FX · ⋯ (T1/T2, nhân bản) · Xoá
+    /// One title: name / style · T1 / T2 (which title the Title On keys take on air) · Sửa · FX · ⋯ (nhân bản) · Xoá
     private func titleRow(_ item: TitleItem) -> some View {
         HStack(spacing: 6) {
             Image(systemName: icon(item.style)).font(.system(size: 12)).foregroundStyle(DS.accent).frame(width: 16)
@@ -110,12 +110,10 @@ struct TitlesPanel: View {
                 Text(verbatim: item.style.label + " · " + (item.fx ?? .fadeSlide).label).font(.system(size: 10)).foregroundStyle(DS.text3).lineLimit(1)
             }
             Spacer(minLength: 4)
-            // on air / off air, with the title's own effect
-            Button { engine.setTitleVisible(item.id, !item.visible) } label: {
-                Text(item.visible ? "Tắt" : "On").font(.system(size: 11, weight: .bold)).frame(width: 40, height: 26)
-                    .foregroundStyle(item.visible ? .white : .black)
-                    .background(item.visible ? DS.pgm : Color.white, in: RoundedRectangle(cornerRadius: DS.radius))
-            }.buttonStyle(.plain)
+            if item.visible { Circle().fill(DS.pgm).frame(width: 7, height: 7) }
+            // on air with the Title On / Title 2 On keys (transition column), like before
+            assignChip("T1", on: (engine.armedTitleID ?? engine.titles.first?.id) == item.id) { engine.armedTitleID = item.id }
+            assignChip("T2", on: engine.secondTitle?.id == item.id) { engine.armedTitle2ID = item.id }
             rowButton("pencil", "Sửa") { editingID.wrappedValue = item.id }
             Menu {
                 Picker("Hiệu ứng vào / ra", selection: Binding(get: { item.fx ?? .fadeSlide }, set: { v in
@@ -128,8 +126,6 @@ struct TitlesPanel: View {
                 }
             } label: { rowLabel("sparkles", "FX") }
             Menu {
-                Button { engine.armedTitleID = item.id } label: { Label("Gán phím T1", systemImage: "1.square") }
-                Button { engine.armedTitle2ID = item.id } label: { Label("Gán phím T2", systemImage: "2.square") }
                 Button {
                     var t = item; t.id = UUID(); t.visible = false; engine.upsertTitle(t)
                 } label: { Label("Nhân bản", systemImage: "plus.square.on.square") }
@@ -139,15 +135,17 @@ struct TitlesPanel: View {
         .padding(.horizontal, 8).padding(.vertical, 5)
         .background(DS.surface, in: RoundedRectangle(cornerRadius: DS.radius))
         .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(item.visible ? DS.pgm : DS.stroke, lineWidth: 1))
-        .overlay(alignment: .topLeading) {
-            let t1 = (engine.armedTitleID ?? engine.titles.first?.id) == item.id, t2 = engine.secondTitle?.id == item.id
-            if t1 || t2 {
-                Text(verbatim: t1 ? "T1" : "T2").font(.system(size: 8, weight: .heavy)).foregroundStyle(.black)
-                    .padding(.horizontal, 3).background(Color.white, in: RoundedRectangle(cornerRadius: 2)).offset(x: -3, y: -4)
-            }
-        }
         .contentShape(Rectangle())
         .onTapGesture(count: 2) { editingID.wrappedValue = item.id }
+    }
+
+    private func assignChip(_ t: String, on: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(verbatim: t).font(.system(size: 10, weight: .bold)).frame(width: 26, height: 26)
+                .foregroundStyle(on ? .black : DS.text2)
+                .background(on ? Color.white : DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
+        }
+        .buttonStyle(.plain)
     }
 
     private func rowButton(_ icon: String, _ label: String, tint: Color = .white, action: @escaping () -> Void) -> some View {
