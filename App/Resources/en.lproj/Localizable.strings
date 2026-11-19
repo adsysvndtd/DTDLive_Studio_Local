@@ -106,6 +106,7 @@
 "Chính + 3 phụ xếp dọc" = "Main + 3 stacked";
 "Chính + 4 phụ hàng dưới" = "Main + 4 below";
 "Chính + phụ phải" = "Main + right";
+"Chính giữa" = "Centre";
 "Chính sách quyền riêng tư" = "Privacy policy";
 "Chưa bật — bật \"Cho phép DTDLive tìm và ghép nối\" trong Cài đặt › Ingest" = "Off — turn on \"Let DTDLive find and pair\" in Settings › Ingest";
 "Chưa cho phép dùng camera" = "Camera access not allowed";
@@ -183,6 +184,7 @@
 "Copy nhật ký" = "Copy log";
 "Cut" = "Cut";
 "Cài đặt" = "Settings";
+"Cách mép" = "Margin";
 "Cách đáy" = "From bottom";
 "Có" = "Yes";
 "Công khai" = "Public";
@@ -215,6 +217,7 @@
 "Dùng làm PiP" = "Use as PiP";
 "Dùng làm chuyển cảnh: cắt PVW lên PGM khi thẻ phủ kín" = "Use as transition: cut PVW to PGM while the card covers the screen";
 "Dùng mức này" = "Use this";
+"Dưới giữa" = "Bottom centre";
 "Dưới phải" = "Bottom right";
 "Dưới trái" = "Bottom left";
 "Dải ngang" = "Wide strip";
@@ -256,6 +259,8 @@
 "Giờ (trống = giờ thực, - = ẩn)" = "Time (empty = real time, - = hidden)";
 "Giữ %@ giây" = "Hold %@ s";
 "Giữ đến khi tắt" = "Hold until off";
+"Giữa phải" = "Middle right";
+"Giữa trái" = "Middle left";
 "Google OAuth Client ID (loại iOS)" = "Google OAuth Client ID (iOS type)";
 "Gán nguồn" = "Assign sources";
 "Gán phím T1" = "Assign to T1";
@@ -377,6 +382,7 @@
 "Kim loại" = "Metallic";
 "Kiểu" = "Style";
 "Kéo cho tiếng khớp với hình khi camera mạng bị trễ." = "Delays the sound to match late network-camera video.";
+"Kéo logo trên khung để di chuyển, kéo chấm ở góc để đổi cỡ." = "Drag the logo on the frame to move it, drag the corner dot to resize it.";
 "Kéo để di chuyển · kéo góc để đổi cỡ" = "Drag to move · drag a corner to resize";
 "Kênh âm thanh" = "Audio channels";
 "Kích thước" = "Size";
@@ -722,6 +728,7 @@
 "Trong nhà" = "Indoor";
 "Trong suốt" = "Transparent";
 "Trên PGM" = "On PGM";
+"Trên giữa" = "Top centre";
 "Trên phải" = "Top right";
 "Trên sóng" = "On air";
 "Trên trái" = "Top left";
@@ -804,6 +811,7 @@
 "Vị trí" = "Position";
 "Vị trí & cỡ" = "Position & size";
 "Vị trí & kích thước" = "Position & size";
+"Vị trí đặt" = "Position";
 "Wi‑Fi chập chờn: SRT đang gửi lại gói, hình vẫn đủ." = "Wi‑Fi is unsteady: SRT is resending packets, the picture is still complete.";
 "Xanh dương" = "Blue";
 "Xanh lá" = "Green";

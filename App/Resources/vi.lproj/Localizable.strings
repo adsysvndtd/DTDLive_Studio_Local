@@ -106,6 +106,7 @@
 "Chính + 3 phụ xếp dọc" = "Chính + 3 phụ xếp dọc";
 "Chính + 4 phụ hàng dưới" = "Chính + 4 phụ hàng dưới";
 "Chính + phụ phải" = "Chính + phụ phải";
+"Chính giữa" = "Chính giữa";
 "Chính sách quyền riêng tư" = "Chính sách quyền riêng tư";
 "Chưa bật — bật \"Cho phép DTDLive tìm và ghép nối\" trong Cài đặt › Ingest" = "Chưa bật — bật \"Cho phép DTDLive tìm và ghép nối\" trong Cài đặt › Ingest";
 "Chưa cho phép dùng camera" = "Chưa cho phép dùng camera";
@@ -183,6 +184,7 @@
 "Copy nhật ký" = "Copy nhật ký";
 "Cut" = "Cut";
 "Cài đặt" = "Cài đặt";
+"Cách mép" = "Cách mép";
 "Cách đáy" = "Cách đáy";
 "Có" = "Có";
 "Công khai" = "Công khai";
@@ -215,6 +217,7 @@
 "Dùng làm PiP" = "Dùng làm PiP";
 "Dùng làm chuyển cảnh: cắt PVW lên PGM khi thẻ phủ kín" = "Dùng làm chuyển cảnh: cắt PVW lên PGM khi thẻ phủ kín";
 "Dùng mức này" = "Dùng mức này";
+"Dưới giữa" = "Dưới giữa";
 "Dưới phải" = "Dưới phải";
 "Dưới trái" = "Dưới trái";
 "Dải ngang" = "Dải ngang";
@@ -256,6 +259,8 @@
 "Giờ (trống = giờ thực, - = ẩn)" = "Giờ (trống = giờ thực, - = ẩn)";
 "Giữ %@ giây" = "Giữ %@ giây";
 "Giữ đến khi tắt" = "Giữ đến khi tắt";
+"Giữa phải" = "Giữa phải";
+"Giữa trái" = "Giữa trái";
 "Google OAuth Client ID (loại iOS)" = "Google OAuth Client ID (loại iOS)";
 "Gán nguồn" = "Gán nguồn";
 "Gán phím T1" = "Gán phím T1";
@@ -377,6 +382,7 @@
 "Kim loại" = "Kim loại";
 "Kiểu" = "Kiểu";
 "Kéo cho tiếng khớp với hình khi camera mạng bị trễ." = "Kéo cho tiếng khớp với hình khi camera mạng bị trễ.";
+"Kéo logo trên khung để di chuyển, kéo chấm ở góc để đổi cỡ." = "Kéo logo trên khung để di chuyển, kéo chấm ở góc để đổi cỡ.";
 "Kéo để di chuyển · kéo góc để đổi cỡ" = "Kéo để di chuyển · kéo góc để đổi cỡ";
 "Kênh âm thanh" = "Kênh âm thanh";
 "Kích thước" = "Kích thước";
@@ -722,6 +728,7 @@
 "Trong nhà" = "Trong nhà";
 "Trong suốt" = "Trong suốt";
 "Trên PGM" = "Trên PGM";
+"Trên giữa" = "Trên giữa";
 "Trên phải" = "Trên phải";
 "Trên sóng" = "Trên sóng";
 "Trên trái" = "Trên trái";
@@ -804,6 +811,7 @@
 "Vị trí" = "Vị trí";
 "Vị trí & cỡ" = "Vị trí & cỡ";
 "Vị trí & kích thước" = "Vị trí & kích thước";
+"Vị trí đặt" = "Vị trí đặt";
 "Wi‑Fi chập chờn: SRT đang gửi lại gói, hình vẫn đủ." = "Wi‑Fi chập chờn: SRT đang gửi lại gói, hình vẫn đủ.";
 "Xanh dương" = "Xanh dương";
 "Xanh lá" = "Xanh lá";

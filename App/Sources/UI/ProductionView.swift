@@ -358,15 +358,8 @@ struct CategoryContent: View {
                 Label(engine.logo == nil ? "Chưa nạp logo" : (engine.logoOn ? "Logo đang trên PGM" : "Logo đã nạp — bấm Logo On"),
                       systemImage: "seal").font(DS.fBody).foregroundStyle(engine.logoOn ? DS.pgm : DS.text2)
                 Spacer()
-                Picker("Vị trí", selection: $engine.logoCorner) { ForEach(StudioEngine.Corner.allCases) { Text($0.label).tag($0) } }
-                    .pickerStyle(.segmented).frame(maxWidth: 380)
             }
-            HStack(spacing: 16) {
-                LabeledSlider(title: "Cỡ logo", value: $engine.logoSize, range: 0.03...0.4) { "\(Int($0 * 100))%" }
-                LabeledSlider(title: "Độ trong", value: $engine.logoOpacity, range: 0.1...1) { "\(Int($0 * 100))%" }
-            }
-            .frame(maxWidth: 560)
-            .disabled(engine.logo == nil)
+            if engine.logo != nil { LogoEditor(engine: engine, compact: compact) }
             libraryGrid(.logo, selected: engine.currentLogoURL) { engine.useLogo($0) }
         case .audio:
             AudioMixerView(engine: engine, library: library, compact: compact)
@@ -1358,6 +1351,147 @@ struct AutoSwitchBadge: View {
             }
             .buttonStyle(.plain)
             .accessibilityLabel(Text("Tắt tự động chuyển cảnh"))
+        }
+    }
+}
+
+/// Logo: drag it on the preview to move it, drag the corner handle to resize it, or pick one of the 9 positions;
+/// margin, size and opacity sliders and a 2 px nudge pad for fine placement. Works whether or not it is on air.
+struct LogoEditor: View {
+    @ObservedObject var engine: StudioEngine
+    var compact = false
+    @State private var moveStart: CGRect?
+    @State private var sizeStart: CGRect?
+
+    private var aspect: CGFloat { CGFloat(engine.format.width) / CGFloat(max(engine.format.height, 1)) }
+    private var image: UIImage? { engine.currentLogoURL.flatMap { UIImage(contentsOfFile: $0.path) } }
+
+    var body: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(alignment: .top, spacing: 14) {
+                canvas.frame(width: compact ? 300 : 380)
+                controls.frame(minWidth: 300, maxWidth: 460)
+            }
+            VStack(alignment: .leading, spacing: 10) {
+                canvas.frame(maxWidth: 380)
+                controls
+            }
+        }
+    }
+
+    private var canvas: some View {
+        GeometryReader { g in
+            let W = g.size.width, H = g.size.height
+            ZStack(alignment: .topLeading) {
+                MonitorView(store: engine.logoOn ? engine.switcher.programMonitor : engine.switcher.previewMonitor, maxFPS: 10)
+                // title-safe guide
+                Rectangle().stroke(Color.white.opacity(0.2), style: StrokeStyle(lineWidth: 1, dash: [4, 4]))
+                    .frame(width: W * 0.9, height: H * 0.9).offset(x: W * 0.05, y: H * 0.05)
+                if let r = engine.logo?.rect {
+                    let box = CGRect(x: r.minX * W, y: r.minY * H, width: r.width * W, height: r.height * H)
+                    Group {
+                        // while on air the logo is already in the PGM picture underneath: only the frame is drawn
+                        if let image, !engine.logoOn {
+                            Image(uiImage: image).resizable().opacity(engine.logoOpacity)
+                        } else { Color.clear }
+                    }
+                    .frame(width: box.width, height: box.height)
+                    .overlay(Rectangle().stroke(DS.accent, style: StrokeStyle(lineWidth: 1.5, dash: [5, 3])))
+                    .contentShape(Rectangle())
+                    .offset(x: box.minX, y: box.minY)
+                    .gesture(DragGesture(minimumDistance: 1)
+                        .onChanged { v in
+                            let s = moveStart ?? r
+                            if moveStart == nil { moveStart = r }
+                            engine.moveLogo(to: CGPoint(x: s.minX + v.translation.width / W, y: s.minY + v.translation.height / H))
+                        }
+                        .onEnded { _ in moveStart = nil })
+                    // resize handle (bottom-right corner)
+                    Circle().fill(DS.accent).frame(width: 18, height: 18)
+                        .overlay(Image(systemName: "arrow.up.left.and.arrow.down.right").font(.system(size: 8, weight: .bold)).foregroundStyle(.black))
+                        .offset(x: box.maxX - 9, y: box.maxY - 9)
+                        .gesture(DragGesture(minimumDistance: 0)
+                            .onChanged { v in
+                                let s = sizeStart ?? r
+                                if sizeStart == nil { sizeStart = r }
+                                // diagonal drag: follow whichever direction moved more (keeps the logo's own aspect)
+                                let dy = max(v.translation.height / H, v.translation.width / W * s.height / max(s.width, 0.001))
+                                engine.resizeLogo(height: Double(s.height + dy))
+                            }
+                            .onEnded { _ in sizeStart = nil })
+                }
+            }
+            .frame(width: W, height: H).clipped()
+        }
+        .aspectRatio(aspect, contentMode: .fit)
+        .background(Color.black)
+        .clipShape(RoundedRectangle(cornerRadius: DS.radius))
+        .overlay(alignment: .topLeading) {
+            Text(engine.logoOn ? "PGM" : "PVW").font(.system(size: 10, weight: .bold)).padding(.horizontal, 5).padding(.vertical, 2)
+                .background(engine.logoOn ? DS.pgm : DS.pvw, in: RoundedRectangle(cornerRadius: 3)).padding(4)
+        }
+    }
+
+    private var controls: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(alignment: .top, spacing: 12) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Vị trí đặt").font(DS.fBodyBold).foregroundStyle(DS.text2)
+                    LazyVGrid(columns: Array(repeating: GridItem(.fixed(34), spacing: 4), count: 3), spacing: 4) {
+                        ForEach(StudioEngine.Corner.allCases) { c in
+                            Button { engine.logoCorner = c } label: {
+                                RoundedRectangle(cornerRadius: 4).fill(DS.surface2).frame(width: 34, height: 24)
+                                    .overlay(alignment: alignment(c)) {
+                                        RoundedRectangle(cornerRadius: 1.5).fill(engine.logoCorner == c ? DS.accent : DS.text3)
+                                            .frame(width: 10, height: 7).padding(3)
+                                    }
+                                    .overlay(RoundedRectangle(cornerRadius: 4).stroke(engine.logoCorner == c ? DS.accent : .clear, lineWidth: 1.5))
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel(Text(c.label))
+                        }
+                    }
+                    .frame(width: 112)
+                }
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Chỉnh nhích").font(DS.fBodyBold).foregroundStyle(DS.text2)
+                    HStack(spacing: 4) {
+                        nudge("arrow.left", -1, 0); nudge("arrow.right", 1, 0); nudge("arrow.up", 0, -1); nudge("arrow.down", 0, 1)
+                    }
+                    Text("Kéo logo trên khung để di chuyển, kéo chấm ở góc để đổi cỡ.")
+                        .font(.caption2).foregroundStyle(DS.text3).fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            LabeledSlider(title: "Cỡ logo", value: Binding(get: { engine.logoSize }, set: { engine.resizeLogo(height: $0) }),
+                          range: 0.03...0.4) { "\(Int($0 * 100))%" }
+            LabeledSlider(title: "Cách mép", value: $engine.logoMargin, range: 0...0.12) { "\(Int(($0 * 100).rounded()))%" }
+            LabeledSlider(title: "Độ trong", value: $engine.logoOpacity, range: 0.1...1) { "\(Int($0 * 100))%" }
+        }
+    }
+
+    private func nudge(_ icon: String, _ dx: CGFloat, _ dy: CGFloat) -> some View {
+        Button {
+            guard let r = engine.logo?.rect else { return }
+            // 2 px at 1080p
+            engine.moveLogo(to: CGPoint(x: r.minX + dx * 2 / 1920, y: r.minY + dy * 2 / 1080))
+        } label: {
+            Image(systemName: icon).font(.system(size: 12, weight: .bold)).frame(width: 32, height: 26)
+                .background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func alignment(_ c: StudioEngine.Corner) -> Alignment {
+        switch c {
+        case .topLeft: return .topLeading
+        case .topCenter: return .top
+        case .topRight: return .topTrailing
+        case .middleLeft: return .leading
+        case .center: return .center
+        case .middleRight: return .trailing
+        case .bottomLeft: return .bottomLeading
+        case .bottomCenter: return .bottom
+        case .bottomRight: return .bottomTrailing
         }
     }
 }

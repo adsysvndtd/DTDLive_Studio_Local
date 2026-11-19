@@ -68,7 +68,19 @@ final class StudioEngine: ObservableObject {
     @Published var pipOn = false { didSet { pip?.visible = pipOn; if pipOn { pip?.opacity = 1; pipFade = 1 } } }
     /// PiP T-bar: 0 = hidden, 1 = fully shown.
     @Published var pipFade: Double = 1 { didSet { pip?.opacity = CGFloat(pipFade); pip?.visible = pipFade > 0.01 } }
-    @Published var logoCorner: Corner = .topRight { didSet { if let l = logo { logo?.rect = logoCorner.rect(size: l.rect.size) } } }
+    @Published var logoCorner: Corner = Corner(rawValue: UserDefaults.standard.string(forKey: "dtd.logo.corner") ?? "") ?? .topRight {
+        didSet {
+            UserDefaults.standard.set(logoCorner.rawValue, forKey: "dtd.logo.corner")
+            if let l = logo { setLogoRect(logoCorner.rect(size: l.rect.size, margin: CGFloat(logoMargin))) }
+        }
+    }
+    /// Distance from the frame edge for the position presets (fraction of the frame).
+    @Published var logoMargin: Double = UserDefaults.standard.object(forKey: "dtd.logo.margin") as? Double ?? 0.03 {
+        didSet {
+            UserDefaults.standard.set(logoMargin, forKey: "dtd.logo.margin")
+            if let l = logo { setLogoRect(logoCorner.rect(size: l.rect.size, margin: CGFloat(logoMargin))) }
+        }
+    }
     /// Logo height as a fraction of the frame (width follows the image aspect).
     @Published var logoSize: Double = UserDefaults.standard.object(forKey: "dtd.logo.size") as? Double ?? 0.12 {
         didSet { UserDefaults.standard.set(logoSize, forKey: "dtd.logo.size"); resizeLogo() }
@@ -130,18 +142,30 @@ final class StudioEngine: ObservableObject {
         }
     }
 
+    /// Logo position presets: 3 × 3 grid (corners, edges, centre).
     enum Corner: String, CaseIterable, Identifiable {
-        case topLeft, topRight, bottomLeft, bottomRight
+        case topLeft, topCenter, topRight, middleLeft, center, middleRight, bottomLeft, bottomCenter, bottomRight
         var id: String { rawValue }
-        var label: String { L(["topLeft": "Trên trái", "topRight": "Trên phải", "bottomLeft": "Dưới trái", "bottomRight": "Dưới phải"][rawValue]!) }
-        func rect(size: CGSize) -> CGRect {
-            let m: CGFloat = 0.03
+        var label: String {
+            L(["topLeft": "Trên trái", "topCenter": "Trên giữa", "topRight": "Trên phải", "middleLeft": "Giữa trái", "center": "Chính giữa",
+               "middleRight": "Giữa phải", "bottomLeft": "Dưới trái", "bottomCenter": "Dưới giữa", "bottomRight": "Dưới phải"][rawValue]!)
+        }
+        func rect(size: CGSize, margin m: CGFloat = 0.03) -> CGRect {
+            let col: Int, row: Int
             switch self {
-            case .topLeft: return CGRect(x: m, y: m, width: size.width, height: size.height)
-            case .topRight: return CGRect(x: 1 - m - size.width, y: m, width: size.width, height: size.height)
-            case .bottomLeft: return CGRect(x: m, y: 1 - m - size.height, width: size.width, height: size.height)
-            case .bottomRight: return CGRect(x: 1 - m - size.width, y: 1 - m - size.height, width: size.width, height: size.height)
+            case .topLeft: (col, row) = (0, 0)
+            case .topCenter: (col, row) = (1, 0)
+            case .topRight: (col, row) = (2, 0)
+            case .middleLeft: (col, row) = (0, 1)
+            case .center: (col, row) = (1, 1)
+            case .middleRight: (col, row) = (2, 1)
+            case .bottomLeft: (col, row) = (0, 2)
+            case .bottomCenter: (col, row) = (1, 2)
+            case .bottomRight: (col, row) = (2, 2)
             }
+            let x = [m, (1 - size.width) / 2, 1 - m - size.width][col]
+            let y = [m, (1 - size.height) / 2, 1 - m - size.height][row]
+            return CGRect(x: x, y: y, width: size.width, height: size.height)
         }
     }
     @Published var fadeToBlack = false { didSet { switcher.setFadeToBlack(fadeToBlack) } }
@@ -515,7 +539,7 @@ final class StudioEngine: ObservableObject {
         }
         checkpoint()
         logoAspect = px.width / max(px.height, 1)
-        var l = OverlayLayer(image: ci, rect: logoCorner.rect(size: logoFrameSize()))
+        var l = OverlayLayer(image: ci, rect: savedLogoRect(size: logoFrameSize()))
         l.visible = logoOn                      // armed; goes on air with the Logo key (live swap if already on)
         l.opacity = CGFloat(logoOpacity)
         logo = l; currentLogoURL = url
@@ -535,12 +559,47 @@ final class StudioEngine: ObservableObject {
     /// Applies the size slider, keeping the logo pinned to the corner it sits nearest to
     /// (so a logo dragged with "Sắp xếp" stays where it was put).
     private func resizeLogo() {
-        guard let cur = logo?.rect else { return }
+        guard !resizingFromEditor, let cur = logo?.rect else { return }
         let sz = logoFrameSize()
         let right = cur.midX > 0.5, bottom = cur.midY > 0.5
         let x = right ? cur.maxX - sz.width : cur.minX
         let y = bottom ? cur.maxY - sz.height : cur.minY
-        logo?.rect = CGRect(x: min(max(x, 0), 1 - sz.width), y: min(max(y, 0), 1 - sz.height), width: sz.width, height: sz.height)
+        setLogoRect(CGRect(x: x, y: y, width: sz.width, height: sz.height))
+    }
+
+    // MARK: Logo editor (move / resize / place)
+
+    private var resizingFromEditor = false
+
+    /// Puts the logo box at `r` (normalised, top-left origin), kept inside the frame, and remembers it.
+    func setLogoRect(_ r: CGRect) {
+        let w = min(r.width, 1), h = min(r.height, 1)
+        let c = CGRect(x: min(max(r.minX, 0), 1 - w), y: min(max(r.minY, 0), 1 - h), width: w, height: h)
+        logo?.rect = c
+        UserDefaults.standard.set([Double(c.minX), Double(c.minY)], forKey: "dtd.logo.origin")
+    }
+
+    /// Drag in the editor: moves the logo's top-left corner.
+    func moveLogo(to origin: CGPoint) {
+        guard let r = logo?.rect else { return }
+        setLogoRect(CGRect(origin: origin, size: r.size))
+    }
+
+    /// Resize handle in the editor: new height (fraction of the frame), top-left corner stays put.
+    func resizeLogo(height: Double) {
+        guard let r = logo?.rect else { return }
+        resizingFromEditor = true
+        logoSize = min(max(height, 0.03), 0.6)
+        resizingFromEditor = false
+        setLogoRect(CGRect(origin: r.origin, size: logoFrameSize()))
+    }
+
+    /// Where the logo was left last time (the preset position if it was never moved).
+    private func savedLogoRect(size: CGSize) -> CGRect {
+        if let o = UserDefaults.standard.array(forKey: "dtd.logo.origin") as? [Double], o.count == 2 {
+            return CGRect(x: min(max(o[0], 0), 1 - size.width), y: min(max(o[1], 0), 1 - size.height), width: size.width, height: size.height)
+        }
+        return logoCorner.rect(size: size, margin: CGFloat(logoMargin))
     }
 
     /// Reads a still (PNG/JPEG/HEIC) with its EXIF orientation applied and alpha kept,
@@ -562,7 +621,7 @@ final class StudioEngine: ObservableObject {
         let url = MediaLibrary.directory(.logo).appendingPathComponent(name)
         guard FileManager.default.fileExists(atPath: url.path), let (ci, px) = Self.loadOverlayImage(url) else { return }
         logoAspect = px.width / max(px.height, 1)
-        var l = OverlayLayer(image: ci, rect: logoCorner.rect(size: logoFrameSize()))
+        var l = OverlayLayer(image: ci, rect: savedLogoRect(size: logoFrameSize()))
         l.visible = false
         l.opacity = CGFloat(logoOpacity)
         logo = l; currentLogoURL = url

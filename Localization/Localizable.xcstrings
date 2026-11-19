@@ -10156,6 +10156,86 @@
           }
         }
       }
+    },
+    "Trên giữa": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Top centre"
+          }
+        }
+      }
+    },
+    "Giữa trái": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Middle left"
+          }
+        }
+      }
+    },
+    "Chính giữa": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Centre"
+          }
+        }
+      }
+    },
+    "Giữa phải": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Middle right"
+          }
+        }
+      }
+    },
+    "Dưới giữa": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bottom centre"
+          }
+        }
+      }
+    },
+    "Vị trí đặt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Position"
+          }
+        }
+      }
+    },
+    "Kéo logo trên khung để di chuyển, kéo chấm ở góc để đổi cỡ.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drag the logo on the frame to move it, drag the corner dot to resize it."
+          }
+        }
+      }
+    },
+    "Cách mép": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Margin"
+          }
+        }
+      }
     }
   },
   "version": "1.0"
