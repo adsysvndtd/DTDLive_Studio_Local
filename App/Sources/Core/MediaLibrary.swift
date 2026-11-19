@@ -85,12 +85,47 @@ final class MediaLibrary: ObservableObject {
         return (err == nil && copyErr == nil) ? dest : nil
     }
 
+    /// A picture from Photos. Photos (HEIC / JPEG) are kept as JPEG in "Ảnh" (a 12 MP PNG is ~25 MB);
+    /// PNG sources and logos / overlays stay PNG (transparency). Every picture gets its own file name —
+    /// several photos picked at once used to share one time-stamped name and overwrite each other.
     @discardableResult
     func importImage(_ data: Data, into k: LibraryKind, name: String = "Ảnh") -> URL? {
-        let df = DateFormatter(); df.dateFormat = "yyyyMMdd-HHmmss"
-        let url = Self.directory(k).appendingPathComponent("\(name)-\(df.string(from: Date())).png")
-        guard let img = UIImage(data: data), let png = img.normalized().pngData(), (try? png.write(to: url)) != nil else { return nil }
+        guard let img = UIImage(data: data)?.normalized() else { return nil }
+        let isPNG = data.starts(with: [0x89, 0x50, 0x4E, 0x47])
+        let jpeg = k == .picture && !isPNG
+        guard let out = jpeg ? img.jpegData(compressionQuality: 0.92) : img.pngData() else { return nil }
+        let url = uniqueURL(in: k, base: "\(name)-\(Self.stamp())", ext: jpeg ? "jpg" : "png")
+        guard (try? out.write(to: url)) != nil else { return nil }
         refresh()
+        return url
+    }
+
+    /// The sound of a video (e.g. one from Photos) saved as an .m4a in Nhạc / Hiệu ứng âm thanh.
+    /// Returns nil when the video has no sound or it could not be converted.
+    func importAudio(fromMovie src: URL, into k: LibraryKind, name: String) async -> URL? {
+        let asset = AVURLAsset(url: src)
+        guard let tracks = try? await asset.loadTracks(withMediaType: .audio), !tracks.isEmpty,
+              let ex = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetAppleM4A) else { return nil }
+        let url = uniqueURL(in: k, base: name, ext: "m4a")
+        ex.outputURL = url
+        ex.outputFileType = .m4a
+        await ex.export()
+        guard ex.status == .completed else { try? FileManager.default.removeItem(at: url); return nil }
+        refresh()
+        return url
+    }
+
+    private static func stamp() -> String {
+        let df = DateFormatter(); df.dateFormat = "yyyyMMdd-HHmmss"
+        return df.string(from: Date())
+    }
+
+    private func uniqueURL(in k: LibraryKind, base: String, ext: String) -> URL {
+        var url = Self.directory(k).appendingPathComponent("\(base).\(ext)")
+        var n = 2
+        while FileManager.default.fileExists(atPath: url.path) {
+            url = Self.directory(k).appendingPathComponent("\(base)-\(n).\(ext)"); n += 1
+        }
         return url
     }
 

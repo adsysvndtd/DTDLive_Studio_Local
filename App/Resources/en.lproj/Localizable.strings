@@ -2,6 +2,7 @@
 "%.1f Mbps · Âm thanh %.0f dBFS" = "%.1f Mbps · Audio %.0f dBFS";
 "%@ (mặc định)" = "%@ (default)";
 "%@ ngày" = "%@ days";
+"%@ video không có âm thanh" = "%@ video(s) have no sound";
 "%lld giây / cú, gia hạn %lld giây" = "%lld s per shot, %lld s extension";
 "(bản sao)" = "(copy)";
 "(bộ mã hoá phần cứng lỗi / quá tải)" = "(hardware encoder failed / overloaded)";
@@ -361,6 +362,7 @@
 "Không mở được tệp: %@" = "Couldn't open file: %@";
 "Không mở được tệp: %lf" = "Couldn't open file: %lf";
 "Không mở được tệp: %lld" = "Couldn't open file: %lld";
+"Không nhập được %@ mục từ Ảnh" = "Could not import %@ item(s) from Photos";
 "Không nhập được: " = "Couldn't import: ";
 "Không phát được nhạc: %@" = "Couldn't play music: %@";
 "Không phát được nhạc: %lf" = "Couldn't play music: %lf";
@@ -791,6 +793,7 @@
 "Tối thiểu: %.1f Mbps" = "Minimum: %.1f Mbps";
 "Tối đa %lld lượt" = "At most %lld innings";
 "Tối ưu chất lượng tốt nhất cho các đích phát" = "Optimize for best quality on all destinations";
+"Từ Tệp" = "From Files";
 "Từ chối" = "Reject";
 "Từ thư viện DTDStudio" = "From DTDStudio library";
 "Tự do" = "Free";
@@ -803,6 +806,7 @@
 "VAR · ĐANG PHÁT" = "VAR · PLAYING";
 "Video" = "Video";
 "Video này không có chat trực tiếp đang mở" = "This video has no open live chat";
+"Video từ Ảnh" = "Videos from Photos";
 "Video đang dùng làm nguồn" = "Videos in use";
 "Video đã ghi / thư viện" = "Recorded / library videos";
 "VideoToolbox lỗi %@ %@ — tạo lại bộ mã hoá" = "VideoToolbox error %@ %@ — recreating the encoder";
@@ -881,6 +885,7 @@
 "Áp dụng (khởi động lại máy chủ nhận)" = "Apply (restarts the ingest servers)";
 "Âm lượng" = "Volume";
 "Âm thanh" = "Audio";
+"Âm thanh của video trong Ảnh" = "Sound of a video in Photos";
 "Ô tỉ số" = "Score box";
 "Ô đầu vào" = "Input tiles";
 "ĐANG REPLAY · DỪNG" = "REPLAY ON AIR · STOP";
@@ -900,6 +905,7 @@
 "Đang nhận (Trang %@)" = "Receiving (Page %@)";
 "Đang nhận (trực tiếp)" = "Receiving (live stream)";
 "Đang nhận trực tiếp (Trang %@)" = "Receiving live (Page %@)";
+"Đang nhập từ Ảnh %@/%@…" = "Importing from Photos %@/%@…";
 "Đang phát" = "Live";
 "Đang tìm buổi live…" = "Looking for the live…";
 "Đang tìm…" = "Searching…";
@@ -1007,6 +1013,7 @@
 "Ảnh / video từ Thư viện ảnh" = "Photo / video from Photos";
 "Ảnh PNG" = "PNG image";
 "Ảnh nền từ Thư viện" = "Background from Photos";
+"Ảnh từ Thư viện" = "From Photos";
 "Ảnh đại diện" = "Avatars";
 "Ảnh đại diện / logo" = "Avatar / logo";
 "Ẩn tất cả" = "Hide all";

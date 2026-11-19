@@ -2,6 +2,7 @@
 "%.1f Mbps · Âm thanh %.0f dBFS" = "%.1f Mbps · Âm thanh %.0f dBFS";
 "%@ (mặc định)" = "%@ (mặc định)";
 "%@ ngày" = "%@ ngày";
+"%@ video không có âm thanh" = "%@ video không có âm thanh";
 "%lld giây / cú, gia hạn %lld giây" = "%lld giây / cú, gia hạn %lld giây";
 "(bản sao)" = "(bản sao)";
 "(bộ mã hoá phần cứng lỗi / quá tải)" = "(bộ mã hoá phần cứng lỗi / quá tải)";
@@ -361,6 +362,7 @@
 "Không mở được tệp: %@" = "Không mở được tệp: %@";
 "Không mở được tệp: %lf" = "Không mở được tệp: %lf";
 "Không mở được tệp: %lld" = "Không mở được tệp: %lld";
+"Không nhập được %@ mục từ Ảnh" = "Không nhập được %@ mục từ Ảnh";
 "Không nhập được: " = "Không nhập được: ";
 "Không phát được nhạc: %@" = "Không phát được nhạc: %@";
 "Không phát được nhạc: %lf" = "Không phát được nhạc: %lf";
@@ -791,6 +793,7 @@
 "Tối thiểu: %.1f Mbps" = "Tối thiểu: %.1f Mbps";
 "Tối đa %lld lượt" = "Tối đa %lld lượt";
 "Tối ưu chất lượng tốt nhất cho các đích phát" = "Tối ưu chất lượng tốt nhất cho các đích phát";
+"Từ Tệp" = "Từ Tệp";
 "Từ chối" = "Từ chối";
 "Từ thư viện DTDStudio" = "Từ thư viện DTDStudio";
 "Tự do" = "Tự do";
@@ -803,6 +806,7 @@
 "VAR · ĐANG PHÁT" = "VAR · ĐANG PHÁT";
 "Video" = "Video";
 "Video này không có chat trực tiếp đang mở" = "Video này không có chat trực tiếp đang mở";
+"Video từ Ảnh" = "Video từ Ảnh";
 "Video đang dùng làm nguồn" = "Video đang dùng làm nguồn";
 "Video đã ghi / thư viện" = "Video đã ghi / thư viện";
 "VideoToolbox lỗi %@ %@ — tạo lại bộ mã hoá" = "VideoToolbox lỗi %@ %@ — tạo lại bộ mã hoá";
@@ -881,6 +885,7 @@
 "Áp dụng (khởi động lại máy chủ nhận)" = "Áp dụng (khởi động lại máy chủ nhận)";
 "Âm lượng" = "Âm lượng";
 "Âm thanh" = "Âm thanh";
+"Âm thanh của video trong Ảnh" = "Âm thanh của video trong Ảnh";
 "Ô tỉ số" = "Ô tỉ số";
 "Ô đầu vào" = "Ô đầu vào";
 "ĐANG REPLAY · DỪNG" = "ĐANG REPLAY · DỪNG";
@@ -900,6 +905,7 @@
 "Đang nhận (Trang %@)" = "Đang nhận (Trang %@)";
 "Đang nhận (trực tiếp)" = "Đang nhận (trực tiếp)";
 "Đang nhận trực tiếp (Trang %@)" = "Đang nhận trực tiếp (Trang %@)";
+"Đang nhập từ Ảnh %@/%@…" = "Đang nhập từ Ảnh %@/%@…";
 "Đang phát" = "Đang phát";
 "Đang tìm buổi live…" = "Đang tìm buổi live…";
 "Đang tìm…" = "Đang tìm…";
@@ -1007,6 +1013,7 @@
 "Ảnh / video từ Thư viện ảnh" = "Ảnh / video từ Thư viện ảnh";
 "Ảnh PNG" = "Ảnh PNG";
 "Ảnh nền từ Thư viện" = "Ảnh nền từ Thư viện";
+"Ảnh từ Thư viện" = "Ảnh từ Thư viện";
 "Ảnh đại diện" = "Ảnh đại diện";
 "Ảnh đại diện / logo" = "Ảnh đại diện / logo";
 "Ẩn tất cả" = "Ẩn tất cả";

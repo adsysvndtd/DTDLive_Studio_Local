@@ -101,7 +101,11 @@ struct CategoryContent: View {
     /// (which clears photoKind / importing) never sends a Logo into Ảnh or vice versa.
     @State private var photoTarget: LibraryKind = .picture
     @State private var videoPick = false
-    @State private var videoItem: PhotosPickerItem?
+    @State private var videoItems: [PhotosPickerItem] = []
+    /// Where videos picked from Photos go: Video, or only their sound into Nhạc / Hiệu ứng âm thanh.
+    @State private var videoTarget: LibraryKind = .movie
+    /// "Đang nhập 2/5…" while items picked from Photos are copied (iCloud videos download first).
+    @State private var importStatus: String?
     @State private var fileTarget: LibraryKind = .picture
     /// Background picture for PiP layouts, picked straight from Photos / Files and applied at once.
     @State private var bgPhoto: PhotosPickerItem?
@@ -122,6 +126,12 @@ struct CategoryContent: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: compact ? 8 : 12) {
                         if hasToolbar { header }
+                        if let st = importStatus {
+                            HStack(spacing: 8) {
+                                ProgressView().controlSize(.small)
+                                Text(verbatim: st).font(DS.fBody).foregroundStyle(DS.text2)
+                            }
+                        }
                         content
                     }
                     .font(DS.fBody)              // one text size for every category page
@@ -156,24 +166,26 @@ struct CategoryContent: View {
         }
         .photosPicker(isPresented: Binding(get: { photoKind != nil }, set: { if !$0 { photoKind = nil } }),
                       selection: $photoItems, matching: .images)
-        .photosPicker(isPresented: $videoPick, selection: $videoItem, matching: .videos)
-        .onChange(of: videoItem) { _, item in
-            guard let item else { return }
-            Task {
-                if let mv = try? await item.loadTransferable(type: PickedMovie.self) {
-                    if let err = library.importFiles([mv.url], into: .movie) { engine.message = err }
-                    try? FileManager.default.removeItem(at: mv.url)
-                } else {
-                    engine.message = L("Không đọc được video từ Thư viện ảnh")
-                }
-                videoItem = nil
-            }
+        // .current: the video as stored (no re-encode to H.264 before it is handed over — much faster for 4K / HEVC)
+        .photosPicker(isPresented: $videoPick, selection: $videoItems, maxSelectionCount: 20,
+                      matching: .videos, preferredItemEncoding: .current)
+        .onChange(of: videoItems) { _, items in
+            guard !items.isEmpty else { return }
+            let k = videoTarget
+            Task { await importVideos(items, into: k); videoItems = [] }
         }
         .onChange(of: photoItems) { _, items in
             guard !items.isEmpty else { return }
             let k = photoTarget
             Task {
-                for i in items { if let d = try? await i.loadTransferable(type: Data.self) { library.importImage(d, into: k, name: k == .logo ? "Logo" : k == .overlay ? "SuperFG" : "Ảnh") } }
+                var failed = 0
+                for (n, i) in items.enumerated() {
+                    importStatus = LF("Đang nhập từ Ảnh %@/%@…", "\(n + 1)", "\(items.count)")
+                    let d = try? await i.loadTransferable(type: Data.self)
+                    if d.flatMap({ library.importImage($0, into: k, name: k == .logo ? "Logo" : k == .overlay ? "SuperFG" : L("Ảnh")) }) == nil { failed += 1 }
+                }
+                importStatus = nil
+                if failed > 0 { engine.message = LF("Không nhập được %@ mục từ Ảnh", "\(failed)") }
                 photoItems = []
             }
         }
@@ -216,15 +228,20 @@ struct CategoryContent: View {
                 }
                 headerButton("Thêm nguồn", "plus") { showAddSource = true }
             case .movie:
-                Menu {
-                    Button { videoPick = true } label: { Label("Thư viện ảnh", systemImage: "photo.on.rectangle") }
-                    Button { fileTarget = .movie; importing = .movie } label: { Label("Tệp", systemImage: "folder") }
-                } label: { toolbarLabel("Nhập video", "square.and.arrow.down") }
+                headerButton("Video từ Ảnh", "photo.on.rectangle") { videoTarget = .movie; videoPick = true }
+                headerButton("Từ Tệp", "folder") { fileTarget = .movie; importing = .movie }
             case .picture, .overlay, .logo:
                 importImageMenu(category == .picture ? .picture : category == .overlay ? .overlay : .logo)
             case .audio:
-                headerButton("Nhập nhạc", "square.and.arrow.down") { fileTarget = .music; importing = .music }
-                headerButton("Nhập hiệu ứng", "sparkles") { fileTarget = .sound; importing = .sound }
+                // Photos holds no audio files: from Ảnh, the sound of the chosen videos is taken out as .m4a
+                Menu {
+                    Button { videoTarget = .music; videoPick = true } label: { Label("Âm thanh của video trong Ảnh", systemImage: "photo.on.rectangle") }
+                    Button { fileTarget = .music; importing = .music } label: { Label("Tệp", systemImage: "folder") }
+                } label: { toolbarLabel("Nhập nhạc", "square.and.arrow.down") }
+                Menu {
+                    Button { videoTarget = .sound; videoPick = true } label: { Label("Âm thanh của video trong Ảnh", systemImage: "photo.on.rectangle") }
+                    Button { fileTarget = .sound; importing = .sound } label: { Label("Tệp", systemImage: "folder") }
+                } label: { toolbarLabel("Nhập hiệu ứng", "sparkles") }
             case .title where titleTab == 1:
                 Menu {
                     ForEach(TitleStyle.allCases) { s in
@@ -265,13 +282,28 @@ struct CategoryContent: View {
             .accessibilityLabel(label)
     }
 
-    /// One "Nhập ảnh" button; the source (Photos or Files) is chosen from its menu.
-    private func importImageMenu(_ k: LibraryKind) -> some View {
-        Menu {
-            Button { photoTarget = k; photoKind = k } label: { Label("Thư viện ảnh", systemImage: "photo.on.rectangle") }
-            Button { fileTarget = k; importing = k } label: { Label("Tệp", systemImage: "folder") }
-        } label: { toolbarLabel("Nhập ảnh", "square.and.arrow.down") }
-        .id(k)
+    /// Import buttons for pictures: straight from the iPad's Photos (several at once) or from Files.
+    @ViewBuilder private func importImageMenu(_ k: LibraryKind) -> some View {
+        headerButton("Ảnh từ Thư viện", "photo.on.rectangle") { photoTarget = k; photoKind = k }.id("p" + k.rawValue)
+        headerButton("Từ Tệp", "folder") { fileTarget = k; importing = k }.id("f" + k.rawValue)
+    }
+
+    /// Videos picked in Photos → the Video library, or only their sound → Nhạc / Hiệu ứng âm thanh.
+    private func importVideos(_ items: [PhotosPickerItem], into k: LibraryKind) async {
+        var failed = 0, silent = 0
+        for (n, item) in items.enumerated() {
+            importStatus = LF("Đang nhập từ Ảnh %@/%@…", "\(n + 1)", "\(items.count)")
+            guard let mv = try? await item.loadTransferable(type: PickedMovie.self) else { failed += 1; continue }
+            if k == .movie {
+                if library.importFiles([mv.url], into: .movie) != nil { failed += 1 }
+            } else if await library.importAudio(fromMovie: mv.url, into: k, name: mv.url.deletingPathExtension().lastPathComponent) == nil {
+                silent += 1
+            }
+            try? FileManager.default.removeItem(at: mv.url)
+        }
+        importStatus = nil
+        if failed > 0 { engine.message = LF("Không nhập được %@ mục từ Ảnh", "\(failed)") }
+        else if silent > 0 { engine.message = LF("%@ video không có âm thanh", "\(silent)") }
     }
 
     private func headerButton(_ title: String, _ icon: String, action: @escaping () -> Void) -> some View {

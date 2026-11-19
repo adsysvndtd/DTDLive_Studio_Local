@@ -10366,6 +10366,76 @@
           }
         }
       }
+    },
+    "Video từ Ảnh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Videos from Photos"
+          }
+        }
+      }
+    },
+    "Từ Tệp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "From Files"
+          }
+        }
+      }
+    },
+    "Ảnh từ Thư viện": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "From Photos"
+          }
+        }
+      }
+    },
+    "Âm thanh của video trong Ảnh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sound of a video in Photos"
+          }
+        }
+      }
+    },
+    "Đang nhập từ Ảnh %@/%@…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Importing from Photos %@/%@…"
+          }
+        }
+      }
+    },
+    "Không nhập được %@ mục từ Ảnh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not import %@ item(s) from Photos"
+          }
+        }
+      }
+    },
+    "%@ video không có âm thanh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ video(s) have no sound"
+          }
+        }
+      }
     }
   },
   "version": "1.0"
