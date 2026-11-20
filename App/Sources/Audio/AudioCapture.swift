@@ -11,7 +11,8 @@ struct AudioChannelState: Identifiable, Equatable {
     var followVideo = false      // AFV: only audible while its source is on program
     var solo = false             // when any channel is soloed, only soloed channels are heard
     var trim: Float = 0          // input gain in dB (−12…+24), applied before the fader
-    var level: Float = -60       // dBFS peak (read-only for UI)
+    var level: Float = -60       // dBFS peak, left / mono (read-only for UI)
+    var levelR: Float = -60      // dBFS peak, right (= left for mono sources)
 }
 
 /// Program audio mixer: microphone / USB interface + every network source's audio
@@ -54,6 +55,7 @@ final class AudioCapture: @unchecked Sendable {
     var onBuffer: Handler?
     var masterGain: Float = 1 { didSet { bus.outputVolume = masterGain } }
     private(set) var peakDB: Float = -60
+    private(set) var peakDBR: Float = -60
     let format = AVAudioFormat(standardFormatWithSampleRate: 48000, channels: 2)!
 
     func start() throws {
@@ -91,7 +93,7 @@ final class AudioCapture: @unchecked Sendable {
 
         bus.installTap(onBus: 0, bufferSize: 1024, format: format) { [weak self] buffer, when in
             guard let self else { return }
-            self.peakDB = Self.peak(buffer)
+            (self.peakDB, self.peakDBR) = Self.peaks(buffer)
             let t = when.isHostTimeValid ? when : AVAudioTime(hostTime: mach_absolute_time())
             self.onBuffer?(buffer, t)
         }
@@ -162,8 +164,8 @@ final class AudioCapture: @unchecked Sendable {
         }
         m.installTap(onBus: 0, bufferSize: 2048, format: nil) { [weak self] b, _ in
             guard let self else { return }
-            let db = Self.peak(b)
-            os_unfair_lock_lock(&self.lock); self.states[id]?.level = db; os_unfair_lock_unlock(&self.lock)
+            let (l, r) = Self.peaks(b)
+            os_unfair_lock_lock(&self.lock); self.states[id]?.level = l; self.states[id]?.levelR = r; os_unfair_lock_unlock(&self.lock)
         }
         channelMixers[id] = m
         os_unfair_lock_lock(&lock); states[id] = AudioChannelState(id: id, name: name); os_unfair_lock_unlock(&lock)
@@ -221,8 +223,10 @@ final class AudioCapture: @unchecked Sendable {
             let s = states[k]!
             let base: Float = s.muted ? -60 : -30 + 20 * Float(s.gain) / 2
             states[k]?.level = min(0, base + 8 * Float(sin(t * (1.3 + Double(i) * 0.4))))
+            states[k]?.levelR = min(0, base + 8 * Float(sin(t * (1.1 + Double(i) * 0.4))))
         }
         peakDB = -14 + 4 * Float(sin(t * 1.7))
+        peakDBR = -15 + 4 * Float(sin(t * 1.4))
         os_unfair_lock_unlock(&lock)
     }
 
@@ -280,6 +284,23 @@ final class AudioCapture: @unchecked Sendable {
         engine.connect(p, to: m, format: file.processingFormat)
         p.scheduleFile(file, at: nil) { [weak self] in DispatchQueue.main.async { self?.engine.detach(p) } }
         p.play()
+    }
+
+    /// Peak dBFS of the first two channels (L, R); mono gives the same value twice.
+    static func peaks(_ b: AVAudioPCMBuffer) -> (Float, Float) {
+        guard let ch = b.floatChannelData, b.frameLength > 0 else { return (-60, -60) }
+        let n = Int(b.frameLength), cc = Int(b.format.channelCount)
+        func db(_ c: Int) -> Float {
+            var p: Float = 0
+            if b.format.isInterleaved {
+                let s = ch[0]; for i in 0..<n { p = max(p, abs(s[i * cc + c])) }
+            } else {
+                let s = ch[c]; for i in 0..<n { p = max(p, abs(s[i])) }
+            }
+            return 20 * log10(max(p, 0.000_01))
+        }
+        let l = db(0)
+        return (l, cc > 1 ? db(1) : l)
     }
 
     static func peak(_ b: AVAudioPCMBuffer) -> Float {

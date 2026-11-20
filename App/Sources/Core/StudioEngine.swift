@@ -109,6 +109,10 @@ final class StudioEngine: ObservableObject {
     @Published private(set) var nowPlayingMusic: URL?
     @Published var showSafeGuides = false
     @Published var showMonitorInfo = false
+    /// L/R VU meters over the PVW and PGM monitors.
+    @Published var showMonitorVU: Bool = UserDefaults.standard.object(forKey: "dtd.ui.monitorVU") as? Bool ?? true {
+        didSet { UserDefaults.standard.set(showMonitorVU, forKey: "dtd.ui.monitorVU") }
+    }
     /// One-line operator message (import / playback errors), shown as an alert.
     @Published var message: String?
     /// Swipe on PVW toward PGM: 1 finger = CUT, 2 fingers = AUTO.
@@ -334,12 +338,16 @@ final class StudioEngine: ObservableObject {
                 let m = self.meters
                 let level = (self.audio.peakDB * 2).rounded() / 2
                 if level != m.level { m.level = level }
-                var levels: [UUID: Float] = [:]
+                let levelR = (self.audio.peakDBR * 2).rounded() / 2
+                if levelR != m.levelR { m.levelR = levelR }
+                var levels: [UUID: Float] = [:], levelsR: [UUID: Float] = [:]
                 let ch = self.audio.channels.map { c -> AudioChannelState in
                     levels[c.id] = (c.level * 2).rounded() / 2
-                    var s = c; s.level = -60; return s
+                    levelsR[c.id] = (c.levelR * 2).rounded() / 2
+                    var s = c; s.level = -60; s.levelR = -60; return s
                 }
                 if levels != m.levels { m.levels = levels }
+                if levelsR != m.levelsR { m.levelsR = levelsR }
                 // the channel list itself only changes when a source, gain, mute… changes
                 if ch != self.audioChannels { self.audioChannels = ch }
             }
@@ -1947,6 +1955,13 @@ extension StudioEngine: ControlTarget {
 final class LiveMeters: ObservableObject {
     @Published var level: Float = -60
     @Published var levels: [UUID: Float] = [:]
+    @Published var levelR: Float = -60
+    @Published var levelsR: [UUID: Float] = [:]
     @Published var scope = ScopeAnalyzer.Result()
     func level(_ id: UUID?) -> Float { id.map { levels[$0] ?? -60 } ?? level }
+    /// L / R peak dBFS of a channel, or of Program (the mixer output) when id is nil.
+    func stereo(_ id: UUID?) -> (Float, Float) {
+        guard let id else { return (level, levelR) }
+        return (levels[id] ?? -60, levelsR[id] ?? levels[id] ?? -60)
+    }
 }

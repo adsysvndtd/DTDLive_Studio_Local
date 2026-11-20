@@ -98,6 +98,7 @@ struct SettingsForm: View {
                     Toggle("Khung an toàn trên PVW/PGM", isOn: $engine.showSafeGuides)
                     Toggle("Khung an toàn trên màn hình ngoài", isOn: $engine.externalSafeGuides)
                     Toggle("Thông số trên PGM", isOn: $engine.showMonitorInfo)
+                    Toggle("VU meter âm thanh trên PVW / PGM", isOn: $engine.showMonitorVU)
                     Toggle("Luôn giữ màn hình sáng", isOn: $engine.keepScreenOn)
                     Text("Tắt (tiết kiệm pin): màn hình chỉ luôn sáng khi đang phát / ghi; lúc khác iPad tự khoá theo Tự động khoá. Khi app ở nền hoặc màn hình tắt mà không phát, sau 15 giây app dừng camera, micro, xử lý hình và kết nối để không tốn pin; mở lại app là chạy tiếp.")
                         .font(.caption2).foregroundStyle(DS.text3)

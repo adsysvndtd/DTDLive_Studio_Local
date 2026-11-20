@@ -13296,6 +13296,16 @@
           }
         }
       }
+    },
+    "VU meter âm thanh trên PVW / PGM": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Audio VU meters on PVW / PGM"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

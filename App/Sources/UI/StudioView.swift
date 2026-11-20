@@ -243,6 +243,13 @@ struct StudioView: View {
                 MonitorView(store: store)
                 if engine.showSafeGuides { SafeGuides() }
                 sourceCaption(isProgram ? engine.programID : engine.previewID, color: color)
+                if engine.showMonitorVU {
+                    // PGM: the program mix; PVW: the audio of the source waiting on preview
+                    MonitorVU(meters: engine.meters, id: isProgram ? nil : engine.previewID, compact: compact)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .trailing)
+                        .padding(.trailing, compact ? 3 : 5)
+                        .padding(.vertical, compact ? 18 : 26)
+                }
                 if !isProgram && engine.swipeToTake && !scopesOnPreview {
                     SwipeTakeOverlay(onCut: { engine.cut() }, onAuto: { engine.autoTransition() })
                 }
@@ -462,6 +469,71 @@ struct LiveScope: View {
     @ObservedObject var meters: LiveMeters
     let kind: ScopeKind
     var body: some View { ScopeView(kind: kind, result: meters.scope) }
+}
+
+/// Transparent L/R VU meter drawn over a monitor: two thin bars (green → yellow −18 dB → red −6 dB)
+/// on a faint track, with −6 / −18 / −40 marks and a 1.5 s peak hold. No background, no hit testing.
+struct MonitorVU: View {
+    @ObservedObject var meters: LiveMeters
+    let id: UUID?
+    var compact = false
+    @State private var hold: (Float, Float) = (-60, -60)
+    @State private var holdAt: (Date, Date) = (.distantPast, .distantPast)
+
+    var body: some View {
+        let (l, r) = meters.stereo(id)
+        let w: CGFloat = compact ? 3 : 5
+        HStack(spacing: compact ? 1.5 : 2) {
+            bar(l, hold.0, w)
+            bar(r, hold.1, w)
+        }
+        .overlay(alignment: .leading) { if !compact { marks } }
+        .shadow(color: .black.opacity(0.6), radius: 1)
+        .allowsHitTesting(false)
+        .onChange(of: l) { _, v in update(v, left: true) }
+        .onChange(of: r) { _, v in update(v, left: false) }
+    }
+
+    private func bar(_ db: Float, _ peak: Float, _ w: CGFloat) -> some View {
+        GeometryReader { g in
+            let h = g.size.height
+            ZStack(alignment: .bottom) {
+                Rectangle().fill(Color.white.opacity(0.12))
+                LinearGradient(stops: [.init(color: .green, location: 0), .init(color: .green, location: Self.pos(-18)),
+                                       .init(color: .yellow, location: Self.pos(-18)), .init(color: .yellow, location: Self.pos(-6)),
+                                       .init(color: .red, location: Self.pos(-6)), .init(color: .red, location: 1)],
+                               startPoint: .bottom, endPoint: .top)
+                    .mask(alignment: .bottom) { Rectangle().frame(height: h * Self.pos(db)) }
+                if peak > -59 {
+                    Rectangle().fill(peak > -6 ? Color.red : Color.white)
+                        .frame(height: 1.5)
+                        .offset(y: -h * Self.pos(peak) + 0.75)
+                }
+            }
+        }
+        .frame(width: w)
+    }
+
+    private var marks: some View {
+        GeometryReader { g in
+            ForEach([-6, -18, -40], id: \.self) { d in
+                Rectangle().fill(Color.white.opacity(0.35)).frame(width: 3, height: 1)
+                    .position(x: -3, y: g.size.height * (1 - Self.pos(Float(d))))
+            }
+        }
+    }
+
+    private func update(_ v: Float, left: Bool) {
+        let now = Date()
+        if left {
+            if v >= hold.0 || now.timeIntervalSince(holdAt.0) > 1.5 { hold.0 = v; holdAt.0 = now }
+        } else {
+            if v >= hold.1 || now.timeIntervalSince(holdAt.1) > 1.5 { hold.1 = v; holdAt.1 = now }
+        }
+    }
+
+    /// −60…0 dBFS → 0…1
+    static func pos(_ db: Float) -> CGFloat { CGFloat(max(0, min(1, (db + 60) / 60))) }
 }
 
 struct LevelMeter: View {
