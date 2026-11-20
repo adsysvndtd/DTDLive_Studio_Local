@@ -94,6 +94,15 @@ final class AudioCapture: @unchecked Sendable {
         let inFmt = engine.inputNode.outputFormat(forBus: 0)
         engine.connect(engine.inputNode, to: micDelay, format: inFmt)
         engine.connect(micDelay, to: mic, format: inFmt)
+        micDelay.installTap(onBus: 0, bufferSize: 2048, format: nil) { [weak self] b, _ in
+            guard let self else { return }
+            let (l, r) = Self.peaks(b)
+            let now = ProcessInfo.processInfo.systemUptime
+            os_unfair_lock_lock(&self.lock)
+            let trim = self.states[Self.micID]?.trim ?? 0
+            self.pfl[Self.micID] = (min(0, l + trim), min(0, r + trim), now)
+            os_unfair_lock_unlock(&self.lock)
+        }
 
         // Music channel
         let music = makeChannel(Self.musicID, name: "Nhạc nền")

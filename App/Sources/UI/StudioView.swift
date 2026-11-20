@@ -272,11 +272,13 @@ struct StudioView: View {
                     // PGM: the program mix; PVW: the audio of the source waiting on preview
                     // Each meter on the monitor's OUTER edge (PVW left, PGM right): at the inner edges the PVW meter
                     // sat right next to PGM and read as PGM's.
-                    MonitorVU(meters: engine.meters, id: isProgram ? nil : engine.previewID, preFader: !isProgram,
+                    MonitorVU(meters: engine.meters, id: isProgram ? nil : engine.audioChannelID(engine.previewID), preFader: !isProgram,
                               marksOnLeading: isProgram, compact: compact)
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: isProgram ? .trailing : .leading)
-                        .padding(isProgram ? .trailing : .leading, compact ? 3 : 5)
-                        .padding(.vertical, compact ? 18 : 26)
+                        .padding(isProgram ? .trailing : .leading, compact ? 6 : 10)
+                        // clear of the PVW/PGM tag at the top and the source name at the bottom
+                        .padding(.top, compact ? 22 : 34)
+                        .padding(.bottom, compact ? 26 : 44)
                 }
                 if !isProgram && engine.swipeToTake && !scopesOnPreview {
                     SwipeTakeOverlay(onCut: { engine.cut() }, onAuto: { engine.autoTransition() })
@@ -519,7 +521,7 @@ struct MonitorVU: View {
             bar(l, hold.0, w)
             bar(r, hold.1, w)
         }
-        .overlay(alignment: marksOnLeading ? .leading : .trailing) { if !compact { marks(leading: marksOnLeading) } }
+        .overlay(alignment: marksOnLeading ? .leading : .trailing) { marks(leading: marksOnLeading) }
         .shadow(color: .black.opacity(0.6), radius: 1)
         .allowsHitTesting(false)
         .onChange(of: l) { _, v in update(v, left: true) }
@@ -546,11 +548,24 @@ struct MonitorVU: View {
         .frame(width: w)
     }
 
+    /// dB scale beside the bars: ticks every 6 dB down to −30, then −40 / −60; numbers on the larger meters.
     private func marks(leading: Bool) -> some View {
         GeometryReader { g in
-            ForEach([-6, -18, -40], id: \.self) { d in
-                Rectangle().fill(Color.white.opacity(0.35)).frame(width: 3, height: 1)
-                    .position(x: leading ? -3 : g.size.width + 3, y: g.size.height * (1 - Self.pos(Float(d))))
+            let ticks: [Int] = compact ? [0, -6, -18, -40] : [0, -6, -12, -18, -24, -30, -40, -60]
+            let labelled: Set<Int> = [0, -6, -12, -18, -30, -60]
+            ForEach(ticks, id: \.self) { d in
+                let y = g.size.height * (1 - Self.pos(Float(d)))
+                let major = d == 0 || d == -6 || d == -18
+                Rectangle().fill(d >= -6 ? Color.red.opacity(0.8) : d >= -18 ? Color.yellow.opacity(0.7) : Color.white.opacity(0.45))
+                    .frame(width: major ? 5 : 3, height: 1)
+                    .position(x: leading ? -(major ? 3.5 : 2.5) : g.size.width + (major ? 3.5 : 2.5), y: y)
+                if !compact && labelled.contains(d) {
+                    Text(verbatim: d == 0 ? "0" : "\(d)")
+                        .font(.system(size: 7, weight: .semibold).monospacedDigit())
+                        .foregroundStyle(.white.opacity(0.75))
+                        .fixedSize()
+                        .position(x: leading ? -15 : g.size.width + 15, y: y)
+                }
             }
         }
     }

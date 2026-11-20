@@ -533,7 +533,13 @@ final class StudioEngine: ObservableObject {
         tally = (program, preview)
         layoutSource.setActive(program.contains(layoutSource.id) || preview.contains(layoutSource.id))
         updateMediaPlayback()
-        audio.setProgram(program, main: switcher.state.program)
+        // The iPad's own cameras have no audio of their own: their sound is the Mic channel. With AFV on the
+        // Mic, it is on air while an iPad camera is on PGM.
+        let cams = Set(sources.compactMap { $0 as? CameraSource }.map(\.id))
+        var audioPGM = program
+        if !program.isDisjoint(with: cams) { audioPGM.insert(AudioCapture.micID) }
+        let main = switcher.state.program.map { cams.contains($0) ? AudioCapture.micID : $0 }
+        audio.setProgram(audioPGM, main: main)
         for id in program.symmetricDifference(old) {
             Task { await ptzControllers[id]?.tally(program.contains(id)) }
         }
@@ -1754,6 +1760,12 @@ final class StudioEngine: ObservableObject {
         guard let s = ndiSource(id) else { return }
         if let speed { s.ptzFocus(speed: Float(speed)) } else { s.ptzAutoFocus() }
         #endif
+    }
+
+    /// Audio channel that carries a source's sound: the Mic for the iPad's own cameras, else the source.
+    func audioChannelID(_ id: UUID?) -> UUID? {
+        guard let id else { return nil }
+        return sources.first { $0.id == id } is CameraSource ? AudioCapture.micID : id
     }
 
     /// The source is an NDI input.

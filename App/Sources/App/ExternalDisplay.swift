@@ -116,7 +116,7 @@ struct MultiviewGrid: View {
             VStack(spacing: gap) {
                 HStack(spacing: gap) {
                     tile(store: engine.switcher.previewMonitor, label: "PVW", border: DS.pvw, width: big, fps: 30)
-                        .overlay(alignment: .leading) { vu(engine.previewID, preFader: true, leading: true, small: false) }
+                        .overlay(alignment: .leading) { vu(engine.audioChannelID(engine.previewID), preFader: true, leading: true, small: false) }
                     tile(store: engine.switcher.programMonitor, label: "PGM", border: DS.pgm, width: big, fps: 30)
                         .overlay(alignment: .trailing) { vu(nil, preFader: false, leading: false, small: false) }
                 }
@@ -150,7 +150,7 @@ struct MultiviewGrid: View {
                 .frame(width: width, height: h)
                 .overlay { Rectangle().stroke(onPGM ? DS.pgm : onPVW ? DS.pvw : Color.white.opacity(0.25), lineWidth: onPGM || onPVW ? 3 : 1) }
                 .overlay(alignment: .bottomLeading) { tag("\(i + 1)  \(s.name)", color: onPGM ? DS.pgm : onPVW ? DS.pvw : .black.opacity(0.6)) }
-                .overlay(alignment: .trailing) { vu(s.id, preFader: true, leading: false, small: true) }
+                .overlay(alignment: .trailing) { vu(engine.audioChannelID(s.id), preFader: true, leading: false, small: true) }
                 .contentShape(Rectangle())
                 .onTapGesture { if interactive { engine.select(s.id) } }     // PVW only: PGM changes with a transition
         } else {
@@ -166,8 +166,9 @@ struct MultiviewGrid: View {
     @ViewBuilder private func vu(_ id: UUID?, preFader: Bool, leading: Bool, small: Bool) -> some View {
         if engine.showMonitorVU {
             MonitorVU(meters: engine.meters, id: id, preFader: preFader, marksOnLeading: !leading, compact: small)
-                .padding(leading ? .leading : .trailing, small ? 3 : 5)
-                .padding(.vertical, small ? 6 : 12)
+                .padding(leading ? .leading : .trailing, small ? 5 : 22)
+                .padding(.top, small ? 8 : 18)
+                .padding(.bottom, small ? 22 : 30)
         }
     }
 
