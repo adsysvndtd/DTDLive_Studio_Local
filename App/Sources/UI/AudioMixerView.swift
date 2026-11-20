@@ -12,10 +12,10 @@ struct AudioMixerView: View {
     @State private var gainMode = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 4) {
             header
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(alignment: .top, spacing: compact ? 3 : 6) {
+                HStack(alignment: .top, spacing: compact ? 2 : 3) {
                     ForEach(engine.audioChannels) { c in
                         MixerMeters(meters: engine.meters, id: c.id) { lr, onAir in
                             ChannelStrip(name: c.name,
@@ -36,7 +36,7 @@ struct AudioMixerView: View {
                                          onDelay: { engine.micDelayMs = min(500, max(0, engine.micDelayMs + $0)) })
                         }
                     }
-                    Rectangle().fill(DS.stroke).frame(width: 1).padding(.vertical, 8)
+                    Rectangle().fill(DS.stroke).frame(width: 1).padding(.vertical, 4)
                     MixerMeters(meters: engine.meters, id: nil) { lr, _ in
                         ChannelStrip(name: "PGM", note: nil, gain: Double(engine.masterGain), trim: 0, gainMode: false,
                                      level: lr, onAir: engine.isAnyLive || engine.isRecording,
@@ -46,19 +46,19 @@ struct AudioMixerView: View {
                                      onMute: {}, onSolo: {}, onAFV: {}, onDelay: { _ in })
                     }
                 }
-                .padding(.vertical, 4)
+                .padding(.vertical, 2)
             }
         }
     }
 
     private var header: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: 8) {
             HStack(spacing: 2) {
                 modeKey("AFV1", on: engine.afvMode == .afv1) { engine.setAFVMode(engine.afvMode == .afv1 ? nil : .afv1) }
                 modeKey("AFV2", on: engine.afvMode == .afv2) { engine.setAFVMode(engine.afvMode == .afv2 ? nil : .afv2) }
                 modeKey("Gain", on: gainMode) { gainMode.toggle() }
             }
-            .padding(3)
+            .padding(2)
             .background(DS.surface2, in: Rectangle())
             Spacer()
             // first four sound effects as quick pads
@@ -66,7 +66,7 @@ struct AudioMixerView: View {
                 ForEach(library.list(.sound).prefix(4), id: \.self) { url in
                     Button { engine.playEffect(url) } label: {
                         Image(systemName: "waveform").font(.system(size: 14, weight: .semibold))
-                            .frame(width: compact ? 34 : 42, height: compact ? 28 : 32)
+                            .frame(width: compact ? 30 : 36, height: compact ? 24 : 28)
                             .background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
                     }
                     .buttonStyle(.plain)
@@ -79,8 +79,8 @@ struct AudioMixerView: View {
 
     private func modeKey(_ t: String, on: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Text(LocalizedStringKey(t)).font(.system(size: compact ? 12 : 14, weight: .bold))
-                .padding(.horizontal, compact ? 10 : 14).frame(height: compact ? 28 : 32)
+            Text(LocalizedStringKey(t)).font(.system(size: compact ? 11 : 13, weight: .bold))
+                .padding(.horizontal, compact ? 8 : 11).frame(height: compact ? 24 : 28)
                 .foregroundStyle(on ? .black : .white)
                 .background(on ? Color.white : Color.clear, in: RoundedRectangle(cornerRadius: DS.radius))
         }
@@ -124,8 +124,8 @@ struct ChannelStrip: View {
     @State private var peakAt = Date.distantPast
 
     private static let faderBlue = Color(red: 0.30, green: 0.55, blue: 0.98)
-    private var height: CGFloat { compact ? 130 : 220 }
-    private var width: CGFloat { compact ? 70 : 92 }
+    private var height: CGFloat { compact ? 110 : 170 }
+    private var width: CGFloat { compact ? 56 : 70 }
     /// Fader value shown on the scale: dB of the fader (or trim in Gain mode).
     private var db: Double { gainMode ? trim : 20 * log10(max(gain, 0.0001)) }
     private var faderMarks: [Double] { gainMode ? [24, 18, 12, 6, 0, -6, -12] : [6, 0, -6, -12, -18, -24, -30, -40, -50, -60] }
@@ -134,30 +134,27 @@ struct ChannelStrip: View {
     private var dimmed: Bool { !isMaster && (muted || !onAir) }
 
     var body: some View {
-        VStack(spacing: 5) {
+        VStack(spacing: 3) {
             // ON AIR lamp
             Capsule().fill(onAir ? DS.pgm : Color(white: 0.28))
-                .frame(width: compact ? 28 : 36, height: 6)
-                .shadow(color: onAir ? DS.pgm.opacity(0.8) : .clear, radius: 4)
-            Text(verbatim: name).font(.system(size: compact ? 10 : 12, weight: .semibold))
-                .lineLimit(1).minimumScaleFactor(0.6).foregroundStyle(.white)
-            HStack(spacing: 4) {
+                .frame(width: compact ? 22 : 28, height: 4)
+                .shadow(color: onAir ? DS.pgm.opacity(0.8) : .clear, radius: 3)
+            // AFV + name on one line
+            HStack(spacing: 2) {
                 if !isMaster {
                     Button(action: onAFV) {
-                        HStack(spacing: 2) {
-                            Image(systemName: afv ? "link.circle.fill" : "link.circle").font(.system(size: 13))
-                            Text("AFV").font(.system(size: 9, weight: .bold))
-                        }
-                        .foregroundStyle(afv ? DS.accent2 : DS.text3)
+                        Image(systemName: afv ? "link.circle.fill" : "link.circle").font(.system(size: compact ? 11 : 12))
+                            .foregroundStyle(afv ? DS.accent2 : DS.text3)
                     }
-                    .buttonStyle(.plain)
-                } else {
-                    Text("MASTER").font(.system(size: 9, weight: .bold)).foregroundStyle(DS.text3)
+                    .buttonStyle(.plain).accessibilityLabel("AFV")
                 }
+                Text(verbatim: name).font(.system(size: compact ? 9 : 10, weight: .semibold))
+                    .lineLimit(1).minimumScaleFactor(0.6).foregroundStyle(.white)
             }
             .frame(height: 14)
-            Text(verbatim: note ?? " ").font(.system(size: 8)).foregroundStyle(DS.accent2).lineLimit(1).frame(height: 10)
-            HStack(alignment: .top, spacing: 3) {
+            Text(verbatim: note ?? (isMaster ? "MASTER" : " ")).font(.system(size: 7, weight: .semibold))
+                .foregroundStyle(isMaster ? DS.text3 : DS.accent2).lineLimit(1).frame(height: 8)
+            HStack(alignment: .top, spacing: 1) {
                 scaleLabels
                 fader
                 meter
@@ -166,45 +163,43 @@ struct ChannelStrip: View {
             .opacity(dimmed ? 0.45 : 1)
             // value: % of unity gain (Gain mode: trim dB)
             Text(verbatim: gainMode ? String(format: "%+.0f dB", trim) : (gain <= 0.001 ? "−∞" : "\(Int((gain * 100).rounded()))%"))
-                .font(.system(size: compact ? 10 : 12, weight: .semibold, design: .monospaced))
+                .font(.system(size: compact ? 9 : 10, weight: .semibold, design: .monospaced))
                 .foregroundStyle(gainMode ? DS.accent : .white)
-            HStack(spacing: 4) {
+            // ▼ ▲ and M S on one row
+            HStack(spacing: 2) {
                 nudge("chevron.down") { onNudge(-1) }
                 nudge("chevron.up") { onNudge(1) }
+                if !isMaster {
+                    key("M", on: muted, color: DS.pgm, action: onMute)
+                    key("S", on: solo, color: .yellow, action: onSolo)
+                }
             }
             Group {
                 if let delayMs {
-                    HStack(spacing: 2) {
-                        Button { onDelay(-10) } label: { Image(systemName: "minus").frame(width: 18, height: 18) }
-                        Text("Delay \(Int(delayMs))ms").font(.system(size: 9, weight: .medium).monospacedDigit()).lineLimit(1)
-                        Button { onDelay(10) } label: { Image(systemName: "plus").frame(width: 18, height: 18) }
+                    HStack(spacing: 1) {
+                        Button { onDelay(-10) } label: { Image(systemName: "minus").frame(width: 14, height: 14) }
+                        Text(verbatim: "\(Int(delayMs))ms").font(.system(size: 8, weight: .medium).monospacedDigit()).lineLimit(1)
+                        Button { onDelay(10) } label: { Image(systemName: "plus").frame(width: 14, height: 14) }
                     }
-                    .font(.system(size: 9, weight: .bold)).foregroundStyle(DS.text2).buttonStyle(.plain)
+                    .font(.system(size: 8, weight: .bold)).foregroundStyle(DS.text2).buttonStyle(.plain)
+                    .accessibilityLabel("Delay")
                 } else {
                     Color.clear
                 }
             }
-            .frame(height: 20)
-            if !isMaster {
-                HStack(spacing: 4) {
-                    key("M", on: muted, color: DS.pgm, action: onMute)
-                    key("S", on: solo, color: .yellow, action: onSolo)
-                }
-            } else {
-                Color.clear.frame(height: compact ? 26 : 30)
-            }
+            .frame(height: 14)
         }
         .frame(width: width)
-        .padding(.vertical, 6)
-        .background(Color(white: 0.11), in: RoundedRectangle(cornerRadius: 6))
+        .padding(.vertical, 3)
+        .background(Color(white: 0.11), in: RoundedRectangle(cornerRadius: 4))
         .onChange(of: level.0) { _, _ in updatePeak() }
         .onChange(of: level.1) { _, _ in updatePeak() }
     }
 
     private func key(_ t: String, on: Bool, color: Color, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Text(verbatim: t).font(.system(size: compact ? 11 : 13, weight: .heavy))
-                .frame(width: compact ? 28 : 36, height: compact ? 26 : 30)
+            Text(verbatim: t).font(.system(size: compact ? 9 : 10, weight: .heavy))
+                .frame(width: compact ? 12 : 15, height: compact ? 18 : 20)
                 .foregroundStyle(on ? .black : DS.text2)
                 .background(on ? color : DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
         }
@@ -213,8 +208,8 @@ struct ChannelStrip: View {
 
     private func nudge(_ icon: String, _ act: @escaping () -> Void) -> some View {
         Button(action: act) {
-            Image(systemName: icon).font(.system(size: 11, weight: .bold))
-                .frame(width: compact ? 28 : 36, height: compact ? 22 : 26)
+            Image(systemName: icon).font(.system(size: compact ? 8 : 9, weight: .bold))
+                .frame(width: compact ? 12 : 15, height: compact ? 18 : 20)
                 .background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
         }
         .buttonStyle(.plain).foregroundStyle(DS.text2)
@@ -235,7 +230,7 @@ struct ChannelStrip: View {
         gainMode ? CGFloat((max(-12, min(24, v)) + 12) / 36) : CGFloat((max(-60, min(6, v)) + 60) / 66)
     }
     private func faderValue(_ p: CGFloat) -> Double { gainMode ? Double(p) * 36 - 12 : Double(p) * 66 - 60 }
-    private var cap: CGFloat { compact ? 14 : 18 }
+    private var cap: CGFloat { compact ? 12 : 14 }
 
     private var scaleLabels: some View {
         GeometryReader { g in
@@ -246,7 +241,7 @@ struct ChannelStrip: View {
                     .position(x: g.size.width / 2, y: cap / 2 + travel * (1 - faderPos(m)))
             }
         }
-        .frame(width: compact ? 16 : 20)
+        .frame(width: compact ? 13 : 16)
     }
 
     private var fader: some View {
@@ -284,7 +279,7 @@ struct ChannelStrip: View {
             })
             .onTapGesture(count: 2) { onDB(0) }
         }
-        .frame(width: compact ? 26 : 34)
+        .frame(width: compact ? 22 : 28)
     }
 
     // MARK: Meter (L/R, same scale and colours as the monitor VU meters)
@@ -313,6 +308,6 @@ struct ChannelStrip: View {
                 }
             }
         }
-        .frame(width: compact ? 4 : 5)
+        .frame(width: compact ? 3 : 4)
     }
 }
