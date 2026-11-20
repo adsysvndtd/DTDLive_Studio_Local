@@ -139,8 +139,13 @@ struct TitleLayer: Identifiable, Equatable {
                 m.w *= f
             } else {
                 let mid = m.x + m.w / 2
-                let centred = (m.kind == .text && m.align == 1 && m.w >= 0.3 * g.width) || abs(mid - g.midX) < 0.08 * g.width
-                if centred { m.x += (f - 1) * (g.midX - g.minX) } else if mid > g.midX { m.x += (f - 1) * g.width }
+                // text follows its own alignment (left text stays left even if its box reaches the middle);
+                // other parts follow the side they are on, or stay centred when they sit in the middle
+                let side: Int
+                if m.kind == .text && m.align != 1 { side = m.align == 2 ? 1 : -1 }
+                else if abs(mid - g.midX) < 0.08 * g.width || (m.kind == .text && m.w >= 0.3 * g.width) { side = 0 }
+                else { side = mid > g.midX ? 1 : -1 }
+                if side == 0 { m.x += (f - 1) * (g.midX - g.minX) } else if side == 1 { m.x += (f - 1) * g.width }
             }
             m.x += shiftAll
             return m
