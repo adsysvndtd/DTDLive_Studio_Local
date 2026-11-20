@@ -1756,7 +1756,7 @@ final class StudioEngine: ObservableObject {
     private var backgroundTask: Task<Void, Never>?
 
     func updateIdleTimer() {
-        let on = keepScreenOn || isAnyLive || isRecording || playout.isActive
+        let on = keepScreenOn || isAnyLive || isRecording || playout.keepsScreenOn
         if UIApplication.shared.isIdleTimerDisabled != on { UIApplication.shared.isIdleTimerDisabled = on }
     }
 

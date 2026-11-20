@@ -3,6 +3,8 @@
 "%@ (mặc định)" = "%@ (mặc định)";
 "%@ ngày" = "%@ ngày";
 "%@ video không có âm thanh" = "%@ video không có âm thanh";
+"%@ video · %@" = "%@ video · %@";
+"%@ đã lên PVW — bấm CUT / AUTO / T-bar để phát lên PGM" = "%@ đã lên PVW — bấm CUT / AUTO / T-bar để phát lên PGM";
 "%lld giây / cú, gia hạn %lld giây" = "%lld giây / cú, gia hạn %lld giây";
 "(bản sao)" = "(bản sao)";
 "(bộ mã hoá phần cứng lỗi / quá tải)" = "(bộ mã hoá phần cứng lỗi / quá tải)";
@@ -67,6 +69,7 @@
 "Bấm ♡ trên một nguồn để thêm vào Yêu thích" = "Bấm ♡ trên một nguồn để thêm vào Yêu thích";
 "BẬT" = "BẬT";
 "Bật bộ đệm replay (60 giây gần nhất)" = "Bật bộ đệm replay (60 giây gần nhất)";
+"Bật khung giờ này" = "Bật khung giờ này";
 "Bật kết nối ở mục Đầu ra (YouTube, Facebook, RTMP, SRT…) như bình thường." = "Bật kết nối ở mục Đầu ra (YouTube, Facebook, RTMP, SRT…) như bình thường.";
 "Bật nảy" = "Bật nảy";
 "Bật scopes (Program)" = "Bật scopes (Program)";
@@ -82,6 +85,7 @@
 "Bỏ chọn" = "Bỏ chọn";
 "Bỏ logo" = "Bỏ logo";
 "Bỏ qua các video đã bị xoá khỏi thư viện" = "Bỏ qua các video đã bị xoá khỏi thư viện";
+"Bỏ qua khung giờ %@ lúc %@: ứng dụng không mở đúng giờ" = "Bỏ qua khung giờ %@ lúc %@: ứng dụng không mở đúng giờ";
 "Bỏ stinger" = "Bỏ stinger";
 "Bỏ ảnh nền" = "Bỏ ảnh nền";
 "BỐ CỤC" = "BỐ CỤC";
@@ -141,6 +145,8 @@
 "Chưa có gói" = "Chưa có gói";
 "Chưa có gói DTDStudio trên máy chủ." = "Chưa có gói DTDStudio trên máy chủ.";
 "Chưa có hình" = "Chưa có hình";
+"Chưa có khung giờ nào sắp tới" = "Chưa có khung giờ nào sắp tới";
+"Chưa có khung giờ nào trong ngày này." = "Chưa có khung giờ nào trong ngày này.";
 "Chưa có kênh nào" = "Chưa có kênh nào";
 "Chưa có kết nối phát. Thêm ở mục Đầu ra (YouTube, Facebook, RTMP, SRT…)." = "Chưa có kết nối phát. Thêm ở mục Đầu ra (YouTube, Facebook, RTMP, SRT…).";
 "Chưa có lớp chữ" = "Chưa có lớp chữ";
@@ -151,6 +157,8 @@
 "Chưa có thiết bị nào được ghép nối" = "Chưa có thiết bị nào được ghép nối";
 "Chưa có thiết kế" = "Chưa có thiết kế";
 "Chưa có title — bấm Thêm title ở góc trên" = "Chưa có title — bấm Thêm title ở góc trên";
+"Chưa có video" = "Chưa có video";
+"Chưa có video trong khung giờ này." = "Chưa có video trong khung giờ này.";
 "Chưa có video. Nhập video ở mục Video (Từ Ảnh / Từ Tệp), rồi thêm vào đây." = "Chưa có video. Nhập video ở mục Video (Từ Ảnh / Từ Tệp), rồi thêm vào đây.";
 "Chưa có đích phát" = "Chưa có đích phát";
 "Chưa có ảnh nền — bấm Ảnh nền từ Thư viện hoặc Tệp" = "Chưa có ảnh nền — bấm Ảnh nền từ Thư viện hoặc Tệp";
@@ -173,11 +181,13 @@
 "Chạm một thẻ hoặc ảnh trong thư viện bên dưới để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh." = "Chạm một thẻ hoặc ảnh trong thư viện bên dưới để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh.";
 "Chạm một thẻ để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh." = "Chạm một thẻ để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh.";
 "Chạm một ảnh để dùng làm chuyển cảnh cho Cut / Auto / T-bar" = "Chạm một ảnh để dùng làm chuyển cảnh cho Cut / Auto / T-bar";
+"Chạm vào một khung để sửa giờ, video, lặp lại theo ngày / theo thứ." = "Chạm vào một khung để sửa giờ, video, lặp lại theo ngày / theo thứ.";
 "Chạm vào một lớp trên khung vẽ để chọn (chạm đúp vào chữ để sửa nội dung), hoặc thêm lớp mới:" = "Chạm vào một lớp trên khung vẽ để chọn (chạm đúp vào chữ để sửa nội dung), hoặc thêm lớp mới:";
 "Chạm để nạp, bật/tắt bằng phím ở cột phải" = "Chạm để nạp, bật/tắt bằng phím ở cột phải";
 "Chạm để đưa lên PVW, rồi Cut / chuyển cảnh ở cột phải" = "Chạm để đưa lên PVW, rồi Cut / chuyển cảnh ở cột phải";
 "Chạy hiệu ứng" = "Chạy hiệu ứng";
 "Chạy lại" = "Chạy lại";
+"Chạy lịch tự động" = "Chạy lịch tự động";
 "Chạy một lần" = "Chạy một lần";
 "Chấm điểm tự do. Chọn môn để tính điểm, set, game theo luật:" = "Chấm điểm tự do. Chọn môn để tính điểm, set, game theo luật:";
 "Chấp nhận" = "Chấp nhận";
@@ -185,6 +195,7 @@
 "Chỉ bật khi dùng tai nghe — loa ngoài sẽ hú vào micro." = "Chỉ bật khi dùng tai nghe — loa ngoài sẽ hú vào micro.";
 "Chỉ chấp nhận nếu ID này trùng với ID trên màn hình thiết bị" = "Chỉ chấp nhận nếu ID này trùng với ID trên màn hình thiết bị";
 "Chỉ mình tôi" = "Chỉ mình tôi";
+"Chỉ ngày này" = "Chỉ ngày này";
 "Chỉnh khung" = "Chỉnh khung";
 "Chỉnh nhích" = "Chỉnh nhích";
 "Chọn lại gói" = "Chọn lại gói";
@@ -192,12 +203,14 @@
 "Chọn một nguồn ở hàng PREVIEW để chỉnh" = "Chọn một nguồn ở hàng PREVIEW để chỉnh";
 "Chọn nguồn" = "Chọn nguồn";
 "Chọn tay" = "Chọn tay";
+"Chọn thứ" = "Chọn thứ";
 "Chọn từ thư viện Logo" = "Chọn từ thư viện Logo";
 "Chọn video" = "Chọn video";
 "Chọn video…" = "Chọn video…";
 "Chọn ít nhất một nền tảng" = "Chọn ít nhất một nền tảng";
 "Chọn ảnh / logo" = "Chọn ảnh / logo";
 "Chống rung" = "Chống rung";
+"Chồng giờ với khung sau" = "Chồng giờ với khung sau";
 "Chớp sáng" = "Chớp sáng";
 "Chụm 2 ngón trên khung để đổi cỡ" = "Chụm 2 ngón trên khung để đổi cỡ";
 "Chủ repo (owner)" = "Chủ repo (owner)";
@@ -259,6 +272,7 @@
 "Cỡ khung" = "Cỡ khung";
 "Cỡ logo" = "Cỡ logo";
 "Cỡ tổng thể" = "Cỡ tổng thể";
+"Danh sách" = "Danh sách";
 "Danh sách bắt đầu trễ %@ phút (ứng dụng không mở đúng giờ)" = "Danh sách bắt đầu trễ %@ phút (ứng dụng không mở đúng giờ)";
 "Danh sách lên PVW trễ %@ phút (ứng dụng không mở đúng giờ)" = "Danh sách lên PVW trễ %@ phút (ứng dụng không mở đúng giờ)";
 "Danh sách phát" = "Danh sách phát";
@@ -407,6 +421,7 @@
 "Hình học" = "Hình học";
 "Hơi đậm" = "Hơi đậm";
 "Hạ replay" = "Hạ replay";
+"Hằng ngày" = "Hằng ngày";
 "Hẹn giờ" = "Hẹn giờ";
 "Hẹn giờ phát" = "Hẹn giờ phát";
 "Hẹp" = "Hẹp";
@@ -425,6 +440,7 @@
 "Khoá cân bằng trắng" = "Khoá cân bằng trắng";
 "Khoá lớp" = "Khoá lớp";
 "Khoá lớp (không chọn / kéo trên khung vẽ)" = "Khoá lớp (không chọn / kéo trên khung vẽ)";
+"Khung %@" = "Khung %@";
 "Khung LIVE" = "Khung LIVE";
 "Khung PiP đơn đè lên Program" = "Khung PiP đơn đè lên Program";
 "Khung an toàn" = "Khung an toàn";
@@ -432,6 +448,7 @@
 "Khung an toàn trên màn hình ngoài" = "Khung an toàn trên màn hình ngoài";
 "Khung bản tin trực tiếp · Xanh" = "Khung bản tin trực tiếp · Xanh";
 "Khung bản tin trực tiếp · Đỏ" = "Khung bản tin trực tiếp · Đỏ";
+"Khung giờ" = "Khung giờ";
 "Khung hình hỏng bị bỏ qua" = "Khung hình hỏng bị bỏ qua";
 "Khung hình/giây: dựng %@ · vào mã hoá %@ · ra %@ · dựng TB %@ ms, max %@ ms, quá hạn %@ · %@×%@ %@/%@ kbps%@" = "Khung hình/giây: dựng %@ · vào mã hoá %@ · ra %@ · dựng TB %@ ms, max %@ ms, quá hạn %@ · %@×%@ %@/%@ kbps%@";
 "Khung neon livestream" = "Khung neon livestream";
@@ -501,6 +518,7 @@
 "Kết nối phát khi bắt đầu" = "Kết nối phát khi bắt đầu";
 "Kết thúc dự kiến" = "Kết thúc dự kiến";
 "Kết thúc hoà" = "Kết thúc hoà";
+"Kết thúc khoảng %@" = "Kết thúc khoảng %@";
 "LIVE · Cam" = "LIVE · Cam";
 "LIVE · Xanh dương" = "LIVE · Xanh dương";
 "LIVE · Xanh đá" = "LIVE · Xanh đá";
@@ -559,7 +577,12 @@
 "Lặp" = "Lặp";
 "Lặp lại" = "Lặp lại";
 "Lặp lại cả danh sách" = "Lặp lại cả danh sách";
+"Lặp lại từ ngày bắt đầu trở đi, cùng giờ." = "Lặp lại từ ngày bắt đầu trở đi, cùng giờ.";
+"Lặp lại: danh sách chạy mãi cho đến khi khung giờ sau lên PVW và anh chuyển cảnh, hoặc bấm Dừng." = "Lặp lại: danh sách chạy mãi cho đến khi khung giờ sau lên PVW và anh chuyển cảnh, hoặc bấm Dừng.";
 "Lịch phát" = "Lịch phát";
+"Lịch theo ngày" = "Lịch theo ngày";
+"Lịch theo ngày · tiếp theo %@ %@ · còn %@" = "Lịch theo ngày · tiếp theo %@ %@ · còn %@";
+"Lịch theo ngày đang chạy · không còn khung giờ nào sắp tới" = "Lịch theo ngày đang chạy · không còn khung giờ nào sắp tới";
 "Lỗi" = "Lỗi";
 "Lỗi tích lũy" = "Lỗi tích lũy";
 "Lỗi: %@" = "Lỗi: %@";
@@ -846,6 +869,7 @@
 "Thêm (%@)" = "Thêm (%@)";
 "Thêm bảng tỉ số" = "Thêm bảng tỉ số";
 "Thêm khung" = "Thêm khung";
+"Thêm khung giờ" = "Thêm khung giờ";
 "Thêm link xem" = "Thêm link xem";
 "Thêm lớp" = "Thêm lớp";
 "Thêm lớp từ thanh công cụ, hoặc nạp một mẫu lower third có sẵn." = "Thêm lớp từ thanh công cụ, hoặc nạp một mẫu lower third có sẵn.";
@@ -898,6 +922,7 @@
 "Tiêu đề trên (tổ chức / chương trình)" = "Tiêu đề trên (tổ chức / chương trình)";
 "Tiêu đề tập" = "Tiêu đề tập";
 "Tiếng Việt" = "Tiếng Việt";
+"Tiếp theo" = "Tiếp theo";
 "To hơn" = "To hơn";
 "Token (chỉ cần cho repo private)" = "Token (chỉ cần cho repo private)";
 "Toàn khung + 2 PiP góc dưới" = "Toàn khung + 2 PiP góc dưới";
@@ -935,6 +960,7 @@
 "Tên" = "Tên";
 "Tên + chức danh" = "Tên + chức danh";
 "Tên chương trình" = "Tên chương trình";
+"Tên khung giờ (ví dụ: Bản tin trưa)" = "Tên khung giờ (ví dụ: Bản tin trưa)";
 "Tên khách mời" = "Tên khách mời";
 "Tên kênh" = "Tên kênh";
 "Tên mẫu" = "Tên mẫu";
@@ -987,6 +1013,7 @@
 "Video" = "Video";
 "Video này không có chat trực tiếp đang mở" = "Video này không có chat trực tiếp đang mở";
 "Video từ Ảnh" = "Video từ Ảnh";
+"Video · %@ · %@" = "Video · %@ · %@";
 "Video đang dùng làm nguồn" = "Video đang dùng làm nguồn";
 "Video đã ghi / thư viện" = "Video đã ghi / thư viện";
 "VideoToolbox lỗi %@ %@ — tạo lại bộ mã hoá" = "VideoToolbox lỗi %@ %@ — tạo lại bộ mã hoá";
@@ -1003,6 +1030,7 @@
 "Vẽ" = "Vẽ";
 "Về 0°" = "Về 0°";
 "Về gốc" = "Về gốc";
+"Về hôm nay" = "Về hôm nay";
 "Về màu mặc định của kiểu" = "Về màu mặc định của kiểu";
 "Về mặc định lớp" = "Về mặc định lớp";
 "Về vị trí gốc" = "Về vị trí gốc";
@@ -1034,6 +1062,8 @@
 "Xoá khung %@" = "Xoá khung %@";
 "Xoá khung %lf" = "Xoá khung %lf";
 "Xoá khung %lld" = "Xoá khung %lld";
+"Xoá khung giờ" = "Xoá khung giờ";
+"Xoá khung giờ này?" = "Xoá khung giờ này?";
 "Xoá khỏi danh sách" = "Xoá khỏi danh sách";
 "Xoá khỏi thư viện" = "Xoá khỏi thư viện";
 "Xoá lớp" = "Xoá lớp";
@@ -1063,6 +1093,7 @@
 "connect lỗi: %@" = "connect lỗi: %@";
 "connect lỗi: %lf" = "connect lỗi: %lf";
 "connect lỗi: %lld" = "connect lỗi: %lld";
+"còn %@" = "còn %@";
 "developers.facebook.com › App › quyền publish_video" = "developers.facebook.com › App › quyền publish_video";
 "instagram.com (trình duyệt máy tính) › Tạo › Video trực tiếp › copy URL luồng + Khoá luồng (mỗi phiên khác nhau, dùng rtmps)." = "instagram.com (trình duyệt máy tính) › Tạo › Video trực tiếp › copy URL luồng + Khoá luồng (mỗi phiên khác nhau, dùng rtmps).";
 "không tìm thấy repo/nhánh/thư mục (repo private cần token)" = "không tìm thấy repo/nhánh/thư mục (repo private cần token)";
@@ -1111,6 +1142,7 @@
 "Đang tìm…" = "Đang tìm…";
 "Đang tải giá từ App Store…" = "Đang tải giá từ App Store…";
 "Đang tải…" = "Đang tải…";
+"Đang tắt" = "Đang tắt";
 "Đen" = "Đen";
 "Điều khiển PTZ" = "Điều khiển PTZ";
 "Điều khiển camera" = "Điều khiển camera";
@@ -1189,6 +1221,7 @@
 "Đặt lại đồng hồ" = "Đặt lại đồng hồ";
 "Đếm ngược" = "Đếm ngược";
 "Đến %@" = "Đến %@";
+"Đến giờ của mỗi khung, danh sách của khung đó lên PVW (dừng ở khung đầu); bấm chuyển cảnh để phát. Giữ DTDStudio mở trên màn hình khi lịch đang chạy." = "Đến giờ của mỗi khung, danh sách của khung đó lên PVW (dừng ở khung đầu); bấm chuyển cảnh để phát. Giữ DTDStudio mở trên màn hình khi lịch đang chạy.";
 "Đến giờ hẹn, danh sách lên PVW và dừng ở khung đầu. Hết danh sách thì giữ khung cuối." = "Đến giờ hẹn, danh sách lên PVW và dừng ở khung đầu. Hết danh sách thì giữ khung cuối.";
 "Địa điểm" = "Địa điểm";
 "ĐỒNG HÀNH CÙNG CHƯƠNG TRÌNH" = "ĐỒNG HÀNH CÙNG CHƯƠNG TRÌNH";

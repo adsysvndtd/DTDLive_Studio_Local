@@ -8,13 +8,26 @@ struct PlayoutSheet: View {
     @Environment(\.dismiss) private var dismiss
     @State private var picking = false
     @State private var confirmStop = false
+    /// 0 = one list (Danh sách) · 1 = day schedule (Lịch theo ngày)
+    @AppStorage("dtd.playout.mode") private var mode = 0
 
     var body: some View {
         NavigationStack {
             Form {
-                statusSection
-                listSection
-                scheduleSection
+                Section {
+                    Picker("Chế độ", selection: $mode) {
+                        Text("Danh sách").tag(0)
+                        Text("Lịch theo ngày").tag(1)
+                    }
+                    .pickerStyle(.segmented)
+                }
+                if mode == 0 || playout.state != .idle { statusSection }
+                if mode == 0 {
+                    listSection
+                    scheduleSection
+                } else {
+                    DayScheduleSections(playout: playout, library: library)
+                }
                 flowSection
             }
             .navigationTitle("Danh sách phát")
@@ -268,7 +281,7 @@ struct PlayoutSheet: View {
 }
 
 /// Pick several videos from the library (in the order they are tapped).
-private struct MoviePickerSheet: View {
+struct MoviePickerSheet: View {
     let files: [URL]
     var onAdd: ([String]) -> Void
     @Environment(\.dismiss) private var dismiss
@@ -325,7 +338,7 @@ struct PlayoutStatusBar: View {
     var open: () -> Void
 
     var body: some View {
-        if playout.state != .idle {
+        if playout.state != .idle || playout.scheduleOn {
             Button(action: open) {
                 HStack(spacing: 8) {
                     Image(systemName: icon).foregroundStyle(tint)
@@ -346,6 +359,7 @@ struct PlayoutStatusBar: View {
         case .armed: return "clock.badge.checkmark"
         case .cued: return "rectangle.on.rectangle"
         case .playing: return "play.rectangle.fill"
+        case .idle: return "calendar.badge.clock"
         default: return "checkmark.circle"
         }
     }
@@ -357,6 +371,11 @@ struct PlayoutStatusBar: View {
                       PlayoutSheet.clock(playout.plan.startAt.timeIntervalSince(playout.now)))
         case .cued:
             return L("Danh sách phát sẵn sàng trên PVW — chuyển cảnh để phát")
+        case .idle:
+            guard let n = playout.nextFire(after: playout.now) else { return L("Lịch theo ngày đang chạy · không còn khung giờ nào sắp tới") }
+            let name = n.slot.name.isEmpty ? L("Danh sách phát") : n.slot.name
+            return LF("Lịch theo ngày · tiếp theo %@ %@ · còn %@", PlayoutController.hm.string(from: n.at), name,
+                      PlayoutSheet.clock(n.at.timeIntervalSince(playout.now)))
         case .playing:
             let n = playout.source?.urls.count ?? 0
             return LF("Danh sách phát %@/%@: %@", "\(playout.index + 1)", "\(n)", playout.source?.currentName ?? "")

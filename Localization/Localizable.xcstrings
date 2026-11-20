@@ -12676,6 +12676,336 @@
           }
         }
       }
+    },
+    "%@ video · %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ videos · %@"
+          }
+        }
+      }
+    },
+    "%@ đã lên PVW — bấm CUT / AUTO / T-bar để phát lên PGM": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ is on PVW — press CUT / AUTO / T-bar to play it on PGM"
+          }
+        }
+      }
+    },
+    "Bật khung giờ này": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enable this slot"
+          }
+        }
+      }
+    },
+    "Bỏ qua khung giờ %@ lúc %@: ứng dụng không mở đúng giờ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skipped slot %@ at %@: the app was not open on time"
+          }
+        }
+      }
+    },
+    "Chưa có khung giờ nào sắp tới": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No upcoming slots"
+          }
+        }
+      }
+    },
+    "Chưa có khung giờ nào trong ngày này.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No slots on this day."
+          }
+        }
+      }
+    },
+    "Chưa có video": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No videos"
+          }
+        }
+      }
+    },
+    "Chưa có video trong khung giờ này.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No videos in this slot yet."
+          }
+        }
+      }
+    },
+    "Chạm vào một khung để sửa giờ, video, lặp lại theo ngày / theo thứ.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap a slot to edit its time, videos and repeat (daily / weekdays)."
+          }
+        }
+      }
+    },
+    "Chạy lịch tự động": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Run schedule automatically"
+          }
+        }
+      }
+    },
+    "Chỉ ngày này": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This day only"
+          }
+        }
+      }
+    },
+    "Chọn thứ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weekdays"
+          }
+        }
+      }
+    },
+    "Chồng giờ với khung sau": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Overlaps the next slot"
+          }
+        }
+      }
+    },
+    "Danh sách": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "List"
+          }
+        }
+      }
+    },
+    "Hằng ngày": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Every day"
+          }
+        }
+      }
+    },
+    "Khung %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slot %@"
+          }
+        }
+      }
+    },
+    "Khung giờ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time slot"
+          }
+        }
+      }
+    },
+    "Kết thúc khoảng %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ends around %@"
+          }
+        }
+      }
+    },
+    "Lặp lại từ ngày bắt đầu trở đi, cùng giờ.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Repeats from the start date onward, at the same time."
+          }
+        }
+      }
+    },
+    "Lặp lại: danh sách chạy mãi cho đến khi khung giờ sau lên PVW và anh chuyển cảnh, hoặc bấm Dừng.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loop: the list keeps playing until the next slot is on PVW and you transition, or you press Stop."
+          }
+        }
+      }
+    },
+    "Lịch theo ngày": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Day schedule"
+          }
+        }
+      }
+    },
+    "Lịch theo ngày · tiếp theo %@ %@ · còn %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Day schedule · next %@ %@ · in %@"
+          }
+        }
+      }
+    },
+    "Lịch theo ngày đang chạy · không còn khung giờ nào sắp tới": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Day schedule running · no upcoming slots"
+          }
+        }
+      }
+    },
+    "Thêm khung giờ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add time slot"
+          }
+        }
+      }
+    },
+    "Tiếp theo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Next"
+          }
+        }
+      }
+    },
+    "Tên khung giờ (ví dụ: Bản tin trưa)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slot name (e.g. Noon news)"
+          }
+        }
+      }
+    },
+    "Video · %@ · %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Videos · %@ · %@"
+          }
+        }
+      }
+    },
+    "Về hôm nay": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back to today"
+          }
+        }
+      }
+    },
+    "Xoá khung giờ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete slot"
+          }
+        }
+      }
+    },
+    "Xoá khung giờ này?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete this slot?"
+          }
+        }
+      }
+    },
+    "còn %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "in %@"
+          }
+        }
+      }
+    },
+    "Đang tắt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Off"
+          }
+        }
+      }
+    },
+    "Đến giờ của mỗi khung, danh sách của khung đó lên PVW (dừng ở khung đầu); bấm chuyển cảnh để phát. Giữ DTDStudio mở trên màn hình khi lịch đang chạy.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "At each slot's time its list goes to PVW (held on the first frame); a transition plays it. Keep DTDStudio open on screen while the schedule is running."
+          }
+        }
+      }
     }
   },
   "version": "1.0"

@@ -3,6 +3,8 @@
 "%@ (mặc định)" = "%@ (default)";
 "%@ ngày" = "%@ days";
 "%@ video không có âm thanh" = "%@ video(s) have no sound";
+"%@ video · %@" = "%@ videos · %@";
+"%@ đã lên PVW — bấm CUT / AUTO / T-bar để phát lên PGM" = "%@ is on PVW — press CUT / AUTO / T-bar to play it on PGM";
 "%lld giây / cú, gia hạn %lld giây" = "%lld s per shot, %lld s extension";
 "(bản sao)" = "(copy)";
 "(bộ mã hoá phần cứng lỗi / quá tải)" = "(hardware encoder failed / overloaded)";
@@ -67,6 +69,7 @@
 "Bấm ♡ trên một nguồn để thêm vào Yêu thích" = "Tap ♡ on a source to add it to Favorites";
 "BẬT" = "ON";
 "Bật bộ đệm replay (60 giây gần nhất)" = "Replay buffer on (last 60 seconds)";
+"Bật khung giờ này" = "Enable this slot";
 "Bật kết nối ở mục Đầu ra (YouTube, Facebook, RTMP, SRT…) như bình thường." = "Start the connections in Outputs (YouTube, Facebook, RTMP, SRT…) as usual.";
 "Bật nảy" = "Pop";
 "Bật scopes (Program)" = "Show scopes (Program)";
@@ -82,6 +85,7 @@
 "Bỏ chọn" = "Deselect";
 "Bỏ logo" = "Clear logo";
 "Bỏ qua các video đã bị xoá khỏi thư viện" = "Skipping videos removed from the library";
+"Bỏ qua khung giờ %@ lúc %@: ứng dụng không mở đúng giờ" = "Skipped slot %@ at %@: the app was not open on time";
 "Bỏ stinger" = "Remove stinger";
 "Bỏ ảnh nền" = "Clear background";
 "BỐ CỤC" = "LAYOUT";
@@ -141,6 +145,8 @@
 "Chưa có gói" = "No plan";
 "Chưa có gói DTDStudio trên máy chủ." = "No DTDStudio plans on the server.";
 "Chưa có hình" = "No picture";
+"Chưa có khung giờ nào sắp tới" = "No upcoming slots";
+"Chưa có khung giờ nào trong ngày này." = "No slots on this day.";
 "Chưa có kênh nào" = "No channels yet";
 "Chưa có kết nối phát. Thêm ở mục Đầu ra (YouTube, Facebook, RTMP, SRT…)." = "No stream connections yet. Add them in Outputs (YouTube, Facebook, RTMP, SRT…).";
 "Chưa có lớp chữ" = "No text layers";
@@ -151,6 +157,8 @@
 "Chưa có thiết bị nào được ghép nối" = "No paired devices yet";
 "Chưa có thiết kế" = "No design yet";
 "Chưa có title — bấm Thêm title ở góc trên" = "No titles yet — tap Add title at the top";
+"Chưa có video" = "No videos";
+"Chưa có video trong khung giờ này." = "No videos in this slot yet.";
 "Chưa có video. Nhập video ở mục Video (Từ Ảnh / Từ Tệp), rồi thêm vào đây." = "No videos yet. Import videos in Video (From Photos / From Files), then add them here.";
 "Chưa có đích phát" = "No destinations yet";
 "Chưa có ảnh nền — bấm Ảnh nền từ Thư viện hoặc Tệp" = "No background picture — tap Background from Photos or Files";
@@ -173,11 +181,13 @@
 "Chạm một thẻ hoặc ảnh trong thư viện bên dưới để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh." = "Tap a card or a picture in the library below to load it; SuperFG On plays its in-animation, then it leaves by itself (or holds until switched off). The small icon shows the transition type.";
 "Chạm một thẻ để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh." = "Tap a card to load it; SuperFG On plays its in-animation, then it leaves by itself (or holds until switched off). The small icon shows the transition type.";
 "Chạm một ảnh để dùng làm chuyển cảnh cho Cut / Auto / T-bar" = "Tap a picture to use it as the transition for Cut / Auto / T-bar";
+"Chạm vào một khung để sửa giờ, video, lặp lại theo ngày / theo thứ." = "Tap a slot to edit its time, videos and repeat (daily / weekdays).";
 "Chạm vào một lớp trên khung vẽ để chọn (chạm đúp vào chữ để sửa nội dung), hoặc thêm lớp mới:" = "Tap a layer on the canvas to select it (double-tap text to edit it), or add a new layer:";
 "Chạm để nạp, bật/tắt bằng phím ở cột phải" = "Tap to load; turn on/off with the keys on the right";
 "Chạm để đưa lên PVW, rồi Cut / chuyển cảnh ở cột phải" = "Tap to send to PVW, then Cut / transition on the right";
 "Chạy hiệu ứng" = "Play animation";
 "Chạy lại" = "Replay";
+"Chạy lịch tự động" = "Run schedule automatically";
 "Chạy một lần" = "Play once";
 "Chấm điểm tự do. Chọn môn để tính điểm, set, game theo luật:" = "Free scoring. Pick a sport to score points, sets and games by its rules:";
 "Chấp nhận" = "Accept";
@@ -185,6 +195,7 @@
 "Chỉ bật khi dùng tai nghe — loa ngoài sẽ hú vào micro." = "Headphones only — the speaker would feed back into the mic.";
 "Chỉ chấp nhận nếu ID này trùng với ID trên màn hình thiết bị" = "Accept only if this ID matches the one on the device";
 "Chỉ mình tôi" = "Only me";
+"Chỉ ngày này" = "This day only";
 "Chỉnh khung" = "Edit windows";
 "Chỉnh nhích" = "Nudge";
 "Chọn lại gói" = "Choose again";
@@ -192,12 +203,14 @@
 "Chọn một nguồn ở hàng PREVIEW để chỉnh" = "Pick a source on PREVIEW to adjust";
 "Chọn nguồn" = "Choose source";
 "Chọn tay" = "Manual";
+"Chọn thứ" = "Weekdays";
 "Chọn từ thư viện Logo" = "Choose from Logo library";
 "Chọn video" = "Choose videos";
 "Chọn video…" = "Choose video…";
 "Chọn ít nhất một nền tảng" = "Pick at least one platform";
 "Chọn ảnh / logo" = "Choose image / logo";
 "Chống rung" = "Stabilization";
+"Chồng giờ với khung sau" = "Overlaps the next slot";
 "Chớp sáng" = "Flash";
 "Chụm 2 ngón trên khung để đổi cỡ" = "Pinch on the preview to resize";
 "Chủ repo (owner)" = "Repo owner";
@@ -259,6 +272,7 @@
 "Cỡ khung" = "Window size";
 "Cỡ logo" = "Logo size";
 "Cỡ tổng thể" = "Overall size";
+"Danh sách" = "List";
 "Danh sách bắt đầu trễ %@ phút (ứng dụng không mở đúng giờ)" = "The playlist started %@ min late (the app was not open at the start time)";
 "Danh sách lên PVW trễ %@ phút (ứng dụng không mở đúng giờ)" = "The playlist went to PVW %@ min late (the app was not open at the time)";
 "Danh sách phát" = "Playlist";
@@ -407,6 +421,7 @@
 "Hình học" = "Geometry";
 "Hơi đậm" = "Semibold";
 "Hạ replay" = "Take replay down";
+"Hằng ngày" = "Every day";
 "Hẹn giờ" = "Scheduled";
 "Hẹn giờ phát" = "Schedule";
 "Hẹp" = "Condensed";
@@ -425,6 +440,7 @@
 "Khoá cân bằng trắng" = "Lock white balance";
 "Khoá lớp" = "Lock layer";
 "Khoá lớp (không chọn / kéo trên khung vẽ)" = "Lock layer (not picked / dragged on the canvas)";
+"Khung %@" = "Slot %@";
 "Khung LIVE" = "LIVE frame";
 "Khung PiP đơn đè lên Program" = "Single PiP window over Program";
 "Khung an toàn" = "Safe area";
@@ -432,6 +448,7 @@
 "Khung an toàn trên màn hình ngoài" = "Safe area on external display";
 "Khung bản tin trực tiếp · Xanh" = "Live news frame · Blue";
 "Khung bản tin trực tiếp · Đỏ" = "Live news frame · Red";
+"Khung giờ" = "Time slot";
 "Khung hình hỏng bị bỏ qua" = "Broken frames skipped";
 "Khung hình/giây: dựng %@ · vào mã hoá %@ · ra %@ · dựng TB %@ ms, max %@ ms, quá hạn %@ · %@×%@ %@/%@ kbps%@" = "Frames/s: rendered %@ · into encoder %@ · out %@ · render avg %@ ms, max %@ ms, late %@ · %@×%@ %@/%@ kbps%@";
 "Khung neon livestream" = "Neon livestream frame";
@@ -501,6 +518,7 @@
 "Kết nối phát khi bắt đầu" = "Stream connections at start";
 "Kết thúc dự kiến" = "Expected end";
 "Kết thúc hoà" = "Ends in a draw";
+"Kết thúc khoảng %@" = "Ends around %@";
 "LIVE · Cam" = "LIVE · Orange";
 "LIVE · Xanh dương" = "LIVE · Blue";
 "LIVE · Xanh đá" = "LIVE · Slate";
@@ -559,7 +577,12 @@
 "Lặp" = "Loop";
 "Lặp lại" = "Loop";
 "Lặp lại cả danh sách" = "Loop the whole list";
+"Lặp lại từ ngày bắt đầu trở đi, cùng giờ." = "Repeats from the start date onward, at the same time.";
+"Lặp lại: danh sách chạy mãi cho đến khi khung giờ sau lên PVW và anh chuyển cảnh, hoặc bấm Dừng." = "Loop: the list keeps playing until the next slot is on PVW and you transition, or you press Stop.";
 "Lịch phát" = "Schedule";
+"Lịch theo ngày" = "Day schedule";
+"Lịch theo ngày · tiếp theo %@ %@ · còn %@" = "Day schedule · next %@ %@ · in %@";
+"Lịch theo ngày đang chạy · không còn khung giờ nào sắp tới" = "Day schedule running · no upcoming slots";
 "Lỗi" = "Error";
 "Lỗi tích lũy" = "Accumulated fouls";
 "Lỗi: %@" = "Error: %@";
@@ -846,6 +869,7 @@
 "Thêm (%@)" = "Add (%@)";
 "Thêm bảng tỉ số" = "Add scoreboard";
 "Thêm khung" = "Add window";
+"Thêm khung giờ" = "Add time slot";
 "Thêm link xem" = "Add watch link";
 "Thêm lớp" = "Add layer";
 "Thêm lớp từ thanh công cụ, hoặc nạp một mẫu lower third có sẵn." = "Add layers from the toolbar, or load a ready-made lower third.";
@@ -898,6 +922,7 @@
 "Tiêu đề trên (tổ chức / chương trình)" = "Header (organisation / show)";
 "Tiêu đề tập" = "Episode title";
 "Tiếng Việt" = "Tiếng Việt";
+"Tiếp theo" = "Next";
 "To hơn" = "Larger";
 "Token (chỉ cần cho repo private)" = "Token (private repos only)";
 "Toàn khung + 2 PiP góc dưới" = "Full + 2 PiP bottom corners";
@@ -935,6 +960,7 @@
 "Tên" = "Name";
 "Tên + chức danh" = "Name + title";
 "Tên chương trình" = "Show name";
+"Tên khung giờ (ví dụ: Bản tin trưa)" = "Slot name (e.g. Noon news)";
 "Tên khách mời" = "Guest name";
 "Tên kênh" = "Channel name";
 "Tên mẫu" = "Template name";
@@ -987,6 +1013,7 @@
 "Video" = "Video";
 "Video này không có chat trực tiếp đang mở" = "This video has no open live chat";
 "Video từ Ảnh" = "Videos from Photos";
+"Video · %@ · %@" = "Videos · %@ · %@";
 "Video đang dùng làm nguồn" = "Videos in use";
 "Video đã ghi / thư viện" = "Recorded / library videos";
 "VideoToolbox lỗi %@ %@ — tạo lại bộ mã hoá" = "VideoToolbox error %@ %@ — recreating the encoder";
@@ -1003,6 +1030,7 @@
 "Vẽ" = "Draw";
 "Về 0°" = "Reset to 0°";
 "Về gốc" = "Reset";
+"Về hôm nay" = "Back to today";
 "Về màu mặc định của kiểu" = "Reset to the style's colours";
 "Về mặc định lớp" = "Reset layer";
 "Về vị trí gốc" = "Back to origin";
@@ -1034,6 +1062,8 @@
 "Xoá khung %@" = "Remove window %@";
 "Xoá khung %lf" = "Remove window %lf";
 "Xoá khung %lld" = "Remove window %lld";
+"Xoá khung giờ" = "Delete slot";
+"Xoá khung giờ này?" = "Delete this slot?";
 "Xoá khỏi danh sách" = "Remove from the list";
 "Xoá khỏi thư viện" = "Remove from library";
 "Xoá lớp" = "Delete layer";
@@ -1063,6 +1093,7 @@
 "connect lỗi: %@" = "connect error: %@";
 "connect lỗi: %lf" = "connect error: %lf";
 "connect lỗi: %lld" = "connect error: %lld";
+"còn %@" = "in %@";
 "developers.facebook.com › App › quyền publish_video" = "developers.facebook.com › App › publish_video permission";
 "instagram.com (trình duyệt máy tính) › Tạo › Video trực tiếp › copy URL luồng + Khoá luồng (mỗi phiên khác nhau, dùng rtmps)." = "instagram.com (desktop browser) › Create › Live video › copy Stream URL + Stream key (new each session, rtmps).";
 "không tìm thấy repo/nhánh/thư mục (repo private cần token)" = "repo/branch/folder not found (private repos need a token)";
@@ -1111,6 +1142,7 @@
 "Đang tìm…" = "Searching…";
 "Đang tải giá từ App Store…" = "Loading prices from the App Store…";
 "Đang tải…" = "Loading…";
+"Đang tắt" = "Off";
 "Đen" = "Black";
 "Điều khiển PTZ" = "PTZ control";
 "Điều khiển camera" = "Camera control";
@@ -1189,6 +1221,7 @@
 "Đặt lại đồng hồ" = "Reset clock";
 "Đếm ngược" = "Count down";
 "Đến %@" = "Until %@";
+"Đến giờ của mỗi khung, danh sách của khung đó lên PVW (dừng ở khung đầu); bấm chuyển cảnh để phát. Giữ DTDStudio mở trên màn hình khi lịch đang chạy." = "At each slot's time its list goes to PVW (held on the first frame); a transition plays it. Keep DTDStudio open on screen while the schedule is running.";
 "Đến giờ hẹn, danh sách lên PVW và dừng ở khung đầu. Hết danh sách thì giữ khung cuối." = "At the scheduled time the list goes to PVW, waiting on its first frame. At the end it holds the last frame.";
 "Địa điểm" = "Location";
 "ĐỒNG HÀNH CÙNG CHƯƠNG TRÌNH" = "PROUDLY SUPPORTED BY";
