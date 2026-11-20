@@ -372,6 +372,8 @@ final class StudioEngine: ObservableObject {
                 for (id, v) in self.audio.preFaderLevels() { pL[id] = (v.0 * 2).rounded() / 2; pR[id] = (v.1 * 2).rounded() / 2 }
                 if pL != m.pflL { m.pflL = pL }
                 if pR != m.pflR { m.pflR = pR }
+                let air = self.audio.onAirChannels()
+                if air != m.onAir { m.onAir = air }
                 // the channel list itself only changes when a source, gain, mute… changes
                 if ch != self.audioChannels { self.audioChannels = ch }
             }
@@ -2013,6 +2015,13 @@ final class LiveMeters: ObservableObject {
     /// Pre-fader (PFL) L/R per source — the PVW meter.
     @Published var pflL: [UUID: Float] = [:]
     @Published var pflR: [UUID: Float] = [:]
+    /// Mixer channels heard in the program right now.
+    @Published var onAir: Set<UUID> = []
+    /// Input level of a mixer channel (after trim, before fader); falls back to the post-fader level.
+    func input(_ id: UUID) -> (Float, Float) {
+        if let l = pflL[id] { return (l, pflR[id] ?? l) }
+        return (levels[id] ?? -60, levelsR[id] ?? levels[id] ?? -60)
+    }
     func preFader(_ id: UUID?) -> (Float, Float) {
         guard let id else { return (-60, -60) }
         return (pflL[id] ?? -60, pflR[id] ?? pflL[id] ?? -60)

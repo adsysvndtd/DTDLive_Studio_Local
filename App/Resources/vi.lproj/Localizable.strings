@@ -607,6 +607,7 @@
 "Lớp trên cùng nằm phía trước. Chạm để chọn, kéo trên khung vẽ để di chuyển." = "Lớp trên cùng nằm phía trước. Chạm để chọn, kéo trên khung vẽ để di chuyển.";
 "Lớp đang chọn · %@" = "Lớp đang chọn · %@";
 "Lửa đỏ" = "Lửa đỏ";
+"MASTER" = "MASTER";
 "Mua gói ngày / tháng / năm" = "Mua gói ngày / tháng / năm";
 "Mua qua App Store" = "Mua qua App Store";
 "Multiview" = "Multiview";
@@ -1141,6 +1142,7 @@
 "publish lỗi: %@" = "publish lỗi: %@";
 "publish lỗi: %lf" = "publish lỗi: %lf";
 "publish lỗi: %lld" = "publish lỗi: %lld";
+"theo Cam iPad" = "theo Cam iPad";
 "tổng %@" = "tổng %@";
 "xxxx.apps.googleusercontent.com — Google Cloud › Credentials, bật YouTube Data API v3" = "xxxx.apps.googleusercontent.com — Google Cloud › Credentials, bật YouTube Data API v3";
 "Ánh bạc" = "Ánh bạc";

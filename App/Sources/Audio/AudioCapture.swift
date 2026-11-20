@@ -110,6 +110,16 @@ final class AudioCapture: @unchecked Sendable {
         engine.attach(player)
         engine.connect(player, to: music, format: format)
         players[Self.musicID] = player
+        // music input level (pre-fader) for its mixer meter
+        player.installTap(onBus: 0, bufferSize: 2048, format: nil) { [weak self] b, _ in
+            guard let self else { return }
+            let (l, r) = Self.peaks(b)
+            let now = ProcessInfo.processInfo.systemUptime
+            os_unfair_lock_lock(&self.lock)
+            let trim = self.states[Self.musicID]?.trim ?? 0
+            self.pfl[Self.musicID] = (min(0, l + trim), min(0, r + trim), now)
+            os_unfair_lock_unlock(&self.lock)
+        }
 
         bus.installTap(onBus: 0, bufferSize: 1024, format: format) { [weak self] buffer, when in
             guard let self else { return }
@@ -271,6 +281,9 @@ final class AudioCapture: @unchecked Sendable {
     /// The Mic counts as "on PGM" (for AFV) while an iPad camera is on air — or always when the show has no
     /// iPad camera, so a commentary mic is never cut off.
     private var micOnAir = true
+    /// Channels currently heard in the program (after mute / AFV / solo) — the mixer's ON AIR lamps.
+    private var audible: Set<UUID> = []
+    func onAirChannels() -> Set<UUID> { os_unfair_lock_lock(&lock); defer { os_unfair_lock_unlock(&lock) }; return audible }
 
     func setProgram(_ ids: Set<UUID>, main: UUID? = nil, micOnAir mic: Bool = true) {
         os_unfair_lock_lock(&lock)
@@ -284,10 +297,13 @@ final class AudioCapture: @unchecked Sendable {
         os_unfair_lock_lock(&lock); let st = states; let all = programIDs; let main = programMain; let micLive = micOnAir; os_unfair_lock_unlock(&lock)
         let pgm: Set<UUID> = afvMode == .afv1 ? Set([main].compactMap { $0 }) : all
         let anySolo = st.values.contains { $0.solo }
+        var live: Set<UUID> = []
+        defer { os_unfair_lock_lock(&lock); audible = live; os_unfair_lock_unlock(&lock) }
         for (id, s) in st {
             let onAir = id == Self.micID ? micLive : pgm.contains(id)
             let audible = !s.muted && (!s.followVideo || onAir) && (!anySolo || s.solo)
             channelMixers[id]?.outputVolume = audible ? s.gain * powf(10, s.trim / 20) : 0
+            if audible && s.gain > 0 { live.insert(id) }
         }
     }
 

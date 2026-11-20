@@ -607,6 +607,7 @@
 "Lớp trên cùng nằm phía trước. Chạm để chọn, kéo trên khung vẽ để di chuyển." = "The top layer is in front. Tap to select, drag on the canvas to move.";
 "Lớp đang chọn · %@" = "Selected layer · %@";
 "Lửa đỏ" = "Red flame";
+"MASTER" = "MASTER";
 "Mua gói ngày / tháng / năm" = "Buy a day / month / year plan";
 "Mua qua App Store" = "Buy on the App Store";
 "Multiview" = "Multiview";
@@ -1141,6 +1142,7 @@
 "publish lỗi: %@" = "publish error: %@";
 "publish lỗi: %lf" = "publish error: %lf";
 "publish lỗi: %lld" = "publish error: %lld";
+"theo Cam iPad" = "follows iPad cam";
 "tổng %@" = "total %@";
 "xxxx.apps.googleusercontent.com — Google Cloud › Credentials, bật YouTube Data API v3" = "xxxx.apps.googleusercontent.com — Google Cloud › Credentials, enable YouTube Data API v3";
 "Ánh bạc" = "Chrome";

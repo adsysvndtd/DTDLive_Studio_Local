@@ -13446,6 +13446,26 @@
           }
         }
       }
+    },
+    "theo Cam iPad": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "follows iPad cam"
+          }
+        }
+      }
+    },
+    "MASTER": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MASTER"
+          }
+        }
+      }
     }
   },
   "version": "1.0"
