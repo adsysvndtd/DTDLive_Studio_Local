@@ -41,6 +41,10 @@ struct TitleDesignerSheet: View {
     @State private var fxPreview: Date?
     @State private var fxOut = false
     @State private var fxRenderer = TitleRenderer()
+    /// Last drawn design per view: the canvas is drawn again only when the layers or its size change
+    /// (not on every unrelated state change such as typing a layer name or a selection change).
+    @State private var canvasCache = DesignImageCache()
+    @State private var pgmCache = DesignImageCache()
     @AppStorage("ui.titleDesigner.snap") private var snapOn = true
     @AppStorage("ui.titleDesigner.bg") private var bgMode = 0
 
@@ -237,7 +241,7 @@ struct TitleDesignerSheet: View {
                 TimelineView(.animation(minimumInterval: 1.0 / 30)) { _ in
                     fxFrame(start: start, size: CGSize(width: W, height: H))
                 }
-            } else if let img = TitleRenderer.drawCustom(draft, canvas: CGSize(width: W, height: H)) {
+            } else if let img = canvasCache.image(draft, CGSize(width: W, height: H)) {
                 Image(uiImage: img).resizable().frame(width: W, height: H)
             }
             // title-safe area (90 %)
@@ -925,7 +929,7 @@ struct TitleDesignerSheet: View {
         var ph: CGFloat = 240
         var pw = ph * aspect
         if pw > 330 { pw = 330; ph = pw / aspect }
-        let img = TitleRenderer.drawCustom(draft, canvas: CGSize(width: pw * 2, height: ph * 2))
+        let img = pgmCache.image(draft, CGSize(width: pw * 2, height: ph * 2))
         return card(L("Trên PGM") + " (" + Self.aspectLabel(aspect) + ")") {
             ZStack {
                 Color(white: 0.2)
@@ -1452,4 +1456,18 @@ enum TitleTemplateStore {
     }
     static func save(_ name: String, _ layers: [TitleLayer]) { var m = all(); m[name] = layers; write(m) }
     static func delete(_ name: String) { var m = all(); m[name] = nil; write(m) }
+}
+
+/// One-entry memo of `TitleRenderer.drawCustom` keyed by the layers and the canvas size.
+final class DesignImageCache {
+    private var key: ([TitleLayer], CGSize)?
+    private var value: UIImage?
+
+    func image(_ item: TitleItem, _ size: CGSize) -> UIImage? {
+        let layers = item.layers ?? []
+        if let k = key, k.1 == size, k.0 == layers { return value }
+        value = TitleRenderer.drawCustom(item, canvas: size)
+        key = (layers, size)
+        return value
+    }
 }

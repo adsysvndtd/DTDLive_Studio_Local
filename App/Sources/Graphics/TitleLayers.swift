@@ -83,11 +83,14 @@ struct TitleLayer: Identifiable, Equatable {
     /// Axis-aligned box around the layer as drawn (rotation included).
     var boundingBox: CGRect {
         guard rotation != 0 else { return frame }
-        let a = rotation * .pi / 180, c = center
-        let pts = [CGPoint(x: -w / 2, y: -h / 2), CGPoint(x: w / 2, y: -h / 2), CGPoint(x: -w / 2, y: h / 2), CGPoint(x: w / 2, y: h / 2)]
-            .map { CGPoint(x: c.x + $0.x * cos(a) - $0.y * sin(a), y: c.y + $0.x * sin(a) + $0.y * cos(a)) }
-        let xs = pts.map(\.x), ys = pts.map(\.y)
-        return CGRect(x: xs.min()!, y: ys.min()!, width: xs.max()! - xs.min()!, height: ys.max()! - ys.min()!)
+        let a: Double = Double(rotation) * Double.pi / 180
+        let cs: CGFloat = abs(CGFloat(cos(a)))
+        let sn: CGFloat = abs(CGFloat(sin(a)))
+        // half extents of the rotated box
+        let ex: CGFloat = w / 2 * cs + h / 2 * sn
+        let ey: CGFloat = w / 2 * sn + h / 2 * cs
+        let m = center
+        return CGRect(x: m.x - ex, y: m.y - ey, width: 2 * ex, height: 2 * ey)
     }
 
     /// Uniform scale of the whole layer (box, position about `a`, lettering, corners, borders, shadow).
@@ -268,10 +271,19 @@ extension TitleLayer: Codable {
 
 extension TitleRenderer {
     /// Resolve a library file name to an image (searched across Logo / Ảnh / Lớp phủ).
+    /// Decoded library pictures used by image layers (read from disk once, not on every redraw).
+    nonisolated(unsafe) static let libraryImageCache: NSCache<NSString, UIImage> = {
+        let c = NSCache<NSString, UIImage>(); c.countLimit = 40; return c
+    }()
+
     static func libraryImage(_ name: String) -> UIImage? {
+        if let img = libraryImageCache.object(forKey: name as NSString) { return img }
         for k in [LibraryKind.logo, .picture, .overlay] {
             let u = MediaLibrary.directory(k).appendingPathComponent(name)
-            if let img = UIImage(contentsOfFile: u.path) { return img }
+            if let img = UIImage(contentsOfFile: u.path) {
+                libraryImageCache.setObject(img, forKey: name as NSString)
+                return img
+            }
         }
         return nil
     }
