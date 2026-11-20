@@ -739,42 +739,76 @@ struct PTZPanel: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text("VISCA over IP").font(DS.fBody).foregroundStyle(DS.text3)
-            if engine.ptz[sourceID] == nil {
-                HStack {
-                    TextField("IP camera", text: $host).textFieldStyle(.roundedBorder).keyboardType(.numbersAndPunctuation)
-                    Picker("", selection: $transport) { Text("UDP 52381").tag(PTZConfig.Transport.viscaUDP); Text("TCP 5678").tag(PTZConfig.Transport.viscaTCP) }
-                    Button("Kết nối") {
-                        engine.setPTZ(sourceID, PTZConfig(host: host, port: transport == .viscaUDP ? 52381 : 5678, transport: transport))
-                    }
-                }
-            } else {
-                HStack(alignment: .center, spacing: 16) {
-                    Joystick { x, y in engine.ptzMove(sourceID, pan: x, tilt: y, zoom: 0) }
-                        .frame(width: 110, height: 110)
-                    VStack {
-                        Button { } label: { Image(systemName: "plus.magnifyingglass") }
-                            .simultaneousGesture(DragGesture(minimumDistance: 0)
-                                .onChanged { _ in engine.ptzMove(sourceID, pan: 0, tilt: 0, zoom: 0.6) }
-                                .onEnded { _ in engine.ptzMove(sourceID, pan: 0, tilt: 0, zoom: 0) })
-                        Button { } label: { Image(systemName: "minus.magnifyingglass") }
-                            .simultaneousGesture(DragGesture(minimumDistance: 0)
-                                .onChanged { _ in engine.ptzMove(sourceID, pan: 0, tilt: 0, zoom: -0.6) }
-                                .onEnded { _ in engine.ptzMove(sourceID, pan: 0, tilt: 0, zoom: 0) })
-                    }
-                    .buttonStyle(.bordered)
-                }
-                Text("Preset: chạm = gọi, giữ = lưu").font(.caption2)
-                HStack {
-                    ForEach(1...6, id: \.self) { n in
-                        Text("\(n)").frame(width: 34, height: 30).background(Color(white: 0.2), in: Rectangle())
-                            .onTapGesture { engine.ptzPreset(sourceID, n, store: false) }
-                            .onLongPressGesture { engine.ptzPreset(sourceID, n, store: true) }
-                    }
-                }
+            if engine.ptz[sourceID] != nil {
+                Text("VISCA over IP").font(DS.fBody).foregroundStyle(DS.text3)
+                controls(ndi: false)
                 Button("Ngắt PTZ", role: .destructive) { engine.setPTZ(sourceID, nil) }.font(DS.fBody)
+            } else if engine.isNDISource(sourceID) {
+                // PTZ support is reported by the camera once connected: re-check every second.
+                TimelineView(.periodic(from: .now, by: 1)) { _ in
+                    if engine.ndiPTZSupported(sourceID) {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Label("PTZ qua NDI®", systemImage: "dot.radiowaves.left.and.right")
+                                .font(DS.fBodyBold).foregroundStyle(DS.accent)
+                            controls(ndi: true)
+                        }
+                    } else {
+                        Text("Camera NDI chưa báo hỗ trợ PTZ (đang kết nối, hoặc camera không có PTZ qua NDI). Có thể điều khiển bằng VISCA ở dưới.")
+                            .font(.system(size: 12)).foregroundStyle(DS.text3)
+                    }
+                }
+                DisclosureGroup("Điều khiển bằng VISCA (IP)") { viscaForm }.font(DS.fBody)
+            } else {
+                Text("VISCA over IP").font(DS.fBody).foregroundStyle(DS.text3)
+                viscaForm
             }
         }
+    }
+
+    private var viscaForm: some View {
+        HStack {
+            TextField("IP camera", text: $host).textFieldStyle(.roundedBorder).keyboardType(.numbersAndPunctuation)
+            Picker("", selection: $transport) { Text("UDP 52381").tag(PTZConfig.Transport.viscaUDP); Text("TCP 5678").tag(PTZConfig.Transport.viscaTCP) }
+            Button("Kết nối") {
+                engine.setPTZ(sourceID, PTZConfig(host: host, port: transport == .viscaUDP ? 52381 : 5678, transport: transport))
+            }
+            .disabled(host.trimmingCharacters(in: .whitespaces).isEmpty)
+        }
+    }
+
+    @ViewBuilder private func controls(ndi: Bool) -> some View {
+        HStack(alignment: .center, spacing: 16) {
+            Joystick { x, y in engine.ptzMove(sourceID, pan: x, tilt: y, zoom: 0) }
+                .frame(width: 110, height: 110)
+            VStack(spacing: 6) {
+                holdButton("plus.magnifyingglass") { engine.ptzMove(sourceID, pan: 0, tilt: 0, zoom: $0 ? 0.6 : 0) }
+                holdButton("minus.magnifyingglass") { engine.ptzMove(sourceID, pan: 0, tilt: 0, zoom: $0 ? -0.6 : 0) }
+            }
+            if ndi {
+                VStack(spacing: 6) {
+                    holdButton("camera.macro") { engine.ptzFocus(sourceID, speed: $0 ? -0.5 : 0) }
+                    holdButton("mountain.2") { engine.ptzFocus(sourceID, speed: $0 ? 0.5 : 0) }
+                    Button("AF") { engine.ptzFocus(sourceID, speed: nil) }.buttonStyle(.bordered).font(.system(size: 12, weight: .bold))
+                }
+            }
+        }
+        Text("Preset: chạm = gọi, giữ = lưu").font(.caption2)
+        HStack {
+            ForEach(1...8, id: \.self) { n in
+                Text(verbatim: "\(n)").frame(width: 34, height: 30).background(Color(white: 0.2), in: Rectangle())
+                    .onTapGesture { engine.ptzPreset(sourceID, n, store: false) }
+                    .onLongPressGesture { engine.ptzPreset(sourceID, n, store: true) }
+            }
+        }
+    }
+
+    /// Button that acts while held (true on press, false on release).
+    private func holdButton(_ icon: String, _ action: @escaping (Bool) -> Void) -> some View {
+        Button { } label: { Image(systemName: icon).frame(width: 22, height: 18) }
+            .buttonStyle(.bordered)
+            .simultaneousGesture(DragGesture(minimumDistance: 0)
+                .onChanged { _ in action(true) }
+                .onEnded { _ in action(false) })
     }
 }
 

@@ -13226,6 +13226,76 @@
           }
         }
       }
+    },
+    "Không tạo được bộ nhận NDI": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not create the NDI receiver"
+          }
+        }
+      }
+    },
+    "PTZ qua NDI®": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PTZ over NDI®"
+          }
+        }
+      }
+    },
+    "Camera NDI chưa báo hỗ trợ PTZ (đang kết nối, hoặc camera không có PTZ qua NDI). Có thể điều khiển bằng VISCA ở dưới.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The NDI camera has not reported PTZ support (still connecting, or no PTZ over NDI). You can control it with VISCA below."
+          }
+        }
+      }
+    },
+    "Điều khiển bằng VISCA (IP)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Control with VISCA (IP)"
+          }
+        }
+      }
+    },
+    "Đã lưu preset %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preset %@ saved"
+          }
+        }
+      }
+    },
+    "VISCA over IP": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "VISCA over IP"
+          }
+        }
+      }
+    },
+    "IP camera": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Camera IP"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

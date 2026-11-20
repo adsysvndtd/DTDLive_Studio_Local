@@ -108,6 +108,7 @@
 "CUT / AUTO / T-bar / stinger: danh sách bắt đầu chạy." = "CUT / AUTO / T-bar / stinger: danh sách bắt đầu chạy.";
 "Camera" = "Camera";
 "Camera / USB-C" = "Camera / USB-C";
+"Camera NDI chưa báo hỗ trợ PTZ (đang kết nối, hoặc camera không có PTZ qua NDI). Có thể điều khiển bằng VISCA ở dưới." = "Camera NDI chưa báo hỗ trợ PTZ (đang kết nối, hoặc camera không có PTZ qua NDI). Có thể điều khiển bằng VISCA ở dưới.";
 "Camera gửi %@ Mbps — thấp so với bitrate phát %@ Mbps: hình bị nén hai lần nên mờ. Cập nhật DTDLive (tự gửi ~12 Mbps cho 1080p30 qua Wi‑Fi) hoặc tăng bitrate trên DTDLive." = "Camera gửi %@ Mbps — thấp so với bitrate phát %@ Mbps: hình bị nén hai lần nên mờ. Cập nhật DTDLive (tự gửi ~12 Mbps cho 1080p30 qua Wi‑Fi) hoặc tăng bitrate trên DTDLive.";
 "Camera mạng (SRT · RTSP · RTMP · DTDLive)" = "Camera mạng (SRT · RTSP · RTMP · DTDLive)";
 "Camera trong máy & USB" = "Camera trong máy & USB";
@@ -438,6 +439,7 @@
 "Hội ý mỗi set: %lld" = "Hội ý mỗi set: %lld";
 "ID xác nhận" = "ID xác nhận";
 "IN HOA" = "IN HOA";
+"IP camera" = "IP camera";
 "Khi bấm Bắt đầu" = "Khi bấm Bắt đầu";
 "Khi hoà" = "Khi hoà";
 "Khi hết danh sách" = "Khi hết danh sách";
@@ -487,6 +489,7 @@
 "Không thấy live đang chạy trên Trang %@ — dán link/ID video live vào ô Facebook" = "Không thấy live đang chạy trên Trang %@ — dán link/ID video live vào ô Facebook";
 "Không thấy nguồn NDI nào trên mạng" = "Không thấy nguồn NDI nào trên mạng";
 "Không tìm thấy gói DTDStudio đã mua với Apple ID này" = "Không tìm thấy gói DTDStudio đã mua với Apple ID này";
+"Không tạo được bộ nhận NDI" = "Không tạo được bộ nhận NDI";
 "Không xác thực được giao dịch" = "Không xác thực được giao dịch";
 "Không đọc được %@" = "Không đọc được %@";
 "Không đọc được %lf" = "Không đọc được %lf";
@@ -760,6 +763,7 @@
 "PHÁT REPLAY" = "PHÁT REPLAY";
 "PNG có tâm trong suốt, lấy từ thư viện SuperFG" = "PNG có tâm trong suốt, lấy từ thư viện SuperFG";
 "PTZ nguồn PVW" = "PTZ nguồn PVW";
+"PTZ qua NDI®" = "PTZ qua NDI®";
 "Phiên bản" = "Phiên bản";
 "Phát" = "Phát";
 "Phát PGM qua NDI" = "Phát PGM qua NDI";
@@ -1027,6 +1031,7 @@
 "Tự động chuyển cảnh" = "Tự động chuyển cảnh";
 "VAR · ĐANG GIỮ HÌNH" = "VAR · ĐANG GIỮ HÌNH";
 "VAR · ĐANG PHÁT" = "VAR · ĐANG PHÁT";
+"VISCA over IP" = "VISCA over IP";
 "Video" = "Video";
 "Video này không có chat trực tiếp đang mở" = "Video này không có chat trực tiếp đang mở";
 "Video từ thư viện…" = "Video từ thư viện…";
@@ -1163,6 +1168,7 @@
 "Đang tắt" = "Đang tắt";
 "Đen" = "Đen";
 "Điều khiển PTZ" = "Điều khiển PTZ";
+"Điều khiển bằng VISCA (IP)" = "Điều khiển bằng VISCA (IP)";
 "Điều khiển camera" = "Điều khiển camera";
 "Điều khiển title từ điện thoại/laptop: http://<IP máy>:8080" = "Điều khiển title từ điện thoại/laptop: http://<IP máy>:8080";
 "Điều khiển tỉ số, đồng hồ, logo, màu ở thẻ Bảng tỉ số phía trên" = "Điều khiển tỉ số, đồng hồ, logo, màu ở thẻ Bảng tỉ số phía trên";
@@ -1187,6 +1193,7 @@
 "Đã lưu %@ (%@ s)" = "Đã lưu %@ (%@ s)";
 "Đã lưu %lf (%lf s)" = "Đã lưu %lf (%lf s)";
 "Đã lưu %lld (%lld s)" = "Đã lưu %lld (%lld s)";
+"Đã lưu preset %@" = "Đã lưu preset %@";
 "Đã mới nhất (%@)" = "Đã mới nhất (%@)";
 "Đã mới nhất (%lf)" = "Đã mới nhất (%lf)";
 "Đã mới nhất (%lld)" = "Đã mới nhất (%lld)";

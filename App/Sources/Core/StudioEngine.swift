@@ -258,7 +258,10 @@ final class StudioEngine: ObservableObject {
         switcher.onPoolRebuilt = { [weak self] in
             Task { @MainActor in self?.logToLiveOutputs(L("Hết bộ đệm khung hình — đã tạo lại (khung bị giữ ở bộ mã hoá)")) }
         }
-        audio.onBuffer = { pcm, when in ae.append(pcm, when: when) }
+        audio.onBuffer = { pcm, when in
+            ae.append(pcm, when: when)
+            ndiBox.sendAudio(pcm)          // Program audio with the NDI output (no-op when it is off)
+        }
         ae.onEncoded = { buf, when in om.audio(buf, when: when) }
         // audio always flows: the mixer, or silence when the mixer could not start (see startSilentAudio)
         om.hasAudio = { true }
@@ -406,6 +409,12 @@ final class StudioEngine: ObservableObject {
         if let s = source as? RTSPInputSource { s.onAudio = { a.feed(sourceID: id, name: name, buffer: $0) } }
         if let s = source as? FileSource { s.onAudio = { a.feed(sourceID: id, name: name, buffer: $0) } }
         if let s = source as? PlaylistSource { s.onAudio = { a.feed(sourceID: id, name: name, buffer: $0) } }
+        #if NDI_SDK
+        if let s = source as? NDIInputSource {
+            s.onAudio = { a.feed(sourceID: id, name: name, buffer: $0) }
+            s.onStatus = { [weak self] in self?.objectWillChange.send() }
+        }
+        #endif
         Task { await source.start(); updateMediaPlayback(); objectWillChange.send() }
         // A new source only goes to PVW (when PVW is empty): PGM changes only with a transition (CUT / AUTO / T-bar).
         if previewID == nil { switcher.setPreview(source.id) }
@@ -1694,15 +1703,51 @@ final class StudioEngine: ObservableObject {
         ptzControllers[id] = c.map { PTZController(config: $0) }
     }
 
+    /// PTZ: VISCA when an IP is set for the source, otherwise PTZ over NDI for an NDI camera that supports it.
     func ptzMove(_ id: UUID, pan: Double, tilt: Double, zoom: Double) {
-        guard let p = ptzControllers[id] else { return }
-        Task { await p.move(pan: pan, tilt: tilt, zoom: zoom) }
+        if let p = ptzControllers[id] { Task { await p.move(pan: pan, tilt: tilt, zoom: zoom) }; return }
+        #if NDI_SDK
+        ndiSource(id)?.ptz(pan: Float(-pan), tilt: Float(tilt), zoom: Float(zoom))   // NDI: positive pan = left
+        #endif
     }
 
     func ptzPreset(_ id: UUID, _ n: Int, store: Bool) {
-        guard let p = ptzControllers[id] else { return }
-        Task { store ? await p.storePreset(n) : await p.recallPreset(n) }
+        if let p = ptzControllers[id] { Task { store ? await p.storePreset(n) : await p.recallPreset(n) }; return }
+        #if NDI_SDK
+        if let s = ndiSource(id) { store ? s.ptzStore(Int32(n)) : s.ptzRecall(Int32(n)) }
+        #endif
+        if store { message = LF("Đã lưu preset %@", "\(n)") }
     }
+
+    /// Focus over NDI: speed -1 (near) … 1 (far), 0 = stop; nil = auto focus.
+    func ptzFocus(_ id: UUID, speed: Double?) {
+        #if NDI_SDK
+        guard let s = ndiSource(id) else { return }
+        if let speed { s.ptzFocus(speed: Float(speed)) } else { s.ptzAutoFocus() }
+        #endif
+    }
+
+    /// The source is an NDI input.
+    func isNDISource(_ id: UUID) -> Bool {
+        #if NDI_SDK
+        return ndiSource(id) != nil
+        #else
+        return false
+        #endif
+    }
+
+    /// The NDI camera accepts PTZ over NDI.
+    func ndiPTZSupported(_ id: UUID) -> Bool {
+        #if NDI_SDK
+        return ndiSource(id)?.ptzSupported ?? false
+        #else
+        return false
+        #endif
+    }
+
+    #if NDI_SDK
+    private func ndiSource(_ id: UUID) -> NDIInputSource? { sources.first { $0.id == id } as? NDIInputSource }
+    #endif
 
     // MARK: Outputs
 

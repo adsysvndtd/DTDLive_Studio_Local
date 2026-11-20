@@ -108,6 +108,7 @@
 "CUT / AUTO / T-bar / stinger: danh sách bắt đầu chạy." = "CUT / AUTO / T-bar / stinger: the list starts rolling.";
 "Camera" = "Camera";
 "Camera / USB-C" = "Camera / USB-C";
+"Camera NDI chưa báo hỗ trợ PTZ (đang kết nối, hoặc camera không có PTZ qua NDI). Có thể điều khiển bằng VISCA ở dưới." = "The NDI camera has not reported PTZ support (still connecting, or no PTZ over NDI). You can control it with VISCA below.";
 "Camera gửi %@ Mbps — thấp so với bitrate phát %@ Mbps: hình bị nén hai lần nên mờ. Cập nhật DTDLive (tự gửi ~12 Mbps cho 1080p30 qua Wi‑Fi) hoặc tăng bitrate trên DTDLive." = "Camera sends %@ Mbps — low for the %@ Mbps output: the picture is compressed twice and looks soft. Update DTDLive (sends ~12 Mbps for 1080p30 over Wi‑Fi) or raise the bitrate in DTDLive.";
 "Camera mạng (SRT · RTSP · RTMP · DTDLive)" = "Network cameras (SRT · RTSP · RTMP · DTDLive)";
 "Camera trong máy & USB" = "Built-in & USB cameras";
@@ -438,6 +439,7 @@
 "Hội ý mỗi set: %lld" = "Timeouts per set: %lld";
 "ID xác nhận" = "Confirmation ID";
 "IN HOA" = "UPPERCASE";
+"IP camera" = "Camera IP";
 "Khi bấm Bắt đầu" = "When I tap Start";
 "Khi hoà" = "If tied";
 "Khi hết danh sách" = "When the list ends";
@@ -487,6 +489,7 @@
 "Không thấy live đang chạy trên Trang %@ — dán link/ID video live vào ô Facebook" = "No live running on Page %@ — paste the live video link/ID into the Facebook field";
 "Không thấy nguồn NDI nào trên mạng" = "No NDI sources found on the network";
 "Không tìm thấy gói DTDStudio đã mua với Apple ID này" = "No DTDStudio purchase found for this Apple ID";
+"Không tạo được bộ nhận NDI" = "Could not create the NDI receiver";
 "Không xác thực được giao dịch" = "Couldn't verify the transaction";
 "Không đọc được %@" = "Couldn't read %@";
 "Không đọc được %lf" = "Couldn't read %lf";
@@ -760,6 +763,7 @@
 "PHÁT REPLAY" = "PLAY REPLAY";
 "PNG có tâm trong suốt, lấy từ thư viện SuperFG" = "PNG with a transparent centre, from the SuperFG library";
 "PTZ nguồn PVW" = "PVW source PTZ";
+"PTZ qua NDI®" = "PTZ over NDI®";
 "Phiên bản" = "Version";
 "Phát" = "Go live";
 "Phát PGM qua NDI" = "Send PGM over NDI";
@@ -1027,6 +1031,7 @@
 "Tự động chuyển cảnh" = "Auto switching";
 "VAR · ĐANG GIỮ HÌNH" = "VAR · HOLDING";
 "VAR · ĐANG PHÁT" = "VAR · PLAYING";
+"VISCA over IP" = "VISCA over IP";
 "Video" = "Video";
 "Video này không có chat trực tiếp đang mở" = "This video has no open live chat";
 "Video từ thư viện…" = "Video from library…";
@@ -1163,6 +1168,7 @@
 "Đang tắt" = "Off";
 "Đen" = "Black";
 "Điều khiển PTZ" = "PTZ control";
+"Điều khiển bằng VISCA (IP)" = "Control with VISCA (IP)";
 "Điều khiển camera" = "Camera control";
 "Điều khiển title từ điện thoại/laptop: http://<IP máy>:8080" = "Control titles from a phone/laptop: http://<device IP>:8080";
 "Điều khiển tỉ số, đồng hồ, logo, màu ở thẻ Bảng tỉ số phía trên" = "Score, clock, logos and colours are in the Scoreboard card above";
@@ -1187,6 +1193,7 @@
 "Đã lưu %@ (%@ s)" = "Saved %@ (%@ s)";
 "Đã lưu %lf (%lf s)" = "Saved %lf (%lf s)";
 "Đã lưu %lld (%lld s)" = "Saved %lld (%lld s)";
+"Đã lưu preset %@" = "Preset %@ saved";
 "Đã mới nhất (%@)" = "Up to date (%@)";
 "Đã mới nhất (%lf)" = "Up to date (%lf)";
 "Đã mới nhất (%lld)" = "Up to date (%lld)";
