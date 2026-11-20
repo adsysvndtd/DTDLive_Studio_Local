@@ -5,8 +5,10 @@ import SwiftUI
 struct DayScheduleSections: View {
     @ObservedObject var playout: PlayoutController
     @ObservedObject var library: MediaLibrary
+    /// Slot being edited. Owned by PlayoutSheet: a sheet presented from inside a Form row/section is
+    /// dropped when the Form rebuilds its rows (it does every second while the schedule clock runs).
+    @Binding var editing: SlotRef?
     @State private var day = Date()
-    @State private var editing: SlotRef?
 
     struct SlotRef: Identifiable { let id: UUID }
 
@@ -53,9 +55,6 @@ struct DayScheduleSections: View {
             Text(verbatim: Self.dayTitle.string(from: day))
         } footer: {
             Text("Chạm vào một khung để sửa giờ, video, lặp lại theo ngày / theo thứ.")
-        }
-        .sheet(item: $editing) { ref in
-            SlotEditorSheet(playout: playout, library: library, slotID: ref.id)
         }
         .onAppear { playout.loadDurations() }
     }

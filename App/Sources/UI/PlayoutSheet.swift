@@ -10,6 +10,7 @@ struct PlayoutSheet: View {
     @State private var confirmStop = false
     /// 0 = one list (Danh sách) · 1 = day schedule (Lịch theo ngày)
     @AppStorage("dtd.playout.mode") private var mode = 0
+    @State private var editingSlot: DayScheduleSections.SlotRef?
 
     var body: some View {
         NavigationStack {
@@ -26,7 +27,7 @@ struct PlayoutSheet: View {
                     listSection
                     scheduleSection
                 } else {
-                    DayScheduleSections(playout: playout, library: library)
+                    DayScheduleSections(playout: playout, library: library, editing: $editingSlot)
                 }
                 flowSection
             }
@@ -36,6 +37,9 @@ struct PlayoutSheet: View {
         }
         .onAppear { playout.loadDurations() }
         .onChange(of: playout.plan.files) { _, _ in playout.loadDurations() }
+        .sheet(item: $editingSlot) { ref in
+            SlotEditorSheet(playout: playout, library: library, slotID: ref.id)
+        }
         .sheet(isPresented: $picking) {
             MoviePickerSheet(files: library.items[.movie] ?? []) { names in
                 playout.plan.files.append(contentsOf: names)
