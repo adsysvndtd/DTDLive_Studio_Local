@@ -270,9 +270,12 @@ struct StudioView: View {
                 sourceCaption(isProgram ? engine.programID : engine.previewID, color: color)
                 if engine.showMonitorVU {
                     // PGM: the program mix; PVW: the audio of the source waiting on preview
-                    MonitorVU(meters: engine.meters, id: isProgram ? nil : engine.previewID, preFader: !isProgram, compact: compact)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .trailing)
-                        .padding(.trailing, compact ? 3 : 5)
+                    // Each meter on the monitor's OUTER edge (PVW left, PGM right): at the inner edges the PVW meter
+                    // sat right next to PGM and read as PGM's.
+                    MonitorVU(meters: engine.meters, id: isProgram ? nil : engine.previewID, preFader: !isProgram,
+                              marksOnLeading: isProgram, compact: compact)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: isProgram ? .trailing : .leading)
+                        .padding(isProgram ? .trailing : .leading, compact ? 3 : 5)
                         .padding(.vertical, compact ? 18 : 26)
                 }
                 if !isProgram && engine.swipeToTake && !scopesOnPreview {
@@ -503,6 +506,8 @@ struct MonitorVU: View {
     let id: UUID?
     /// PVW: the source's own level before its fader / AFV (it is not on air yet).
     var preFader = false
+    /// dB marks on the side facing the picture
+    var marksOnLeading = true
     var compact = false
     @State private var hold: (Float, Float) = (-60, -60)
     @State private var holdAt: (Date, Date) = (.distantPast, .distantPast)
@@ -514,7 +519,7 @@ struct MonitorVU: View {
             bar(l, hold.0, w)
             bar(r, hold.1, w)
         }
-        .overlay(alignment: .leading) { if !compact { marks } }
+        .overlay(alignment: marksOnLeading ? .leading : .trailing) { if !compact { marks(leading: marksOnLeading) } }
         .shadow(color: .black.opacity(0.6), radius: 1)
         .allowsHitTesting(false)
         .onChange(of: l) { _, v in update(v, left: true) }
@@ -541,11 +546,11 @@ struct MonitorVU: View {
         .frame(width: w)
     }
 
-    private var marks: some View {
+    private func marks(leading: Bool) -> some View {
         GeometryReader { g in
             ForEach([-6, -18, -40], id: \.self) { d in
                 Rectangle().fill(Color.white.opacity(0.35)).frame(width: 3, height: 1)
-                    .position(x: -3, y: g.size.height * (1 - Self.pos(Float(d))))
+                    .position(x: leading ? -3 : g.size.width + 3, y: g.size.height * (1 - Self.pos(Float(d))))
             }
         }
     }
