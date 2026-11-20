@@ -766,6 +766,7 @@
 "PGM" = "PGM";
 "PGM (chỉ hình phát)" = "PGM (program only)";
 "PGM chuyển về nguồn trước đó." = "PGM returns to the previous source.";
+"PGM không có khung mới — đã khởi động lại xử lý hình" = "PGM produced no new frames — the video pipeline was restarted";
 "PGM không tự đổi: nếu danh sách đang trên PGM, hình đứng ở khung hiện tại cho đến khi anh bấm chuyển cảnh." = "PGM does not change by itself: if the list is on PGM, the picture holds until you press a transition.";
 "PHÁT REPLAY" = "PLAY REPLAY";
 "PNG có tâm trong suốt, lấy từ thư viện SuperFG" = "PNG with a transparent centre, from the SuperFG library";

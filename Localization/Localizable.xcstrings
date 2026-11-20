@@ -13406,6 +13406,16 @@
           }
         }
       }
+    },
+    "PGM không có khung mới — đã khởi động lại xử lý hình": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PGM produced no new frames — the video pipeline was restarted"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

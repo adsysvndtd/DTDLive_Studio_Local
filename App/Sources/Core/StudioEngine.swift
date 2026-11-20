@@ -374,6 +374,7 @@ final class StudioEngine: ObservableObject {
         timers.append(Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
             Task { @MainActor in
                 guard let self else { return }
+                self.renderWatchdog()
                 StreamStats.bitrateKbps = self.currentBitrate / 1000
                 StreamStats.fps = self.format.fps
                 self.encoderWatchdog()
@@ -1848,6 +1849,9 @@ final class StudioEngine: ObservableObject {
     func appDidBecomeActive() {
         backgroundTask?.cancel(); backgroundTask = nil
         if suspendedInBackground { resumeFromBackground() }
+        // cameras iOS stopped while the app was away (interruption, media services reset) start again
+        for case let c as CameraSource in sources { c.ensureRunning() }
+        stalledSeconds = 0
         if wentBackgroundWhileLive {
             wentBackgroundWhileLive = false
             message = L("Ứng dụng đã chạy nền trong lúc phát: iPad dừng camera và xử lý hình khi app không ở phía trước, chỉ âm thanh tiếp tục. Hãy giữ DTDStudio mở khi đang phát.")
@@ -1864,6 +1868,20 @@ final class StudioEngine: ObservableObject {
         audio.suspend()
         control.stop()
         ingest.stop()
+    }
+
+    /// Program frames stopped while the app is in front (render clock lost, pool stuck): restart the
+    /// render pipeline and the cameras instead of leaving PVW/PGM black until the app is reopened.
+    private var stalledSeconds = 0
+    private func renderWatchdog() {
+        guard !suspendedInBackground, !DemoMode.isOn, UIApplication.shared.applicationState == .active else { stalledSeconds = 0; return }
+        if switcher.programMonitor.latestFrame(staleAfter: 1.5) != nil { stalledSeconds = 0; return }
+        stalledSeconds += 1
+        guard stalledSeconds >= 3 else { return }
+        stalledSeconds = 0
+        switcher.recover()
+        for case let c as CameraSource in sources { c.ensureRunning() }
+        logToLiveOutputs(L("PGM không có khung mới — đã khởi động lại xử lý hình"))
     }
 
     private func resumeFromBackground() {

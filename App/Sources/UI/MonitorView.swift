@@ -85,7 +85,13 @@ final class MonitorMTKView: MTKView {
         colorPixelFormat = .bgra8Unorm
         clearColor = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 1)
         autoResizeDrawable = true
+        // iOS may drop the layer's contents in the background: draw again when the app is back.
+        foreground = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { [weak self] _ in
+            self?.drawn = nil
+        }
     }
+    private var foreground: NSObjectProtocol?
+    deinit { foreground.map { NotificationCenter.default.removeObserver($0) } }
 
     required init(coder: NSCoder) { fatalError() }
 
@@ -98,9 +104,10 @@ final class MonitorMTKView: MTKView {
         let frame = store.latestFrame()
         let now = (store: ObjectIdentifier(store), seq: frame?.seq, size: drawableSize)
         if let d = drawn, d.store == now.store, d.seq == now.seq, d.size == now.size { return }
-        drawn = now
         let pb = frame?.buffer
+        // No drawable (app in the background, view off screen): leave `drawn` alone so the next pass draws.
         guard let drawable = currentDrawable, let cb = queue.makeCommandBuffer() else { return }
+        drawn = now
         let size = drawableSize
         let bounds = CGRect(origin: .zero, size: size)
         var img = CIImage(color: .black).cropped(to: bounds)

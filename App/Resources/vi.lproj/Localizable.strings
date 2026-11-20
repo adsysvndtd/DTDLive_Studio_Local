@@ -766,6 +766,7 @@
 "PGM" = "PGM";
 "PGM (chỉ hình phát)" = "PGM (chỉ hình phát)";
 "PGM chuyển về nguồn trước đó." = "PGM chuyển về nguồn trước đó.";
+"PGM không có khung mới — đã khởi động lại xử lý hình" = "PGM không có khung mới — đã khởi động lại xử lý hình";
 "PGM không tự đổi: nếu danh sách đang trên PGM, hình đứng ở khung hiện tại cho đến khi anh bấm chuyển cảnh." = "PGM không tự đổi: nếu danh sách đang trên PGM, hình đứng ở khung hiện tại cho đến khi anh bấm chuyển cảnh.";
 "PHÁT REPLAY" = "PHÁT REPLAY";
 "PNG có tâm trong suốt, lấy từ thư viện SuperFG" = "PNG có tâm trong suốt, lấy từ thư viện SuperFG";

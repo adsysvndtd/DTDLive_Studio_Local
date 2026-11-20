@@ -83,6 +83,7 @@ final class CameraSource: NSObject, VideoSource {
         if !isExternal { startRotationTracking(device) }   // a USB-C camera doesn't turn with the iPad
         let s = session
         queue.async { if !s.isRunning { s.startRunning() } }
+        watchSession()
         refreshControls()
         status = .live
     }
@@ -223,7 +224,29 @@ final class CameraSource: NSObject, VideoSource {
         }
     }
 
+    /// Restart the capture session if iOS stopped it (runtime error, media services reset, an interruption
+    /// that did not end by itself). Called on runtime errors and whenever the app comes back to the front.
+    func ensureRunning() {
+        guard status != .idle else { return }
+        let s = session
+        queue.async { if !s.isRunning { s.startRunning() } }
+    }
+
+    private func watchSession() {
+        guard sessionObservers.isEmpty else { return }
+        let nc = NotificationCenter.default
+        sessionObservers.append(nc.addObserver(forName: AVCaptureSession.runtimeErrorNotification, object: session, queue: .main) { [weak self] _ in
+            // e.g. media services were reset: the session stops and must be started again
+            MainActor.assumeIsolated { self?.ensureRunning() }
+        })
+        sessionObservers.append(nc.addObserver(forName: AVCaptureSession.interruptionEndedNotification, object: session, queue: .main) { [weak self] _ in
+            MainActor.assumeIsolated { self?.ensureRunning() }
+        })
+    }
+    private var sessionObservers: [NSObjectProtocol] = []
+
     func stop() async {
+        sessionObservers.forEach { NotificationCenter.default.removeObserver($0) }; sessionObservers = []
         plugObservers.forEach { NotificationCenter.default.removeObserver($0) }; plugObservers = []
         rotationObservation?.invalidate(); rotationObservation = nil; rotation = nil
         let s = session

@@ -48,7 +48,15 @@ final class VideoEncoder: @unchecked Sendable {
     private var settings: EncoderSettings
     private var size: (Int32, Int32) = (0, 0)
     private var forceKeyframe = false
-    private var needsRebuild = false
+    /// Set from VideoToolbox callbacks. Its own tiny lock, never the session lock: invalidate() holds the
+    /// session lock while VTCompressionSessionCompleteFrames waits for pending callbacks — a callback
+    /// waiting for that lock froze the render queue for good (PVW/PGM black until the app was restarted).
+    private let rebuildLock = NSLock()
+    private var rebuildFlag = false
+    private var needsRebuild: Bool {
+        get { rebuildLock.lock(); defer { rebuildLock.unlock() }; return rebuildFlag }
+        set { rebuildLock.lock(); rebuildFlag = newValue; rebuildLock.unlock() }
+    }
     private var liveBitrate: Int
     /// Program frame rate; changing it rebuilds the session on the next frame.
     var fps: Double = 30 { didSet { if fps != oldValue { invalidate(); forceKeyframe = true } } }
@@ -81,7 +89,7 @@ final class VideoEncoder: @unchecked Sendable {
             guard status == noErr, let sample else {
                 // Session died (interruption, memory pressure, media services reset): rebuild on the next frame.
                 // never tear the session down from inside its own callback — flag it, encode() rebuilds
-                self.lock.lock(); self.needsRebuild = true; self.lock.unlock()
+                self.needsRebuild = true
                 self.onProblem?(LF("VideoToolbox lỗi %@ %@ — tạo lại bộ mã hoá", "\(status)", Self.explain(status)))
                 return
             }
@@ -114,7 +122,7 @@ final class VideoEncoder: @unchecked Sendable {
     func restartIfStalled(_ inSinceLast: Int, _ outSinceLast: Int) -> Bool {
         guard inSinceLast >= 20, outSinceLast == 0 else { return false }
         onProblem?(LF("Bộ mã hoá không ra hình (%@ khung vào, 0 ra) — khởi động lại", "\(inSinceLast)"))
-        lock.lock(); needsRebuild = true; lock.unlock()
+        needsRebuild = true
         return true
     }
 

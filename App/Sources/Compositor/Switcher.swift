@@ -275,6 +275,8 @@ final class Switcher: @unchecked Sendable {
     // MARK: Render clock
 
     func start() { queue.async { self.restartClock() } }
+    /// Fresh frame pool + clock (watchdog: program stopped producing frames while it should run).
+    func recover() { queue.async { self.makePool(); self.restartClock() } }
     func stop() { queue.async { self.timer?.cancel(); self.timer = nil } }
 
     private func restartClock() {
