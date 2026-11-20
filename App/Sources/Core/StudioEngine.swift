@@ -204,6 +204,10 @@ final class StudioEngine: ObservableObject {
     // MARK: Pipeline
     let switcher = Switcher()
     let titleRenderer = TitleRenderer()
+    /// Video list played on a schedule (import → list → stream connection).
+    private(set) lazy var playout: PlayoutController = {
+        let p = PlayoutController(); p.engine = self; return p
+    }()
     let annotation = AnnotationLayer()
     let replayBuffer = ReplayBuffer()
     private(set) lazy var replay = ReplaySource(buffer: replayBuffer)
@@ -401,6 +405,7 @@ final class StudioEngine: ObservableObject {
         if let s = source as? RTMPInputSource { s.sink.onAudio = { a.feed(sourceID: id, name: name, buffer: $0) } }
         if let s = source as? RTSPInputSource { s.onAudio = { a.feed(sourceID: id, name: name, buffer: $0) } }
         if let s = source as? FileSource { s.onAudio = { a.feed(sourceID: id, name: name, buffer: $0) } }
+        if let s = source as? PlaylistSource { s.onAudio = { a.feed(sourceID: id, name: name, buffer: $0) } }
         Task { await source.start(); updateMediaPlayback(); objectWillChange.send() }
         if programID == nil { switcher.take(source.id) } else if previewID == nil { switcher.setPreview(source.id) }
         syncState()
@@ -1748,7 +1753,7 @@ final class StudioEngine: ObservableObject {
     private var backgroundTask: Task<Void, Never>?
 
     func updateIdleTimer() {
-        let on = keepScreenOn || isAnyLive || isRecording
+        let on = keepScreenOn || isAnyLive || isRecording || playout.isActive
         if UIApplication.shared.isIdleTimerDisabled != on { UIApplication.shared.isIdleTimerDisabled = on }
     }
 
@@ -1783,6 +1788,7 @@ final class StudioEngine: ObservableObject {
         suspendedInBackground = true
         switcher.stop()
         for case let f as FileSource in sources where f.isPlaying { f.pause() }
+        for case let p as PlaylistSource in sources where p.isPlaying { p.pause() }
         audio.suspend()
         control.stop()
         ingest.stop()
@@ -1796,6 +1802,7 @@ final class StudioEngine: ObservableObject {
         ingest.start()
         switcher.start()
         updateMediaPlayback()
+        if playout.state == .playing { playout.source?.resume() }
     }
 
     func toggleRecording() {

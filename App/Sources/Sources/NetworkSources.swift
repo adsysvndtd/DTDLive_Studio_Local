@@ -119,7 +119,7 @@ final class FileSource: VideoSource {
     let id = UUID()
     var name: String
     let kind: SourceKind = .file
-    let frames = FrameStore()
+    let frames: FrameStore
     private(set) var status: SourceStatus = .idle
 
     private let player = AVPlayer()
@@ -142,14 +142,24 @@ final class FileSource: VideoSource {
 
     /// Loop at end of file (default) or hold the last frame.
     var loops = true
+    /// Called when a non-looping file reaches its end (playlist: go to the next clip).
+    var onEnded: (() -> Void)?
+    /// Clear the frame store on stop (off for playlist clips: the next clip shares the store, the last
+    /// picture stays up until its first frame arrives — no black flash between clips).
+    var clearsOnStop = true
+
+    /// Playback position and length in seconds (nil until known).
+    var currentSeconds: Double? { let t = player.currentTime().seconds; return t.isFinite ? t : nil }
+    var durationSeconds: Double? { let d = item.duration.seconds; return d.isFinite && d > 0 ? d : nil }
     /// Paused by the operator: automatic play-when-seen leaves it paused until it is played or cued again.
     var heldByUser = false
 
     private(set) var isPlaying = false { didSet { if isPlaying != oldValue { updateLinkRate() } } }
 
-    init(name: String, url: URL) {
+    init(name: String, url: URL, frames: FrameStore = FrameStore()) {
         self.name = name
         self.url = url
+        self.frames = frames
         item = AVPlayerItem(url: url)
         item.add(output)
         player.replaceCurrentItem(with: item)
@@ -207,7 +217,10 @@ final class FileSource: VideoSource {
         endObserver = NotificationCenter.default.addObserver(forName: AVPlayerItem.didPlayToEndTimeNotification, object: item, queue: .main) { [weak self] _ in
             MainActor.assumeIsolated {
                 guard let self else { return }
-                if self.loops { self.player.seek(to: .zero); self.player.play() } else { self.isPlaying = false }
+                if self.loops { self.player.seek(to: .zero); self.player.play() } else {
+                    self.isPlaying = false
+                    self.onEnded?()
+                }
             }
         }
         player.play()
@@ -287,7 +300,7 @@ final class FileSource: VideoSource {
         if let b = boundary { player.removeTimeObserver(b); boundary = nil }
         isPlaying = false
         player.pause()
-        frames.clear()
+        if clearsOnStop { frames.clear() }
         status = .idle
     }
 }

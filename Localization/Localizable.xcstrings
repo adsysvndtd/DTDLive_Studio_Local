@@ -11966,6 +11966,506 @@
           }
         }
       }
+    },
+    "Danh sách phát": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Playlist"
+          }
+        }
+      }
+    },
+    "Chuyển PGM về nguồn trước đó": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Return PGM to the previous source"
+          }
+        }
+      }
+    },
+    "Tắt các kết nối phát đã bật": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stop the stream connections it started"
+          }
+        }
+      }
+    },
+    "Giữ khung hình cuối": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hold the last frame"
+          }
+        }
+      }
+    },
+    "Danh sách phát chưa có video": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The playlist has no videos"
+          }
+        }
+      }
+    },
+    "Danh sách phát chưa có video (hoặc video đã bị xoá khỏi thư viện)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The playlist has no videos (or they were removed from the library)"
+          }
+        }
+      }
+    },
+    "Bỏ qua các video đã bị xoá khỏi thư viện": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skipping videos removed from the library"
+          }
+        }
+      }
+    },
+    "Danh sách bắt đầu trễ %@ phút (ứng dụng không mở đúng giờ)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The playlist started %@ min late (the app was not open at the start time)"
+          }
+        }
+      }
+    },
+    "Dừng danh sách phát?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stop the playlist?"
+          }
+        }
+      }
+    },
+    "PGM chuyển về nguồn trước đó.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PGM returns to the previous source."
+          }
+        }
+      }
+    },
+    "Bắt đầu ngay": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start now"
+          }
+        }
+      }
+    },
+    "Hẹn giờ phát": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schedule"
+          }
+        }
+      }
+    },
+    "Sẽ phát lúc %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Starts at %@"
+          }
+        }
+      }
+    },
+    "Còn %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In %@"
+          }
+        }
+      }
+    },
+    "Huỷ hẹn giờ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel schedule"
+          }
+        }
+      }
+    },
+    "Clip trước": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Previous clip"
+          }
+        }
+      }
+    },
+    "Clip sau": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Next clip"
+          }
+        }
+      }
+    },
+    "Đã phát hết danh sách": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The playlist has finished"
+          }
+        }
+      }
+    },
+    "Đóng danh sách": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close the playlist"
+          }
+        }
+      }
+    },
+    "Giữ DTDStudio mở trên màn hình cho đến khi phát xong: iPad không cho ứng dụng xử lý hình khi ở nền. Màn hình được giữ sáng tự động.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep DTDStudio open on screen until the playlist is done: iPad does not let apps process video in the background. The screen is kept on automatically."
+          }
+        }
+      }
+    },
+    "ĐANG PHÁT": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ON AIR"
+          }
+        }
+      }
+    },
+    "Lặp lại": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loop"
+          }
+        }
+      }
+    },
+    "Chưa có video. Nhập video ở mục Video (Từ Ảnh / Từ Tệp), rồi thêm vào đây.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No videos yet. Import videos in Video (From Photos / From Files), then add them here."
+          }
+        }
+      }
+    },
+    "Thêm video từ thư viện": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add videos from the library"
+          }
+        }
+      }
+    },
+    "Lặp lại cả danh sách": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loop the whole list"
+          }
+        }
+      }
+    },
+    "Danh sách · %@ video · %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "List · %@ videos · %@"
+          }
+        }
+      }
+    },
+    "Thay đổi danh sách áp dụng cho lần phát sau. Chạm vào một clip để chuyển ngay sang clip đó.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "List changes apply to the next run. Tap a clip to jump to it now."
+          }
+        }
+      }
+    },
+    "Vuốt sang trái để xoá, giữ và kéo để đổi thứ tự.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Swipe left to delete, touch and hold then drag to reorder."
+          }
+        }
+      }
+    },
+    "Không còn trong thư viện": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No longer in the library"
+          }
+        }
+      }
+    },
+    "Lên trên": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Move up"
+          }
+        }
+      }
+    },
+    "Xuống dưới": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Move down"
+          }
+        }
+      }
+    },
+    "Nhân đôi": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Duplicate"
+          }
+        }
+      }
+    },
+    "Xoá khỏi danh sách": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove from the list"
+          }
+        }
+      }
+    },
+    "Khi bấm Bắt đầu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "When I tap Start"
+          }
+        }
+      }
+    },
+    "Hẹn giờ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scheduled"
+          }
+        }
+      }
+    },
+    "Giờ bắt đầu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start time"
+          }
+        }
+      }
+    },
+    "Kết thúc dự kiến": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Expected end"
+          }
+        }
+      }
+    },
+    "Khi hết danh sách": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "When the list ends"
+          }
+        }
+      }
+    },
+    "Lịch phát": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schedule"
+          }
+        }
+      }
+    },
+    "Đang bật Lặp lại: danh sách phát mãi cho đến khi bấm Dừng.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loop is on: the list plays until you tap Stop."
+          }
+        }
+      }
+    },
+    "Chưa có kết nối phát. Thêm ở mục Đầu ra (YouTube, Facebook, RTMP, SRT…).": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No stream connections yet. Add them in Outputs (YouTube, Facebook, RTMP, SRT…)."
+          }
+        }
+      }
+    },
+    "Kết nối phát khi bắt đầu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stream connections at start"
+          }
+        }
+      }
+    },
+    "Các kết nối được chọn tự bật lúc danh sách bắt đầu; kết nối đang phát sẵn được giữ nguyên. Logo, title và bảng tỉ số vẫn hiện trên hình phát.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The chosen connections start when the list starts; connections already live are left as they are. Logo, titles and scoreboard stay on the output."
+          }
+        }
+      }
+    },
+    "Thư viện Video chưa có video. Nhập ở mục Video › Video từ Ảnh / Từ Tệp.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Video library is empty. Import in Video › Videos from Photos / From Files."
+          }
+        }
+      }
+    },
+    "Chọn video": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose videos"
+          }
+        }
+      }
+    },
+    "Thêm (%@)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add (%@)"
+          }
+        }
+      }
+    },
+    "Mở": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open"
+          }
+        }
+      }
+    },
+    "Danh sách phát: hẹn %@ · còn %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Playlist: scheduled %@ · in %@"
+          }
+        }
+      }
+    },
+    "Danh sách phát %@/%@: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Playlist %@/%@: %@"
+          }
+        }
+      }
+    },
+    "Danh sách phát đã phát hết": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Playlist finished"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

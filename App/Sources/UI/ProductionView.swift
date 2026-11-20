@@ -101,6 +101,7 @@ struct CategoryContent: View {
     /// (which clears photoKind / importing) never sends a Logo into Ảnh or vice versa.
     @State private var photoTarget: LibraryKind = .picture
     @State private var videoPick = false
+    @State private var showPlayout = false
     @State private var videoItems: [PhotosPickerItem] = []
     /// Where videos picked from Photos go: Video, or only their sound into Nhạc / Hiệu ứng âm thanh.
     @State private var videoTarget: LibraryKind = .movie
@@ -164,6 +165,9 @@ struct CategoryContent: View {
             }
             importing = nil
         }
+        .sheet(isPresented: $showPlayout) {
+            PlayoutSheet(playout: engine.playout, engine: engine, library: library)
+        }
         .photosPicker(isPresented: Binding(get: { photoKind != nil }, set: { if !$0 { photoKind = nil } }),
                       selection: $photoItems, matching: .images, preferredItemEncoding: .current)
         // .current: the video as stored (no re-encode to H.264 before it is handed over — much faster for 4K / HEVC)
@@ -220,6 +224,7 @@ struct CategoryContent: View {
             case .movie:
                 headerButton("Video từ Ảnh", "photo.on.rectangle") { videoTarget = .movie; videoPick = true }
                 headerButton("Từ Tệp", "folder") { fileTarget = .movie; importing = .movie }
+                headerButton("Danh sách phát", "list.and.film") { showPlayout = true }
             case .picture, .overlay, .logo:
                 importImageMenu(category == .picture ? .picture : category == .overlay ? .overlay : .logo)
             case .audio:
@@ -372,7 +377,9 @@ struct CategoryContent: View {
             sourceGrid(favs)
         case .camera:
             let local = engine.sources.filter { $0 is CameraSource }
-            let net = engine.sources.filter { !($0 is CameraSource) && !($0 is FileSource) && !($0 is ImageSource) && $0.id != engine.replay.id }
+            let net = engine.sources.filter {
+                !($0 is CameraSource) && !($0 is FileSource) && !($0 is PlaylistSource) && !($0 is ImageSource) && $0.id != engine.replay.id
+            }
             sectionHeader("Camera trong máy & USB")
             sourceGrid(local)
             sectionHeader("Camera mạng (SRT · RTSP · RTMP · DTDLive)")
@@ -384,8 +391,9 @@ struct CategoryContent: View {
         case .pip:
             pipContent
         case .movie:
+            PlayoutStatusBar(playout: engine.playout) { showPlayout = true }
             libraryGrid(.movie) { engine.cueMovie($0) }
-            let playing = engine.sources.compactMap { $0 as? FileSource }
+            let playing: [any VideoSource] = engine.sources.filter { $0 is FileSource || $0 is PlaylistSource }
             if !playing.isEmpty {
                 sectionHeader("Video đang dùng làm nguồn")
                 sourceGrid(playing)

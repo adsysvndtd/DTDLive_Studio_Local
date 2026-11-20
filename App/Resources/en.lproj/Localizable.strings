@@ -71,11 +71,13 @@
 "Bật: mạng chậm thì tự giảm bitrate (hình mềm hơn nhưng không đứng). Tắt: giữ nét, mạng chậm thì bỏ khung hình." = "On: lowers bitrate when the network is slow (softer but no freezing). Off: stays sharp, drops frames when the network is slow.";
 "Bắt dóng" = "Snap";
 "Bắt đầu" = "Game starts";
+"Bắt đầu ngay" = "Start now";
 "Bắt đầu sau" = "Starts in";
 "Bắt đầu đếm khi bấm LÊN SÓNG" = "Starts counting when taken on air";
 "Bỏ SuperFG" = "Remove SuperFG";
 "Bỏ chọn" = "Deselect";
 "Bỏ logo" = "Clear logo";
+"Bỏ qua các video đã bị xoá khỏi thư viện" = "Skipping videos removed from the library";
 "Bỏ stinger" = "Remove stinger";
 "Bỏ ảnh nền" = "Clear background";
 "BỐ CỤC" = "LAYOUT";
@@ -104,6 +106,7 @@
 "Cao hơn = chịu được Wi‑Fi chập chờn (SRT kịp gửi lại gói) nhưng hình trễ hơn. 300 ms cho Wi‑Fi tốt, 500–800 ms cho Wi‑Fi đông. Áp dụng sau khi mở lại app." = "Higher = tolerates unsteady Wi‑Fi (SRT has time to resend) but more delay. 300 ms for good Wi‑Fi, 500–800 ms for busy Wi‑Fi. Applies after reopening the app.";
 "Cho phép DTDLive tìm và ghép nối" = "Let DTDLive find and pair";
 "Chrome xanh" = "Blue chrome";
+"Chuyển PGM về nguồn trước đó" = "Return PGM to the previous source";
 "Chuyển cảnh" = "Transitions";
 "Chuyển khoản ngân hàng (VietQR)" = "Bank transfer (VietQR)";
 "Chuyển màu dọc" = "Vertical gradient";
@@ -133,6 +136,7 @@
 "Chưa có gói DTDStudio trên máy chủ." = "No DTDStudio plans on the server.";
 "Chưa có hình" = "No picture";
 "Chưa có kênh nào" = "No channels yet";
+"Chưa có kết nối phát. Thêm ở mục Đầu ra (YouTube, Facebook, RTMP, SRT…)." = "No stream connections yet. Add them in Outputs (YouTube, Facebook, RTMP, SRT…).";
 "Chưa có lớp chữ" = "No text layers";
 "Chưa có lớp có màu nền" = "No filled layers";
 "Chưa có lớp nào" = "No layers yet";
@@ -141,6 +145,7 @@
 "Chưa có thiết bị nào được ghép nối" = "No paired devices yet";
 "Chưa có thiết kế" = "No design yet";
 "Chưa có title — bấm Thêm title ở góc trên" = "No titles yet — tap Add title at the top";
+"Chưa có video. Nhập video ở mục Video (Từ Ảnh / Từ Tệp), rồi thêm vào đây." = "No videos yet. Import videos in Video (From Photos / From Files), then add them here.";
 "Chưa có đích phát" = "No destinations yet";
 "Chưa có ảnh nền — bấm Ảnh nền từ Thư viện hoặc Tệp" = "No background picture — tap Background from Photos or Files";
 "Chưa có ảnh — nhập ảnh nền ở mục Ảnh (Thư viện ảnh / Tệp)" = "No pictures — import one in Pictures (Photos / Files)";
@@ -182,6 +187,7 @@
 "Chọn nguồn" = "Choose source";
 "Chọn tay" = "Manual";
 "Chọn từ thư viện Logo" = "Choose from Logo library";
+"Chọn video" = "Choose videos";
 "Chọn video…" = "Choose video…";
 "Chọn ít nhất một nền tảng" = "Pick at least one platform";
 "Chọn ảnh / logo" = "Choose image / logo";
@@ -207,14 +213,18 @@
 "Chữ nhỏ dưới nhãn" = "Small text under the tag";
 "Chữ số giờ" = "Time digits";
 "Chữ tên" = "Name text";
+"Clip sau" = "Next clip";
+"Clip trước" = "Previous clip";
 "Clip đã lưu" = "Saved clips";
 "Copy link" = "Copy link";
 "Copy nhật ký" = "Copy log";
 "Cut" = "Cut";
 "Cài đặt" = "Settings";
+"Các kết nối được chọn tự bật lúc danh sách bắt đầu; kết nối đang phát sẵn được giữ nguyên. Logo, title và bảng tỉ số vẫn hiện trên hình phát." = "The chosen connections start when the list starts; connections already live are left as they are. Logo, titles and scoreboard stay on the output.";
 "Các lớp (trên = trước)" = "Layers (top = front)";
 "Cách mép" = "Margin";
 "Cách đáy" = "From bottom";
+"Còn %@" = "In %@";
 "Có" = "Yes";
 "Có chân" = "Serif";
 "Có nền" = "Background";
@@ -243,6 +253,14 @@
 "Cỡ khung" = "Window size";
 "Cỡ logo" = "Logo size";
 "Cỡ tổng thể" = "Overall size";
+"Danh sách bắt đầu trễ %@ phút (ứng dụng không mở đúng giờ)" = "The playlist started %@ min late (the app was not open at the start time)";
+"Danh sách phát" = "Playlist";
+"Danh sách phát %@/%@: %@" = "Playlist %@/%@: %@";
+"Danh sách phát chưa có video" = "The playlist has no videos";
+"Danh sách phát chưa có video (hoặc video đã bị xoá khỏi thư viện)" = "The playlist has no videos (or they were removed from the library)";
+"Danh sách phát đã phát hết" = "Playlist finished";
+"Danh sách phát: hẹn %@ · còn %@" = "Playlist: scheduled %@ · in %@";
+"Danh sách · %@ video · %@" = "List · %@ videos · %@";
 "Dung lượng" = "Size";
 "Dày viền" = "Border width";
 "Dày viền chữ" = "Outline width";
@@ -265,6 +283,7 @@
 "Dịch" = "Nudge";
 "Dọc" = "Vertical";
 "Dừng" = "Stop";
+"Dừng danh sách phát?" = "Stop the playlist?";
 "Dừng nhận" = "Stop";
 "Dừng tất cả" = "Stop all";
 "Dừng xem thử" = "Stop preview";
@@ -300,9 +319,12 @@
 "Giờ" = "Clock";
 "Giờ (trống = giờ thực)" = "Time (empty = real time)";
 "Giờ (trống = giờ thực, - = ẩn)" = "Time (empty = real time, - = hidden)";
+"Giờ bắt đầu" = "Start time";
 "Giữ %@ giây" = "Hold %@ s";
+"Giữ DTDStudio mở trên màn hình cho đến khi phát xong: iPad không cho ứng dụng xử lý hình khi ở nền. Màn hình được giữ sáng tự động." = "Keep DTDStudio open on screen until the playlist is done: iPad does not let apps process video in the background. The screen is kept on automatically.";
 "Giữ hình" = "Hold";
 "Giữ hình rồi bước từng khung để soi tình huống; ‹ › trên bàn phím cũng bước 1 khung." = "Hold, then step frame by frame to check the incident; ‹ › on a keyboard also step 1 frame.";
+"Giữ khung hình cuối" = "Hold the last frame";
 "Giữ tỉ lệ khi kéo góc" = "Keep proportions on corner drag";
 "Giữ đến khi tắt" = "Hold until off";
 "Giữa dọc" = "Centre vertically";
@@ -361,6 +383,7 @@
 "Hoà trộn" = "Dissolve";
 "Hoàn tác" = "Undo";
 "Huỷ" = "Cancel";
+"Huỷ hẹn giờ" = "Cancel schedule";
 "Huỷ đơn" = "Cancel order";
 "Hà Nội" = "Hanoi";
 "Hình %@/s · Tiếng %@/s" = "Video %@/s · Audio %@/s";
@@ -372,6 +395,8 @@
 "Hình học" = "Geometry";
 "Hơi đậm" = "Semibold";
 "Hạ replay" = "Take replay down";
+"Hẹn giờ" = "Scheduled";
+"Hẹn giờ phát" = "Schedule";
 "Hẹp" = "Condensed";
 "Hết bộ đệm khung hình — đã tạo lại (khung bị giữ ở bộ mã hoá)" = "Out of frame buffers — recreated (frames held by the encoder)";
 "Hệ thống" = "System";
@@ -382,7 +407,9 @@
 "Hội ý mỗi set: %lld" = "Timeouts per set: %lld";
 "ID xác nhận" = "Confirmation ID";
 "IN HOA" = "UPPERCASE";
+"Khi bấm Bắt đầu" = "When I tap Start";
 "Khi hoà" = "If tied";
+"Khi hết danh sách" = "When the list ends";
 "Khoá cân bằng trắng" = "Lock white balance";
 "Khoá lớp" = "Lock layer";
 "Khoá lớp (không chọn / kéo trên khung vẽ)" = "Lock layer (not picked / dragged on the canvas)";
@@ -406,6 +433,7 @@
 "Khôi phục giao dịch" = "Restore purchases";
 "Khôi phục mẫu" = "Reset template";
 "Không" = "No";
+"Không còn trong thư viện" = "No longer in the library";
 "Không có tín hiệu" = "No signal";
 "Không công khai (có link)" = "Unlisted (link only)";
 "Không dùng" = "None";
@@ -458,6 +486,8 @@
 "Kết nối %lf  key %lf" = "Connecting %lf  key %lf";
 "Kết nối %lld  key %lld" = "Connecting %lld  key %lld";
 "Kết nối lại" = "Reconnecting";
+"Kết nối phát khi bắt đầu" = "Stream connections at start";
+"Kết thúc dự kiến" = "Expected end";
 "Kết thúc hoà" = "Ends in a draw";
 "LIVE · Cam" = "LIVE · Orange";
 "LIVE · Xanh dương" = "LIVE · Blue";
@@ -495,6 +525,7 @@
 "Lên Preview" = "To Preview";
 "Lên sóng" = "On air";
 "Lên sóng ngay" = "Take now";
+"Lên trên" = "Move up";
 "Lên trước" = "Forward";
 "Lưu" = "Save";
 "Lưu clip" = "Save clip";
@@ -513,6 +544,9 @@
 "Lật" = "Curl";
 "Lật gương" = "Mirror";
 "Lặp" = "Loop";
+"Lặp lại" = "Loop";
+"Lặp lại cả danh sách" = "Loop the whole list";
+"Lịch phát" = "Schedule";
 "Lỗi" = "Error";
 "Lỗi tích lũy" = "Accumulated fouls";
 "Lỗi: %@" = "Error: %@";
@@ -585,6 +619,7 @@
 "Mờ + trượt nhẹ" = "Fade + short slide";
 "Mờ dần" = "Fade";
 "Mờ nét" = "Blur";
+"Mở" = "Open";
 "Mở DTDLive (hoặc app hỗ trợ DTD pairing) trên cùng mạng Wi-Fi → chọn DTDStudio → so ID xác nhận → Chấp nhận. Không cần nhập mã." = "Open DTDLive on the same Wi-Fi → pick DTDStudio → compare the confirmation ID → Accept. No code to type.";
 "Mở dọc" = "Open vertical";
 "Mở khoá lớp" = "Unlock layer";
@@ -621,6 +656,7 @@
 "Nhánh" = "Branch";
 "Nhân bản" = "Duplicate";
 "Nhân bản để sửa" = "Duplicate to edit";
+"Nhân đôi" = "Duplicate";
 "Nhãn" = "Label";
 "Nhãn (tự xuống dòng)" = "Tag (wraps)";
 "Nhãn chữ chạy" = "Ticker tag";
@@ -673,6 +709,7 @@
 "On" = "On";
 "Oswald (cao, hẹp)" = "Oswald (tall, narrow)";
 "PGM" = "PGM";
+"PGM chuyển về nguồn trước đó." = "PGM returns to the previous source.";
 "PHÁT REPLAY" = "PLAY REPLAY";
 "PNG có tâm trong suốt, lấy từ thư viện SuperFG" = "PNG with a transparent centre, from the SuperFG library";
 "PTZ nguồn PVW" = "PVW source PTZ";
@@ -751,6 +788,7 @@
 "Sắp phát sóng" = "Stream starting";
 "Sắp xếp" = "Arrange";
 "Sẵn sàng" = "Ready";
+"Sẽ phát lúc %@" = "Starts at %@";
 "SỌC" = "BARS";
 "Sọc" = "Bars";
 "Sọc chéo" = "Diagonal stripes";
@@ -774,6 +812,7 @@
 "Thanh nền dài / ngắn lại, chữ giữ nguyên cỡ." = "Background bars get longer / shorter, text keeps its size.";
 "Thao tác" = "Gestures";
 "Thay người mỗi set: %lld" = "Substitutions per set: %lld";
+"Thay đổi danh sách áp dụng cho lần phát sau. Chạm vào một clip để chuyển ngay sang clip đó." = "List changes apply to the next run. Tap a clip to jump to it now.";
 "Theo mẫu" = "Template";
 "Theo thẻ" = "Follow card";
 "Theo âm thanh" = "By audio";
@@ -788,6 +827,7 @@
 "Thêm %@" = "Add %@";
 "Thêm %lf" = "Add %lf";
 "Thêm %lld" = "Add %lld";
+"Thêm (%@)" = "Add (%@)";
 "Thêm bảng tỉ số" = "Add scoreboard";
 "Thêm khung" = "Add window";
 "Thêm link xem" = "Add watch link";
@@ -796,6 +836,7 @@
 "Thêm nguồn" = "Add source";
 "Thêm thao tác" = "More";
 "Thêm title" = "Add title";
+"Thêm video từ thư viện" = "Add videos from the library";
 "Thêm đích" = "Add destination";
 "Thông số" = "Info";
 "Thông số trên PGM" = "Info on PGM";
@@ -806,6 +847,7 @@
 "Thư mục %lld không có manifest.json" = "Folder %lld has no manifest.json";
 "Thư mục không có file .html" = "The folder has no .html file";
 "Thư mục đồ hoạ" = "Graphics folder";
+"Thư viện Video chưa có video. Nhập ở mục Video › Video từ Ảnh / Từ Tệp." = "The Video library is empty. Import in Video › Videos from Photos / From Files.";
 "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTDStudio › Library › %@" = "Library empty — use the import button above. Files live in Files › DTDStudio › Library › %@";
 "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTDStudio › Library › %lf" = "Library empty — use the import button above. Files live in Files › DTDStudio › Library › %lf";
 "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTDStudio › Library › %lld" = "Library empty — use the import button above. Files live in Files › DTDStudio › Library › %lld";
@@ -899,6 +941,7 @@
 "TẮT" = "OFF";
 "Tắt" = "Off";
 "Tắt (tiết kiệm pin): màn hình chỉ luôn sáng khi đang phát / ghi; lúc khác iPad tự khoá theo Tự động khoá. Khi app ở nền hoặc màn hình tắt mà không phát, sau 15 giây app dừng camera, micro, xử lý hình và kết nối để không tốn pin; mở lại app là chạy tiếp." = "Off (saves battery): the screen stays on only while streaming / recording; otherwise the iPad locks by Auto-Lock. When the app is in the background or the screen is off and nothing is on air, after 15 seconds the app stops cameras, microphone, picture processing and connections to save battery; open the app again to continue.";
+"Tắt các kết nối phát đã bật" = "Stop the stream connections it started";
 "Tắt khi không dùng replay để đỡ nóng máy và tiết kiệm pin." = "Turn off when not using replay to keep the device cool and save battery.";
 "Tắt tự động chuyển cảnh" = "Turn off auto switching";
 "Tệp" = "Files";
@@ -936,6 +979,7 @@
 "Viền khung" = "Box border";
 "Vuốt 1 ngón trên PVW về phía PGM = CUT · 2 ngón = AUTO" = "Swipe PVW toward PGM: 1 finger = CUT · 2 fingers = AUTO";
 "Vuốt PVW → PGM để chuyển" = "Swipe PVW → PGM to switch";
+"Vuốt sang trái để xoá, giữ và kéo để đổi thứ tự." = "Swipe left to delete, touch and hold then drag to reorder.";
 "Vào trận" = "Game on";
 "Vát góc" = "Angled";
 "Vòng tròn" = "Iris";
@@ -974,6 +1018,7 @@
 "Xoá khung %@" = "Remove window %@";
 "Xoá khung %lf" = "Remove window %lf";
 "Xoá khung %lld" = "Remove window %lld";
+"Xoá khỏi danh sách" = "Remove from the list";
 "Xoá khỏi thư viện" = "Remove from library";
 "Xoá lớp" = "Delete layer";
 "Xoá nguồn" = "Remove source";
@@ -990,6 +1035,7 @@
 "Xuất thất bại: %lf" = "Export failed: %lf";
 "Xuất thất bại: %lld" = "Export failed: %lld";
 "Xuống 1 lớp" = "Down one layer";
+"Xuống dưới" = "Move down";
 "Xuống dưới cùng" = "Send to back";
 "Xám" = "Grey";
 "YouTube Studio › Phát trực tiếp › Khoá luồng." = "YouTube Studio › Go live › Stream key.";
@@ -1023,7 +1069,9 @@
 "Ô tỉ số" = "Score box";
 "Ô vuông (trong suốt)" = "Checkerboard (transparent)";
 "Ô đầu vào" = "Input tiles";
+"ĐANG PHÁT" = "ON AIR";
 "ĐANG REPLAY · DỪNG" = "REPLAY ON AIR · STOP";
+"Đang bật Lặp lại: danh sách phát mãi cho đến khi bấm Dừng." = "Loop is on: the list plays until you tap Stop.";
 "Đang chờ ngân hàng xác nhận…" = "Waiting for the bank…";
 "Đang chờ · %@ · cổng ghép nối %@ (tự tìm, không cần nhập)" = "Waiting · %@ · pairing port %@ (found automatically, nothing to type)";
 "Đang dùng" = "Active";
@@ -1081,6 +1129,7 @@
 "Đã nạp" = "Loaded";
 "Đã nạp logo — bấm Logo ở cột phải để lên PGM" = "Logo loaded — press Logo in the right column to put it on PGM";
 "Đã nạp — bấm SuperFG On ở cột phải" = "Loaded — press SuperFG On in the right column";
+"Đã phát hết danh sách" = "The playlist has finished";
 "Đã rút camera" = "Camera unplugged";
 "Đã thêm" = "Added";
 "Đã tạo và đang phát tới" = "Created and streaming to";
@@ -1092,6 +1141,7 @@
 "Đèn" = "Torch";
 "Đích phát (chạy song song, encode 1 lần)" = "Destinations (in parallel, encoded once)";
 "Đóng" = "Close";
+"Đóng danh sách" = "Close the playlist";
 "Đôi" = "Double";
 "Đăng nhập" = "Sign in";
 "Đăng nhập một lần; ở Đầu ra bấm Tạo live YouTube/Facebook để tự lấy URL + stream key." = "Sign in once; in Outputs tap Create YouTube/Facebook live to get the URL + stream key automatically.";
