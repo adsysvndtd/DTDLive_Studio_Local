@@ -80,6 +80,73 @@ struct TitleLayer: Identifiable, Equatable {
     }
     var center: CGPoint { CGPoint(x: x + w / 2, y: y + h / 2) }
 
+    /// Axis-aligned box around the layer as drawn (rotation included).
+    var boundingBox: CGRect {
+        guard rotation != 0 else { return frame }
+        let a = rotation * .pi / 180, c = center
+        let pts = [CGPoint(x: -w / 2, y: -h / 2), CGPoint(x: w / 2, y: -h / 2), CGPoint(x: -w / 2, y: h / 2), CGPoint(x: w / 2, y: h / 2)]
+            .map { CGPoint(x: c.x + $0.x * cos(a) - $0.y * sin(a), y: c.y + $0.x * sin(a) + $0.y * cos(a)) }
+        let xs = pts.map(\.x), ys = pts.map(\.y)
+        return CGRect(x: xs.min()!, y: ys.min()!, width: xs.max()! - xs.min()!, height: ys.max()! - ys.min()!)
+    }
+
+    /// Uniform scale of the whole layer (box, position about `a`, lettering, corners, borders, shadow).
+    mutating func scale(by f: CGFloat, about a: CGPoint) {
+        x = a.x + (x - a.x) * f; y = a.y + (y - a.y) * f
+        w *= f; h *= f
+        fontSize *= f; letterSpacing *= f; textStrokeWidth *= f; shadowBlur *= f
+        cornerRadius *= f; strokeWidth *= f
+    }
+
+    // MARK: Whole design (all layers as one lower third)
+
+    /// Box around every visible layer, in design px.
+    static func groupBounds(_ layers: [TitleLayer]) -> CGRect? {
+        var r: CGRect?
+        for l in layers where !l.hidden {
+            let b = l.boundingBox
+            r = r.map { $0.union(b) } ?? b
+        }
+        return r
+    }
+
+    /// The point the design grows from when resized: the side it sits against
+    /// (left / centre / right, bottom for designs in the lower half, top otherwise).
+    static func groupAnchor(_ g: CGRect) -> CGPoint {
+        let ax: CGFloat = abs(g.midX - 960) < 60 ? g.midX : (g.midX < 960 ? g.minX : g.maxX)
+        return CGPoint(x: ax, y: g.midY >= 540 ? g.maxY : g.minY)
+    }
+
+    static func moved(_ layers: [TitleLayer], dx: CGFloat, dy: CGFloat) -> [TitleLayer] {
+        layers.map { (l: TitleLayer) -> TitleLayer in var m = l; m.x += dx; m.y += dy; return m }
+    }
+
+    static func scaled(_ layers: [TitleLayer], by f: CGFloat, about a: CGPoint) -> [TitleLayer] {
+        layers.map { (l: TitleLayer) -> TitleLayer in var m = l; m.scale(by: f, about: a); return m }
+    }
+
+    /// Longer / shorter without changing the lettering: wide background shapes (bars, rules) stretch,
+    /// everything else keeps its size and stays with its side (left items stay, right items follow the
+    /// right edge, centred items stay centred). A design centred on the frame stays centred.
+    static func stretched(_ layers: [TitleLayer], by f: CGFloat) -> [TitleLayer] {
+        guard let g = groupBounds(layers), g.width > 0 else { return layers }
+        let shiftAll: CGFloat = abs(g.midX - 960) < 60 ? -(f - 1) * g.width / 2 : 0
+        return layers.map { (l: TitleLayer) -> TitleLayer in
+            var m = l
+            let spanning = (m.kind == .rect || m.kind == .roundRect || m.kind == .line) && m.rotation == 0 && m.w >= 0.3 * g.width
+            if spanning {
+                m.x = g.minX + (m.x - g.minX) * f
+                m.w *= f
+            } else {
+                let mid = m.x + m.w / 2
+                let centred = (m.kind == .text && m.align == 1 && m.w >= 0.3 * g.width) || abs(mid - g.midX) < 0.08 * g.width
+                if centred { m.x += (f - 1) * (g.midX - g.minX) } else if mid > g.midX { m.x += (f - 1) * g.width }
+            }
+            m.x += shiftAll
+            return m
+        }
+    }
+
     /// A ready-made lower-third design to start from: dark bar, accent tab, name, role.
     static func starter(accent: String) -> [TitleLayer] {
         var bar = make(.roundRect); bar.name = L("Nền"); bar.x = 560; bar.y = 760; bar.w = 820; bar.h = 150; bar.fillHex = "#101418"; bar.fillOpacity = 0.9
@@ -283,17 +350,39 @@ extension TitleRenderer {
 
     // MARK: Drawing
 
+    /// How a 16:9 design (1920×1080) is placed on a program frame of another shape: 16:9 exactly as designed;
+    /// otherwise the design is sized by `graphicsScale` (never wider / taller than 94 % of the frame), keeps its
+    /// relative horizontal position and its bottom margin (top margin for designs in the upper half).
+    static func adaptTransform(_ layers: [TitleLayer], canvas: CGSize) -> (k: CGFloat, tx: CGFloat, ty: CGFloat) {
+        let W = canvas.width, H = max(canvas.height, 1)
+        if abs(W / H - 16.0 / 9.0) < 0.02 { return (W / 1920, 0, 0) }
+        guard let g = TitleLayer.groupBounds(layers), g.width > 0, g.height > 0 else { return (min(W / 1920, H / 1080), 0, 0) }
+        let k = min(graphicsScale(canvas), 0.94 * W / g.width, 0.94 * H / g.height)
+        var left = g.midX / 1920 * W - g.width * k / 2
+        left = min(max(left, 0.03 * W), max(0.03 * W, 0.97 * W - g.width * k))
+        var top: CGFloat = g.midY >= 540 ? (H - (1080 - g.maxY) / 1080 * H) - g.height * k : g.minY / 1080 * H
+        top = min(max(top, 0.02 * H), max(0.02 * H, 0.98 * H - g.height * k))
+        return (k, left - g.minX * k, top - g.minY * k)
+    }
+
+    /// Size of graphics designed for 1080 lines on this frame: by height on 16:9 / 4:3, limited by the width on
+    /// square and vertical frames (so a 900 px lower third still fits a 9:16 frame).
+    static func graphicsScale(_ canvas: CGSize) -> CGFloat {
+        min(canvas.height / 1080, canvas.width * 0.95 / 1080)
+    }
+
     /// Full-canvas transparent image of every visible layer, composited in order (first = back).
     static func drawCustom(_ item: TitleItem, canvas: CGSize) -> UIImage? {
         let layers = item.layers ?? []
         guard !layers.isEmpty, canvas.width >= 1, canvas.height >= 1 else { return nil }
-        let k = canvas.width / 1920                 // design space (1920×1080) → canvas
+        let t = adaptTransform(layers, canvas: canvas)  // design space (1920×1080) → canvas
+        let k = t.k
         let fmt = UIGraphicsImageRendererFormat(); fmt.scale = 1; fmt.opaque = false
         return UIGraphicsImageRenderer(size: canvas, format: fmt).image { ctx in
             let g = ctx.cgContext
             for layer in layers where !layer.hidden {
                 g.saveGState()
-                let box = CGRect(x: layer.x * k, y: layer.y * k, width: max(1, layer.w * k), height: max(1, layer.h * k))
+                let box = CGRect(x: t.tx + layer.x * k, y: t.ty + layer.y * k, width: max(1, layer.w * k), height: max(1, layer.h * k))
                 if layer.rotation != 0 {             // rotate around the box centre
                     g.translateBy(x: box.midX, y: box.midY)
                     g.rotate(by: layer.rotation * .pi / 180)

@@ -261,7 +261,8 @@ final class TitleRenderer: @unchecked Sendable {
         }
         // Clock / countdown change once a second: redraw only when the shown second changes
         // (drawing text on the CPU every frame made program stutter).
-        let k = canvas.height / 1080 * item.scale
+        // by height on 16:9 / 4:3, limited by the width on square / vertical frames (no overflow on 9:16)
+        let k = Self.graphicsScale(canvas) * item.scale
         var remaining: Int?
         if item.style == .countdown {
             lock.lock(); let start = shownAt[item.id]; lock.unlock()

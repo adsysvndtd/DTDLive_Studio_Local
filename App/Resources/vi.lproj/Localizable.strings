@@ -100,6 +100,7 @@
 "Camera mạng (SRT · RTSP · RTMP · DTDLive)" = "Camera mạng (SRT · RTSP · RTMP · DTDLive)";
 "Camera trong máy & USB" = "Camera trong máy & USB";
 "Cao" = "Cao";
+"Cao / thấp" = "Cao / thấp";
 "Cao hơn = chịu được Wi‑Fi chập chờn (SRT kịp gửi lại gói) nhưng hình trễ hơn. 300 ms cho Wi‑Fi tốt, 500–800 ms cho Wi‑Fi đông. Áp dụng sau khi mở lại app." = "Cao hơn = chịu được Wi‑Fi chập chờn (SRT kịp gửi lại gói) nhưng hình trễ hơn. 300 ms cho Wi‑Fi tốt, 500–800 ms cho Wi‑Fi đông. Áp dụng sau khi mở lại app.";
 "Cho phép DTDLive tìm và ghép nối" = "Cho phép DTDLive tìm và ghép nối";
 "Chrome xanh" = "Chrome xanh";
@@ -132,10 +133,13 @@
 "Chưa có gói DTDStudio trên máy chủ." = "Chưa có gói DTDStudio trên máy chủ.";
 "Chưa có hình" = "Chưa có hình";
 "Chưa có kênh nào" = "Chưa có kênh nào";
+"Chưa có lớp chữ" = "Chưa có lớp chữ";
+"Chưa có lớp có màu nền" = "Chưa có lớp có màu nền";
 "Chưa có lớp nào" = "Chưa có lớp nào";
 "Chưa có mẫu" = "Chưa có mẫu";
 "Chưa có mẫu nào" = "Chưa có mẫu nào";
 "Chưa có thiết bị nào được ghép nối" = "Chưa có thiết bị nào được ghép nối";
+"Chưa có thiết kế" = "Chưa có thiết kế";
 "Chưa có title — bấm Thêm title ở góc trên" = "Chưa có title — bấm Thêm title ở góc trên";
 "Chưa có đích phát" = "Chưa có đích phát";
 "Chưa có ảnh nền — bấm Ảnh nền từ Thư viện hoặc Tệp" = "Chưa có ảnh nền — bấm Ảnh nền từ Thư viện hoặc Tệp";
@@ -194,6 +198,7 @@
 "Chữ chạy tin tức" = "Chữ chạy tin tức";
 "Chữ dòng 1" = "Chữ dòng 1";
 "Chữ dòng 2" = "Chữ dòng 2";
+"Chữ in hoa" = "Chữ in hoa";
 "Chữ khi hết giờ" = "Chữ khi hết giờ";
 "Chữ logo" = "Chữ logo";
 "Chữ lớn" = "Chữ lớn";
@@ -237,6 +242,7 @@
 "Cỡ chữ" = "Cỡ chữ";
 "Cỡ khung" = "Cỡ khung";
 "Cỡ logo" = "Cỡ logo";
+"Cỡ tổng thể" = "Cỡ tổng thể";
 "Dung lượng" = "Dung lượng";
 "Dày viền" = "Dày viền";
 "Dày viền chữ" = "Dày viền chữ";
@@ -261,6 +267,7 @@
 "Dừng" = "Dừng";
 "Dừng nhận" = "Dừng nhận";
 "Dừng tất cả" = "Dừng tất cả";
+"Dừng xem thử" = "Dừng xem thử";
 "Email" = "Email";
 "FX" = "FX";
 "Facebook giới hạn số lần gọi — tạm dừng 5 phút rồi nhận tiếp" = "Facebook giới hạn số lần gọi — tạm dừng 5 phút rồi nhận tiếp";
@@ -299,6 +306,7 @@
 "Giữ tỉ lệ khi kéo góc" = "Giữ tỉ lệ khi kéo góc";
 "Giữ đến khi tắt" = "Giữ đến khi tắt";
 "Giữa dọc" = "Giữa dọc";
+"Giữa khung" = "Giữa khung";
 "Giữa ngang" = "Giữa ngang";
 "Giữa phải" = "Giữa phải";
 "Giữa trái" = "Giữa trái";
@@ -440,9 +448,11 @@
 "Kéo cho tiếng khớp với hình khi camera mạng bị trễ." = "Kéo cho tiếng khớp với hình khi camera mạng bị trễ.";
 "Kéo logo trên khung để di chuyển, kéo chấm ở góc để đổi cỡ." = "Kéo logo trên khung để di chuyển, kéo chấm ở góc để đổi cỡ.";
 "Kéo title trên khung để đặt vị trí · chụm 2 ngón để đổi cỡ" = "Kéo title trên khung để đặt vị trí · chụm 2 ngón để đổi cỡ";
+"Kéo trên khung vẽ để dời cả lower third, kéo góc để đổi cỡ đồng bộ. Chạm vào một phần để sửa riêng phần đó." = "Kéo trên khung vẽ để dời cả lower third, kéo góc để đổi cỡ đồng bộ. Chạm vào một phần để sửa riêng phần đó.";
 "Kéo để di chuyển · kéo góc để đổi cỡ" = "Kéo để di chuyển · kéo góc để đổi cỡ";
 "Kênh âm thanh" = "Kênh âm thanh";
 "Kích thước" = "Kích thước";
+"Kích thước & vị trí" = "Kích thước & vị trí";
 "Kết nối" = "Kết nối";
 "Kết nối %@  key %@" = "Kết nối %@  key %@";
 "Kết nối %lf  key %lf" = "Kết nối %lf  key %lf";
@@ -535,6 +545,7 @@
 "Màu nguồn PVW" = "Màu nguồn PVW";
 "Màu nhấn" = "Màu nhấn";
 "Màu nền" = "Màu nền";
+"Màu nền & màu nhấn" = "Màu nền & màu nhấn";
 "Màu sắc" = "Màu sắc";
 "Màu tô" = "Màu tô";
 "Màu viền" = "Màu viền";
@@ -564,6 +575,7 @@
 "Mật khẩu để xác nhận" = "Mật khẩu để xác nhận";
 "Mặc định" = "Mặc định";
 "Mềm biên" = "Mềm biên";
+"Mọi lớp to / nhỏ cùng lúc, kể cả chữ (số = chiều cao so với khung hình)." = "Mọi lớp to / nhỏ cùng lúc, kể cả chữ (số = chiều cao so với khung hình).";
 "Mỗi %@ giây" = "Mỗi %@ giây";
 "Mỗi %lf giây" = "Mỗi %lf giây";
 "Mỗi %lld giây" = "Mỗi %lld giây";
@@ -577,6 +589,7 @@
 "Mở dọc" = "Mở dọc";
 "Mở khoá lớp" = "Mở khoá lớp";
 "Mở ngang" = "Mở ngang";
+"Mở tab Mẫu" = "Mở tab Mẫu";
 "Mở trang xem live" = "Mở trang xem live";
 "Mở trong Replay (mark in/out)" = "Mở trong Replay (mark in/out)";
 "N-Title (NDI có alpha)" = "N-Title (NDI có alpha)";
@@ -630,6 +643,7 @@
 "Nhập ảnh" = "Nhập ảnh";
 "Nhập ảnh / logo ở các mục Ảnh và Logo" = "Nhập ảnh / logo ở các mục Ảnh và Logo";
 "Nhập ảnh PNG (nền trong suốt) làm stinger — nó quét qua khung hình, camera chuyển khi ảnh che kín." = "Nhập ảnh PNG (nền trong suốt) làm stinger — nó quét qua khung hình, camera chuyển khi ảnh che kín.";
+"Nhỏ hơn" = "Nhỏ hơn";
 "Nạp" = "Nạp";
 "Nạp %@" = "Nạp %@";
 "Nạp (tắt mẫu đang phát)" = "Nạp (tắt mẫu đang phát)";
@@ -658,6 +672,7 @@
 "Nửa trái" = "Nửa trái";
 "On" = "On";
 "Oswald (cao, hẹp)" = "Oswald (cao, hẹp)";
+"PGM" = "PGM";
 "PHÁT REPLAY" = "PHÁT REPLAY";
 "PNG có tâm trong suốt, lấy từ thư viện SuperFG" = "PNG có tâm trong suốt, lấy từ thư viện SuperFG";
 "PTZ nguồn PVW" = "PTZ nguồn PVW";
@@ -674,10 +689,12 @@
 "Phát tất cả" = "Phát tất cả";
 "Phóng to" = "Phóng to";
 "Phông" = "Phông";
+"Phông chữ (tất cả chữ)" = "Phông chữ (tất cả chữ)";
 "Phút %@" = "Phút %@";
 "Phút %lf" = "Phút %lf";
 "Phút %lld" = "Phút %lld";
 "Phơi sáng" = "Phơi sáng";
+"Phải" = "Phải";
 "Phản hồi không hợp lệ" = "Phản hồi không hợp lệ";
 "Phản hồi máy chủ không hợp lệ" = "Phản hồi máy chủ không hợp lệ";
 "Phần tử có data-field=\"tên\" sẽ thành ô sửa chữ; biến màu CSS (--accent: #…) thành ô chọn màu." = "Phần tử có data-field=\"tên\" sẽ thành ô sửa chữ; biến màu CSS (--accent: #…) thành ô chọn màu.";
@@ -725,6 +742,7 @@
 "SuperFG của bạn (PNG trong suốt · video có kênh alpha .mov)" = "SuperFG của bạn (PNG trong suốt · video có kênh alpha .mov)";
 "SuperFG của bạn: ảnh PNG/JPG chạy như thẻ có hiệu ứng · video .mov có kênh alpha" = "SuperFG của bạn: ảnh PNG/JPG chạy như thẻ có hiệu ứng · video .mov có kênh alpha";
 "SuperFG đang trên PGM" = "SuperFG đang trên PGM";
+"Sát đáy" = "Sát đáy";
 "Sân" = "Sân";
 "Sân 11" = "Sân 11";
 "Sân 5" = "Sân 5";
@@ -753,6 +771,7 @@
 "TIN TỨC" = "TIN TỨC";
 "TRÊN SÓNG" = "TRÊN SÓNG";
 "Tech" = "Tech";
+"Thanh nền dài / ngắn lại, chữ giữ nguyên cỡ." = "Thanh nền dài / ngắn lại, chữ giữ nguyên cỡ.";
 "Thao tác" = "Thao tác";
 "Thay người mỗi set: %lld" = "Thay người mỗi set: %lld";
 "Theo mẫu" = "Theo mẫu";
@@ -762,6 +781,7 @@
 "Thiết kế" = "Thiết kế";
 "Thiết kế Title" = "Thiết kế Title";
 "Thiết kế nhiều lớp" = "Thiết kế nhiều lớp";
+"Thiết kế vẽ ở khung 16:9. PGM có tỉ lệ khác nên lower third tự co cho vừa khung và giữ khoảng cách tới mép dưới." = "Thiết kế vẽ ở khung 16:9. PGM có tỉ lệ khác nên lower third tự co cho vừa khung và giữ khoảng cách tới mép dưới.";
 "Thu gọn" = "Thu gọn";
 "Thuộc tính" = "Thuộc tính";
 "Thêm" = "Thêm";
@@ -772,6 +792,7 @@
 "Thêm khung" = "Thêm khung";
 "Thêm link xem" = "Thêm link xem";
 "Thêm lớp" = "Thêm lớp";
+"Thêm lớp từ thanh công cụ, hoặc nạp một mẫu lower third có sẵn." = "Thêm lớp từ thanh công cụ, hoặc nạp một mẫu lower third có sẵn.";
 "Thêm nguồn" = "Thêm nguồn";
 "Thêm thao tác" = "Thêm thao tác";
 "Thêm title" = "Thêm title";
@@ -790,6 +811,7 @@
 "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTDStudio › Library › %lld" = "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTDStudio › Library › %lld";
 "Thư viện ảnh" = "Thư viện ảnh";
 "Thường" = "Thường";
+"Thấp" = "Thấp";
 "Thắng %@/%@" = "Thắng %@/%@";
 "Thắng rack được phá" = "Thắng rack được phá";
 "Thẻ vàng" = "Thẻ vàng";
@@ -818,6 +840,7 @@
 "Tiêu đề trên (tổ chức / chương trình)" = "Tiêu đề trên (tổ chức / chương trình)";
 "Tiêu đề tập" = "Tiêu đề tập";
 "Tiếng Việt" = "Tiếng Việt";
+"To hơn" = "To hơn";
 "Token (chỉ cần cho repo private)" = "Token (chỉ cần cho repo private)";
 "Toàn khung + 2 PiP góc dưới" = "Toàn khung + 2 PiP góc dưới";
 "Toàn khung + PiP góc phải" = "Toàn khung + PiP góc phải";
@@ -827,7 +850,9 @@
 "Trong khung layout PiP" = "Trong khung layout PiP";
 "Trong nhà" = "Trong nhà";
 "Trong suốt" = "Trong suốt";
+"Trái" = "Trái";
 "Trên PGM" = "Trên PGM";
+"Trên cùng" = "Trên cùng";
 "Trên giữa" = "Trên giữa";
 "Trên phải" = "Trên phải";
 "Trên sóng" = "Trên sóng";
@@ -887,9 +912,11 @@
 "Tối thiểu: %.1f Mbps" = "Tối thiểu: %.1f Mbps";
 "Tối đa %lld lượt" = "Tối đa %lld lượt";
 "Tối ưu chất lượng tốt nhất cho các đích phát" = "Tối ưu chất lượng tốt nhất cho các đích phát";
+"Tổng thể" = "Tổng thể";
 "Từ Tệp" = "Từ Tệp";
 "Từ chối" = "Từ chối";
 "Từ thư viện DTDStudio" = "Từ thư viện DTDStudio";
+"Từng lớp" = "Từng lớp";
 "Tự do" = "Tự do";
 "Tự do (+/−)" = "Tự do (+/−)";
 "Tự gia hạn" = "Tự gia hạn";
@@ -977,6 +1004,7 @@
 "developers.facebook.com › App › quyền publish_video" = "developers.facebook.com › App › quyền publish_video";
 "instagram.com (trình duyệt máy tính) › Tạo › Video trực tiếp › copy URL luồng + Khoá luồng (mỗi phiên khác nhau, dùng rtmps)." = "instagram.com (trình duyệt máy tính) › Tạo › Video trực tiếp › copy URL luồng + Khoá luồng (mỗi phiên khác nhau, dùng rtmps).";
 "không tìm thấy repo/nhánh/thư mục (repo private cần token)" = "không tìm thấy repo/nhánh/thư mục (repo private cần token)";
+"lower third tự co theo khung, xem ở tab Tổng thể" = "lower third tự co theo khung, xem ở tab Tổng thể";
 "lỗi cổng" = "lỗi cổng";
 "mất kết nối, thử lại (%@)" = "mất kết nối, thử lại (%@)";
 "mất kết nối, thử lại (%lf)" = "mất kết nối, thử lại (%lf)";
@@ -1099,6 +1127,7 @@
 "Đồng hồ cơ" = "Đồng hồ cơ";
 "Đồng hồ đếm ngược (futsal)" = "Đồng hồ đếm ngược (futsal)";
 "Đổ bóng" = "Đổ bóng";
+"Đổ bóng cho chữ" = "Đổ bóng cho chữ";
 "Đổi bên (tên, tỉ số, logo)" = "Đổi bên (tên, tỉ số, logo)";
 "Đổi key bảo mật (link cũ hết hiệu lực)" = "Đổi key bảo mật (link cũ hết hiệu lực)";
 "Đổi luật giữa trận áp dụng từ điểm tiếp theo. Dùng \"Trận mới\" để bắt đầu lại với luật này." = "Đổi luật giữa trận áp dụng từ điểm tiếp theo. Dùng \"Trận mới\" để bắt đầu lại với luật này.";
@@ -1108,6 +1137,7 @@
 "Đổi tên" = "Đổi tên";
 "Đổi độ phân giải/fps khi đang phát: các đích tự kết nối lại với thông số mới." = "Đổi độ phân giải/fps khi đang phát: các đích tự kết nối lại với thông số mới.";
 "Đổi ảnh" = "Đổi ảnh";
+"Độ dài" = "Độ dài";
 "Độ dày" = "Độ dày";
 "Độ nhoè" = "Độ nhoè";
 "Độ phân giải" = "Độ phân giải";
@@ -1123,6 +1153,7 @@
 "Độ đậm nền" = "Độ đậm nền";
 "Độ đục" = "Độ đục";
 "Độ đục lớp" = "Độ đục lớp";
+"Độ đục nền" = "Độ đục nền";
 "Đội A" = "Đội A";
 "Đội B" = "Đội B";
 "Đội khách" = "Đội khách";

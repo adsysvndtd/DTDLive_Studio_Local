@@ -12,6 +12,8 @@ import UIKit
 struct TitleDesignerSheet: View {
     @Binding var item: TitleItem
     var program: FrameStore?
+    /// Program frame shape (width / height): the design is drawn 16:9 and adapted to this on air.
+    var programAspect: CGFloat = 16.0 / 9.0
     var onDelete: () -> Void
     @Environment(\.dismiss) private var dismiss
 
@@ -28,7 +30,8 @@ struct TitleDesignerSheet: View {
     @State private var guidesY: [CGFloat] = []
     @State private var lastTap: (id: UUID, at: Date)?
 
-    @State private var tab = 0                      // 0 thuộc tính · 1 lớp · 2 mẫu
+    @State private var tab = 0                      // 0 tổng thể · 1 thuộc tính · 2 lớp · 3 mẫu
+    @State private var groupBase: [TitleLayer]?     // layers when a whole-design slider drag began
     @FocusState private var textFocused: Bool
     @State private var bigStep = false
     @State private var showName = false
@@ -41,17 +44,20 @@ struct TitleDesignerSheet: View {
     @AppStorage("ui.titleDesigner.snap") private var snapOn = true
     @AppStorage("ui.titleDesigner.bg") private var bgMode = 0
 
-    init(item: Binding<TitleItem>, program: FrameStore?, onDelete: @escaping () -> Void) {
+    init(item: Binding<TitleItem>, program: FrameStore?, programAspect: CGFloat = 16.0 / 9.0, onDelete: @escaping () -> Void) {
         _item = item
         self.program = program
+        self.programAspect = programAspect
         self.onDelete = onDelete
         _draft = State(initialValue: item.wrappedValue)
     }
 
     private struct Drag {
-        enum Mode { case none, move, resize(Int, Int), rotate }
+        enum Mode { case none, move, resize(Int, Int), rotate, groupMove, groupScale(Int, Int) }
         var mode: Mode
         var origin: TitleLayer?
+        var base: [TitleLayer] = []                 // whole-design gestures: layers at the start
+        var bounds: CGRect = .zero                  // … and their box
         var startAngle: CGFloat = 0
         var committed = false
         var moved = false
@@ -163,7 +169,7 @@ struct TitleDesignerSheet: View {
                         Button { add(k) } label: { Label(k.label, systemImage: k.icon) }
                     }
                 } label: { toolLabel("plus.square", "Thêm lớp", tint: DS.accent) }
-                if let l = selectedLayer {
+                if tab != 0, let l = selectedLayer {
                     separator
                     tool("plus.square.on.square", "Nhân bản") { duplicate(l.id) }
                     tool("trash", "Xoá lớp", tint: DS.pgm) { delete(l.id) }
@@ -244,7 +250,16 @@ struct TitleDesignerSheet: View {
             ForEach(guidesY, id: \.self) { y in
                 Rectangle().fill(Color.pink).frame(width: W, height: 1).offset(y: y * s).allowsHitTesting(false)
             }
-            if fxPreview == nil { selectionOverlay(s: s, W: W, H: H) }
+            if fxPreview == nil {
+                if tab == 0 { groupOverlay(s: s, W: W, H: H) } else { selectionOverlay(s: s, W: W, H: H) }
+            }
+            if abs(programAspect - 16.0 / 9.0) > 0.02 {
+                Text(verbatim: L("PGM") + " " + Self.aspectLabel(programAspect) + " · " + L("lower third tự co theo khung, xem ở tab Tổng thể"))
+                    .font(.system(size: 10, weight: .medium)).foregroundStyle(.white)
+                    .padding(.horizontal, 6).padding(.vertical, 3)
+                    .background(Color.black.opacity(0.6), in: Capsule()).padding(6)
+                    .allowsHitTesting(false)
+            }
             if layers.isEmpty {
                 Text("Bấm “Thêm lớp” để bắt đầu thiết kế").font(.system(size: 14, weight: .medium)).foregroundStyle(.white.opacity(0.8))
                     .frame(width: W, height: H)
@@ -337,6 +352,7 @@ struct TitleDesignerSheet: View {
     private func begin(at p: CGPoint, s: CGFloat) {
         guard fxPreview == nil else { drag = Drag(mode: .none); return }
         let d = CGPoint(x: p.x / s, y: p.y / s)
+        if tab == 0 { beginGroup(at: d, s: s); return }
         // 1. a handle of the selected layer
         if let l = selectedLayer, !l.locked, !l.hidden, let m = handleHit(l, d, s: s) {
             var g = Drag(mode: m, origin: l)
@@ -357,8 +373,11 @@ struct TitleDesignerSheet: View {
     }
 
     private func dragChanged(_ v: DragGesture.Value, s: CGFloat) {
-        guard var g = drag, let o = g.origin else { return }
+        guard var g = drag else { return }
         if case .none = g.mode { return }
+        if case .groupMove = g.mode { groupChanged(&g, v, s: s); return }
+        if case .groupScale = g.mode { groupChanged(&g, v, s: s); return }
+        guard let o = g.origin else { return }
         if !g.moved && hypot(v.translation.width, v.translation.height) < 3 { return }
         g.moved = true
         if !g.committed { commit(); g.committed = true }
@@ -369,6 +388,7 @@ struct TitleDesignerSheet: View {
         case .move: moveLayer(o, by: CGSize(width: v.translation.width / s, height: v.translation.height / s), s: s)
         case .resize(let sx, let sy): resizeLayer(o, sx: sx, sy: sy, to: d)
         case .rotate: rotateLayer(o, to: d, startAngle: g.startAngle)
+        case .groupMove, .groupScale: break
         }
     }
 
@@ -377,9 +397,13 @@ struct TitleDesignerSheet: View {
         drag = nil; guidesX = []; guidesY = []
         guard let g, !g.moved else { return }
         // a tap
+        if tab == 0 {                                   // whole-design mode: tap a part to edit it on its own
+            if let o = g.origin { selected = o.id; tab = 1 }
+            return
+        }
         guard let o = g.origin else { selected = nil; return }
         if o.kind == .text, let lt = lastTap, lt.id == o.id, Date().timeIntervalSince(lt.at) < 0.45 {
-            tab = 0; textFocused = true; lastTap = nil         // double tap on text: edit it
+            tab = 1; textFocused = true; lastTap = nil         // double tap on text: edit it
         } else {
             lastTap = (o.id, Date())
         }
@@ -488,6 +512,102 @@ struct TitleDesignerSheet: View {
         return nil
     }
 
+    // MARK: Whole-design gestures (tab Tổng thể)
+
+    private static let groupCorners: [Handle] = [
+        Handle(sx: -1, sy: -1), Handle(sx: 1, sy: -1), Handle(sx: -1, sy: 1), Handle(sx: 1, sy: 1)
+    ]
+
+    /// Tab Tổng thể: drag inside the design moves all layers, a corner scales all of them together
+    /// (from the opposite corner). A tap picks the part under the finger for editing on its own.
+    private func beginGroup(at d: CGPoint, s: CGFloat) {
+        guard let g = TitleLayer.groupBounds(layers) else { drag = Drag(mode: .none); return }
+        let top = layers.reversed().first { !$0.hidden && contains($0, d, tol: 4 / s) }
+        for c in Self.groupCorners {
+            let p = CGPoint(x: c.sx < 0 ? g.minX : g.maxX, y: c.sy < 0 ? g.minY : g.maxY)
+            if hypot(d.x - p.x, d.y - p.y) <= 26 / s {
+                drag = Drag(mode: .groupScale(c.sx, c.sy), origin: top, base: layers, bounds: g)
+                return
+            }
+        }
+        if g.insetBy(dx: -8 / s, dy: -8 / s).contains(d) {
+            drag = Drag(mode: .groupMove, origin: top, base: layers, bounds: g)
+        } else {
+            drag = Drag(mode: .none)
+        }
+    }
+
+    private func groupChanged(_ g: inout Drag, _ v: DragGesture.Value, s: CGFloat) {
+        if !g.moved && hypot(v.translation.width, v.translation.height) < 3 { return }
+        g.moved = true
+        if !g.committed { commit(); g.committed = true }
+        drag = g
+        let b = g.bounds
+        switch g.mode {
+        case .groupMove:
+            var dx = v.translation.width / s, dy = v.translation.height / s
+            var gx: [CGFloat] = [], gy: [CGFloat] = []
+            if snapOn {
+                let thr = 8 / s
+                if let sn = Self.snap([b.minX + dx, b.midX + dx, b.maxX + dx], to: [0, 96, 960, 1824, 1920], thr: thr) {
+                    dx += sn.delta; gx = [sn.at]
+                }
+                if let sn = Self.snap([b.minY + dy, b.midY + dy, b.maxY + dy], to: [0, 54, 540, 1026, 1080], thr: thr) {
+                    dy += sn.delta; gy = [sn.at]
+                }
+            }
+            guidesX = gx; guidesY = gy
+            draft.layers = TitleLayer.moved(g.base, dx: dx.rounded(), dy: dy.rounded())
+        case .groupScale(let sx, let sy):
+            let a = CGPoint(x: sx < 0 ? b.maxX : b.minX, y: sy < 0 ? b.maxY : b.minY)
+            let d = CGPoint(x: v.location.x / s, y: v.location.y / s)
+            let raw = max(abs(d.x - a.x) / max(b.width, 1), abs(d.y - a.y) / max(b.height, 1))
+            draft.layers = TitleLayer.scaled(g.base, by: min(max(raw, 0.2), 5), about: a)
+        default:
+            break
+        }
+    }
+
+    @ViewBuilder private func groupOverlay(s: CGFloat, W: CGFloat, H: CGFloat) -> some View {
+        if let g = TitleLayer.groupBounds(layers) {
+            let r = CGRect(x: g.minX * s, y: g.minY * s, width: max(2, g.width * s), height: max(2, g.height * s))
+            ZStack(alignment: .topLeading) {
+                Rectangle().stroke(DS.accent, style: StrokeStyle(lineWidth: 1.5, dash: [6, 4]))
+                    .frame(width: r.width, height: r.height)
+                ForEach(Self.groupCorners, id: \.self) { c in
+                    RoundedRectangle(cornerRadius: 3).fill(DS.accent)
+                        .overlay(RoundedRectangle(cornerRadius: 3).stroke(Color.white, lineWidth: 1.5))
+                        .frame(width: 16, height: 16)
+                        .position(x: c.sx < 0 ? 0 : r.width, y: c.sy < 0 ? 0 : r.height)
+                }
+            }
+            .frame(width: r.width, height: r.height)
+            .position(x: r.midX, y: r.midY)
+            .allowsHitTesting(false)
+            Text(verbatim: groupReadout(g))
+                .font(.system(size: 11, weight: .semibold).monospacedDigit())
+                .padding(.horizontal, 6).padding(.vertical, 3)
+                .background(Color.black.opacity(0.75), in: Capsule()).foregroundStyle(.white)
+                .position(x: min(max(r.midX, 90), W - 90), y: r.minY > 34 ? r.minY - 16 : min(r.maxY + 16, H - 12))
+                .allowsHitTesting(false)
+        }
+    }
+
+    private func groupReadout(_ g: CGRect) -> String {
+        if let d = drag, case .groupScale = d.mode, d.bounds.height > 0 {
+            return "\(Int((g.height / d.bounds.height * 100).rounded()))%"
+        }
+        if drag != nil { return "X \(Int(g.minX))  Y \(Int(g.minY))" }
+        return L("Tổng thể") + " · \(Int(g.width)) × \(Int(g.height))"
+    }
+
+    private static func aspectLabel(_ a: CGFloat) -> String {
+        let known: [(CGFloat, String)] = [(16.0 / 9, "16:9"), (9.0 / 16, "9:16"), (4.0 / 3, "4:3"), (3.0 / 4, "3:4"),
+                                          (1, "1:1"), (4.0 / 5, "4:5"), (21.0 / 9, "21:9")]
+        for (v, n) in known where abs(v - a) < 0.02 { return n }
+        return String(format: "%.2f:1", a)
+    }
+
     // MARK: Edit model (undo / redo)
 
     private func commit() {
@@ -545,7 +665,7 @@ struct TitleDesignerSheet: View {
         let same = layers.filter { $0.kind == kind }.count          // cascade so new layers don't stack exactly
         l.x += CGFloat(same * 24); l.y += CGFloat(same * 24)
         var ls = layers; ls.append(l); draft.layers = ls
-        selected = l.id; tab = 0
+        selected = l.id; tab = 1
         if kind == .text { textFocused = true }
         if kind == .image { pickImage = true }
     }
@@ -644,17 +764,19 @@ struct TitleDesignerSheet: View {
     private var inspector: some View {
         VStack(spacing: 0) {
             Picker("", selection: $tab) {
-                Text("Thuộc tính").tag(0)
-                Text("Lớp (\(layers.count))").tag(1)
-                Text("Mẫu").tag(2)
+                Text("Tổng thể").tag(0)
+                Text("Từng lớp").tag(1)
+                Text("Lớp (\(layers.count))").tag(2)
+                Text("Mẫu").tag(3)
             }
             .pickerStyle(.segmented).padding(10)
             Divider()
             ScrollView {
                 VStack(alignment: .leading, spacing: 12) {
                     switch tab {
-                    case 1: layersTab
-                    case 2: templatesTab
+                    case 0: overviewTab
+                    case 2: layersTab
+                    case 3: templatesTab
                     default: propertiesTab
                     }
                 }
@@ -673,6 +795,239 @@ struct TitleDesignerSheet: View {
         .padding(10)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(DS.surface, in: RoundedRectangle(cornerRadius: DS.radius))
+    }
+
+    // MARK: Tab Tổng thể (the whole lower third at once)
+
+    @ViewBuilder private var overviewTab: some View {
+        if layers.isEmpty {
+            card("Chưa có thiết kế") {
+                Text("Thêm lớp từ thanh công cụ, hoặc nạp một mẫu lower third có sẵn.")
+                    .font(.system(size: 12)).foregroundStyle(DS.text2)
+                Button { tab = 3 } label: { Label("Mở tab Mẫu", systemImage: "square.grid.2x2") }
+                    .font(.system(size: 13))
+            }
+        } else {
+            Text("Kéo trên khung vẽ để dời cả lower third, kéo góc để đổi cỡ đồng bộ. Chạm vào một phần để sửa riêng phần đó.")
+                .font(.system(size: 11)).foregroundStyle(DS.text3)
+            sizeCard
+            fontCard
+            textColorsCard
+            fillColorsCard
+            effectCard
+            if abs(programAspect - 16.0 / 9.0) > 0.02 { programPreviewCard }
+        }
+    }
+
+    private var sizeCard: some View {
+        card("Kích thước & vị trí") {
+            groupSlider("Cỡ tổng thể", sizeBinding, 0.04...0.6)
+            Text("Mọi lớp to / nhỏ cùng lúc, kể cả chữ (số = chiều cao so với khung hình).")
+                .font(.system(size: 10)).foregroundStyle(DS.text3)
+            groupSlider("Độ dài", lengthBinding, 0.12...0.98)
+            Text("Thanh nền dài / ngắn lại, chữ giữ nguyên cỡ.")
+                .font(.system(size: 10)).foregroundStyle(DS.text3)
+            groupSlider("Cao / thấp", heightPosBinding, 0...0.92)
+            HStack(spacing: 6) {
+                Text("Dọc").font(.system(size: 12)).foregroundStyle(DS.text3).frame(width: 36, alignment: .leading)
+                presetButton("Sát đáy") { place(.bottom) }
+                presetButton("Thấp") { place(.low) }
+                presetButton("Giữa khung") { place(.middle) }
+                presetButton("Trên cùng") { place(.top) }
+            }
+            HStack(spacing: 6) {
+                Text("Ngang").font(.system(size: 12)).foregroundStyle(DS.text3).frame(width: 36, alignment: .leading)
+                presetButton("Trái") { place(.left) }
+                presetButton("Chính giữa") { place(.centre) }
+                presetButton("Phải") { place(.right) }
+            }
+        }
+    }
+
+    private var fontCard: some View {
+        card("Phông chữ (tất cả chữ)") {
+            HStack(spacing: 6) {
+                Picker("Phông", selection: Binding(get: { textLayers.first?.fontDesign ?? 0 },
+                                                   set: { v in applyTexts { $0.fontDesign = v } })) {
+                    Text("Hệ thống").tag(0); Text("Bo tròn").tag(1); Text("Có chân").tag(2); Text("Đơn cách").tag(3)
+                }
+                Picker("Độ rộng chữ", selection: Binding(get: { textLayers.first?.fontWidth ?? 0 },
+                                                         set: { v in applyTexts { $0.fontWidth = v } })) {
+                    Text("Thường").tag(0); Text("Hẹp").tag(1); Text("Rất hẹp").tag(2); Text("Rộng ra").tag(3)
+                }
+            }
+            .pickerStyle(.menu).font(.system(size: 13))
+            HStack(spacing: 6) {
+                Text("Cỡ chữ").font(.system(size: 13)).foregroundStyle(DS.text2)
+                Spacer(minLength: 4)
+                presetButton("Nhỏ hơn", icon: "textformat.size.smaller") {
+                    applyTexts { $0.fontSize = max(6, ($0.fontSize * 0.92).rounded()) }
+                }
+                presetButton("To hơn", icon: "textformat.size.larger") {
+                    applyTexts { $0.fontSize = min(400, ($0.fontSize * 1.08).rounded()) }
+                }
+            }
+            Toggle("Đổ bóng cho chữ", isOn: Binding(get: { textLayers.contains { $0.shadow } },
+                                                    set: { on in applyTexts { $0.shadow = on } }))
+                .font(.system(size: 13))
+            Toggle("Chữ in hoa", isOn: Binding(get: { !textLayers.isEmpty && textLayers.allSatisfy { $0.uppercase } },
+                                               set: { on in applyTexts { $0.uppercase = on } }))
+                .font(.system(size: 13))
+        }
+    }
+
+    private var textColorsCard: some View {
+        card("Màu chữ") {
+            if textLayers.isEmpty {
+                Text("Chưa có lớp chữ").font(.system(size: 12)).foregroundStyle(DS.text3)
+            }
+            ForEach(textLayers) { l in
+                colorRow(layerTitle(l), Binding(get: { layers.first { $0.id == l.id }?.textHex ?? "#FFFFFF" },
+                                                set: { h in commitCoalesced(); update(l.id) { $0.textHex = h } }))
+            }
+        }
+    }
+
+    private var fillColorsCard: some View {
+        card("Màu nền & màu nhấn") {
+            if filledLayers.isEmpty {
+                Text("Chưa có lớp có màu nền").font(.system(size: 12)).foregroundStyle(DS.text3)
+            }
+            ForEach(filledLayers) { l in
+                colorRow(layerTitle(l), Binding(get: { layers.first { $0.id == l.id }?.fillHex ?? "#000000" },
+                                                set: { h in commitCoalesced(); update(l.id) { $0.fillHex = h } }))
+                if l.id == mainFillID {
+                    percentRow("Độ đục nền", Binding(get: { layers.first { $0.id == l.id }?.fillOpacity ?? 1 },
+                                                     set: { v in commitCoalesced(); update(l.id) { $0.fillOpacity = v } }))
+                }
+            }
+        }
+    }
+
+    private var effectCard: some View {
+        card("Hiệu ứng vào / ra") {
+            Picker("Hiệu ứng", selection: Binding(get: { draft.fx ?? .fadeSlide }, set: { draft.fx = $0 })) {
+                ForEach(TitleFX.allCases) { Label($0.label, systemImage: $0.icon).tag($0) }
+            }
+            Picker("Thời gian", selection: Binding(get: { draft.fxDuration ?? 0.35 }, set: { draft.fxDuration = $0 })) {
+                ForEach([0.2, 0.35, 0.6, 1.0, 1.5], id: \.self) { Text(verbatim: String(format: "%.2g s", $0)).tag($0) }
+            }
+            Button { toggleFXPreview() } label: {
+                Label(LocalizedStringKey(fxPreview == nil ? "Xem thử trên khung vẽ" : "Dừng xem thử"),
+                      systemImage: fxPreview == nil ? "play.circle" : "stop.circle")
+            }
+            .font(.system(size: 13))
+        }
+    }
+
+    private var programPreviewCard: some View {
+        let aspect = max(programAspect, 0.2)
+        var ph: CGFloat = 240
+        var pw = ph * aspect
+        if pw > 330 { pw = 330; ph = pw / aspect }
+        let img = TitleRenderer.drawCustom(draft, canvas: CGSize(width: pw * 2, height: ph * 2))
+        return card(L("Trên PGM") + " (" + Self.aspectLabel(aspect) + ")") {
+            ZStack {
+                Color(white: 0.2)
+                if let img { Image(uiImage: img).resizable() }
+            }
+            .frame(width: pw, height: ph)
+            .clipShape(RoundedRectangle(cornerRadius: 4))
+            .frame(maxWidth: .infinity)
+            Text("Thiết kế vẽ ở khung 16:9. PGM có tỉ lệ khác nên lower third tự co cho vừa khung và giữ khoảng cách tới mép dưới.")
+                .font(.system(size: 10)).foregroundStyle(DS.text3)
+        }
+    }
+
+    private var textLayers: [TitleLayer] { layers.filter { $0.kind == .text } }
+    private var filledLayers: [TitleLayer] { layers.filter { $0.fillHex != nil } }
+    /// The biggest filled layer: the background bar (its opacity is offered on the Tổng thể tab).
+    private var mainFillID: UUID? { filledLayers.max { $0.w * $0.h < $1.w * $1.h }?.id }
+
+    /// Change every text layer at once (one undo step per burst); fitted boxes re-fit, keeping their anchor.
+    private func applyTexts(_ f: (inout TitleLayer) -> Void) {
+        commitCoalesced()
+        guard var ls = draft.layers else { return }
+        for i in ls.indices where ls[i].kind == .text {
+            f(&ls[i])
+            if ls[i].fitText { TitleRenderer.refit(&ls[i]) }
+        }
+        draft.layers = ls
+    }
+
+    /// Whole-design sliders: a drag works from the layers as they were when it began (no rounding drift).
+    private func groupSlider(_ title: String, _ v: Binding<CGFloat>, _ r: ClosedRange<CGFloat>) -> some View {
+        HStack(spacing: 8) {
+            Text(LocalizedStringKey(title)).font(.system(size: 13)).foregroundStyle(DS.text2).frame(width: 86, alignment: .leading)
+            Slider(value: v, in: r, onEditingChanged: { editing in
+                if editing { commit(); groupBase = layers } else { groupBase = nil }
+            })
+            .tint(DS.accent).controlSize(.small)
+            Text(verbatim: "\(Int((v.wrappedValue * 100).rounded()))%").font(.system(size: 12).monospacedDigit())
+                .foregroundStyle(DS.text3).frame(width: 44, alignment: .trailing)
+        }
+    }
+
+    /// Height of the design as a share of the frame; setting it scales every layer from the design's anchor.
+    private var sizeBinding: Binding<CGFloat> {
+        Binding(get: { (TitleLayer.groupBounds(layers)?.height ?? 0) / 1080 },
+                set: { target in
+                    let base = groupBase ?? layers
+                    if groupBase == nil { commitCoalesced() }
+                    guard let g = TitleLayer.groupBounds(base), g.height > 0 else { return }
+                    draft.layers = TitleLayer.scaled(base, by: target * 1080 / g.height, about: TitleLayer.groupAnchor(g))
+                })
+    }
+
+    /// Width of the design as a share of the frame; setting it stretches the bars (lettering unchanged).
+    private var lengthBinding: Binding<CGFloat> {
+        Binding(get: { (TitleLayer.groupBounds(layers)?.width ?? 0) / 1920 },
+                set: { target in
+                    let base = groupBase ?? layers
+                    if groupBase == nil { commitCoalesced() }
+                    guard let g = TitleLayer.groupBounds(base), g.width > 0 else { return }
+                    draft.layers = TitleLayer.stretched(base, by: target * 1920 / g.width)
+                })
+    }
+
+    /// Space under the design as a share of the frame height (higher value = placed higher).
+    private var heightPosBinding: Binding<CGFloat> {
+        Binding(get: { 1 - (TitleLayer.groupBounds(layers)?.maxY ?? 1080) / 1080 },
+                set: { v in
+                    guard let g = TitleLayer.groupBounds(layers) else { return }
+                    if groupBase == nil { commitCoalesced() }
+                    draft.layers = TitleLayer.moved(layers, dx: 0, dy: ((1 - v) * 1080 - g.maxY).rounded())
+                })
+    }
+
+    private enum Place { case bottom, low, middle, top, left, centre, right }
+
+    private func place(_ p: Place) {
+        guard let g = TitleLayer.groupBounds(layers) else { return }
+        var dx: CGFloat = 0, dy: CGFloat = 0
+        switch p {
+        case .bottom: dy = 1026 - g.maxY          // title-safe bottom
+        case .low: dy = 950 - g.maxY
+        case .middle: dy = 540 - g.midY
+        case .top: dy = 54 - g.minY
+        case .left: dx = 96 - g.minX
+        case .centre: dx = 960 - g.midX
+        case .right: dx = 1824 - g.maxX
+        }
+        commit()
+        draft.layers = TitleLayer.moved(layers, dx: dx.rounded(), dy: dy.rounded())
+    }
+
+    private func presetButton(_ title: String, icon: String? = nil, _ action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Group {
+                if let icon { Label(LocalizedStringKey(title), systemImage: icon) } else { Text(LocalizedStringKey(title)) }
+            }
+            .font(.system(size: 12)).lineLimit(1).minimumScaleFactor(0.8)
+            .padding(.horizontal, 6).frame(maxWidth: .infinity).frame(height: 30)
+            .background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
+        }
+        .buttonStyle(.plain)
     }
 
     @ViewBuilder private var propertiesTab: some View {
@@ -701,16 +1056,6 @@ struct TitleDesignerSheet: View {
                         }.buttonStyle(.plain)
                     }
                 }
-            }
-            card("Hiệu ứng vào / ra của title") {
-                Picker("Hiệu ứng", selection: Binding(get: { draft.fx ?? .fadeSlide }, set: { draft.fx = $0 })) {
-                    ForEach(TitleFX.allCases) { Label($0.label, systemImage: $0.icon).tag($0) }
-                }
-                Picker("Thời gian", selection: Binding(get: { draft.fxDuration ?? 0.35 }, set: { draft.fxDuration = $0 })) {
-                    ForEach([0.2, 0.35, 0.6, 1.0, 1.5], id: \.self) { Text(verbatim: String(format: "%.2g s", $0)).tag($0) }
-                }
-                Button { toggleFXPreview() } label: { Label("Xem thử trên khung vẽ", systemImage: "play.circle") }
-                    .font(.system(size: 13))
             }
         }
     }
@@ -1024,7 +1369,7 @@ struct TitleDesignerSheet: View {
 
     private func colorRow(_ title: String, _ hex: Binding<String>) -> some View {
         HStack(spacing: 6) {
-            Text(LocalizedStringKey(title)).font(.system(size: 13)).foregroundStyle(DS.text2)
+            Text(LocalizedStringKey(title)).font(.system(size: 13)).foregroundStyle(DS.text2).lineLimit(1)
             Spacer(minLength: 4)
             ForEach(Self.swatches, id: \.self) { h in
                 let on = hex.wrappedValue.uppercased() == h

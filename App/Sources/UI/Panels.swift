@@ -100,7 +100,8 @@ struct TitlesPanel: View {
         // custom (multi-layer) titles: the designer, full screen
         .fullScreenCover(item: Binding(get: { editingID.wrappedValue.flatMap { isCustom($0) ? IDBox(id: $0) : nil } },
                                        set: { editingID.wrappedValue = $0?.id })) { box in
-            TitleDesignerSheet(item: titleBinding(box.id), program: engine.switcher.programMonitor) {
+            TitleDesignerSheet(item: titleBinding(box.id), program: engine.switcher.programMonitor,
+                               programAspect: CGFloat(engine.format.width) / CGFloat(max(engine.format.height, 1))) {
                 editingID.wrappedValue = nil; engine.removeTitle(box.id)
             }
         }

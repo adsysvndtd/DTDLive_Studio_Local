@@ -100,6 +100,7 @@
 "Camera mạng (SRT · RTSP · RTMP · DTDLive)" = "Network cameras (SRT · RTSP · RTMP · DTDLive)";
 "Camera trong máy & USB" = "Built-in & USB cameras";
 "Cao" = "Height";
+"Cao / thấp" = "Higher / lower";
 "Cao hơn = chịu được Wi‑Fi chập chờn (SRT kịp gửi lại gói) nhưng hình trễ hơn. 300 ms cho Wi‑Fi tốt, 500–800 ms cho Wi‑Fi đông. Áp dụng sau khi mở lại app." = "Higher = tolerates unsteady Wi‑Fi (SRT has time to resend) but more delay. 300 ms for good Wi‑Fi, 500–800 ms for busy Wi‑Fi. Applies after reopening the app.";
 "Cho phép DTDLive tìm và ghép nối" = "Let DTDLive find and pair";
 "Chrome xanh" = "Blue chrome";
@@ -132,10 +133,13 @@
 "Chưa có gói DTDStudio trên máy chủ." = "No DTDStudio plans on the server.";
 "Chưa có hình" = "No picture";
 "Chưa có kênh nào" = "No channels yet";
+"Chưa có lớp chữ" = "No text layers";
+"Chưa có lớp có màu nền" = "No filled layers";
 "Chưa có lớp nào" = "No layers yet";
 "Chưa có mẫu" = "No templates yet";
 "Chưa có mẫu nào" = "No templates yet";
 "Chưa có thiết bị nào được ghép nối" = "No paired devices yet";
+"Chưa có thiết kế" = "No design yet";
 "Chưa có title — bấm Thêm title ở góc trên" = "No titles yet — tap Add title at the top";
 "Chưa có đích phát" = "No destinations yet";
 "Chưa có ảnh nền — bấm Ảnh nền từ Thư viện hoặc Tệp" = "No background picture — tap Background from Photos or Files";
@@ -194,6 +198,7 @@
 "Chữ chạy tin tức" = "News ticker";
 "Chữ dòng 1" = "Line 1 text";
 "Chữ dòng 2" = "Line 2 text";
+"Chữ in hoa" = "Uppercase";
 "Chữ khi hết giờ" = "Text when time is up";
 "Chữ logo" = "Logo text";
 "Chữ lớn" = "Big text";
@@ -237,6 +242,7 @@
 "Cỡ chữ" = "Text size";
 "Cỡ khung" = "Window size";
 "Cỡ logo" = "Logo size";
+"Cỡ tổng thể" = "Overall size";
 "Dung lượng" = "Size";
 "Dày viền" = "Border width";
 "Dày viền chữ" = "Outline width";
@@ -261,6 +267,7 @@
 "Dừng" = "Stop";
 "Dừng nhận" = "Stop";
 "Dừng tất cả" = "Stop all";
+"Dừng xem thử" = "Stop preview";
 "Email" = "Email";
 "FX" = "FX";
 "Facebook giới hạn số lần gọi — tạm dừng 5 phút rồi nhận tiếp" = "Facebook rate limit reached — pausing 5 minutes, then resuming";
@@ -299,6 +306,7 @@
 "Giữ tỉ lệ khi kéo góc" = "Keep proportions on corner drag";
 "Giữ đến khi tắt" = "Hold until off";
 "Giữa dọc" = "Centre vertically";
+"Giữa khung" = "Middle";
 "Giữa ngang" = "Centre horizontally";
 "Giữa phải" = "Middle right";
 "Giữa trái" = "Middle left";
@@ -440,9 +448,11 @@
 "Kéo cho tiếng khớp với hình khi camera mạng bị trễ." = "Delays the sound to match late network-camera video.";
 "Kéo logo trên khung để di chuyển, kéo chấm ở góc để đổi cỡ." = "Drag the logo on the frame to move it, drag the corner dot to resize it.";
 "Kéo title trên khung để đặt vị trí · chụm 2 ngón để đổi cỡ" = "Drag the title on the preview to place it · pinch to resize";
+"Kéo trên khung vẽ để dời cả lower third, kéo góc để đổi cỡ đồng bộ. Chạm vào một phần để sửa riêng phần đó." = "Drag on the canvas to move the whole lower third, drag a corner to resize everything together. Tap a part to edit it on its own.";
 "Kéo để di chuyển · kéo góc để đổi cỡ" = "Drag to move · drag a corner to resize";
 "Kênh âm thanh" = "Audio channels";
 "Kích thước" = "Size";
+"Kích thước & vị trí" = "Size & position";
 "Kết nối" = "Connection";
 "Kết nối %@  key %@" = "Connecting %@  key %@";
 "Kết nối %lf  key %lf" = "Connecting %lf  key %lf";
@@ -535,6 +545,7 @@
 "Màu nguồn PVW" = "PVW source colour";
 "Màu nhấn" = "Accent colour";
 "Màu nền" = "Background colour";
+"Màu nền & màu nhấn" = "Background & accent colours";
 "Màu sắc" = "Colour";
 "Màu tô" = "Fill colour";
 "Màu viền" = "Border colour";
@@ -564,6 +575,7 @@
 "Mật khẩu để xác nhận" = "Password to confirm";
 "Mặc định" = "Default";
 "Mềm biên" = "Edge softness";
+"Mọi lớp to / nhỏ cùng lúc, kể cả chữ (số = chiều cao so với khung hình)." = "All layers grow / shrink together, text included (value = height relative to the frame).";
 "Mỗi %@ giây" = "Every %@ s";
 "Mỗi %lf giây" = "Every %lf s";
 "Mỗi %lld giây" = "Every %lld s";
@@ -577,6 +589,7 @@
 "Mở dọc" = "Open vertical";
 "Mở khoá lớp" = "Unlock layer";
 "Mở ngang" = "Open horizontal";
+"Mở tab Mẫu" = "Open Templates";
 "Mở trang xem live" = "Open live page";
 "Mở trong Replay (mark in/out)" = "Open in Replay (mark in/out)";
 "N-Title (NDI có alpha)" = "N-Title (NDI with alpha)";
@@ -630,6 +643,7 @@
 "Nhập ảnh" = "Import pictures";
 "Nhập ảnh / logo ở các mục Ảnh và Logo" = "Import images / logos in the Pictures and Logo sections";
 "Nhập ảnh PNG (nền trong suốt) làm stinger — nó quét qua khung hình, camera chuyển khi ảnh che kín." = "Import a PNG (transparent background) as a stinger — it sweeps across the frame and the cameras switch while it covers the screen.";
+"Nhỏ hơn" = "Smaller";
 "Nạp" = "Load";
 "Nạp %@" = "Load %@";
 "Nạp (tắt mẫu đang phát)" = "Load (takes the current one off air)";
@@ -658,6 +672,7 @@
 "Nửa trái" = "Left half";
 "On" = "On";
 "Oswald (cao, hẹp)" = "Oswald (tall, narrow)";
+"PGM" = "PGM";
 "PHÁT REPLAY" = "PLAY REPLAY";
 "PNG có tâm trong suốt, lấy từ thư viện SuperFG" = "PNG with a transparent centre, from the SuperFG library";
 "PTZ nguồn PVW" = "PVW source PTZ";
@@ -674,10 +689,12 @@
 "Phát tất cả" = "Start all";
 "Phóng to" = "Zoom";
 "Phông" = "Font";
+"Phông chữ (tất cả chữ)" = "Font (all text)";
 "Phút %@" = "Minutes %@";
 "Phút %lf" = "Minutes %lf";
 "Phút %lld" = "Minutes %lld";
 "Phơi sáng" = "Exposure";
+"Phải" = "Right";
 "Phản hồi không hợp lệ" = "Invalid response";
 "Phản hồi máy chủ không hợp lệ" = "Invalid server response";
 "Phần tử có data-field=\"tên\" sẽ thành ô sửa chữ; biến màu CSS (--accent: #…) thành ô chọn màu." = "Elements with data-field=\"name\" become text fields; CSS colour variables (--accent: #…) become colour pickers.";
@@ -725,6 +742,7 @@
 "SuperFG của bạn (PNG trong suốt · video có kênh alpha .mov)" = "Your SuperFG (transparent PNG · alpha video .mov)";
 "SuperFG của bạn: ảnh PNG/JPG chạy như thẻ có hiệu ứng · video .mov có kênh alpha" = "Your SuperFG: PNG/JPG pictures play as cards with a transition · .mov video with alpha";
 "SuperFG đang trên PGM" = "SuperFG on PGM";
+"Sát đáy" = "Bottom";
 "Sân" = "Pitch";
 "Sân 11" = "11-a-side";
 "Sân 5" = "5-a-side";
@@ -753,6 +771,7 @@
 "TIN TỨC" = "NEWS";
 "TRÊN SÓNG" = "ON AIR";
 "Tech" = "Tech";
+"Thanh nền dài / ngắn lại, chữ giữ nguyên cỡ." = "Background bars get longer / shorter, text keeps its size.";
 "Thao tác" = "Gestures";
 "Thay người mỗi set: %lld" = "Substitutions per set: %lld";
 "Theo mẫu" = "Template";
@@ -762,6 +781,7 @@
 "Thiết kế" = "Design";
 "Thiết kế Title" = "Title designer";
 "Thiết kế nhiều lớp" = "Multi-layer design";
+"Thiết kế vẽ ở khung 16:9. PGM có tỉ lệ khác nên lower third tự co cho vừa khung và giữ khoảng cách tới mép dưới." = "The design is drawn on a 16:9 frame. PGM has another shape, so the lower third resizes to fit and keeps its distance from the bottom edge.";
 "Thu gọn" = "Collapse";
 "Thuộc tính" = "Properties";
 "Thêm" = "Add";
@@ -772,6 +792,7 @@
 "Thêm khung" = "Add window";
 "Thêm link xem" = "Add watch link";
 "Thêm lớp" = "Add layer";
+"Thêm lớp từ thanh công cụ, hoặc nạp một mẫu lower third có sẵn." = "Add layers from the toolbar, or load a ready-made lower third.";
 "Thêm nguồn" = "Add source";
 "Thêm thao tác" = "More";
 "Thêm title" = "Add title";
@@ -790,6 +811,7 @@
 "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTDStudio › Library › %lld" = "Library empty — use the import button above. Files live in Files › DTDStudio › Library › %lld";
 "Thư viện ảnh" = "Photos";
 "Thường" = "Regular";
+"Thấp" = "Low";
 "Thắng %@/%@" = "Best %@ of %@";
 "Thắng rack được phá" = "Winner breaks";
 "Thẻ vàng" = "Yellow card";
@@ -818,6 +840,7 @@
 "Tiêu đề trên (tổ chức / chương trình)" = "Header (organisation / show)";
 "Tiêu đề tập" = "Episode title";
 "Tiếng Việt" = "Tiếng Việt";
+"To hơn" = "Larger";
 "Token (chỉ cần cho repo private)" = "Token (private repos only)";
 "Toàn khung + 2 PiP góc dưới" = "Full + 2 PiP bottom corners";
 "Toàn khung + PiP góc phải" = "Full + PiP bottom right";
@@ -827,7 +850,9 @@
 "Trong khung layout PiP" = "In a PiP layout window";
 "Trong nhà" = "Indoor";
 "Trong suốt" = "Transparent";
+"Trái" = "Left";
 "Trên PGM" = "On PGM";
+"Trên cùng" = "Top";
 "Trên giữa" = "Top centre";
 "Trên phải" = "Top right";
 "Trên sóng" = "On air";
@@ -887,9 +912,11 @@
 "Tối thiểu: %.1f Mbps" = "Minimum: %.1f Mbps";
 "Tối đa %lld lượt" = "At most %lld innings";
 "Tối ưu chất lượng tốt nhất cho các đích phát" = "Optimize for best quality on all destinations";
+"Tổng thể" = "Overall";
 "Từ Tệp" = "From Files";
 "Từ chối" = "Reject";
 "Từ thư viện DTDStudio" = "From DTDStudio library";
+"Từng lớp" = "Layer";
 "Tự do" = "Free";
 "Tự do (+/−)" = "Free (+/−)";
 "Tự gia hạn" = "Renews automatically";
@@ -977,6 +1004,7 @@
 "developers.facebook.com › App › quyền publish_video" = "developers.facebook.com › App › publish_video permission";
 "instagram.com (trình duyệt máy tính) › Tạo › Video trực tiếp › copy URL luồng + Khoá luồng (mỗi phiên khác nhau, dùng rtmps)." = "instagram.com (desktop browser) › Create › Live video › copy Stream URL + Stream key (new each session, rtmps).";
 "không tìm thấy repo/nhánh/thư mục (repo private cần token)" = "repo/branch/folder not found (private repos need a token)";
+"lower third tự co theo khung, xem ở tab Tổng thể" = "the lower third adapts to the frame, see the Overall tab";
 "lỗi cổng" = "port error";
 "mất kết nối, thử lại (%@)" = "connection lost, retrying (%@)";
 "mất kết nối, thử lại (%lf)" = "connection lost, retrying (%lf)";
@@ -1099,6 +1127,7 @@
 "Đồng hồ cơ" = "Shot clock";
 "Đồng hồ đếm ngược (futsal)" = "Count-down clock (futsal)";
 "Đổ bóng" = "Drop shadow";
+"Đổ bóng cho chữ" = "Text shadow";
 "Đổi bên (tên, tỉ số, logo)" = "Swap sides (names, scores, logos)";
 "Đổi key bảo mật (link cũ hết hiệu lực)" = "New security key (old links stop working)";
 "Đổi luật giữa trận áp dụng từ điểm tiếp theo. Dùng \"Trận mới\" để bắt đầu lại với luật này." = "Rule changes mid-match apply from the next point. Use \"New match\" to start over with these rules.";
@@ -1108,6 +1137,7 @@
 "Đổi tên" = "Rename";
 "Đổi độ phân giải/fps khi đang phát: các đích tự kết nối lại với thông số mới." = "Changing resolution/fps while live reconnects every destination with the new settings.";
 "Đổi ảnh" = "Change image";
+"Độ dài" = "Length";
 "Độ dày" = "Thickness";
 "Độ nhoè" = "Blur";
 "Độ phân giải" = "Resolution";
@@ -1123,6 +1153,7 @@
 "Độ đậm nền" = "Background opacity";
 "Độ đục" = "Opacity";
 "Độ đục lớp" = "Layer opacity";
+"Độ đục nền" = "Background opacity";
 "Đội A" = "Team A";
 "Đội B" = "Team B";
 "Đội khách" = "Away";

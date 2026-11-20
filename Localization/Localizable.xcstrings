@@ -11656,6 +11656,316 @@
           }
         }
       }
+    },
+    "Tổng thể": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Overall"
+          }
+        }
+      }
+    },
+    "Từng lớp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Layer"
+          }
+        }
+      }
+    },
+    "Chưa có thiết kế": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No design yet"
+          }
+        }
+      }
+    },
+    "Thêm lớp từ thanh công cụ, hoặc nạp một mẫu lower third có sẵn.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add layers from the toolbar, or load a ready-made lower third."
+          }
+        }
+      }
+    },
+    "Mở tab Mẫu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Templates"
+          }
+        }
+      }
+    },
+    "Kéo trên khung vẽ để dời cả lower third, kéo góc để đổi cỡ đồng bộ. Chạm vào một phần để sửa riêng phần đó.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drag on the canvas to move the whole lower third, drag a corner to resize everything together. Tap a part to edit it on its own."
+          }
+        }
+      }
+    },
+    "Kích thước & vị trí": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Size & position"
+          }
+        }
+      }
+    },
+    "Cỡ tổng thể": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Overall size"
+          }
+        }
+      }
+    },
+    "Mọi lớp to / nhỏ cùng lúc, kể cả chữ (số = chiều cao so với khung hình).": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All layers grow / shrink together, text included (value = height relative to the frame)."
+          }
+        }
+      }
+    },
+    "Độ dài": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Length"
+          }
+        }
+      }
+    },
+    "Thanh nền dài / ngắn lại, chữ giữ nguyên cỡ.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Background bars get longer / shorter, text keeps its size."
+          }
+        }
+      }
+    },
+    "Cao / thấp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Higher / lower"
+          }
+        }
+      }
+    },
+    "Sát đáy": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bottom"
+          }
+        }
+      }
+    },
+    "Thấp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Low"
+          }
+        }
+      }
+    },
+    "Giữa khung": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Middle"
+          }
+        }
+      }
+    },
+    "Trên cùng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Top"
+          }
+        }
+      }
+    },
+    "Trái": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Left"
+          }
+        }
+      }
+    },
+    "Phải": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Right"
+          }
+        }
+      }
+    },
+    "Phông chữ (tất cả chữ)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Font (all text)"
+          }
+        }
+      }
+    },
+    "Nhỏ hơn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Smaller"
+          }
+        }
+      }
+    },
+    "To hơn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Larger"
+          }
+        }
+      }
+    },
+    "Đổ bóng cho chữ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Text shadow"
+          }
+        }
+      }
+    },
+    "Chữ in hoa": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uppercase"
+          }
+        }
+      }
+    },
+    "Chưa có lớp chữ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No text layers"
+          }
+        }
+      }
+    },
+    "Màu nền & màu nhấn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Background & accent colours"
+          }
+        }
+      }
+    },
+    "Chưa có lớp có màu nền": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No filled layers"
+          }
+        }
+      }
+    },
+    "Độ đục nền": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Background opacity"
+          }
+        }
+      }
+    },
+    "Dừng xem thử": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stop preview"
+          }
+        }
+      }
+    },
+    "PGM": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PGM"
+          }
+        }
+      }
+    },
+    "Thiết kế vẽ ở khung 16:9. PGM có tỉ lệ khác nên lower third tự co cho vừa khung và giữ khoảng cách tới mép dưới.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The design is drawn on a 16:9 frame. PGM has another shape, so the lower third resizes to fit and keeps its distance from the bottom edge."
+          }
+        }
+      }
+    },
+    "lower third tự co theo khung, xem ở tab Tổng thể": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "the lower third adapts to the frame, see the Overall tab"
+          }
+        }
+      }
     }
   },
   "version": "1.0"
