@@ -23,6 +23,8 @@ final class PlaylistSource: VideoSource {
     private var stopped = false
     /// false = cued: the first clip waits on its first frame until roll() (the list goes to PGM).
     private(set) var rolling: Bool
+    /// Paused like a tape (off PGM): clips chosen meanwhile wait on their first frame.
+    private(set) var held = false
 
     /// Clip sound to the program mixer (set by the engine before start()).
     var onAudio: (@Sendable (AVAudioPCMBuffer) -> Void)?
@@ -68,7 +70,7 @@ final class PlaylistSource: VideoSource {
         current = clip
         index = i
         await clip.start()
-        if !rolling { clip.cueAtStart() }
+        if !rolling || held { clip.cueAtStart() }
         let cb = onItemChanged
         DispatchQueue.main.async { cb?(i) }
         if let n = nextIndex(after: i), urls[n] != urls[i] { preloaded = makeClip(urls[n]) }   // get the next file ready
@@ -79,8 +81,11 @@ final class PlaylistSource: VideoSource {
         await play(at: ((index + d) % urls.count + urls.count) % urls.count)
     }
 
-    func pause() { current?.pause() }
-    func resume() { if rolling { current?.play() } }
+    func pause() { held = true; current?.pause() }
+    func resume() {
+        held = false
+        if rolling { current?.play() }
+    }
 
     func stop() async {
         stopped = true
@@ -175,6 +180,8 @@ final class PlayoutController: ObservableObject {
     @Published private(set) var now = Date()
     @Published private(set) var durations: [String: Double] = [:]
     @Published private(set) var startedAt: Date?
+    /// Playing list taken off PGM: paused like a tape, continues from the same point when back on PGM.
+    @Published private(set) var offAir = false
 
     /// Day schedule: time slots, each with its own list.
     @Published var schedule: [ScheduleSlot] { didSet { saveSchedule() } }
@@ -356,6 +363,7 @@ final class PlayoutController: ObservableObject {
         source = s
         index = 0
         startedAt = nil
+        offAir = false
         now = Date()
         state = .cued
         engine.add(s)
@@ -375,12 +383,28 @@ final class PlayoutController: ObservableObject {
         engine.updateIdleTimer()
     }
 
-    /// Called by the engine whenever PGM changes: a cued list starts rolling when it reaches PGM.
+    /// Called by the engine whenever PGM changes: a cued list starts rolling when it reaches PGM; a playing
+    /// list pauses when it leaves PGM and continues from the same point when it is back (like a tape).
     func programChanged(_ onAir: Set<UUID>) {
-        guard state == .cued, let s = source, onAir.contains(s.id) else { return }
-        s.roll()
-        startedAt = Date()
-        state = .playing
+        guard let s = source else { return }
+        let on = onAir.contains(s.id)
+        switch state {
+        case .cued where on:
+            s.roll()
+            startedAt = Date()
+            offAir = false
+            state = .playing
+        case .playing:
+            if on && offAir {
+                offAir = false
+                s.resume()
+            } else if !on && !offAir {
+                offAir = true
+                s.pause()
+            }
+        default:
+            break
+        }
     }
 
     func skip(_ d: Int) {
@@ -400,6 +424,7 @@ final class PlayoutController: ObservableObject {
         source = nil
         state = .idle
         startedAt = nil
+        offAir = false
         updateTimer()
         engine?.updateIdleTimer()
     }

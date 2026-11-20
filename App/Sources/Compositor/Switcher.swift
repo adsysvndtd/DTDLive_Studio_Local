@@ -444,8 +444,10 @@ final class Switcher: @unchecked Sendable {
         guard let pb = store?.latest() else { return productSlate(extent.size).cropped(to: extent) }
         var img = CIImage(cvPixelBuffer: pb)
         if let proc {
-            let bg = proc.keyBackgroundID.flatMap { bid in locked { inputs[bid] } }?.latest().map { CIImage(cvPixelBuffer: $0) }
-                .map { b in b.transformed(by: CGAffineTransform(scaleX: img.extent.width / b.extent.width, y: img.extent.height / b.extent.height)) }
+            // raw background frame; the processor scales it to cover the keyed picture (aspect fill)
+            let bg = proc.chromaEnabled
+                ? proc.keyBackgroundID.flatMap { bid in locked { inputs[bid] } }?.latest().map { CIImage(cvPixelBuffer: $0) }
+                : nil
             img = processor.apply(proc, to: img, background: bg)
         }
         let scale = min(extent.width / img.extent.width, extent.height / img.extent.height)

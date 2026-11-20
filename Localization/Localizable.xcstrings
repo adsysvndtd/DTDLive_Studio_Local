@@ -13096,6 +13096,136 @@
           }
         }
       }
+    },
+    "Tạm dừng — đã rời PGM. Chuyển cảnh lại lên PGM để chạy tiếp từ chỗ này.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paused — off PGM. Transition back to PGM to continue from here."
+          }
+        }
+      }
+    },
+    "Tạm dừng (rời PGM)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paused (off PGM)"
+          }
+        }
+      }
+    },
+    "Màu đơn sắc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Solid colour"
+          }
+        }
+      }
+    },
+    "Ảnh từ thư viện…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Picture from library…"
+          }
+        }
+      }
+    },
+    "Video từ thư viện…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video from library…"
+          }
+        }
+      }
+    },
+    "Nguồn đang có": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Current inputs"
+          }
+        }
+      }
+    },
+    "Nguồn đã bị xoá": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Input removed"
+          }
+        }
+      }
+    },
+    "Phần phông xanh được thay bằng nguồn này (phủ kín khung, giữ tỉ lệ).": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The green screen is replaced by this input (fills the frame, keeps aspect)."
+          }
+        }
+      }
+    },
+    "Phần phông xanh được thay bằng màu này.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The green screen is replaced by this colour."
+          }
+        }
+      }
+    },
+    "Trong suốt: phần phông xanh để trống — dùng khi nguồn này làm lớp chồng (PiP / layout / key).": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transparent: the green screen is left empty — use it when this input is an overlay (PiP / layout / key)."
+          }
+        }
+      }
+    },
+    "Thư viện chưa có ảnh. Nhập ở mục Ảnh › Ảnh từ Thư viện / Từ Tệp.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The picture library is empty. Import in Pictures › From Photos / From Files."
+          }
+        }
+      }
+    },
+    "Chọn video làm nền": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose background video"
+          }
+        }
+      }
+    },
+    "Chọn ảnh làm nền": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose background picture"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

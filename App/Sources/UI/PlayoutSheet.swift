@@ -90,6 +90,10 @@ struct PlayoutSheet: View {
                     bigButton("Huỷ", "xmark", DS.surface2) { playout.stop() }
                 }
             case .playing:
+                if playout.offAir {
+                    Label("Tạm dừng — đã rời PGM. Chuyển cảnh lại lên PGM để chạy tiếp từ chỗ này.", systemImage: "pause.circle.fill")
+                        .font(.system(size: 13, weight: .semibold)).foregroundStyle(.orange)
+                }
                 nowPlaying
                 HStack(spacing: 10) {
                     bigButton("Clip trước", "backward.end.fill", DS.surface2) { playout.skip(-1) }
@@ -367,12 +371,12 @@ struct PlayoutStatusBar: View {
         switch playout.state {
         case .armed: return "clock.badge.checkmark"
         case .cued: return "rectangle.on.rectangle"
-        case .playing: return "play.rectangle.fill"
+        case .playing: return playout.offAir ? "pause.circle.fill" : "play.rectangle.fill"
         case .idle: return "calendar.badge.clock"
         default: return "checkmark.circle"
         }
     }
-    private var tint: Color { playout.state == .playing ? DS.pgm : playout.state == .cued ? DS.pvw : DS.accent }
+    private var tint: Color { playout.state == .playing ? (playout.offAir ? Color.orange : DS.pgm) : playout.state == .cued ? DS.pvw : DS.accent }
     private var text: String {
         switch playout.state {
         case .armed:
@@ -387,7 +391,8 @@ struct PlayoutStatusBar: View {
                       PlayoutSheet.clock(n.at.timeIntervalSince(playout.now)))
         case .playing:
             let n = playout.source?.urls.count ?? 0
-            return LF("Danh sách phát %@/%@: %@", "\(playout.index + 1)", "\(n)", playout.source?.currentName ?? "")
+            let line = LF("Danh sách phát %@/%@: %@", "\(playout.index + 1)", "\(n)", playout.source?.currentName ?? "")
+            return playout.offAir ? L("Tạm dừng (rời PGM)") + " · " + line : line
         default:
             return L("Danh sách phát đã phát hết")
         }

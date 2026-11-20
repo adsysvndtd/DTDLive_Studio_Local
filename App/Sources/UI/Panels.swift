@@ -700,15 +700,7 @@ struct SourcePanel: View {
                     }.pickerStyle(.segmented)
                     slider(id, "Dung sai", Double(p.keyTolerance), 5...80, { "\(Int($0))°" }) { var n = p; n.keyTolerance = Float($0); return n }
                     slider(id, "Mềm biên", Double(p.keySoftness), 0...40, { "\(Int($0))°" }) { var n = p; n.keySoftness = Float($0); return n }
-                    HStack {
-                        Text("Nền thay thế").font(DS.fBody).foregroundStyle(DS.text2)
-                        Spacer()
-                        Picker("Nền", selection: Binding(get: { p.keyBackgroundID }, set: { var n = p; n.keyBackgroundID = $0; engine.setProcessing(id, n) })) {
-                            Text("Trong suốt").tag(UUID?.none)
-                            ForEach(engine.sources.filter { $0.id != id }, id: \.id) { Text($0.name).tag(Optional($0.id)) }
-                        }
-                        .pickerStyle(.menu)
-                    }
+                    KeyBackgroundRow(engine: engine, id: id, p: p)
                 } else {
                     Text("Bật để xoá phông xanh lá / xanh dương").font(DS.fBody).foregroundStyle(DS.text3)
                 }

@@ -207,9 +207,11 @@
 "Chọn thứ" = "Weekdays";
 "Chọn từ thư viện Logo" = "Choose from Logo library";
 "Chọn video" = "Choose videos";
+"Chọn video làm nền" = "Choose background video";
 "Chọn video…" = "Choose video…";
 "Chọn ít nhất một nền tảng" = "Pick at least one platform";
 "Chọn ảnh / logo" = "Choose image / logo";
+"Chọn ảnh làm nền" = "Choose background picture";
 "Chống rung" = "Stabilization";
 "Chồng giờ với khung sau" = "Overlaps the next slot";
 "Chớp sáng" = "Flash";
@@ -625,6 +627,7 @@
 "Màu tô" = "Fill colour";
 "Màu viền" = "Border colour";
 "Màu viền chữ" = "Outline colour";
+"Màu đơn sắc" = "Solid colour";
 "Màu đường kẻ" = "Line colour";
 "Màu, key, PTZ…" = "Colour, key, PTZ…";
 "Máy chủ chưa cấu hình tài khoản nhận tiền." = "The server has no receiving bank account yet.";
@@ -683,6 +686,8 @@
 "Nguồn này đã có trong danh sách đầu vào." = "This source is already an input.";
 "Nguồn tham gia" = "Sources";
 "Nguồn đang chỉnh" = "Adjusting";
+"Nguồn đang có" = "Current inputs";
+"Nguồn đã bị xoá" = "Input removed";
 "Ngân hàng" = "Bank";
 "Ngôn ngữ" = "Language";
 "Ngẫu nhiên" = "Random";
@@ -777,6 +782,8 @@
 "Phải" = "Right";
 "Phản hồi không hợp lệ" = "Invalid response";
 "Phản hồi máy chủ không hợp lệ" = "Invalid server response";
+"Phần phông xanh được thay bằng màu này." = "The green screen is replaced by this colour.";
+"Phần phông xanh được thay bằng nguồn này (phủ kín khung, giữ tỉ lệ)." = "The green screen is replaced by this input (fills the frame, keeps aspect).";
 "Phần tử có data-field=\"tên\" sẽ thành ô sửa chữ; biến màu CSS (--accent: #…) thành ô chọn màu." = "Elements with data-field=\"name\" become text fields; CSS colour variables (--accent: #…) become colour pickers.";
 "Phẳng (theo mẫu)" = "Flat (template)";
 "PiP trên Program" = "PiP on Program";
@@ -894,6 +901,7 @@
 "Thư mục không có file .html" = "The folder has no .html file";
 "Thư mục đồ hoạ" = "Graphics folder";
 "Thư viện Video chưa có video. Nhập ở mục Video › Video từ Ảnh / Từ Tệp." = "The Video library is empty. Import in Video › Videos from Photos / From Files.";
+"Thư viện chưa có ảnh. Nhập ở mục Ảnh › Ảnh từ Thư viện / Từ Tệp." = "The picture library is empty. Import in Pictures › From Photos / From Files.";
 "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTDStudio › Library › %@" = "Library empty — use the import button above. Files live in Files › DTDStudio › Library › %@";
 "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTDStudio › Library › %lf" = "Library empty — use the import button above. Files live in Files › DTDStudio › Library › %lf";
 "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTDStudio › Library › %lld" = "Library empty — use the import button above. Files live in Files › DTDStudio › Library › %lld";
@@ -939,6 +947,7 @@
 "Trong khung layout PiP" = "In a PiP layout window";
 "Trong nhà" = "Indoor";
 "Trong suốt" = "Transparent";
+"Trong suốt: phần phông xanh để trống — dùng khi nguồn này làm lớp chồng (PiP / layout / key)." = "Transparent: the green screen is left empty — use it when this input is an overlay (PiP / layout / key).";
 "Trái" = "Left";
 "Trên PGM" = "On PGM";
 "Trên cùng" = "Top";
@@ -980,6 +989,8 @@
 "Tùy chỉnh (nhiều lớp)…" = "Custom (multi-layer)…";
 "Tương phản" = "Contrast";
 "Tạm dừng" = "Pause";
+"Tạm dừng (rời PGM)" = "Paused (off PGM)";
+"Tạm dừng — đã rời PGM. Chuyển cảnh lại lên PGM để chạy tiếp từ chỗ này." = "Paused — off PGM. Transition back to PGM to continue from here.";
 "Tạo live" = "Create live";
 "Tạo phiên live YouTube / Facebook" = "Create YouTube / Facebook live";
 "Tạo phiên live tự động" = "Create live event";
@@ -1018,6 +1029,7 @@
 "VAR · ĐANG PHÁT" = "VAR · PLAYING";
 "Video" = "Video";
 "Video này không có chat trực tiếp đang mở" = "This video has no open live chat";
+"Video từ thư viện…" = "Video from library…";
 "Video từ Ảnh" = "Videos from Photos";
 "Video · %@ · %@" = "Videos · %@ · %@";
 "Video đang dùng làm nguồn" = "Videos in use";
@@ -1278,6 +1290,7 @@
 "Ảnh PNG" = "PNG image";
 "Ảnh nền từ Thư viện" = "Background from Photos";
 "Ảnh từ Thư viện" = "From Photos";
+"Ảnh từ thư viện…" = "Picture from library…";
 "Ảnh đại diện" = "Avatars";
 "Ảnh đại diện / logo" = "Avatar / logo";
 "Ẩn lớp" = "Hide layer";

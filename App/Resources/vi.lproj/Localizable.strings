@@ -207,9 +207,11 @@
 "Chọn thứ" = "Chọn thứ";
 "Chọn từ thư viện Logo" = "Chọn từ thư viện Logo";
 "Chọn video" = "Chọn video";
+"Chọn video làm nền" = "Chọn video làm nền";
 "Chọn video…" = "Chọn video…";
 "Chọn ít nhất một nền tảng" = "Chọn ít nhất một nền tảng";
 "Chọn ảnh / logo" = "Chọn ảnh / logo";
+"Chọn ảnh làm nền" = "Chọn ảnh làm nền";
 "Chống rung" = "Chống rung";
 "Chồng giờ với khung sau" = "Chồng giờ với khung sau";
 "Chớp sáng" = "Chớp sáng";
@@ -625,6 +627,7 @@
 "Màu tô" = "Màu tô";
 "Màu viền" = "Màu viền";
 "Màu viền chữ" = "Màu viền chữ";
+"Màu đơn sắc" = "Màu đơn sắc";
 "Màu đường kẻ" = "Màu đường kẻ";
 "Màu, key, PTZ…" = "Màu, key, PTZ…";
 "Máy chủ chưa cấu hình tài khoản nhận tiền." = "Máy chủ chưa cấu hình tài khoản nhận tiền.";
@@ -683,6 +686,8 @@
 "Nguồn này đã có trong danh sách đầu vào." = "Nguồn này đã có trong danh sách đầu vào.";
 "Nguồn tham gia" = "Nguồn tham gia";
 "Nguồn đang chỉnh" = "Nguồn đang chỉnh";
+"Nguồn đang có" = "Nguồn đang có";
+"Nguồn đã bị xoá" = "Nguồn đã bị xoá";
 "Ngân hàng" = "Ngân hàng";
 "Ngôn ngữ" = "Ngôn ngữ";
 "Ngẫu nhiên" = "Ngẫu nhiên";
@@ -777,6 +782,8 @@
 "Phải" = "Phải";
 "Phản hồi không hợp lệ" = "Phản hồi không hợp lệ";
 "Phản hồi máy chủ không hợp lệ" = "Phản hồi máy chủ không hợp lệ";
+"Phần phông xanh được thay bằng màu này." = "Phần phông xanh được thay bằng màu này.";
+"Phần phông xanh được thay bằng nguồn này (phủ kín khung, giữ tỉ lệ)." = "Phần phông xanh được thay bằng nguồn này (phủ kín khung, giữ tỉ lệ).";
 "Phần tử có data-field=\"tên\" sẽ thành ô sửa chữ; biến màu CSS (--accent: #…) thành ô chọn màu." = "Phần tử có data-field=\"tên\" sẽ thành ô sửa chữ; biến màu CSS (--accent: #…) thành ô chọn màu.";
 "Phẳng (theo mẫu)" = "Phẳng (theo mẫu)";
 "PiP trên Program" = "PiP trên Program";
@@ -894,6 +901,7 @@
 "Thư mục không có file .html" = "Thư mục không có file .html";
 "Thư mục đồ hoạ" = "Thư mục đồ hoạ";
 "Thư viện Video chưa có video. Nhập ở mục Video › Video từ Ảnh / Từ Tệp." = "Thư viện Video chưa có video. Nhập ở mục Video › Video từ Ảnh / Từ Tệp.";
+"Thư viện chưa có ảnh. Nhập ở mục Ảnh › Ảnh từ Thư viện / Từ Tệp." = "Thư viện chưa có ảnh. Nhập ở mục Ảnh › Ảnh từ Thư viện / Từ Tệp.";
 "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTDStudio › Library › %@" = "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTDStudio › Library › %@";
 "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTDStudio › Library › %lf" = "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTDStudio › Library › %lf";
 "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTDStudio › Library › %lld" = "Thư viện trống — dùng nút nhập ở phía trên. Tệp lưu trong Files › DTDStudio › Library › %lld";
@@ -939,6 +947,7 @@
 "Trong khung layout PiP" = "Trong khung layout PiP";
 "Trong nhà" = "Trong nhà";
 "Trong suốt" = "Trong suốt";
+"Trong suốt: phần phông xanh để trống — dùng khi nguồn này làm lớp chồng (PiP / layout / key)." = "Trong suốt: phần phông xanh để trống — dùng khi nguồn này làm lớp chồng (PiP / layout / key).";
 "Trái" = "Trái";
 "Trên PGM" = "Trên PGM";
 "Trên cùng" = "Trên cùng";
@@ -980,6 +989,8 @@
 "Tùy chỉnh (nhiều lớp)…" = "Tùy chỉnh (nhiều lớp)…";
 "Tương phản" = "Tương phản";
 "Tạm dừng" = "Tạm dừng";
+"Tạm dừng (rời PGM)" = "Tạm dừng (rời PGM)";
+"Tạm dừng — đã rời PGM. Chuyển cảnh lại lên PGM để chạy tiếp từ chỗ này." = "Tạm dừng — đã rời PGM. Chuyển cảnh lại lên PGM để chạy tiếp từ chỗ này.";
 "Tạo live" = "Tạo live";
 "Tạo phiên live YouTube / Facebook" = "Tạo phiên live YouTube / Facebook";
 "Tạo phiên live tự động" = "Tạo phiên live tự động";
@@ -1018,6 +1029,7 @@
 "VAR · ĐANG PHÁT" = "VAR · ĐANG PHÁT";
 "Video" = "Video";
 "Video này không có chat trực tiếp đang mở" = "Video này không có chat trực tiếp đang mở";
+"Video từ thư viện…" = "Video từ thư viện…";
 "Video từ Ảnh" = "Video từ Ảnh";
 "Video · %@ · %@" = "Video · %@ · %@";
 "Video đang dùng làm nguồn" = "Video đang dùng làm nguồn";
@@ -1278,6 +1290,7 @@
 "Ảnh PNG" = "Ảnh PNG";
 "Ảnh nền từ Thư viện" = "Ảnh nền từ Thư viện";
 "Ảnh từ Thư viện" = "Ảnh từ Thư viện";
+"Ảnh từ thư viện…" = "Ảnh từ thư viện…";
 "Ảnh đại diện" = "Ảnh đại diện";
 "Ảnh đại diện / logo" = "Ảnh đại diện / logo";
 "Ẩn lớp" = "Ẩn lớp";

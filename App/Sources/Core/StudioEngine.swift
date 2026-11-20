@@ -1805,7 +1805,7 @@ final class StudioEngine: ObservableObject {
         ingest.start()
         switcher.start()
         updateMediaPlayback()
-        if playout.state == .playing { playout.source?.resume() }
+        if playout.state == .playing && !playout.offAir { playout.source?.resume() }
     }
 
     func toggleRecording() {
