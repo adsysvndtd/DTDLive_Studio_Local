@@ -55,7 +55,11 @@ struct PlayoutSheet: View {
             switch playout.state {
             case .idle:
                 HStack(spacing: 10) {
-                    bigButton("Đưa lên PVW", "rectangle.on.rectangle", DS.pvw) { playout.cue() }
+                    if playout.plan.toProgram {
+                        bigButton("Phát lên PGM", "play.rectangle.fill", DS.pgm) { playout.cue() }
+                    } else {
+                        bigButton("Đưa lên PVW", "rectangle.on.rectangle", DS.pvw) { playout.cue() }
+                    }
                     if playout.plan.scheduled {
                         bigButton("Hẹn giờ", "clock.badge.checkmark", DS.accent) { playout.arm() }
                     }
@@ -213,8 +217,11 @@ struct PlayoutSheet: View {
             }
             .pickerStyle(.segmented)
             .disabled(playout.isActive)
+            Toggle(isOn: $playout.plan.toProgram) {
+                Label("Lên PGM ngay (bỏ qua PVW)", systemImage: "forward.end.fill")
+            }
             if playout.plan.scheduled {
-                DatePicker("Giờ lên PVW", selection: $playout.plan.startAt, in: Date()..., displayedComponents: [.date, .hourAndMinute])
+                DatePicker(playout.plan.toProgram ? L("Giờ phát") : L("Giờ lên PVW"), selection: $playout.plan.startAt, in: Date()..., displayedComponents: [.date, .hourAndMinute])
                     .disabled(playout.state != .idle && playout.state != .finished)
                 if !playout.plan.loop && playout.totalDuration > 0 {
                     LabeledContent("Kết thúc dự kiến",
@@ -226,6 +233,8 @@ struct PlayoutSheet: View {
         } footer: {
             if playout.plan.loop {
                 Text("Đang bật Lặp lại: danh sách phát mãi cho đến khi bấm Dừng.")
+            } else if playout.plan.toProgram {
+                Text("Lên PGM ngay: bấm Phát (hoặc đến giờ hẹn) là danh sách cắt thẳng lên PGM và chạy, PVW giữ nguyên. Hết danh sách thì giữ khung cuối.")
             } else {
                 Text("Đến giờ hẹn, danh sách lên PVW và dừng ở khung đầu. Hết danh sách thì giữ khung cuối.")
             }

@@ -124,6 +124,10 @@ struct PlayoutPlan: Codable, Equatable {
     var loop = false
     var scheduled = false
     var startAt = Date().addingTimeInterval(3600)
+    /// Optional so plans saved before this option still decode.
+    var directPGM: Bool?
+    /// Go straight to PGM (cut) instead of waiting on PVW for a transition.
+    var toProgram: Bool { get { directPGM ?? false } set { directPGM = newValue } }
 }
 
 /// One time slot of the day schedule: its own video list, cued on PVW at its start time.
@@ -137,6 +141,10 @@ struct ScheduleSlot: Codable, Identifiable, Equatable {
     var files: [String] = []
     var loop = false
     var enabled = true
+    /// Optional so slots saved before this option still decode.
+    var directPGM: Bool?
+    /// At its time the list cuts straight to PGM instead of waiting on PVW.
+    var toProgram: Bool { get { directPGM ?? false } set { directPGM = newValue } }
 
     /// On the calendar for this day (enabled or not).
     func scheduled(on day: Date, _ cal: Calendar) -> Bool {
@@ -266,7 +274,7 @@ final class PlayoutController: ObservableObject {
                 engine?.message = LF("Bỏ qua khung giờ %@ lúc %@: ứng dụng không mở đúng giờ", label, Self.hm.string(from: at))
                 continue
             }
-            cue(files: s.files, loop: s.loop, name: label)
+            cue(files: s.files, loop: s.loop, name: label, toProgram: s.toProgram)
         }
     }
 
@@ -315,11 +323,12 @@ final class PlayoutController: ObservableObject {
     }
 
     /// Put the list on PVW, waiting on the first frame of the first clip.
-    func cue() { cue(files: plan.files, loop: plan.loop, name: L("Danh sách phát")) }
+    func cue() { cue(files: plan.files, loop: plan.loop, name: L("Danh sách phát"), toProgram: plan.toProgram) }
 
     /// Put any list on PVW (the manual list or a schedule slot's). A list already playing on PGM keeps
     /// playing until a transition takes it off air.
-    func cue(files all: [String], loop: Bool, name: String) {
+    /// `toProgram`: skip PVW — cut the list straight to PGM (it starts rolling there).
+    func cue(files all: [String], loop: Bool, name: String, toProgram: Bool = false) {
         guard let engine else { return }
         let files = all.filter(exists)
         guard !files.isEmpty else {
@@ -350,8 +359,17 @@ final class PlayoutController: ObservableObject {
         now = Date()
         state = .cued
         engine.add(s)
-        engine.select(s.id)                              // PVW only; PGM changes with a transition
-        notes.append(LF("%@ đã lên PVW — bấm CUT / AUTO / T-bar để phát lên PGM", name))
+        if toProgram {
+            // Cut straight to PGM once the first frame is decoded (PVW is left as it was).
+            notes.append(LF("%@ phát thẳng lên PGM", name))
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self, weak s] in
+                guard let self, let s, self.source === s, self.state == .cued, let engine = self.engine else { return }
+                engine.take(s.id)
+            }
+        } else {
+            engine.select(s.id)                          // PVW only; PGM changes with a transition
+            notes.append(LF("%@ đã lên PVW — bấm CUT / AUTO / T-bar để phát lên PGM", name))
+        }
         engine.message = notes.joined(separator: "\n")
         updateTimer()
         engine.updateIdleTimer()

@@ -25,7 +25,7 @@ struct DayScheduleSections: View {
         } header: {
             Text("Lịch theo ngày")
         } footer: {
-            Text("Đến giờ của mỗi khung, danh sách của khung đó lên PVW (dừng ở khung đầu); bấm chuyển cảnh để phát. Giữ DTDStudio mở trên màn hình khi lịch đang chạy.")
+            Text("Đến giờ của mỗi khung, danh sách của khung đó lên PVW (dừng ở khung đầu); bấm chuyển cảnh để phát. Khung bật \"Lên PGM ngay\" thì cắt thẳng lên PGM. Giữ DTDStudio mở trên màn hình khi lịch đang chạy.")
         }
 
         Section {
@@ -87,6 +87,7 @@ struct DayScheduleSections: View {
                         .font(.system(size: 11).monospacedDigit()).foregroundStyle(DS.text3)
                     HStack(spacing: 6) {
                         badge(Self.repeatLabel(s), DS.text2)
+                        if s.toProgram { badge(L("Lên PGM ngay"), DS.pgm) }
                         if !s.enabled { badge(L("Đang tắt"), DS.text3) }
                         if s.files.isEmpty { badge(L("Chưa có video"), .orange) }
                         if overlap { badge(L("Chồng giờ với khung sau"), .orange) }
@@ -192,6 +193,15 @@ struct SlotEditorSheet: View {
                     TextField("Tên khung giờ (ví dụ: Bản tin trưa)", text: slot.name)
                     DatePicker("Bắt đầu", selection: slot.start, displayedComponents: [.date, .hourAndMinute])
                     Toggle("Bật khung giờ này", isOn: slot.enabled)
+                    Toggle(isOn: slot.toProgram) {
+                        Label("Lên PGM ngay (bỏ qua PVW)", systemImage: "forward.end.fill")
+                    }
+                } footer: {
+                    if slot.wrappedValue.toProgram {
+                        Text("Đến giờ, danh sách cắt thẳng lên PGM và chạy ngay; PVW giữ nguyên.")
+                    } else {
+                        Text("Đến giờ, danh sách lên PVW (dừng ở khung đầu); bấm chuyển cảnh để phát.")
+                    }
                 }
                 Section {
                     Picker("Lặp lại", selection: repeatMode) {
@@ -216,9 +226,16 @@ struct SlotEditorSheet: View {
                 Section {
                     Button {
                         let s = slot.wrappedValue
-                        playout.cue(files: s.files, loop: s.loop, name: s.name.isEmpty ? L("Danh sách phát") : s.name)
+                        playout.cue(files: s.files, loop: s.loop, name: s.name.isEmpty ? L("Danh sách phát") : s.name,
+                                    toProgram: s.toProgram)
                         dismiss()
-                    } label: { Label("Đưa lên PVW ngay", systemImage: "rectangle.on.rectangle") }
+                    } label: {
+                        if slot.wrappedValue.toProgram {
+                            Label("Phát lên PGM ngay", systemImage: "play.rectangle.fill")
+                        } else {
+                            Label("Đưa lên PVW ngay", systemImage: "rectangle.on.rectangle")
+                        }
+                    }
                     .disabled(slot.wrappedValue.files.isEmpty)
                     Button(role: .destructive) { confirmDelete = true } label: { Label("Xoá khung giờ", systemImage: "trash") }
                 }

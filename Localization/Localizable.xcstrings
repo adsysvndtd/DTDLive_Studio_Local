@@ -13006,6 +13006,96 @@
           }
         }
       }
+    },
+    "%@ phát thẳng lên PGM": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ cut straight to PGM"
+          }
+        }
+      }
+    },
+    "Phát lên PGM ngay": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Play on PGM now"
+          }
+        }
+      }
+    },
+    "Lên PGM ngay (bỏ qua PVW)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Straight to PGM (skip PVW)"
+          }
+        }
+      }
+    },
+    "Lên PGM ngay": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Straight to PGM"
+          }
+        }
+      }
+    },
+    "Giờ phát": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Play time"
+          }
+        }
+      }
+    },
+    "Lên PGM ngay: bấm Phát (hoặc đến giờ hẹn) là danh sách cắt thẳng lên PGM và chạy, PVW giữ nguyên. Hết danh sách thì giữ khung cuối.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Straight to PGM: press Play (or at the scheduled time) and the list cuts straight to PGM and plays; PVW is unchanged. At the end the last frame is held."
+          }
+        }
+      }
+    },
+    "Đến giờ, danh sách cắt thẳng lên PGM và chạy ngay; PVW giữ nguyên.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "At its time the list cuts straight to PGM and plays; PVW is unchanged."
+          }
+        }
+      }
+    },
+    "Đến giờ, danh sách lên PVW (dừng ở khung đầu); bấm chuyển cảnh để phát.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "At its time the list goes to PVW (held on the first frame); a transition plays it."
+          }
+        }
+      }
+    },
+    "Đến giờ của mỗi khung, danh sách của khung đó lên PVW (dừng ở khung đầu); bấm chuyển cảnh để phát. Khung bật \"Lên PGM ngay\" thì cắt thẳng lên PGM. Giữ DTDStudio mở trên màn hình khi lịch đang chạy.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "At each slot's time its list goes to PVW (held on the first frame); a transition plays it. Slots set to \"Straight to PGM\" cut straight to PGM. Keep DTDStudio open on screen while the schedule is running."
+          }
+        }
+      }
     }
   },
   "version": "1.0"

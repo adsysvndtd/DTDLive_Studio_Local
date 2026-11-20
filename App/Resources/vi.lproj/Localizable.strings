@@ -2,6 +2,7 @@
 "%.1f Mbps · Âm thanh %.0f dBFS" = "%.1f Mbps · Âm thanh %.0f dBFS";
 "%@ (mặc định)" = "%@ (mặc định)";
 "%@ ngày" = "%@ ngày";
+"%@ phát thẳng lên PGM" = "%@ phát thẳng lên PGM";
 "%@ video không có âm thanh" = "%@ video không có âm thanh";
 "%@ video · %@" = "%@ video · %@";
 "%@ đã lên PVW — bấm CUT / AUTO / T-bar để phát lên PGM" = "%@ đã lên PVW — bấm CUT / AUTO / T-bar để phát lên PGM";
@@ -346,6 +347,7 @@
 "Giờ (trống = giờ thực, - = ẩn)" = "Giờ (trống = giờ thực, - = ẩn)";
 "Giờ bắt đầu" = "Giờ bắt đầu";
 "Giờ lên PVW" = "Giờ lên PVW";
+"Giờ phát" = "Giờ phát";
 "Giữ %@ giây" = "Giữ %@ giây";
 "Giữ DTDStudio mở trên màn hình cho đến khi phát xong: iPad không cho ứng dụng xử lý hình khi ở nền. Màn hình được giữ sáng tự động." = "Giữ DTDStudio mở trên màn hình cho đến khi phát xong: iPad không cho ứng dụng xử lý hình khi ở nền. Màn hình được giữ sáng tự động.";
 "Giữ hình" = "Giữ hình";
@@ -552,6 +554,9 @@
 "Làm lại" = "Làm lại";
 "Làm mới" = "Làm mới";
 "Lên 1 lớp" = "Lên 1 lớp";
+"Lên PGM ngay" = "Lên PGM ngay";
+"Lên PGM ngay (bỏ qua PVW)" = "Lên PGM ngay (bỏ qua PVW)";
+"Lên PGM ngay: bấm Phát (hoặc đến giờ hẹn) là danh sách cắt thẳng lên PGM và chạy, PVW giữ nguyên. Hết danh sách thì giữ khung cuối." = "Lên PGM ngay: bấm Phát (hoặc đến giờ hẹn) là danh sách cắt thẳng lên PGM và chạy, PVW giữ nguyên. Hết danh sách thì giữ khung cuối.";
 "Lên PVW lúc %@" = "Lên PVW lúc %@";
 "Lên Preview" = "Lên Preview";
 "Lên sóng" = "Lên sóng";
@@ -755,6 +760,7 @@
 "Phát PGM qua NDI" = "Phát PGM qua NDI";
 "Phát lên" = "Phát lên";
 "Phát lên PGM" = "Phát lên PGM";
+"Phát lên PGM ngay" = "Phát lên PGM ngay";
 "Phát lại" = "Phát lại";
 "Phát lại từ đầu" = "Phát lại từ đầu";
 "Phát sáng" = "Phát sáng";
@@ -1222,7 +1228,10 @@
 "Đếm ngược" = "Đếm ngược";
 "Đến %@" = "Đến %@";
 "Đến giờ của mỗi khung, danh sách của khung đó lên PVW (dừng ở khung đầu); bấm chuyển cảnh để phát. Giữ DTDStudio mở trên màn hình khi lịch đang chạy." = "Đến giờ của mỗi khung, danh sách của khung đó lên PVW (dừng ở khung đầu); bấm chuyển cảnh để phát. Giữ DTDStudio mở trên màn hình khi lịch đang chạy.";
+"Đến giờ của mỗi khung, danh sách của khung đó lên PVW (dừng ở khung đầu); bấm chuyển cảnh để phát. Khung bật \"Lên PGM ngay\" thì cắt thẳng lên PGM. Giữ DTDStudio mở trên màn hình khi lịch đang chạy." = "Đến giờ của mỗi khung, danh sách của khung đó lên PVW (dừng ở khung đầu); bấm chuyển cảnh để phát. Khung bật \"Lên PGM ngay\" thì cắt thẳng lên PGM. Giữ DTDStudio mở trên màn hình khi lịch đang chạy.";
 "Đến giờ hẹn, danh sách lên PVW và dừng ở khung đầu. Hết danh sách thì giữ khung cuối." = "Đến giờ hẹn, danh sách lên PVW và dừng ở khung đầu. Hết danh sách thì giữ khung cuối.";
+"Đến giờ, danh sách cắt thẳng lên PGM và chạy ngay; PVW giữ nguyên." = "Đến giờ, danh sách cắt thẳng lên PGM và chạy ngay; PVW giữ nguyên.";
+"Đến giờ, danh sách lên PVW (dừng ở khung đầu); bấm chuyển cảnh để phát." = "Đến giờ, danh sách lên PVW (dừng ở khung đầu); bấm chuyển cảnh để phát.";
 "Địa điểm" = "Địa điểm";
 "ĐỒNG HÀNH CÙNG CHƯƠNG TRÌNH" = "ĐỒNG HÀNH CÙNG CHƯƠNG TRÌNH";
 "Đồ hoạ HTML5" = "Đồ hoạ HTML5";

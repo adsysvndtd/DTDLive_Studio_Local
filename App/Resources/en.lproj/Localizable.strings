@@ -2,6 +2,7 @@
 "%.1f Mbps · Âm thanh %.0f dBFS" = "%.1f Mbps · Audio %.0f dBFS";
 "%@ (mặc định)" = "%@ (default)";
 "%@ ngày" = "%@ days";
+"%@ phát thẳng lên PGM" = "%@ cut straight to PGM";
 "%@ video không có âm thanh" = "%@ video(s) have no sound";
 "%@ video · %@" = "%@ videos · %@";
 "%@ đã lên PVW — bấm CUT / AUTO / T-bar để phát lên PGM" = "%@ is on PVW — press CUT / AUTO / T-bar to play it on PGM";
@@ -346,6 +347,7 @@
 "Giờ (trống = giờ thực, - = ẩn)" = "Time (empty = real time, - = hidden)";
 "Giờ bắt đầu" = "Start time";
 "Giờ lên PVW" = "Time to PVW";
+"Giờ phát" = "Play time";
 "Giữ %@ giây" = "Hold %@ s";
 "Giữ DTDStudio mở trên màn hình cho đến khi phát xong: iPad không cho ứng dụng xử lý hình khi ở nền. Màn hình được giữ sáng tự động." = "Keep DTDStudio open on screen until the playlist is done: iPad does not let apps process video in the background. The screen is kept on automatically.";
 "Giữ hình" = "Hold";
@@ -552,6 +554,9 @@
 "Làm lại" = "Redo";
 "Làm mới" = "Refresh";
 "Lên 1 lớp" = "Up one layer";
+"Lên PGM ngay" = "Straight to PGM";
+"Lên PGM ngay (bỏ qua PVW)" = "Straight to PGM (skip PVW)";
+"Lên PGM ngay: bấm Phát (hoặc đến giờ hẹn) là danh sách cắt thẳng lên PGM và chạy, PVW giữ nguyên. Hết danh sách thì giữ khung cuối." = "Straight to PGM: press Play (or at the scheduled time) and the list cuts straight to PGM and plays; PVW is unchanged. At the end the last frame is held.";
 "Lên PVW lúc %@" = "To PVW at %@";
 "Lên Preview" = "To Preview";
 "Lên sóng" = "On air";
@@ -755,6 +760,7 @@
 "Phát PGM qua NDI" = "Send PGM over NDI";
 "Phát lên" = "Publish to";
 "Phát lên PGM" = "Play to PGM";
+"Phát lên PGM ngay" = "Play on PGM now";
 "Phát lại" = "Replay";
 "Phát lại từ đầu" = "Restart";
 "Phát sáng" = "Glow";
@@ -1222,7 +1228,10 @@
 "Đếm ngược" = "Count down";
 "Đến %@" = "Until %@";
 "Đến giờ của mỗi khung, danh sách của khung đó lên PVW (dừng ở khung đầu); bấm chuyển cảnh để phát. Giữ DTDStudio mở trên màn hình khi lịch đang chạy." = "At each slot's time its list goes to PVW (held on the first frame); a transition plays it. Keep DTDStudio open on screen while the schedule is running.";
+"Đến giờ của mỗi khung, danh sách của khung đó lên PVW (dừng ở khung đầu); bấm chuyển cảnh để phát. Khung bật \"Lên PGM ngay\" thì cắt thẳng lên PGM. Giữ DTDStudio mở trên màn hình khi lịch đang chạy." = "At each slot's time its list goes to PVW (held on the first frame); a transition plays it. Slots set to \"Straight to PGM\" cut straight to PGM. Keep DTDStudio open on screen while the schedule is running.";
 "Đến giờ hẹn, danh sách lên PVW và dừng ở khung đầu. Hết danh sách thì giữ khung cuối." = "At the scheduled time the list goes to PVW, waiting on its first frame. At the end it holds the last frame.";
+"Đến giờ, danh sách cắt thẳng lên PGM và chạy ngay; PVW giữ nguyên." = "At its time the list cuts straight to PGM and plays; PVW is unchanged.";
+"Đến giờ, danh sách lên PVW (dừng ở khung đầu); bấm chuyển cảnh để phát." = "At its time the list goes to PVW (held on the first frame); a transition plays it.";
 "Địa điểm" = "Location";
 "ĐỒNG HÀNH CÙNG CHƯƠNG TRÌNH" = "PROUDLY SUPPORTED BY";
 "Đồ hoạ HTML5" = "HTML5 graphics";
