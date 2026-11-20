@@ -270,7 +270,7 @@ struct StudioView: View {
                 sourceCaption(isProgram ? engine.programID : engine.previewID, color: color)
                 if engine.showMonitorVU {
                     // PGM: the program mix; PVW: the audio of the source waiting on preview
-                    MonitorVU(meters: engine.meters, id: isProgram ? nil : engine.previewID, compact: compact)
+                    MonitorVU(meters: engine.meters, id: isProgram ? nil : engine.previewID, preFader: !isProgram, compact: compact)
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .trailing)
                         .padding(.trailing, compact ? 3 : 5)
                         .padding(.vertical, compact ? 18 : 26)
@@ -501,12 +501,14 @@ struct LiveScope: View {
 struct MonitorVU: View {
     @ObservedObject var meters: LiveMeters
     let id: UUID?
+    /// PVW: the source's own level before its fader / AFV (it is not on air yet).
+    var preFader = false
     var compact = false
     @State private var hold: (Float, Float) = (-60, -60)
     @State private var holdAt: (Date, Date) = (.distantPast, .distantPast)
 
     var body: some View {
-        let (l, r) = meters.stereo(id)
+        let (l, r) = preFader ? meters.preFader(id) : meters.stereo(id)
         let w: CGFloat = compact ? 3 : 5
         HStack(spacing: compact ? 1.5 : 2) {
             bar(l, hold.0, w)

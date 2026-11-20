@@ -364,6 +364,10 @@ final class StudioEngine: ObservableObject {
                 }
                 if levels != m.levels { m.levels = levels }
                 if levelsR != m.levelsR { m.levelsR = levelsR }
+                var pL: [UUID: Float] = [:], pR: [UUID: Float] = [:]
+                for (id, v) in self.audio.preFaderLevels() { pL[id] = (v.0 * 2).rounded() / 2; pR[id] = (v.1 * 2).rounded() / 2 }
+                if pL != m.pflL { m.pflL = pL }
+                if pR != m.pflR { m.pflR = pR }
                 // the channel list itself only changes when a source, gain, mute… changes
                 if ch != self.audioChannels { self.audioChannels = ch }
             }
@@ -1991,6 +1995,13 @@ final class LiveMeters: ObservableObject {
     @Published var levels: [UUID: Float] = [:]
     @Published var levelR: Float = -60
     @Published var levelsR: [UUID: Float] = [:]
+    /// Pre-fader (PFL) L/R per source — the PVW meter.
+    @Published var pflL: [UUID: Float] = [:]
+    @Published var pflR: [UUID: Float] = [:]
+    func preFader(_ id: UUID?) -> (Float, Float) {
+        guard let id else { return (-60, -60) }
+        return (pflL[id] ?? -60, pflR[id] ?? pflL[id] ?? -60)
+    }
     @Published var scope = ScopeAnalyzer.Result()
     func level(_ id: UUID?) -> Float { id.map { levels[$0] ?? -60 } ?? level }
     /// L / R peak dBFS of a channel, or of Program (the mixer output) when id is nil.

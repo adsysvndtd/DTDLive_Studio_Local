@@ -55,6 +55,17 @@ final class AudioCapture: @unchecked Sendable {
     var onBuffer: Handler?
     var masterGain: Float = 1 { didSet { bus.outputVolume = masterGain } }
     private(set) var peakDB: Float = -60
+    /// Pre-fader peaks per source (L, R, when) — see feed().
+    private var pfl: [UUID: (l: Float, r: Float, at: TimeInterval)] = [:]
+
+    /// Pre-fader L/R per source; a source that stopped sending reads −60 after 0.4 s.
+    func preFaderLevels() -> [UUID: (Float, Float)] {
+        let now = ProcessInfo.processInfo.systemUptime
+        os_unfair_lock_lock(&lock); defer { os_unfair_lock_unlock(&lock) }
+        var out: [UUID: (Float, Float)] = [:]
+        for (id, v) in pfl { out[id] = now - v.at < 0.4 ? (v.l, v.r) : (-60, -60) }
+        return out
+    }
     private(set) var peakDBR: Float = -60
     let format = AVAudioFormat(standardFormatWithSampleRate: 48000, channels: 2)!
 
@@ -176,6 +187,14 @@ final class AudioCapture: @unchecked Sendable {
 
     /// Called with decoded PCM from an SRT/RTMP source. Creates its fader lazily.
     func feed(sourceID: UUID, name: String, buffer: AVAudioPCMBuffer) {
+        // Pre-fader level (PFL, after trim): what the source carries even while its fader / AFV keeps it
+        // out of the program — the PVW meter shows this so a source can be checked before it goes on air.
+        let (l, r) = Self.peaks(buffer)
+        let now = ProcessInfo.processInfo.systemUptime
+        os_unfair_lock_lock(&lock)
+        let trim = states[sourceID]?.trim ?? 0
+        pfl[sourceID] = (min(0, l + trim), min(0, r + trim), now)
+        os_unfair_lock_unlock(&lock)
         DispatchQueue.main.async { [self] in
             if channelMixers[sourceID] == nil { makeChannel(sourceID, name: name); applyGains() }
             if playerFormats[sourceID] != buffer.format {
@@ -196,7 +215,7 @@ final class AudioCapture: @unchecked Sendable {
             players[id].map { $0.stop(); engine.detach($0) }
             channelMixers[id].map { $0.removeTap(onBus: 0); engine.detach($0) }
             players[id] = nil; channelMixers[id] = nil; playerFormats[id] = nil
-            os_unfair_lock_lock(&lock); states[id] = nil; os_unfair_lock_unlock(&lock)
+            os_unfair_lock_lock(&lock); states[id] = nil; pfl[id] = nil; os_unfair_lock_unlock(&lock)
         }
     }
 
@@ -224,6 +243,8 @@ final class AudioCapture: @unchecked Sendable {
             let base: Float = s.muted ? -60 : -30 + 20 * Float(s.gain) / 2
             states[k]?.level = min(0, base + 8 * Float(sin(t * (1.3 + Double(i) * 0.4))))
             states[k]?.levelR = min(0, base + 8 * Float(sin(t * (1.1 + Double(i) * 0.4))))
+            let p = -20 + 8 * Float(sin(t * (1.2 + Double(i) * 0.3)))
+            pfl[k] = (p, p - 1.5, ProcessInfo.processInfo.systemUptime)
         }
         peakDB = -14 + 4 * Float(sin(t * 1.7))
         peakDBR = -15 + 4 * Float(sin(t * 1.4))
