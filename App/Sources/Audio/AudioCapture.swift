@@ -188,7 +188,9 @@ final class AudioCapture: @unchecked Sendable {
             os_unfair_lock_lock(&self.lock); self.states[id]?.level = l; self.states[id]?.levelR = r; os_unfair_lock_unlock(&self.lock)
         }
         channelMixers[id] = m
-        os_unfair_lock_lock(&lock); states[id] = AudioChannelState(id: id, name: name); os_unfair_lock_unlock(&lock)
+        // Audio follows video by default: a source is heard only while it is on PGM (the Mic follows the
+        // iPad's own cameras, see micOnAir); background music never follows.
+        os_unfair_lock_lock(&lock); states[id] = AudioChannelState(id: id, name: name, followVideo: id != Self.musicID); os_unfair_lock_unlock(&lock)
         return m
     }
 
@@ -266,20 +268,25 @@ final class AudioCapture: @unchecked Sendable {
     }
 
     /// Called with the sources on program (audio-follow-video).
-    func setProgram(_ ids: Set<UUID>, main: UUID? = nil) {
+    /// The Mic counts as "on PGM" (for AFV) while an iPad camera is on air — or always when the show has no
+    /// iPad camera, so a commentary mic is never cut off.
+    private var micOnAir = true
+
+    func setProgram(_ ids: Set<UUID>, main: UUID? = nil, micOnAir mic: Bool = true) {
         os_unfair_lock_lock(&lock)
-        let changed = ids != programIDs || main != programMain
-        programIDs = ids; programMain = main
+        let changed = ids != programIDs || main != programMain || mic != micOnAir
+        programIDs = ids; programMain = main; micOnAir = mic
         os_unfair_lock_unlock(&lock)
         if changed { DispatchQueue.main.async { self.applyGains() } }
     }
 
     private func applyGains() {
-        os_unfair_lock_lock(&lock); let st = states; let all = programIDs; let main = programMain; os_unfair_lock_unlock(&lock)
+        os_unfair_lock_lock(&lock); let st = states; let all = programIDs; let main = programMain; let micLive = micOnAir; os_unfair_lock_unlock(&lock)
         let pgm: Set<UUID> = afvMode == .afv1 ? Set([main].compactMap { $0 }) : all
         let anySolo = st.values.contains { $0.solo }
         for (id, s) in st {
-            let audible = !s.muted && (!s.followVideo || pgm.contains(id)) && (!anySolo || s.solo)
+            let onAir = id == Self.micID ? micLive : pgm.contains(id)
+            let audible = !s.muted && (!s.followVideo || onAir) && (!anySolo || s.solo)
             channelMixers[id]?.outputVolume = audible ? s.gain * powf(10, s.trim / 20) : 0
         }
     }

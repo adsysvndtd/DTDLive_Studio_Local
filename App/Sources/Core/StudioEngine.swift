@@ -184,6 +184,10 @@ final class StudioEngine: ObservableObject {
     @Published var scopesEnabled = false
     var scopeResult: ScopeAnalyzer.Result { meters.scope }
     @Published var ptz: [UUID: PTZConfig] = [:]
+    /// L/R VU meter on the external PGM output (on by default; turn off for a clean feed to a recorder).
+    @Published var externalVU: Bool = UserDefaults.standard.object(forKey: "dtd.external.vu") as? Bool ?? true {
+        didSet { UserDefaults.standard.set(externalVU, forKey: "dtd.external.vu") }
+    }
     /// What the HDMI / USB‑C display shows (kept across launches).
     @Published var externalMode: ExternalMode = ExternalMode(rawValue: UserDefaults.standard.string(forKey: "dtd.external.mode") ?? "") ?? .program {
         didSet { UserDefaults.standard.set(externalMode.rawValue, forKey: "dtd.external.mode") }
@@ -536,10 +540,9 @@ final class StudioEngine: ObservableObject {
         // The iPad's own cameras have no audio of their own: their sound is the Mic channel. With AFV on the
         // Mic, it is on air while an iPad camera is on PGM.
         let cams = Set(sources.compactMap { $0 as? CameraSource }.map(\.id))
-        var audioPGM = program
-        if !program.isDisjoint(with: cams) { audioPGM.insert(AudioCapture.micID) }
-        let main = switcher.state.program.map { cams.contains($0) ? AudioCapture.micID : $0 }
-        audio.setProgram(audioPGM, main: main)
+        let main = switcher.state.program
+        let camOnAir = audio.afvMode == .afv1 ? main.map(cams.contains) ?? false : !program.isDisjoint(with: cams)
+        audio.setProgram(program, main: main, micOnAir: cams.isEmpty || camOnAir)
         for id in program.symmetricDifference(old) {
             Task { await ptzControllers[id]?.tally(program.contains(id)) }
         }

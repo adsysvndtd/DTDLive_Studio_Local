@@ -130,6 +130,7 @@ struct StudioView: View {
                         Label("Multiview", systemImage: "square.grid.3x3").tag(StudioEngine.ExternalMode.multiview)
                         Label("Phản chiếu màn iPad", systemImage: "rectangle.on.rectangle").tag(StudioEngine.ExternalMode.mirror)
                     }
+                    Toggle("VU meter trên hình PGM ra màn ngoài", isOn: $engine.externalVU)
                     Button { openWindow(id: "pgm-output") } label: {
                         Label("Mở cửa sổ xuất hình (Stage Manager)", systemImage: "macwindow.on.rectangle")
                     }
@@ -513,6 +514,12 @@ struct MonitorVU: View {
     var compact = false
     @State private var hold: (Float, Float) = (-60, -60)
     @State private var holdAt: (Date, Date) = (.distantPast, .distantPast)
+
+    // Explicit: the memberwise init would be private (private @State) and unusable from the multiview file.
+    init(meters: LiveMeters, id: UUID?, preFader: Bool = false, marksOnLeading: Bool = true, compact: Bool = false) {
+        self.meters = meters; self.id = id; self.preFader = preFader
+        self.marksOnLeading = marksOnLeading; self.compact = compact
+    }
 
     var body: some View {
         let (l, r) = preFader ? meters.preFader(id) : meters.stereo(id)

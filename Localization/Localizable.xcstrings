@@ -13436,6 +13436,16 @@
           }
         }
       }
+    },
+    "VU meter trên hình PGM ra màn ngoài": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "VU meter on the external PGM output"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

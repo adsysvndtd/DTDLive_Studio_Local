@@ -1042,6 +1042,7 @@
 "VAR · ĐANG GIỮ HÌNH" = "VAR · HOLDING";
 "VAR · ĐANG PHÁT" = "VAR · PLAYING";
 "VISCA over IP" = "VISCA over IP";
+"VU meter trên hình PGM ra màn ngoài" = "VU meter on the external PGM output";
 "VU meter âm thanh trên PVW / PGM" = "Audio VU meters on PVW / PGM";
 "Video" = "Video";
 "Video này không có chat trực tiếp đang mở" = "This video has no open live chat";

@@ -83,6 +83,13 @@ struct ExternalProgramView: View {
                 MonitorView(store: engine.switcher.programMonitor, maxFPS: 60)
                     .aspectRatio(CGFloat(engine.format.width) / CGFloat(engine.format.height), contentMode: .fit)
                     .overlay { if engine.externalSafeGuides { SafeGuides() } }
+                    .overlay(alignment: .trailing) {
+                        if engine.externalVU {
+                            MonitorVU(meters: engine.meters, id: nil, marksOnLeading: true)
+                                .frame(width: 14)
+                                .padding(.trailing, 28).padding(.vertical, 60)
+                        }
+                    }
             case .multiview:
                 MultiviewGrid(engine: engine)
             case .mirror:

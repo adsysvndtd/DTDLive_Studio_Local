@@ -107,6 +107,7 @@ struct SettingsForm: View {
                         Text("Multiview").tag(StudioEngine.ExternalMode.multiview)
                         Text("Phản chiếu màn iPad").tag(StudioEngine.ExternalMode.mirror)
                     }
+                    Toggle("VU meter trên hình PGM ra màn ngoài", isOn: $engine.externalVU)
                     Text("Cắm màn hình / bộ chuyển USB‑C sang HDMI: DTDStudio tự xuất hình đã chọn ra màn ngoài (không phản chiếu màn iPad). Nếu iPad dùng màn ngoài làm màn mở rộng (Stage Manager), mở menu Multiview › Mở cửa sổ xuất hình rồi kéo cửa sổ sang màn ngoài.")
                         .font(.caption2).foregroundStyle(DS.text3)
                 }
