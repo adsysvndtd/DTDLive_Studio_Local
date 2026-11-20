@@ -59,11 +59,15 @@
 "Bảng nhập điểm…" = "Score entry…";
 "Bảng tỉ số" = "Scoreboard";
 "Bảng tỉ số (web)" = "Scoreboard (web)";
+"Bấm CUT / AUTO / kéo T-bar để đưa lên PGM — danh sách bắt đầu chạy khi lên PGM." = "Press CUT / AUTO / pull the T-bar to take it to PGM — the list starts rolling on PGM.";
 "Bấm Phát ở đích vừa tạo; sau 10–20 giây trang xem mới có hình." = "The picture appears on the live page 10–20 s after streaming starts.";
+"Bấm vào nguồn hay danh sách chỉ đưa lên PVW; chỉ các nút chuyển cảnh mới đổi PGM. Logo, title và bảng tỉ số vẫn hiện trên hình phát." = "Tapping a source or the list only puts it on PVW; only the transition buttons change PGM. Logo, titles and scoreboard stay on the output.";
+"Bấm Đưa lên PVW (hoặc đến giờ hẹn): danh sách chờ ở khung đầu." = "Tap Put on PVW (or wait for the scheduled time): the list waits on its first frame.";
 "Bấm “Thêm lớp” để bắt đầu thiết kế" = "Tap “Add layer” to start designing";
 "Bấm ♡ trên một nguồn để thêm vào Yêu thích" = "Tap ♡ on a source to add it to Favorites";
 "BẬT" = "ON";
 "Bật bộ đệm replay (60 giây gần nhất)" = "Replay buffer on (last 60 seconds)";
+"Bật kết nối ở mục Đầu ra (YouTube, Facebook, RTMP, SRT…) như bình thường." = "Start the connections in Outputs (YouTube, Facebook, RTMP, SRT…) as usual.";
 "Bật nảy" = "Pop";
 "Bật scopes (Program)" = "Show scopes (Program)";
 "Bật để xoá phông xanh lá / xanh dương" = "Turn on to remove a green / blue screen";
@@ -96,6 +100,7 @@
 "CAM 3 · Khán giả" = "CAM 3 · Audience";
 "CHƯƠNG TRÌNH" = "PROGRAMME";
 "CHỮ HOA" = "UPPERCASE";
+"CUT / AUTO / T-bar / stinger: danh sách bắt đầu chạy." = "CUT / AUTO / T-bar / stinger: the list starts rolling.";
 "Camera" = "Camera";
 "Camera / USB-C" = "Camera / USB-C";
 "Camera gửi %@ Mbps — thấp so với bitrate phát %@ Mbps: hình bị nén hai lần nên mờ. Cập nhật DTDLive (tự gửi ~12 Mbps cho 1080p30 qua Wi‑Fi) hoặc tăng bitrate trên DTDLive." = "Camera sends %@ Mbps — low for the %@ Mbps output: the picture is compressed twice and looks soft. Update DTDLive (sends ~12 Mbps for 1080p30 over Wi‑Fi) or raise the bitrate in DTDLive.";
@@ -108,6 +113,7 @@
 "Chrome xanh" = "Blue chrome";
 "Chuyển PGM về nguồn trước đó" = "Return PGM to the previous source";
 "Chuyển cảnh" = "Transitions";
+"Chuyển cảnh lên PGM" = "Transition to PGM";
 "Chuyển khoản ngân hàng (VietQR)" = "Bank transfer (VietQR)";
 "Chuyển màu dọc" = "Vertical gradient";
 "Chuyển màu ngang" = "Horizontal gradient";
@@ -254,12 +260,17 @@
 "Cỡ logo" = "Logo size";
 "Cỡ tổng thể" = "Overall size";
 "Danh sách bắt đầu trễ %@ phút (ứng dụng không mở đúng giờ)" = "The playlist started %@ min late (the app was not open at the start time)";
+"Danh sách lên PVW trễ %@ phút (ứng dụng không mở đúng giờ)" = "The playlist went to PVW %@ min late (the app was not open at the time)";
 "Danh sách phát" = "Playlist";
 "Danh sách phát %@/%@: %@" = "Playlist %@/%@: %@";
 "Danh sách phát chưa có video" = "The playlist has no videos";
 "Danh sách phát chưa có video (hoặc video đã bị xoá khỏi thư viện)" = "The playlist has no videos (or they were removed from the library)";
+"Danh sách phát sẵn sàng trên PVW — chuyển cảnh để phát" = "Playlist ready on PVW — transition to play";
+"Danh sách phát đã hết — giữ khung cuối, bấm chuyển cảnh để rời" = "The playlist has finished — holding the last frame, transition to leave it";
+"Danh sách phát đã lên PVW — bấm CUT / AUTO / T-bar để phát lên PGM" = "The playlist is on PVW — press CUT / AUTO / T-bar to play it on PGM";
 "Danh sách phát đã phát hết" = "Playlist finished";
 "Danh sách phát: hẹn %@ · còn %@" = "Playlist: scheduled %@ · in %@";
+"Danh sách phát: lên PVW lúc %@ · còn %@" = "Playlist: to PVW at %@ · in %@";
 "Danh sách · %@ video · %@" = "List · %@ videos · %@";
 "Dung lượng" = "Size";
 "Dày viền" = "Border width";
@@ -320,6 +331,7 @@
 "Giờ (trống = giờ thực)" = "Time (empty = real time)";
 "Giờ (trống = giờ thực, - = ẩn)" = "Time (empty = real time, - = hidden)";
 "Giờ bắt đầu" = "Start time";
+"Giờ lên PVW" = "Time to PVW";
 "Giữ %@ giây" = "Hold %@ s";
 "Giữ DTDStudio mở trên màn hình cho đến khi phát xong: iPad không cho ứng dụng xử lý hình khi ở nền. Màn hình được giữ sáng tự động." = "Keep DTDStudio open on screen until the playlist is done: iPad does not let apps process video in the background. The screen is kept on automatically.";
 "Giữ hình" = "Hold";
@@ -522,6 +534,7 @@
 "Làm lại" = "Redo";
 "Làm mới" = "Refresh";
 "Lên 1 lớp" = "Up one layer";
+"Lên PVW lúc %@" = "To PVW at %@";
 "Lên Preview" = "To Preview";
 "Lên sóng" = "On air";
 "Lên sóng ngay" = "Take now";
@@ -710,6 +723,7 @@
 "Oswald (cao, hẹp)" = "Oswald (tall, narrow)";
 "PGM" = "PGM";
 "PGM chuyển về nguồn trước đó." = "PGM returns to the previous source.";
+"PGM không tự đổi: nếu danh sách đang trên PGM, hình đứng ở khung hiện tại cho đến khi anh bấm chuyển cảnh." = "PGM does not change by itself: if the list is on PGM, the picture holds until you press a transition.";
 "PHÁT REPLAY" = "PLAY REPLAY";
 "PNG có tâm trong suốt, lấy từ thư viện SuperFG" = "PNG with a transparent centre, from the SuperFG library";
 "PTZ nguồn PVW" = "PVW source PTZ";
@@ -740,6 +754,7 @@
 "Playfair Display (có chân)" = "Playfair Display (serif)";
 "Preset: chạm = gọi, giữ = lưu" = "Presets: tap = recall, hold = store";
 "QUÉT" = "WIPE";
+"Quy trình" = "Workflow";
 "Quyền phá" = "Break";
 "Quét" = "Wipe";
 "Quét bằng app ngân hàng bất kỳ – số tiền và nội dung đã điền sẵn" = "Scan with any banking app – amount and reference are filled in";
@@ -788,6 +803,7 @@
 "Sắp phát sóng" = "Stream starting";
 "Sắp xếp" = "Arrange";
 "Sẵn sàng" = "Ready";
+"Sẵn sàng trên PVW" = "Ready on PVW";
 "Sẽ phát lúc %@" = "Starts at %@";
 "SỌC" = "BARS";
 "Sọc" = "Bars";
@@ -1130,6 +1146,7 @@
 "Đã nạp logo — bấm Logo ở cột phải để lên PGM" = "Logo loaded — press Logo in the right column to put it on PGM";
 "Đã nạp — bấm SuperFG On ở cột phải" = "Loaded — press SuperFG On in the right column";
 "Đã phát hết danh sách" = "The playlist has finished";
+"Đã phát hết — đang giữ khung cuối" = "Finished — holding the last frame";
 "Đã rút camera" = "Camera unplugged";
 "Đã thêm" = "Added";
 "Đã tạo và đang phát tới" = "Created and streaming to";
@@ -1151,8 +1168,11 @@
 "Đơn cách" = "Monospaced";
 "Đơn đã hết hạn hoặc bị huỷ" = "Order expired or cancelled";
 "Đưa N-Title lên PGM" = "Put N-Title on PGM";
+"Đưa lên PVW" = "Put on PVW";
+"Đưa lên PVW ngay" = "Put on PVW now";
 "Đưa lên Preview" = "Send to Preview";
 "Đưa lên trên cùng" = "Bring to front";
+"Đưa lại lên PVW" = "Put on PVW again";
 "Đưa vào Khung %@" = "Into window %@";
 "Đưa vào khung PiP" = "Into PiP";
 "Đường kẻ" = "Line";
@@ -1169,6 +1189,7 @@
 "Đặt lại đồng hồ" = "Reset clock";
 "Đếm ngược" = "Count down";
 "Đến %@" = "Until %@";
+"Đến giờ hẹn, danh sách lên PVW và dừng ở khung đầu. Hết danh sách thì giữ khung cuối." = "At the scheduled time the list goes to PVW, waiting on its first frame. At the end it holds the last frame.";
 "Địa điểm" = "Location";
 "ĐỒNG HÀNH CÙNG CHƯƠNG TRÌNH" = "PROUDLY SUPPORTED BY";
 "Đồ hoạ HTML5" = "HTML5 graphics";

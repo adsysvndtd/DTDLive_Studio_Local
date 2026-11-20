@@ -283,6 +283,11 @@ final class FileSource: VideoSource {
 
     func play() { player.play(); isPlaying = true }
     func pause() { player.pause(); isPlaying = false }
+    /// Paused on the first frame (shown on PVW, silent) until it is played.
+    func cueAtStart() {
+        player.pause(); isPlaying = false
+        player.seek(to: .zero, toleranceBefore: .zero, toleranceAfter: .zero)
+    }
     func restart() {
         if let b = boundary { player.removeTimeObserver(b); boundary = nil }
         player.seek(to: .zero); player.play(); isPlaying = true

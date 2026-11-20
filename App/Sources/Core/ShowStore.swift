@@ -116,7 +116,7 @@ extension StudioEngine {
             if let z = c.ptz { setPTZ(source.id, z) }
             added.append(source)
         }
-        if let i = show.programIndex, i < added.count { take(added[i].id) }
-        if let i = show.previewIndex, i < added.count { select(added[i].id) }
+        // Opening a show cues its sources; the one that was on air goes to PVW and reaches PGM only with a transition.
+        if let i = show.programIndex ?? show.previewIndex, i < added.count { select(added[i].id) }
     }
 }

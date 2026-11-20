@@ -15,7 +15,7 @@ struct PlayoutSheet: View {
                 statusSection
                 listSection
                 scheduleSection
-                outputsSection
+                flowSection
             }
             .navigationTitle("Danh sách phát")
             .navigationBarTitleDisplayMode(.inline)
@@ -31,7 +31,7 @@ struct PlayoutSheet: View {
         .confirmationDialog("Dừng danh sách phát?", isPresented: $confirmStop, titleVisibility: .visible) {
             Button("Dừng", role: .destructive) { playout.stop() }
         } message: {
-            Text("PGM chuyển về nguồn trước đó.")
+            Text("PGM không tự đổi: nếu danh sách đang trên PGM, hình đứng ở khung hiện tại cho đến khi anh bấm chuyển cảnh.")
         }
     }
 
@@ -42,22 +42,35 @@ struct PlayoutSheet: View {
             switch playout.state {
             case .idle:
                 HStack(spacing: 10) {
-                    bigButton("Bắt đầu ngay", "play.fill", DS.pgm) { playout.startNow() }
+                    bigButton("Đưa lên PVW", "rectangle.on.rectangle", DS.pvw) { playout.cue() }
                     if playout.plan.scheduled {
-                        bigButton("Hẹn giờ phát", "clock.badge.checkmark", DS.accent) { playout.arm() }
+                        bigButton("Hẹn giờ", "clock.badge.checkmark", DS.accent) { playout.arm() }
                     }
                 }
                 .disabled(playout.plan.files.isEmpty)
             case .armed:
                 VStack(alignment: .leading, spacing: 6) {
-                    Label(LF("Sẽ phát lúc %@", Self.dateTime.string(from: playout.plan.startAt)), systemImage: "clock.badge.checkmark")
+                    Label(LF("Lên PVW lúc %@", Self.dateTime.string(from: playout.plan.startAt)), systemImage: "clock.badge.checkmark")
                         .font(.system(size: 15, weight: .semibold)).foregroundStyle(DS.accent)
                     Text(LF("Còn %@", Self.clock(playout.plan.startAt.timeIntervalSince(playout.now))))
                         .font(.system(size: 24, weight: .bold).monospacedDigit())
                 }
                 HStack(spacing: 10) {
-                    bigButton("Bắt đầu ngay", "play.fill", DS.pgm) { playout.startNow() }
+                    bigButton("Đưa lên PVW ngay", "rectangle.on.rectangle", DS.pvw) { playout.cue() }
                     bigButton("Huỷ hẹn giờ", "xmark", DS.surface2) { playout.cancelSchedule() }
+                }
+            case .cued:
+                VStack(alignment: .leading, spacing: 4) {
+                    Label("Sẵn sàng trên PVW", systemImage: "rectangle.on.rectangle").font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(DS.pvw)
+                    Text(verbatim: playout.source?.currentName ?? "").font(.system(size: 14)).lineLimit(1)
+                    Text("Bấm CUT / AUTO / kéo T-bar để đưa lên PGM — danh sách bắt đầu chạy khi lên PGM.")
+                        .font(.system(size: 12)).foregroundStyle(DS.text3)
+                }
+                HStack(spacing: 10) {
+                    bigButton("Clip trước", "backward.end.fill", DS.surface2) { playout.skip(-1) }
+                    bigButton("Clip sau", "forward.end.fill", DS.surface2) { playout.skip(1) }
+                    bigButton("Huỷ", "xmark", DS.surface2) { playout.stop() }
                 }
             case .playing:
                 nowPlaying
@@ -67,9 +80,9 @@ struct PlayoutSheet: View {
                     bigButton("Dừng", "stop.fill", DS.pgm) { confirmStop = true }
                 }
             case .finished:
-                Label("Đã phát hết danh sách", systemImage: "checkmark.circle").foregroundStyle(DS.text2)
+                Label("Đã phát hết — đang giữ khung cuối", systemImage: "checkmark.circle").foregroundStyle(DS.text2)
                 HStack(spacing: 10) {
-                    bigButton("Phát lại từ đầu", "arrow.counterclockwise", DS.accent) { playout.startNow() }
+                    bigButton("Đưa lại lên PVW", "arrow.counterclockwise", DS.pvw) { playout.cue() }
                     bigButton("Đóng danh sách", "xmark", DS.surface2) { playout.stop() }
                 }
             }
@@ -133,7 +146,7 @@ struct PlayoutSheet: View {
     private func row(_ i: Int, _ f: String) -> some View {
         let url = playout.url(f)
         let missing = !playout.exists(f)
-        let current = playout.state == .playing && playout.index == i && playout.source?.urls.count == playout.plan.files.count
+        let current = (playout.state == .playing || playout.state == .cued) && playout.index == i && playout.source?.urls.count == playout.plan.files.count
         return HStack(spacing: 10) {
             Text(verbatim: "\(i + 1)").font(.system(size: 12, weight: .semibold).monospacedDigit())
                 .foregroundStyle(DS.text3).frame(width: 22)
@@ -168,7 +181,7 @@ struct PlayoutSheet: View {
             } label: { Image(systemName: "ellipsis.circle").font(.system(size: 18)).foregroundStyle(DS.text2) }
         }
         .contentShape(Rectangle())
-        .onTapGesture { if playout.state == .playing && !missing { playout.playClip(i) } }
+        .onTapGesture { if (playout.state == .playing || playout.state == .cued) && !missing { playout.playClip(i) } }
     }
 
     private func move(_ i: Int, _ d: Int) {
@@ -188,52 +201,46 @@ struct PlayoutSheet: View {
             .pickerStyle(.segmented)
             .disabled(playout.isActive)
             if playout.plan.scheduled {
-                DatePicker("Giờ bắt đầu", selection: $playout.plan.startAt, in: Date()..., displayedComponents: [.date, .hourAndMinute])
-                    .disabled(playout.state == .armed || playout.state == .playing)
+                DatePicker("Giờ lên PVW", selection: $playout.plan.startAt, in: Date()..., displayedComponents: [.date, .hourAndMinute])
+                    .disabled(playout.state != .idle && playout.state != .finished)
                 if !playout.plan.loop && playout.totalDuration > 0 {
                     LabeledContent("Kết thúc dự kiến",
                                    value: Self.dateTime.string(from: playout.plan.startAt.addingTimeInterval(playout.totalDuration)))
                 }
             }
-            Picker("Khi hết danh sách", selection: $playout.plan.endAction) {
-                ForEach(PlayoutEndAction.allCases) { Text($0.label).tag($0) }
-            }
-            .disabled(playout.plan.loop)
         } header: {
             Text("Lịch phát")
         } footer: {
-            if playout.plan.loop { Text("Đang bật Lặp lại: danh sách phát mãi cho đến khi bấm Dừng.") }
+            if playout.plan.loop {
+                Text("Đang bật Lặp lại: danh sách phát mãi cho đến khi bấm Dừng.")
+            } else {
+                Text("Đến giờ hẹn, danh sách lên PVW và dừng ở khung đầu. Hết danh sách thì giữ khung cuối.")
+            }
         }
     }
 
-    // MARK: Stream connections
+    // MARK: Flow
 
-    private var outputsSection: some View {
+    private var flowSection: some View {
         Section {
-            if engine.outputs.isEmpty {
-                Text("Chưa có kết nối phát. Thêm ở mục Đầu ra (YouTube, Facebook, RTMP, SRT…).")
-                    .font(.system(size: 13)).foregroundStyle(DS.text3)
-            }
-            ForEach(engine.outputs) { c in
-                Toggle(isOn: Binding(get: { playout.plan.outputIDs.contains(c.id) },
-                                     set: { on in
-                                         if on { if !playout.plan.outputIDs.contains(c.id) { playout.plan.outputIDs.append(c.id) } }
-                                         else { playout.plan.outputIDs.removeAll { $0 == c.id } }
-                                     })) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(verbatim: c.name).font(.system(size: 14))
-                        HStack(spacing: 6) {
-                            Text(verbatim: c.proto.label)
-                            Text(verbatim: "· " + (engine.outputStatus[c.id] ?? .idle).text)
-                        }
-                        .font(.system(size: 11)).foregroundStyle(DS.text3)
-                    }
-                }
-            }
+            flowStep("1", "Đưa lên PVW", "Bấm Đưa lên PVW (hoặc đến giờ hẹn): danh sách chờ ở khung đầu.")
+            flowStep("2", "Chuyển cảnh lên PGM", "CUT / AUTO / T-bar / stinger: danh sách bắt đầu chạy.")
+            flowStep("3", "Phát", "Bật kết nối ở mục Đầu ra (YouTube, Facebook, RTMP, SRT…) như bình thường.")
         } header: {
-            Text("Kết nối phát khi bắt đầu")
+            Text("Quy trình")
         } footer: {
-            Text("Các kết nối được chọn tự bật lúc danh sách bắt đầu; kết nối đang phát sẵn được giữ nguyên. Logo, title và bảng tỉ số vẫn hiện trên hình phát.")
+            Text("Bấm vào nguồn hay danh sách chỉ đưa lên PVW; chỉ các nút chuyển cảnh mới đổi PGM. Logo, title và bảng tỉ số vẫn hiện trên hình phát.")
+        }
+    }
+
+    private func flowStep(_ n: String, _ title: String, _ detail: String) -> some View {
+        HStack(alignment: .top, spacing: 10) {
+            Text(verbatim: n).font(.system(size: 12, weight: .bold)).foregroundStyle(.black)
+                .frame(width: 22, height: 22).background(DS.accent, in: Circle())
+            VStack(alignment: .leading, spacing: 2) {
+                Text(LocalizedStringKey(title)).font(.system(size: 14, weight: .semibold))
+                Text(LocalizedStringKey(detail)).font(.system(size: 12)).foregroundStyle(DS.text3)
+            }
         }
     }
 
@@ -337,16 +344,19 @@ struct PlayoutStatusBar: View {
     private var icon: String {
         switch playout.state {
         case .armed: return "clock.badge.checkmark"
+        case .cued: return "rectangle.on.rectangle"
         case .playing: return "play.rectangle.fill"
         default: return "checkmark.circle"
         }
     }
-    private var tint: Color { playout.state == .playing ? DS.pgm : DS.accent }
+    private var tint: Color { playout.state == .playing ? DS.pgm : playout.state == .cued ? DS.pvw : DS.accent }
     private var text: String {
         switch playout.state {
         case .armed:
-            return LF("Danh sách phát: hẹn %@ · còn %@", PlayoutSheet.dateTime.string(from: playout.plan.startAt),
+            return LF("Danh sách phát: lên PVW lúc %@ · còn %@", PlayoutSheet.dateTime.string(from: playout.plan.startAt),
                       PlayoutSheet.clock(playout.plan.startAt.timeIntervalSince(playout.now)))
+        case .cued:
+            return L("Danh sách phát sẵn sàng trên PVW — chuyển cảnh để phát")
         case .playing:
             let n = playout.source?.urls.count ?? 0
             return LF("Danh sách phát %@/%@: %@", "\(playout.index + 1)", "\(n)", playout.source?.currentName ?? "")

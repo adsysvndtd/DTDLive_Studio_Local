@@ -59,11 +59,15 @@
 "Bảng nhập điểm…" = "Bảng nhập điểm…";
 "Bảng tỉ số" = "Bảng tỉ số";
 "Bảng tỉ số (web)" = "Bảng tỉ số (web)";
+"Bấm CUT / AUTO / kéo T-bar để đưa lên PGM — danh sách bắt đầu chạy khi lên PGM." = "Bấm CUT / AUTO / kéo T-bar để đưa lên PGM — danh sách bắt đầu chạy khi lên PGM.";
 "Bấm Phát ở đích vừa tạo; sau 10–20 giây trang xem mới có hình." = "Bấm Phát ở đích vừa tạo; sau 10–20 giây trang xem mới có hình.";
+"Bấm vào nguồn hay danh sách chỉ đưa lên PVW; chỉ các nút chuyển cảnh mới đổi PGM. Logo, title và bảng tỉ số vẫn hiện trên hình phát." = "Bấm vào nguồn hay danh sách chỉ đưa lên PVW; chỉ các nút chuyển cảnh mới đổi PGM. Logo, title và bảng tỉ số vẫn hiện trên hình phát.";
+"Bấm Đưa lên PVW (hoặc đến giờ hẹn): danh sách chờ ở khung đầu." = "Bấm Đưa lên PVW (hoặc đến giờ hẹn): danh sách chờ ở khung đầu.";
 "Bấm “Thêm lớp” để bắt đầu thiết kế" = "Bấm “Thêm lớp” để bắt đầu thiết kế";
 "Bấm ♡ trên một nguồn để thêm vào Yêu thích" = "Bấm ♡ trên một nguồn để thêm vào Yêu thích";
 "BẬT" = "BẬT";
 "Bật bộ đệm replay (60 giây gần nhất)" = "Bật bộ đệm replay (60 giây gần nhất)";
+"Bật kết nối ở mục Đầu ra (YouTube, Facebook, RTMP, SRT…) như bình thường." = "Bật kết nối ở mục Đầu ra (YouTube, Facebook, RTMP, SRT…) như bình thường.";
 "Bật nảy" = "Bật nảy";
 "Bật scopes (Program)" = "Bật scopes (Program)";
 "Bật để xoá phông xanh lá / xanh dương" = "Bật để xoá phông xanh lá / xanh dương";
@@ -96,6 +100,7 @@
 "CAM 3 · Khán giả" = "CAM 3 · Khán giả";
 "CHƯƠNG TRÌNH" = "CHƯƠNG TRÌNH";
 "CHỮ HOA" = "CHỮ HOA";
+"CUT / AUTO / T-bar / stinger: danh sách bắt đầu chạy." = "CUT / AUTO / T-bar / stinger: danh sách bắt đầu chạy.";
 "Camera" = "Camera";
 "Camera / USB-C" = "Camera / USB-C";
 "Camera gửi %@ Mbps — thấp so với bitrate phát %@ Mbps: hình bị nén hai lần nên mờ. Cập nhật DTDLive (tự gửi ~12 Mbps cho 1080p30 qua Wi‑Fi) hoặc tăng bitrate trên DTDLive." = "Camera gửi %@ Mbps — thấp so với bitrate phát %@ Mbps: hình bị nén hai lần nên mờ. Cập nhật DTDLive (tự gửi ~12 Mbps cho 1080p30 qua Wi‑Fi) hoặc tăng bitrate trên DTDLive.";
@@ -108,6 +113,7 @@
 "Chrome xanh" = "Chrome xanh";
 "Chuyển PGM về nguồn trước đó" = "Chuyển PGM về nguồn trước đó";
 "Chuyển cảnh" = "Chuyển cảnh";
+"Chuyển cảnh lên PGM" = "Chuyển cảnh lên PGM";
 "Chuyển khoản ngân hàng (VietQR)" = "Chuyển khoản ngân hàng (VietQR)";
 "Chuyển màu dọc" = "Chuyển màu dọc";
 "Chuyển màu ngang" = "Chuyển màu ngang";
@@ -254,12 +260,17 @@
 "Cỡ logo" = "Cỡ logo";
 "Cỡ tổng thể" = "Cỡ tổng thể";
 "Danh sách bắt đầu trễ %@ phút (ứng dụng không mở đúng giờ)" = "Danh sách bắt đầu trễ %@ phút (ứng dụng không mở đúng giờ)";
+"Danh sách lên PVW trễ %@ phút (ứng dụng không mở đúng giờ)" = "Danh sách lên PVW trễ %@ phút (ứng dụng không mở đúng giờ)";
 "Danh sách phát" = "Danh sách phát";
 "Danh sách phát %@/%@: %@" = "Danh sách phát %@/%@: %@";
 "Danh sách phát chưa có video" = "Danh sách phát chưa có video";
 "Danh sách phát chưa có video (hoặc video đã bị xoá khỏi thư viện)" = "Danh sách phát chưa có video (hoặc video đã bị xoá khỏi thư viện)";
+"Danh sách phát sẵn sàng trên PVW — chuyển cảnh để phát" = "Danh sách phát sẵn sàng trên PVW — chuyển cảnh để phát";
+"Danh sách phát đã hết — giữ khung cuối, bấm chuyển cảnh để rời" = "Danh sách phát đã hết — giữ khung cuối, bấm chuyển cảnh để rời";
+"Danh sách phát đã lên PVW — bấm CUT / AUTO / T-bar để phát lên PGM" = "Danh sách phát đã lên PVW — bấm CUT / AUTO / T-bar để phát lên PGM";
 "Danh sách phát đã phát hết" = "Danh sách phát đã phát hết";
 "Danh sách phát: hẹn %@ · còn %@" = "Danh sách phát: hẹn %@ · còn %@";
+"Danh sách phát: lên PVW lúc %@ · còn %@" = "Danh sách phát: lên PVW lúc %@ · còn %@";
 "Danh sách · %@ video · %@" = "Danh sách · %@ video · %@";
 "Dung lượng" = "Dung lượng";
 "Dày viền" = "Dày viền";
@@ -320,6 +331,7 @@
 "Giờ (trống = giờ thực)" = "Giờ (trống = giờ thực)";
 "Giờ (trống = giờ thực, - = ẩn)" = "Giờ (trống = giờ thực, - = ẩn)";
 "Giờ bắt đầu" = "Giờ bắt đầu";
+"Giờ lên PVW" = "Giờ lên PVW";
 "Giữ %@ giây" = "Giữ %@ giây";
 "Giữ DTDStudio mở trên màn hình cho đến khi phát xong: iPad không cho ứng dụng xử lý hình khi ở nền. Màn hình được giữ sáng tự động." = "Giữ DTDStudio mở trên màn hình cho đến khi phát xong: iPad không cho ứng dụng xử lý hình khi ở nền. Màn hình được giữ sáng tự động.";
 "Giữ hình" = "Giữ hình";
@@ -522,6 +534,7 @@
 "Làm lại" = "Làm lại";
 "Làm mới" = "Làm mới";
 "Lên 1 lớp" = "Lên 1 lớp";
+"Lên PVW lúc %@" = "Lên PVW lúc %@";
 "Lên Preview" = "Lên Preview";
 "Lên sóng" = "Lên sóng";
 "Lên sóng ngay" = "Lên sóng ngay";
@@ -710,6 +723,7 @@
 "Oswald (cao, hẹp)" = "Oswald (cao, hẹp)";
 "PGM" = "PGM";
 "PGM chuyển về nguồn trước đó." = "PGM chuyển về nguồn trước đó.";
+"PGM không tự đổi: nếu danh sách đang trên PGM, hình đứng ở khung hiện tại cho đến khi anh bấm chuyển cảnh." = "PGM không tự đổi: nếu danh sách đang trên PGM, hình đứng ở khung hiện tại cho đến khi anh bấm chuyển cảnh.";
 "PHÁT REPLAY" = "PHÁT REPLAY";
 "PNG có tâm trong suốt, lấy từ thư viện SuperFG" = "PNG có tâm trong suốt, lấy từ thư viện SuperFG";
 "PTZ nguồn PVW" = "PTZ nguồn PVW";
@@ -740,6 +754,7 @@
 "Playfair Display (có chân)" = "Playfair Display (có chân)";
 "Preset: chạm = gọi, giữ = lưu" = "Preset: chạm = gọi, giữ = lưu";
 "QUÉT" = "QUÉT";
+"Quy trình" = "Quy trình";
 "Quyền phá" = "Quyền phá";
 "Quét" = "Quét";
 "Quét bằng app ngân hàng bất kỳ – số tiền và nội dung đã điền sẵn" = "Quét bằng app ngân hàng bất kỳ – số tiền và nội dung đã điền sẵn";
@@ -788,6 +803,7 @@
 "Sắp phát sóng" = "Sắp phát sóng";
 "Sắp xếp" = "Sắp xếp";
 "Sẵn sàng" = "Sẵn sàng";
+"Sẵn sàng trên PVW" = "Sẵn sàng trên PVW";
 "Sẽ phát lúc %@" = "Sẽ phát lúc %@";
 "SỌC" = "SỌC";
 "Sọc" = "Sọc";
@@ -1130,6 +1146,7 @@
 "Đã nạp logo — bấm Logo ở cột phải để lên PGM" = "Đã nạp logo — bấm Logo ở cột phải để lên PGM";
 "Đã nạp — bấm SuperFG On ở cột phải" = "Đã nạp — bấm SuperFG On ở cột phải";
 "Đã phát hết danh sách" = "Đã phát hết danh sách";
+"Đã phát hết — đang giữ khung cuối" = "Đã phát hết — đang giữ khung cuối";
 "Đã rút camera" = "Đã rút camera";
 "Đã thêm" = "Đã thêm";
 "Đã tạo và đang phát tới" = "Đã tạo và đang phát tới";
@@ -1151,8 +1168,11 @@
 "Đơn cách" = "Đơn cách";
 "Đơn đã hết hạn hoặc bị huỷ" = "Đơn đã hết hạn hoặc bị huỷ";
 "Đưa N-Title lên PGM" = "Đưa N-Title lên PGM";
+"Đưa lên PVW" = "Đưa lên PVW";
+"Đưa lên PVW ngay" = "Đưa lên PVW ngay";
 "Đưa lên Preview" = "Đưa lên Preview";
 "Đưa lên trên cùng" = "Đưa lên trên cùng";
+"Đưa lại lên PVW" = "Đưa lại lên PVW";
 "Đưa vào Khung %@" = "Đưa vào Khung %@";
 "Đưa vào khung PiP" = "Đưa vào khung PiP";
 "Đường kẻ" = "Đường kẻ";
@@ -1169,6 +1189,7 @@
 "Đặt lại đồng hồ" = "Đặt lại đồng hồ";
 "Đếm ngược" = "Đếm ngược";
 "Đến %@" = "Đến %@";
+"Đến giờ hẹn, danh sách lên PVW và dừng ở khung đầu. Hết danh sách thì giữ khung cuối." = "Đến giờ hẹn, danh sách lên PVW và dừng ở khung đầu. Hết danh sách thì giữ khung cuối.";
 "Địa điểm" = "Địa điểm";
 "ĐỒNG HÀNH CÙNG CHƯƠNG TRÌNH" = "ĐỒNG HÀNH CÙNG CHƯƠNG TRÌNH";
 "Đồ hoạ HTML5" = "Đồ hoạ HTML5";

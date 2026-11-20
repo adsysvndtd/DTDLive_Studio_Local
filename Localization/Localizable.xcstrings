@@ -12466,6 +12466,216 @@
           }
         }
       }
+    },
+    "Đưa lên PVW": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Put on PVW"
+          }
+        }
+      }
+    },
+    "Lên PVW lúc %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "To PVW at %@"
+          }
+        }
+      }
+    },
+    "Đưa lên PVW ngay": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Put on PVW now"
+          }
+        }
+      }
+    },
+    "Sẵn sàng trên PVW": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ready on PVW"
+          }
+        }
+      }
+    },
+    "Bấm CUT / AUTO / kéo T-bar để đưa lên PGM — danh sách bắt đầu chạy khi lên PGM.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Press CUT / AUTO / pull the T-bar to take it to PGM — the list starts rolling on PGM."
+          }
+        }
+      }
+    },
+    "Đã phát hết — đang giữ khung cuối": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finished — holding the last frame"
+          }
+        }
+      }
+    },
+    "Đưa lại lên PVW": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Put on PVW again"
+          }
+        }
+      }
+    },
+    "PGM không tự đổi: nếu danh sách đang trên PGM, hình đứng ở khung hiện tại cho đến khi anh bấm chuyển cảnh.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PGM does not change by itself: if the list is on PGM, the picture holds until you press a transition."
+          }
+        }
+      }
+    },
+    "Đến giờ hẹn, danh sách lên PVW và dừng ở khung đầu. Hết danh sách thì giữ khung cuối.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "At the scheduled time the list goes to PVW, waiting on its first frame. At the end it holds the last frame."
+          }
+        }
+      }
+    },
+    "Giờ lên PVW": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time to PVW"
+          }
+        }
+      }
+    },
+    "Quy trình": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Workflow"
+          }
+        }
+      }
+    },
+    "Bấm Đưa lên PVW (hoặc đến giờ hẹn): danh sách chờ ở khung đầu.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap Put on PVW (or wait for the scheduled time): the list waits on its first frame."
+          }
+        }
+      }
+    },
+    "Chuyển cảnh lên PGM": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transition to PGM"
+          }
+        }
+      }
+    },
+    "CUT / AUTO / T-bar / stinger: danh sách bắt đầu chạy.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CUT / AUTO / T-bar / stinger: the list starts rolling."
+          }
+        }
+      }
+    },
+    "Bật kết nối ở mục Đầu ra (YouTube, Facebook, RTMP, SRT…) như bình thường.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start the connections in Outputs (YouTube, Facebook, RTMP, SRT…) as usual."
+          }
+        }
+      }
+    },
+    "Bấm vào nguồn hay danh sách chỉ đưa lên PVW; chỉ các nút chuyển cảnh mới đổi PGM. Logo, title và bảng tỉ số vẫn hiện trên hình phát.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tapping a source or the list only puts it on PVW; only the transition buttons change PGM. Logo, titles and scoreboard stay on the output."
+          }
+        }
+      }
+    },
+    "Danh sách phát: lên PVW lúc %@ · còn %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Playlist: to PVW at %@ · in %@"
+          }
+        }
+      }
+    },
+    "Danh sách phát sẵn sàng trên PVW — chuyển cảnh để phát": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Playlist ready on PVW — transition to play"
+          }
+        }
+      }
+    },
+    "Danh sách lên PVW trễ %@ phút (ứng dụng không mở đúng giờ)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The playlist went to PVW %@ min late (the app was not open at the time)"
+          }
+        }
+      }
+    },
+    "Danh sách phát đã lên PVW — bấm CUT / AUTO / T-bar để phát lên PGM": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The playlist is on PVW — press CUT / AUTO / T-bar to play it on PGM"
+          }
+        }
+      }
+    },
+    "Danh sách phát đã hết — giữ khung cuối, bấm chuyển cảnh để rời": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The playlist has finished — holding the last frame, transition to leave it"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

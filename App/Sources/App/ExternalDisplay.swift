@@ -129,8 +129,7 @@ struct MultiviewGrid: View {
                 .overlay { Rectangle().stroke(onPGM ? DS.pgm : onPVW ? DS.pvw : Color.white.opacity(0.25), lineWidth: onPGM || onPVW ? 3 : 1) }
                 .overlay(alignment: .bottomLeading) { tag("\(i + 1)  \(s.name)", color: onPGM ? DS.pgm : onPVW ? DS.pvw : .black.opacity(0.6)) }
                 .contentShape(Rectangle())
-                .onTapGesture(count: 2) { if interactive { engine.take(s.id) } }
-                .onTapGesture { if interactive { engine.select(s.id) } }
+                .onTapGesture { if interactive { engine.select(s.id) } }     // PVW only: PGM changes with a transition
         } else {
             Color(white: 0.06)
                 .frame(width: width, height: h)

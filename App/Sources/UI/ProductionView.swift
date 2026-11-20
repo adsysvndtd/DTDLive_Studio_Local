@@ -856,7 +856,6 @@ struct SourceCell: View {
                 .buttonStyle(.plain)
                 Menu {
                     Button { engine.select(source.id) } label: { Label("Đưa lên Preview", systemImage: "rectangle.on.rectangle") }
-                    Button { engine.take(source.id) } label: { Label("Lên sóng ngay", systemImage: "dot.radiowaves.left.and.right") }
                     Button { engine.setPiP(source.id) } label: { Label("Dùng làm PiP", systemImage: "pip") }
                     Button(action: onAdjust) { Label("Màu, key, PTZ…", systemImage: "slider.horizontal.3") }
                     if let f = source as? FileSource {

@@ -407,7 +407,8 @@ final class StudioEngine: ObservableObject {
         if let s = source as? FileSource { s.onAudio = { a.feed(sourceID: id, name: name, buffer: $0) } }
         if let s = source as? PlaylistSource { s.onAudio = { a.feed(sourceID: id, name: name, buffer: $0) } }
         Task { await source.start(); updateMediaPlayback(); objectWillChange.send() }
-        if programID == nil { switcher.take(source.id) } else if previewID == nil { switcher.setPreview(source.id) }
+        // A new source only goes to PVW (when PVW is empty): PGM changes only with a transition (CUT / AUTO / T-bar).
+        if previewID == nil { switcher.setPreview(source.id) }
         syncState()
     }
 
@@ -515,6 +516,10 @@ final class StudioEngine: ObservableObject {
             let on = active.contains(f.id)
             if on && !f.isPlaying && !f.heldByUser { f.play() } else if !on && f.isPlaying { f.pause() }
         }
+        // a cued playlist starts rolling when a transition puts it on PGM (also inside a layout on PGM)
+        var onAir = tally.program
+        if onAir.contains(layoutSource.id) { onAir.formUnion(layoutSlots.compactMap { $0 }) }
+        playout.programChanged(onAir)
     }
 
     // MARK: Graphics
@@ -535,8 +540,6 @@ final class StudioEngine: ObservableObject {
         let s = FileSource(name: url.deletingPathExtension().lastPathComponent, url: url)
         add(s); select(s.id)
     }
-
-    /// Double-tap on a library item: straight to program (cut).
 
     func cuePicture(_ url: URL) {
         if let id = libraryInput(url, movie: false) { select(id) }
