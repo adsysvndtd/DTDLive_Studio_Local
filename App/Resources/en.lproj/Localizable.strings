@@ -167,6 +167,7 @@
 "Chưa có ảnh — nhập ảnh nền ở mục Ảnh (Thư viện ảnh / Tệp)" = "No pictures — import one in Pictures (Photos / Files)";
 "Chưa có ảnh — nhập ở mục Ảnh" = "No pictures — import in Pictures";
 "Chưa cắm camera USB-C" = "USB-C camera not plugged in";
+"Chưa cắm màn hình ngoài" = "No external display connected";
 "Chưa mở bán trên App Store" = "Not on sale in the App Store yet";
 "Chưa nhập Facebook App ID — vào Cài đặt › Phát trực tiếp, hoặc dùng 'Thêm đích' với stream key Facebook" = "No Facebook App ID — set it in Settings › Live, or use 'Add destination' with a Facebook stream key";
 "Chưa nhập Google OAuth Client ID (iOS) — vào Cài đặt › Phát trực tiếp, hoặc dùng 'Thêm đích' với stream key YouTube" = "No Google OAuth Client ID (iOS) — set it in Settings › Live, or use 'Add destination' with a YouTube stream key";
@@ -265,6 +266,7 @@
 "Cầu lông" = "Badminton";
 "Cập nhật từ Git" = "Update from Git";
 "Cắm camera USB-C hoặc thiết bị capture (UVC) vào iPad — nó hiện ở đây ngay (iPadOS 17 trở lên)." = "Plug a USB-C camera or UVC capture device into the iPad — it shows up here right away (iPadOS 17 or later).";
+"Cắm màn hình / bộ chuyển USB‑C sang HDMI: DTDStudio tự xuất hình đã chọn ra màn ngoài (không phản chiếu màn iPad). Nếu iPad dùng màn ngoài làm màn mở rộng (Stage Manager), mở menu Multiview › Mở cửa sổ xuất hình rồi kéo cửa sổ sang màn ngoài." = "Connect a display or a USB‑C to HDMI adapter: DTDStudio sends the chosen picture to it (not a mirror of the iPad). If the iPad uses it as an extended display (Stage Manager), open Multiview › Open output window and drag the window to that screen.";
 "Cắt (không hiệu ứng)" = "Cut (no effect)";
 "Cổ điển" = "Classic";
 "Cổng RTMP" = "RTMP port";
@@ -608,11 +610,14 @@
 "Mua gói ngày / tháng / năm" = "Buy a day / month / year plan";
 "Mua qua App Store" = "Buy on the App Store";
 "Multiview" = "Multiview";
+"Multiview trên iPad" = "Multiview on iPad";
 "Màn chờ · Quay lại ngay" = "Standby · Be right back";
 "Màn chờ · Sắp bắt đầu" = "Standby · Starting soon";
 "Màn hình" = "Display";
 "Màn hình ngoài" = "External display";
+"Màn hình ngoài (USB‑C / HDMI)" = "External display (USB‑C / HDMI)";
 "Màn ngoài" = "External";
+"Màn ngoài đang là màn mở rộng (Stage Manager): mở cửa sổ xuất hình, kéo sang màn ngoài và phóng to toàn màn hình" = "The external screen is an extended display (Stage Manager): open the output window, drag it to that screen and make it full screen";
 "Màu" = "Colours";
 "Màu & PTZ" = "Colour & PTZ";
 "Màu & hiệu ứng" = "Colour & effects";
@@ -668,6 +673,7 @@
 "Mờ nét" = "Blur";
 "Mở" = "Open";
 "Mở DTDLive (hoặc app hỗ trợ DTD pairing) trên cùng mạng Wi-Fi → chọn DTDStudio → so ID xác nhận → Chấp nhận. Không cần nhập mã." = "Open DTDLive on the same Wi-Fi → pick DTDStudio → compare the confirmation ID → Accept. No code to type.";
+"Mở cửa sổ xuất hình (Stage Manager)" = "Open output window (Stage Manager)";
 "Mở dọc" = "Open vertical";
 "Mở khoá lớp" = "Unlock layer";
 "Mở ngang" = "Open horizontal";
@@ -758,6 +764,7 @@
 "On" = "On";
 "Oswald (cao, hẹp)" = "Oswald (tall, narrow)";
 "PGM" = "PGM";
+"PGM (chỉ hình phát)" = "PGM (program only)";
 "PGM chuyển về nguồn trước đó." = "PGM returns to the previous source.";
 "PGM không tự đổi: nếu danh sách đang trên PGM, hình đứng ở khung hiện tại cho đến khi anh bấm chuyển cảnh." = "PGM does not change by itself: if the list is on PGM, the picture holds until you press a transition.";
 "PHÁT REPLAY" = "PLAY REPLAY";
@@ -1101,6 +1108,7 @@
 "Xoá vĩnh viễn tài khoản này?" = "Delete this account permanently?";
 "Xoá vĩnh viễn tài khoản và dữ liệu đăng nhập. Gói đang dùng trên tài khoản sẽ mất; thuê bao App Store vẫn huỷ trong Cài đặt › Apple ID." = "Permanently deletes the account and its sign-in data. Plans on the account are lost; App Store subscriptions are still cancelled in Settings › Apple ID.";
 "Xuất MP4 vào thư viện" = "Export MP4 to library";
+"Xuất ra màn ngoài" = "Send to external display";
 "Xuất thất bại: %@" = "Export failed: %@";
 "Xuất thất bại: %lf" = "Export failed: %lf";
 "Xuất thất bại: %lld" = "Export failed: %lld";
@@ -1167,6 +1175,8 @@
 "Đang tải giá từ App Store…" = "Loading prices from the App Store…";
 "Đang tải…" = "Loading…";
 "Đang tắt" = "Off";
+"Đang xuất Multiview ra màn ngoài" = "Sending Multiview to the external display";
+"Đang xuất PGM ra màn ngoài" = "Sending PGM to the external display";
 "Đen" = "Black";
 "Điều khiển PTZ" = "PTZ control";
 "Điều khiển bằng VISCA (IP)" = "Control with VISCA (IP)";

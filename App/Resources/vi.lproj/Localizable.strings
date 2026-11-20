@@ -167,6 +167,7 @@
 "Chưa có ảnh — nhập ảnh nền ở mục Ảnh (Thư viện ảnh / Tệp)" = "Chưa có ảnh — nhập ảnh nền ở mục Ảnh (Thư viện ảnh / Tệp)";
 "Chưa có ảnh — nhập ở mục Ảnh" = "Chưa có ảnh — nhập ở mục Ảnh";
 "Chưa cắm camera USB-C" = "Chưa cắm camera USB-C";
+"Chưa cắm màn hình ngoài" = "Chưa cắm màn hình ngoài";
 "Chưa mở bán trên App Store" = "Chưa mở bán trên App Store";
 "Chưa nhập Facebook App ID — vào Cài đặt › Phát trực tiếp, hoặc dùng 'Thêm đích' với stream key Facebook" = "Chưa nhập Facebook App ID — vào Cài đặt › Phát trực tiếp, hoặc dùng 'Thêm đích' với stream key Facebook";
 "Chưa nhập Google OAuth Client ID (iOS) — vào Cài đặt › Phát trực tiếp, hoặc dùng 'Thêm đích' với stream key YouTube" = "Chưa nhập Google OAuth Client ID (iOS) — vào Cài đặt › Phát trực tiếp, hoặc dùng 'Thêm đích' với stream key YouTube";
@@ -265,6 +266,7 @@
 "Cầu lông" = "Cầu lông";
 "Cập nhật từ Git" = "Cập nhật từ Git";
 "Cắm camera USB-C hoặc thiết bị capture (UVC) vào iPad — nó hiện ở đây ngay (iPadOS 17 trở lên)." = "Cắm camera USB-C hoặc thiết bị capture (UVC) vào iPad — nó hiện ở đây ngay (iPadOS 17 trở lên).";
+"Cắm màn hình / bộ chuyển USB‑C sang HDMI: DTDStudio tự xuất hình đã chọn ra màn ngoài (không phản chiếu màn iPad). Nếu iPad dùng màn ngoài làm màn mở rộng (Stage Manager), mở menu Multiview › Mở cửa sổ xuất hình rồi kéo cửa sổ sang màn ngoài." = "Cắm màn hình / bộ chuyển USB‑C sang HDMI: DTDStudio tự xuất hình đã chọn ra màn ngoài (không phản chiếu màn iPad). Nếu iPad dùng màn ngoài làm màn mở rộng (Stage Manager), mở menu Multiview › Mở cửa sổ xuất hình rồi kéo cửa sổ sang màn ngoài.";
 "Cắt (không hiệu ứng)" = "Cắt (không hiệu ứng)";
 "Cổ điển" = "Cổ điển";
 "Cổng RTMP" = "Cổng RTMP";
@@ -608,11 +610,14 @@
 "Mua gói ngày / tháng / năm" = "Mua gói ngày / tháng / năm";
 "Mua qua App Store" = "Mua qua App Store";
 "Multiview" = "Multiview";
+"Multiview trên iPad" = "Multiview trên iPad";
 "Màn chờ · Quay lại ngay" = "Màn chờ · Quay lại ngay";
 "Màn chờ · Sắp bắt đầu" = "Màn chờ · Sắp bắt đầu";
 "Màn hình" = "Màn hình";
 "Màn hình ngoài" = "Màn hình ngoài";
+"Màn hình ngoài (USB‑C / HDMI)" = "Màn hình ngoài (USB‑C / HDMI)";
 "Màn ngoài" = "Màn ngoài";
+"Màn ngoài đang là màn mở rộng (Stage Manager): mở cửa sổ xuất hình, kéo sang màn ngoài và phóng to toàn màn hình" = "Màn ngoài đang là màn mở rộng (Stage Manager): mở cửa sổ xuất hình, kéo sang màn ngoài và phóng to toàn màn hình";
 "Màu" = "Màu";
 "Màu & PTZ" = "Màu & PTZ";
 "Màu & hiệu ứng" = "Màu & hiệu ứng";
@@ -668,6 +673,7 @@
 "Mờ nét" = "Mờ nét";
 "Mở" = "Mở";
 "Mở DTDLive (hoặc app hỗ trợ DTD pairing) trên cùng mạng Wi-Fi → chọn DTDStudio → so ID xác nhận → Chấp nhận. Không cần nhập mã." = "Mở DTDLive (hoặc app hỗ trợ DTD pairing) trên cùng mạng Wi-Fi → chọn DTDStudio → so ID xác nhận → Chấp nhận. Không cần nhập mã.";
+"Mở cửa sổ xuất hình (Stage Manager)" = "Mở cửa sổ xuất hình (Stage Manager)";
 "Mở dọc" = "Mở dọc";
 "Mở khoá lớp" = "Mở khoá lớp";
 "Mở ngang" = "Mở ngang";
@@ -758,6 +764,7 @@
 "On" = "On";
 "Oswald (cao, hẹp)" = "Oswald (cao, hẹp)";
 "PGM" = "PGM";
+"PGM (chỉ hình phát)" = "PGM (chỉ hình phát)";
 "PGM chuyển về nguồn trước đó." = "PGM chuyển về nguồn trước đó.";
 "PGM không tự đổi: nếu danh sách đang trên PGM, hình đứng ở khung hiện tại cho đến khi anh bấm chuyển cảnh." = "PGM không tự đổi: nếu danh sách đang trên PGM, hình đứng ở khung hiện tại cho đến khi anh bấm chuyển cảnh.";
 "PHÁT REPLAY" = "PHÁT REPLAY";
@@ -1101,6 +1108,7 @@
 "Xoá vĩnh viễn tài khoản này?" = "Xoá vĩnh viễn tài khoản này?";
 "Xoá vĩnh viễn tài khoản và dữ liệu đăng nhập. Gói đang dùng trên tài khoản sẽ mất; thuê bao App Store vẫn huỷ trong Cài đặt › Apple ID." = "Xoá vĩnh viễn tài khoản và dữ liệu đăng nhập. Gói đang dùng trên tài khoản sẽ mất; thuê bao App Store vẫn huỷ trong Cài đặt › Apple ID.";
 "Xuất MP4 vào thư viện" = "Xuất MP4 vào thư viện";
+"Xuất ra màn ngoài" = "Xuất ra màn ngoài";
 "Xuất thất bại: %@" = "Xuất thất bại: %@";
 "Xuất thất bại: %lf" = "Xuất thất bại: %lf";
 "Xuất thất bại: %lld" = "Xuất thất bại: %lld";
@@ -1167,6 +1175,8 @@
 "Đang tải giá từ App Store…" = "Đang tải giá từ App Store…";
 "Đang tải…" = "Đang tải…";
 "Đang tắt" = "Đang tắt";
+"Đang xuất Multiview ra màn ngoài" = "Đang xuất Multiview ra màn ngoài";
+"Đang xuất PGM ra màn ngoài" = "Đang xuất PGM ra màn ngoài";
 "Đen" = "Đen";
 "Điều khiển PTZ" = "Điều khiển PTZ";
 "Điều khiển bằng VISCA (IP)" = "Điều khiển bằng VISCA (IP)";

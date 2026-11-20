@@ -13306,6 +13306,106 @@
           }
         }
       }
+    },
+    "Multiview trên iPad": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Multiview on iPad"
+          }
+        }
+      }
+    },
+    "Màn hình ngoài (USB‑C / HDMI)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "External display (USB‑C / HDMI)"
+          }
+        }
+      }
+    },
+    "Xuất ra màn ngoài": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Send to external display"
+          }
+        }
+      }
+    },
+    "PGM (chỉ hình phát)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PGM (program only)"
+          }
+        }
+      }
+    },
+    "Mở cửa sổ xuất hình (Stage Manager)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open output window (Stage Manager)"
+          }
+        }
+      }
+    },
+    "Đang xuất PGM ra màn ngoài": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sending PGM to the external display"
+          }
+        }
+      }
+    },
+    "Đang xuất Multiview ra màn ngoài": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sending Multiview to the external display"
+          }
+        }
+      }
+    },
+    "Màn ngoài đang là màn mở rộng (Stage Manager): mở cửa sổ xuất hình, kéo sang màn ngoài và phóng to toàn màn hình": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The external screen is an extended display (Stage Manager): open the output window, drag it to that screen and make it full screen"
+          }
+        }
+      }
+    },
+    "Chưa cắm màn hình ngoài": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No external display connected"
+          }
+        }
+      }
+    },
+    "Cắm màn hình / bộ chuyển USB‑C sang HDMI: DTDStudio tự xuất hình đã chọn ra màn ngoài (không phản chiếu màn iPad). Nếu iPad dùng màn ngoài làm màn mở rộng (Stage Manager), mở menu Multiview › Mở cửa sổ xuất hình rồi kéo cửa sổ sang màn ngoài.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connect a display or a USB‑C to HDMI adapter: DTDStudio sends the chosen picture to it (not a mirror of the iPad). If the iPad uses it as an extended display (Stage Manager), open Multiview › Open output window and drag the window to that screen."
+          }
+        }
+      }
     }
   },
   "version": "1.0"

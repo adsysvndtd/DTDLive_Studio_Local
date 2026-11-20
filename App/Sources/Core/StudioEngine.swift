@@ -184,7 +184,10 @@ final class StudioEngine: ObservableObject {
     @Published var scopesEnabled = false
     var scopeResult: ScopeAnalyzer.Result { meters.scope }
     @Published var ptz: [UUID: PTZConfig] = [:]
-    @Published var externalMode: ExternalMode = .program
+    /// What the HDMI / USB‑C display shows (kept across launches).
+    @Published var externalMode: ExternalMode = ExternalMode(rawValue: UserDefaults.standard.string(forKey: "dtd.external.mode") ?? "") ?? .program {
+        didSet { UserDefaults.standard.set(externalMode.rawValue, forKey: "dtd.external.mode") }
+    }
     /// Number of input tiles in the multiview (fixed slots; inputs beyond them are not shown).
     enum MultiviewLayout: Int, CaseIterable, Identifiable {
         case four = 4, eight = 8, ten = 10, sixteen = 16
@@ -196,7 +199,20 @@ final class StudioEngine: ObservableObject {
     @Published var multiviewLayout: MultiviewLayout = MultiviewLayout(rawValue: UserDefaults.standard.integer(forKey: "dtd.multiview.layout")) ?? .eight {
         didSet { UserDefaults.standard.set(multiviewLayout.rawValue, forKey: "dtd.multiview.layout") }
     }
+    /// DTDStudio owns the external display (its own scene, not mirroring).
     @Published var externalDisplayConnected = false
+    /// A second screen is attached at all (also when iPadOS uses it as an extended Stage Manager display,
+    /// where apps get no external scene: the "PGM output" window is moved there instead).
+    @Published var externalScreenPresent = UIScreen.screens.count > 1
+    private var screenObservers: [NSObjectProtocol] = []
+    func watchScreens() {
+        guard screenObservers.isEmpty else { return }
+        for n in [UIScreen.didConnectNotification, UIScreen.didDisconnectNotification] {
+            screenObservers.append(NotificationCenter.default.addObserver(forName: n, object: nil, queue: .main) { [weak self] _ in
+                MainActor.assumeIsolated { self?.externalScreenPresent = UIScreen.screens.count > 1 }
+            })
+        }
+    }
     @Published private(set) var canUndo = false
     @Published private(set) var canRedo = false
     /// Bitrate actually in use (adaptive bitrate may lower it below `encoder.bitrate`).

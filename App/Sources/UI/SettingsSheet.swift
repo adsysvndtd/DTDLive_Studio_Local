@@ -102,12 +102,12 @@ struct SettingsForm: View {
                     Toggle("Luôn giữ màn hình sáng", isOn: $engine.keepScreenOn)
                     Text("Tắt (tiết kiệm pin): màn hình chỉ luôn sáng khi đang phát / ghi; lúc khác iPad tự khoá theo Tự động khoá. Khi app ở nền hoặc màn hình tắt mà không phát, sau 15 giây app dừng camera, micro, xử lý hình và kết nối để không tốn pin; mở lại app là chạy tiếp.")
                         .font(.caption2).foregroundStyle(DS.text3)
-                    if engine.externalDisplayConnected {
-                        Picker("Màn hình ngoài", selection: $engine.externalMode) {
-                            Text("Program").tag(StudioEngine.ExternalMode.program)
-                            Text("Multiview").tag(StudioEngine.ExternalMode.multiview)
-                        }
+                    Picker("Màn hình ngoài (USB‑C / HDMI)", selection: $engine.externalMode) {
+                        Text("PGM (chỉ hình phát)").tag(StudioEngine.ExternalMode.program)
+                        Text("Multiview").tag(StudioEngine.ExternalMode.multiview)
                     }
+                    Text("Cắm màn hình / bộ chuyển USB‑C sang HDMI: DTDStudio tự xuất hình đã chọn ra màn ngoài (không phản chiếu màn iPad). Nếu iPad dùng màn ngoài làm màn mở rộng (Stage Manager), mở menu Multiview › Mở cửa sổ xuất hình rồi kéo cửa sổ sang màn ngoài.")
+                        .font(.caption2).foregroundStyle(DS.text3)
                 }
                 Section(header: SettingsHeader("Nhận camera: SRT · RTMP · RTSP · DTDLive")) {
                     IngestSettingsRows(ingest: engine.ingest)

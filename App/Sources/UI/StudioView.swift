@@ -19,6 +19,7 @@ struct StudioView: View {
     @State private var arranging = false
     @State private var showSettings = false
     @Environment(\.verticalSizeClass) private var vSize
+    @Environment(\.openWindow) private var openWindow
 
     /// iPhone (or any height-compact window): smaller chrome, same structure.
     private var compact: Bool { vSize == .compact || UIDevice.current.userInterfaceIdiom == .phone }
@@ -119,17 +120,24 @@ struct StudioView: View {
             barButton("arrow.uturn.forward", "Làm lại") { engine.redo() }.disabled(!engine.canRedo).opacity(engine.canRedo ? 1 : 0.4)
                 .keyboardShortcut("z", modifiers: [.command, .shift])
             barButton(engine.isRecording ? "record.circle.fill" : "record.circle", "Ghi", tint: engine.isRecording ? DS.pgm : .white) { engine.toggleRecording() }
-            barButton("square.grid.3x3", "Multiview") { showMultiview = true }
+            Menu {
+                Button { showMultiview = true } label: { Label("Multiview trên iPad", systemImage: "square.grid.3x3") }
+                Section(L("Màn hình ngoài (USB‑C / HDMI)")) {
+                    Picker("Xuất ra màn ngoài", selection: $engine.externalMode) {
+                        Label("PGM (chỉ hình phát)", systemImage: "play.rectangle").tag(StudioEngine.ExternalMode.program)
+                        Label("Multiview", systemImage: "square.grid.3x3").tag(StudioEngine.ExternalMode.multiview)
+                    }
+                    Button { openWindow(id: "pgm-output") } label: {
+                        Label("Mở cửa sổ xuất hình (Stage Manager)", systemImage: "macwindow.on.rectangle")
+                    }
+                    Text(externalStatus)
+                }
+            } label: {
+                barLabel(engine.externalDisplayConnected ? "tv.fill" : "square.grid.3x3", "Multiview",
+                         tint: engine.externalDisplayConnected ? DS.pgm : .white)
+            }
             barButton("folder", "Show") { showShows = true }
             barButton("gearshape", "Cài đặt") { showSettings = true }
-            if engine.externalDisplayConnected {
-                Menu {
-                    Picker("Màn ngoài", selection: $engine.externalMode) {
-                        Text("Program").tag(StudioEngine.ExternalMode.program)
-                        Text("Multiview").tag(StudioEngine.ExternalMode.multiview)
-                    }
-                } label: { barLabel("tv", "Màn ngoài") }
-            }
             Button { showOutputs = true } label: {
                 Label(LocalizedStringKey(engine.isAnyLive ? "Đang phát" : (compact ? "Phát" : "Phát trực tiếp")), systemImage: "dot.radiowaves.left.and.right")
                     .font(.caption.weight(.bold)).lineLimit(1).fixedSize()
@@ -141,6 +149,17 @@ struct StudioView: View {
         }
         .padding(.horizontal, 10).frame(height: compact ? 32 : 44)
         .background(DS.surface)
+    }
+
+    /// One line on what the external screen is doing.
+    private var externalStatus: String {
+        if engine.externalDisplayConnected {
+            return engine.externalMode == .program ? L("Đang xuất PGM ra màn ngoài") : L("Đang xuất Multiview ra màn ngoài")
+        }
+        if engine.externalScreenPresent {
+            return L("Màn ngoài đang là màn mở rộng (Stage Manager): mở cửa sổ xuất hình, kéo sang màn ngoài và phóng to toàn màn hình")
+        }
+        return L("Chưa cắm màn hình ngoài")
     }
 
     private func barButton(_ icon: String, _ title: String, tint: Color = .white, action: @escaping () -> Void) -> some View {
