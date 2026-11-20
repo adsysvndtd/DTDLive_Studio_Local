@@ -219,7 +219,7 @@ final class StudioEngine: ObservableObject {
     @Published private(set) var currentBitrate = EncoderSettings().bitrate
     private var calmSeconds = 0
 
-    enum ExternalMode: String, CaseIterable { case program, multiview }
+    enum ExternalMode: String, CaseIterable { case program, multiview, mirror }
 
     // MARK: Pipeline
     let switcher = Switcher()

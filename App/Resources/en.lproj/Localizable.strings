@@ -618,6 +618,7 @@
 "Màn hình ngoài (USB‑C / HDMI)" = "External display (USB‑C / HDMI)";
 "Màn ngoài" = "External";
 "Màn ngoài đang là màn mở rộng (Stage Manager): mở cửa sổ xuất hình, kéo sang màn ngoài và phóng to toàn màn hình" = "The external screen is an extended display (Stage Manager): open the output window, drag it to that screen and make it full screen";
+"Màn ngoài đang phản chiếu màn iPad" = "The external display mirrors the iPad screen";
 "Màu" = "Colours";
 "Màu & PTZ" = "Colour & PTZ";
 "Màu & hiệu ứng" = "Colour & effects";
@@ -792,6 +793,7 @@
 "Phút %lld" = "Minutes %lld";
 "Phơi sáng" = "Exposure";
 "Phải" = "Right";
+"Phản chiếu màn iPad" = "Mirror the iPad screen";
 "Phản hồi không hợp lệ" = "Invalid response";
 "Phản hồi máy chủ không hợp lệ" = "Invalid server response";
 "Phần phông xanh được thay bằng màu này." = "The green screen is replaced by this colour.";

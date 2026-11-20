@@ -81,6 +81,8 @@ struct StudioView: View {
         .sheet(isPresented: $showOutputs) { OutputsSheet(engine: engine) }
         .sheet(isPresented: $showShows) { ShowsSheet(engine: engine) }
         .fullScreenCover(isPresented: $showMultiview) { MultiviewScreen(engine: engine) }
+        // iOS 27+: registers the external-display content (otherwise the HDMI screen only mirrors the iPad)
+        .background(ExternalDisplayAccessory(engine: engine).frame(width: 0, height: 0).allowsHitTesting(false))
         .sheet(isPresented: $showSettings) { SettingsSheet(engine: engine) }
         .alert(engine.message ?? "", isPresented: Binding(get: { engine.message != nil }, set: { if !$0 { engine.message = nil } })) {
             Button("OK", role: .cancel) {}
@@ -126,6 +128,7 @@ struct StudioView: View {
                     Picker("Xuất ra màn ngoài", selection: $engine.externalMode) {
                         Label("PGM (chỉ hình phát)", systemImage: "play.rectangle").tag(StudioEngine.ExternalMode.program)
                         Label("Multiview", systemImage: "square.grid.3x3").tag(StudioEngine.ExternalMode.multiview)
+                        Label("Phản chiếu màn iPad", systemImage: "rectangle.on.rectangle").tag(StudioEngine.ExternalMode.mirror)
                     }
                     Button { openWindow(id: "pgm-output") } label: {
                         Label("Mở cửa sổ xuất hình (Stage Manager)", systemImage: "macwindow.on.rectangle")
@@ -153,6 +156,9 @@ struct StudioView: View {
 
     /// One line on what the external screen is doing.
     private var externalStatus: String {
+        if engine.externalMode == .mirror {
+            return engine.externalScreenPresent ? L("Màn ngoài đang phản chiếu màn iPad") : L("Chưa cắm màn hình ngoài")
+        }
         if engine.externalDisplayConnected {
             return engine.externalMode == .program ? L("Đang xuất PGM ra màn ngoài") : L("Đang xuất Multiview ra màn ngoài")
         }

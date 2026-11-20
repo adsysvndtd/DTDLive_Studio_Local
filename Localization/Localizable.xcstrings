@@ -13416,6 +13416,26 @@
           }
         }
       }
+    },
+    "Phản chiếu màn iPad": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mirror the iPad screen"
+          }
+        }
+      }
+    },
+    "Màn ngoài đang phản chiếu màn iPad": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The external display mirrors the iPad screen"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

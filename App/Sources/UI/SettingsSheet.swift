@@ -105,6 +105,7 @@ struct SettingsForm: View {
                     Picker("Màn hình ngoài (USB‑C / HDMI)", selection: $engine.externalMode) {
                         Text("PGM (chỉ hình phát)").tag(StudioEngine.ExternalMode.program)
                         Text("Multiview").tag(StudioEngine.ExternalMode.multiview)
+                        Text("Phản chiếu màn iPad").tag(StudioEngine.ExternalMode.mirror)
                     }
                     Text("Cắm màn hình / bộ chuyển USB‑C sang HDMI: DTDStudio tự xuất hình đã chọn ra màn ngoài (không phản chiếu màn iPad). Nếu iPad dùng màn ngoài làm màn mở rộng (Stage Manager), mở menu Multiview › Mở cửa sổ xuất hình rồi kéo cửa sổ sang màn ngoài.")
                         .font(.caption2).foregroundStyle(DS.text3)

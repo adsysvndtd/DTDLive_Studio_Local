@@ -618,6 +618,7 @@
 "Màn hình ngoài (USB‑C / HDMI)" = "Màn hình ngoài (USB‑C / HDMI)";
 "Màn ngoài" = "Màn ngoài";
 "Màn ngoài đang là màn mở rộng (Stage Manager): mở cửa sổ xuất hình, kéo sang màn ngoài và phóng to toàn màn hình" = "Màn ngoài đang là màn mở rộng (Stage Manager): mở cửa sổ xuất hình, kéo sang màn ngoài và phóng to toàn màn hình";
+"Màn ngoài đang phản chiếu màn iPad" = "Màn ngoài đang phản chiếu màn iPad";
 "Màu" = "Màu";
 "Màu & PTZ" = "Màu & PTZ";
 "Màu & hiệu ứng" = "Màu & hiệu ứng";
@@ -792,6 +793,7 @@
 "Phút %lld" = "Phút %lld";
 "Phơi sáng" = "Phơi sáng";
 "Phải" = "Phải";
+"Phản chiếu màn iPad" = "Phản chiếu màn iPad";
 "Phản hồi không hợp lệ" = "Phản hồi không hợp lệ";
 "Phản hồi máy chủ không hợp lệ" = "Phản hồi máy chủ không hợp lệ";
 "Phần phông xanh được thay bằng màu này." = "Phần phông xanh được thay bằng màu này.";
