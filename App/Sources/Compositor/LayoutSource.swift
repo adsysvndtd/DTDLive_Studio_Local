@@ -90,9 +90,10 @@ final class LayoutSource: VideoSource {
     private let queue = DispatchQueue(label: "layout.render", qos: .userInteractive)
 
     func configure(template: LayoutTemplate, inputs: [FrameStore?], size: CGSize, background: FrameStore?,
-                   still: CIImage? = nil, color: CIColor? = nil, frame: LayoutFrame = LayoutFrame(), frameImage: CIImage? = nil) {
+                   still: CIImage? = nil, color: CIColor? = nil, frame: LayoutFrame = LayoutFrame(), frameImage: CIImage? = nil,
+                   slotStills: [Int: CIImage] = [:]) {
         renderer.update(template: template, inputs: inputs, size: size, background: background, still: still, color: color,
-                        frame: frame, frameImage: frameImage)
+                        frame: frame, frameImage: frameImage, slotStills: slotStills)
         name = "BỐ CỤC \(template.id)"
     }
 
@@ -128,6 +129,8 @@ final class LayoutRenderer: @unchecked Sendable {
     private var size = CGSize(width: 1920, height: 1080)
     private var frame = LayoutFrame()
     private var frameImage: CIImage?
+    /// Pictures shown in windows that have no input (e.g. the picture under the replay PiP).
+    private var slotStills: [Int: CIImage] = [:]
     fileprivate var frameCache: [String: CIImage] = [:]
     private var pool: CVPixelBufferPool?
     private let ci = CIContext(options: [.cacheIntermediates: false])
@@ -137,8 +140,10 @@ final class LayoutRenderer: @unchecked Sendable {
     func setActive(_ on: Bool) { os_unfair_lock_lock(&lock); active = on; os_unfair_lock_unlock(&lock) }
 
     func update(template: LayoutTemplate, inputs: [FrameStore?], size: CGSize, background: FrameStore?,
-                still: CIImage? = nil, color: CIColor? = nil, frame: LayoutFrame = LayoutFrame(), frameImage: CIImage? = nil) {
+                still: CIImage? = nil, color: CIColor? = nil, frame: LayoutFrame = LayoutFrame(), frameImage: CIImage? = nil,
+                slotStills: [Int: CIImage] = [:]) {
         os_unfair_lock_lock(&lock)
+        self.slotStills = slotStills
         if size != self.size { pool = nil }
         if frame != self.frame || frameImage !== self.frameImage { frameCache.removeAll() }
         self.frame = frame; self.frameImage = frameImage
@@ -150,6 +155,7 @@ final class LayoutRenderer: @unchecked Sendable {
     func render() -> CVPixelBuffer? {
         os_unfair_lock_lock(&lock)
         let t = template, ins = inputs, bg = background, sz = size, stillImg = still, bgColor = color, fr = frame, frImg = frameImage
+        let stills = slotStills
         if pool == nil {
             let attrs: [String: Any] = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA,
                                         kCVPixelBufferWidthKey as String: Int(sz.width), kCVPixelBufferHeightKey as String: Int(sz.height),
@@ -184,8 +190,9 @@ final class LayoutRenderer: @unchecked Sendable {
             let r = CGRect(x: slot.rect.minX * sz.width, y: (1 - slot.rect.maxY) * sz.height,
                            width: slot.rect.width * sz.width, height: slot.rect.height * sz.height)
             var tile: CIImage
-            if i < ins.count, let buf = ins[i]?.latest() {
-                let img = CIImage(cvPixelBuffer: buf)
+            let input: CIImage? = (i < ins.count ? ins[i]?.latest().map { CIImage(cvPixelBuffer: $0) } : nil)
+                ?? stills[i].map { $0.transformed(by: CGAffineTransform(translationX: -$0.extent.minX, y: -$0.extent.minY)) }
+            if let img = input {
                 // Aspect fill into the slot, centre-cropped — except a portrait (9:16) source in a landscape window:
                 // that one is shown whole, never cut down to a strip, with black bars at the sides.
                 let portraitInLandscape = img.extent.height > img.extent.width && r.width > r.height
@@ -207,7 +214,9 @@ final class LayoutRenderer: @unchecked Sendable {
                 tile = f.outputImage ?? tile
             }
             out = tile.composited(over: out)
-            if !slot.perspective, let f = frameOverlay(fr, image: frImg, rect: r, canvas: sz) {
+            // no decorative frame around a full-frame window (the live picture under a PiP)
+            let fullFrame = slot.rect.width >= 0.999 && slot.rect.height >= 0.999
+            if !slot.perspective, !fullFrame, let f = frameOverlay(fr, image: frImg, rect: r, canvas: sz) {
                 out = f.composited(over: out)
             }
         }

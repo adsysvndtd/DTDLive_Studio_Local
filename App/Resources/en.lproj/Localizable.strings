@@ -216,6 +216,7 @@
 "Chọn ít nhất một nền tảng" = "Pick at least one platform";
 "Chọn ảnh / logo" = "Choose image / logo";
 "Chọn ảnh làm nền" = "Choose background picture";
+"Chọn ảnh trong thư viện" = "Choose a picture from the library";
 "Chống rung" = "Stabilization";
 "Chồng giờ với khung sau" = "Overlaps the next slot";
 "Chớp sáng" = "Flash";
@@ -278,6 +279,7 @@
 "Cỡ %@%% bề rộng" = "Size %@%% of width";
 "Cỡ chữ" = "Text size";
 "Cỡ khung" = "Window size";
+"Cỡ khung PiP" = "PiP size";
 "Cỡ logo" = "Logo size";
 "Cỡ tổng thể" = "Overall size";
 "Danh sách" = "List";
@@ -429,6 +431,7 @@
 "Hình bầu dục" = "Ellipse";
 "Hình chữ nhật" = "Rectangle";
 "Hình học" = "Geometry";
+"Hình đang phát vẫn toàn khung; replay hiện trong khung PiP 16:9, bên dưới có thể thêm một input hoặc ảnh 16:9. Hết replay, khung PiP tự hạ." = "The live picture stays full frame; the replay shows in a 16:9 PiP window, with an optional 16:9 input or picture below it. When the replay ends the PiP comes down.";
 "Hơi đậm" = "Semibold";
 "Hạ replay" = "Take replay down";
 "Hằng ngày" = "Every day";
@@ -444,7 +447,10 @@
 "Hội ý mỗi set: %lld" = "Timeouts per set: %lld";
 "ID xác nhận" = "Confirmation ID";
 "IN HOA" = "UPPERCASE";
+"INPUT" = "INPUT";
 "IP camera" = "Camera IP";
+"Input" = "Input";
+"Input: nguồn đang ở PVW" = "Input: source on PVW";
 "Khi bấm Bắt đầu" = "When I tap Start";
 "Khi hoà" = "If tied";
 "Khi hết danh sách" = "When the list ends";
@@ -459,6 +465,7 @@
 "Khung an toàn trên màn hình ngoài" = "Safe area on external display";
 "Khung bản tin trực tiếp · Xanh" = "Live news frame · Blue";
 "Khung bản tin trực tiếp · Đỏ" = "Live news frame · Red";
+"Khung dưới replay" = "Window below the replay";
 "Khung giờ" = "Time slot";
 "Khung hình hỏng bị bỏ qua" = "Broken frames skipped";
 "Khung hình/giây: dựng %@ · vào mã hoá %@ · ra %@ · dựng TB %@ ms, max %@ ms, quá hạn %@ · %@×%@ %@/%@ kbps%@" = "Frames/s: rendered %@ · into encoder %@ · out %@ · render avg %@ ms, max %@ ms, late %@ · %@×%@ %@/%@ kbps%@";
@@ -704,6 +711,7 @@
 "Nguồn đang chỉnh" = "Adjusting";
 "Nguồn đang có" = "Current inputs";
 "Nguồn đang phát trước replay" = "Source on air before the replay";
+"Nguồn đang ở PVW" = "Source on PVW";
 "Nguồn đã bị xoá" = "Input removed";
 "Ngân hàng" = "Bank";
 "Ngôn ngữ" = "Language";
@@ -801,6 +809,8 @@
 "Phút %lld" = "Minutes %lld";
 "Phơi sáng" = "Exposure";
 "Phải" = "Right";
+"Phải dưới" = "Bottom right";
+"Phải trên" = "Top right";
 "Phản chiếu màn iPad" = "Mirror the iPad screen";
 "Phản hồi không hợp lệ" = "Invalid response";
 "Phản hồi máy chủ không hợp lệ" = "Invalid server response";
@@ -809,6 +819,7 @@
 "Phần tử có data-field=\"tên\" sẽ thành ô sửa chữ; biến màu CSS (--accent: #…) thành ô chọn màu." = "Elements with data-field=\"name\" become text fields; CSS colour variables (--accent: #…) become colour pickers.";
 "Phẳng (theo mẫu)" = "Flat (template)";
 "PiP 16:9" = "PiP 16:9";
+"PiP replay" = "Replay PiP";
 "PiP trên Program" = "PiP on Program";
 "Playfair Display (có chân)" = "Playfair Display (serif)";
 "Preset: chạm = gọi, giữ = lưu" = "Presets: tap = recall, hold = store";
@@ -978,6 +989,8 @@
 "Trong suốt" = "Transparent";
 "Trong suốt: phần phông xanh để trống — dùng khi nguồn này làm lớp chồng (PiP / layout / key)." = "Transparent: the green screen is left empty — use it when this input is an overlay (PiP / layout / key).";
 "Trái" = "Left";
+"Trái dưới" = "Bottom left";
+"Trái trên" = "Top left";
 "Trên PGM" = "On PGM";
 "Trên cùng" = "Top";
 "Trên giữa" = "Top centre";
@@ -1322,6 +1335,7 @@
 "Đội khách" = "Away";
 "Đội nhà" = "Home";
 "đang mở cổng…" = "opening port…";
+"ẢNH" = "PICTURE";
 "Ảnh" = "Pictures";
 "Ảnh / logo" = "Image / logo";
 "Ảnh / video từ Thư viện ảnh" = "Photo / video from Photos";

@@ -216,6 +216,7 @@
 "Chọn ít nhất một nền tảng" = "Chọn ít nhất một nền tảng";
 "Chọn ảnh / logo" = "Chọn ảnh / logo";
 "Chọn ảnh làm nền" = "Chọn ảnh làm nền";
+"Chọn ảnh trong thư viện" = "Chọn ảnh trong thư viện";
 "Chống rung" = "Chống rung";
 "Chồng giờ với khung sau" = "Chồng giờ với khung sau";
 "Chớp sáng" = "Chớp sáng";
@@ -278,6 +279,7 @@
 "Cỡ %@%% bề rộng" = "Cỡ %@%% bề rộng";
 "Cỡ chữ" = "Cỡ chữ";
 "Cỡ khung" = "Cỡ khung";
+"Cỡ khung PiP" = "Cỡ khung PiP";
 "Cỡ logo" = "Cỡ logo";
 "Cỡ tổng thể" = "Cỡ tổng thể";
 "Danh sách" = "Danh sách";
@@ -429,6 +431,7 @@
 "Hình bầu dục" = "Hình bầu dục";
 "Hình chữ nhật" = "Hình chữ nhật";
 "Hình học" = "Hình học";
+"Hình đang phát vẫn toàn khung; replay hiện trong khung PiP 16:9, bên dưới có thể thêm một input hoặc ảnh 16:9. Hết replay, khung PiP tự hạ." = "Hình đang phát vẫn toàn khung; replay hiện trong khung PiP 16:9, bên dưới có thể thêm một input hoặc ảnh 16:9. Hết replay, khung PiP tự hạ.";
 "Hơi đậm" = "Hơi đậm";
 "Hạ replay" = "Hạ replay";
 "Hằng ngày" = "Hằng ngày";
@@ -444,7 +447,10 @@
 "Hội ý mỗi set: %lld" = "Hội ý mỗi set: %lld";
 "ID xác nhận" = "ID xác nhận";
 "IN HOA" = "IN HOA";
+"INPUT" = "INPUT";
 "IP camera" = "IP camera";
+"Input" = "Input";
+"Input: nguồn đang ở PVW" = "Input: nguồn đang ở PVW";
 "Khi bấm Bắt đầu" = "Khi bấm Bắt đầu";
 "Khi hoà" = "Khi hoà";
 "Khi hết danh sách" = "Khi hết danh sách";
@@ -459,6 +465,7 @@
 "Khung an toàn trên màn hình ngoài" = "Khung an toàn trên màn hình ngoài";
 "Khung bản tin trực tiếp · Xanh" = "Khung bản tin trực tiếp · Xanh";
 "Khung bản tin trực tiếp · Đỏ" = "Khung bản tin trực tiếp · Đỏ";
+"Khung dưới replay" = "Khung dưới replay";
 "Khung giờ" = "Khung giờ";
 "Khung hình hỏng bị bỏ qua" = "Khung hình hỏng bị bỏ qua";
 "Khung hình/giây: dựng %@ · vào mã hoá %@ · ra %@ · dựng TB %@ ms, max %@ ms, quá hạn %@ · %@×%@ %@/%@ kbps%@" = "Khung hình/giây: dựng %@ · vào mã hoá %@ · ra %@ · dựng TB %@ ms, max %@ ms, quá hạn %@ · %@×%@ %@/%@ kbps%@";
@@ -704,6 +711,7 @@
 "Nguồn đang chỉnh" = "Nguồn đang chỉnh";
 "Nguồn đang có" = "Nguồn đang có";
 "Nguồn đang phát trước replay" = "Nguồn đang phát trước replay";
+"Nguồn đang ở PVW" = "Nguồn đang ở PVW";
 "Nguồn đã bị xoá" = "Nguồn đã bị xoá";
 "Ngân hàng" = "Ngân hàng";
 "Ngôn ngữ" = "Ngôn ngữ";
@@ -801,6 +809,8 @@
 "Phút %lld" = "Phút %lld";
 "Phơi sáng" = "Phơi sáng";
 "Phải" = "Phải";
+"Phải dưới" = "Phải dưới";
+"Phải trên" = "Phải trên";
 "Phản chiếu màn iPad" = "Phản chiếu màn iPad";
 "Phản hồi không hợp lệ" = "Phản hồi không hợp lệ";
 "Phản hồi máy chủ không hợp lệ" = "Phản hồi máy chủ không hợp lệ";
@@ -809,6 +819,7 @@
 "Phần tử có data-field=\"tên\" sẽ thành ô sửa chữ; biến màu CSS (--accent: #…) thành ô chọn màu." = "Phần tử có data-field=\"tên\" sẽ thành ô sửa chữ; biến màu CSS (--accent: #…) thành ô chọn màu.";
 "Phẳng (theo mẫu)" = "Phẳng (theo mẫu)";
 "PiP 16:9" = "PiP 16:9";
+"PiP replay" = "PiP replay";
 "PiP trên Program" = "PiP trên Program";
 "Playfair Display (có chân)" = "Playfair Display (có chân)";
 "Preset: chạm = gọi, giữ = lưu" = "Preset: chạm = gọi, giữ = lưu";
@@ -978,6 +989,8 @@
 "Trong suốt" = "Trong suốt";
 "Trong suốt: phần phông xanh để trống — dùng khi nguồn này làm lớp chồng (PiP / layout / key)." = "Trong suốt: phần phông xanh để trống — dùng khi nguồn này làm lớp chồng (PiP / layout / key).";
 "Trái" = "Trái";
+"Trái dưới" = "Trái dưới";
+"Trái trên" = "Trái trên";
 "Trên PGM" = "Trên PGM";
 "Trên cùng" = "Trên cùng";
 "Trên giữa" = "Trên giữa";
@@ -1322,6 +1335,7 @@
 "Đội khách" = "Đội khách";
 "Đội nhà" = "Đội nhà";
 "đang mở cổng…" = "đang mở cổng…";
+"ẢNH" = "ẢNH";
 "Ảnh" = "Ảnh";
 "Ảnh / logo" = "Ảnh / logo";
 "Ảnh / video từ Thư viện ảnh" = "Ảnh / video từ Thư viện ảnh";
