@@ -293,21 +293,6 @@ struct ChannelStrip: View {
     }
 
     private func bar(_ db: Float, _ pk: Float) -> some View {
-        GeometryReader { g in
-            let h = g.size.height
-            ZStack(alignment: .bottom) {
-                Rectangle().fill(Color.black)
-                LinearGradient(stops: [.init(color: .green, location: 0), .init(color: .green, location: MonitorVU.pos(-18)),
-                                       .init(color: .yellow, location: MonitorVU.pos(-18)), .init(color: .yellow, location: MonitorVU.pos(-6)),
-                                       .init(color: .red, location: MonitorVU.pos(-6)), .init(color: .red, location: 1)],
-                               startPoint: .bottom, endPoint: .top)
-                    .mask(alignment: .bottom) { Rectangle().frame(height: h * MonitorVU.pos(db)) }
-                if pk > -59 {
-                    Rectangle().fill(pk > -6 ? Color.red : Color.white).frame(height: 2)
-                        .offset(y: -h * MonitorVU.pos(pk) + 1)
-                }
-            }
-        }
-        .frame(width: compact ? 3 : 4)
+        VUBarCanvas(level: db, peak: pk).frame(width: compact ? 3 : 4)
     }
 }

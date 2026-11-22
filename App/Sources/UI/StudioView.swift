@@ -536,23 +536,7 @@ struct MonitorVU: View {
     }
 
     private func bar(_ db: Float, _ peak: Float, _ w: CGFloat) -> some View {
-        GeometryReader { g in
-            let h = g.size.height
-            ZStack(alignment: .bottom) {
-                Rectangle().fill(Color.white.opacity(0.12))
-                LinearGradient(stops: [.init(color: .green, location: 0), .init(color: .green, location: Self.pos(-18)),
-                                       .init(color: .yellow, location: Self.pos(-18)), .init(color: .yellow, location: Self.pos(-6)),
-                                       .init(color: .red, location: Self.pos(-6)), .init(color: .red, location: 1)],
-                               startPoint: .bottom, endPoint: .top)
-                    .mask(alignment: .bottom) { Rectangle().frame(height: h * Self.pos(db)) }
-                if peak > -59 {
-                    Rectangle().fill(peak > -6 ? Color.red : Color.white)
-                        .frame(height: 1.5)
-                        .offset(y: -h * Self.pos(peak) + 0.75)
-                }
-            }
-        }
-        .frame(width: w)
+        VUBarCanvas(level: db, peak: peak, track: Color.white.opacity(0.12)).frame(width: w)
     }
 
     /// dB scale beside the bars: ticks every 6 dB down to −30, then −40 / −60; numbers on the larger meters.
@@ -1020,5 +1004,37 @@ struct OutputLogView: View {
                 }
             }
         }
+    }
+}
+
+/// One VU bar drawn directly (no layout): the base stays on the bottom edge and only the top moves with the
+/// level. Green to −18 dB, yellow to −6 dB, red above (each zone appears only once the level reaches it);
+/// peak-hold line. Used by the monitor / multiview meters and the mixer strips.
+struct VUBarCanvas: View {
+    let level: Float
+    let peak: Float
+    var track: Color = .black
+
+    var body: some View {
+        Canvas { ctx, size in
+            let h = size.height, w = size.width
+            ctx.fill(Path(CGRect(x: 0, y: 0, width: w, height: h)), with: .color(track))
+            let top = h * MonitorVU.pos(level)                    // filled height from the bottom
+            let zones: [(from: CGFloat, to: CGFloat, color: Color)] = [
+                (0, MonitorVU.pos(-18), .green),
+                (MonitorVU.pos(-18), MonitorVU.pos(-6), .yellow),
+                (MonitorVU.pos(-6), 1, .red)]
+            for z in zones {
+                let lo = h * z.from, hi = min(h * z.to, top)
+                guard hi > lo else { continue }
+                ctx.fill(Path(CGRect(x: 0, y: h - hi, width: w, height: hi - lo)), with: .color(z.color))
+            }
+            if peak > -59 {
+                let y = h - h * MonitorVU.pos(peak)
+                ctx.fill(Path(CGRect(x: 0, y: max(0, y - 1), width: w, height: 1.5)),
+                         with: .color(peak > -6 ? .red : .white))
+            }
+        }
+        .allowsHitTesting(false)
     }
 }
