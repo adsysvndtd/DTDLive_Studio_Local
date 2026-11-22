@@ -101,6 +101,7 @@
 "Bộ đệm replay" = "Bộ đệm replay";
 "Bộ đệm replay (Program)" = "Bộ đệm replay (Program)";
 "Bộ đệm trống — replay ghi lại tín hiệu Program khi app đang mã hoá (đang phát hoặc ghi)." = "Bộ đệm trống — replay ghi lại tín hiệu Program khi app đang mã hoá (đang phát hoặc ghi).";
+"CAM" = "CAM";
 "CAM 1 · Sân khấu" = "CAM 1 · Sân khấu";
 "CAM 3 · Khán giả" = "CAM 3 · Khán giả";
 "CHƯƠNG TRÌNH" = "CHƯƠNG TRÌNH";
@@ -112,6 +113,7 @@
 "Camera gửi %@ Mbps — thấp so với bitrate phát %@ Mbps: hình bị nén hai lần nên mờ. Cập nhật DTDLive (tự gửi ~12 Mbps cho 1080p30 qua Wi‑Fi) hoặc tăng bitrate trên DTDLive." = "Camera gửi %@ Mbps — thấp so với bitrate phát %@ Mbps: hình bị nén hai lần nên mờ. Cập nhật DTDLive (tự gửi ~12 Mbps cho 1080p30 qua Wi‑Fi) hoặc tăng bitrate trên DTDLive.";
 "Camera mạng (SRT · RTSP · RTMP · DTDLive)" = "Camera mạng (SRT · RTSP · RTMP · DTDLive)";
 "Camera trong máy & USB" = "Camera trong máy & USB";
+"Camera: nguồn đang phát trước replay" = "Camera: nguồn đang phát trước replay";
 "Cao" = "Cao";
 "Cao / thấp" = "Cao / thấp";
 "Cao hơn = chịu được Wi‑Fi chập chờn (SRT kịp gửi lại gói) nhưng hình trễ hơn. 300 ms cho Wi‑Fi tốt, 500–800 ms cho Wi‑Fi đông. Áp dụng sau khi mở lại app." = "Cao hơn = chịu được Wi‑Fi chập chờn (SRT kịp gửi lại gói) nhưng hình trễ hơn. 300 ms cho Wi‑Fi tốt, 500–800 ms cho Wi‑Fi đông. Áp dụng sau khi mở lại app.";
@@ -394,6 +396,7 @@
 "Gửi khung hình đầu (keyframe: %lld)" = "Gửi khung hình đầu (keyframe: %lld)";
 "Gửi tới máy khác" = "Gửi tới máy khác";
 "HEVC: YouTube/RTMP cần máy chủ hỗ trợ Enhanced RTMP; Facebook chỉ nhận H.264. SRT/RTSP/ghi file dùng được." = "HEVC: YouTube/RTMP cần máy chủ hỗ trợ Enhanced RTMP; Facebook chỉ nhận H.264. SRT/RTSP/ghi file dùng được.";
+"Hai khung bằng nhau" = "Hai khung bằng nhau";
 "Hai khung chia đôi" = "Hai khung chia đôi";
 "Hai khung ngang" = "Hai khung ngang";
 "Hai khung so le" = "Hai khung so le";
@@ -459,6 +462,7 @@
 "Khung giờ" = "Khung giờ";
 "Khung hình hỏng bị bỏ qua" = "Khung hình hỏng bị bỏ qua";
 "Khung hình/giây: dựng %@ · vào mã hoá %@ · ra %@ · dựng TB %@ ms, max %@ ms, quá hạn %@ · %@×%@ %@/%@ kbps%@" = "Khung hình/giây: dựng %@ · vào mã hoá %@ · ra %@ · dựng TB %@ ms, max %@ ms, quá hạn %@ · %@×%@ %@/%@ kbps%@";
+"Khung luôn 16:9; phần còn lại là ảnh nền (thêm ảnh ở thư viện Ảnh). Hết replay, khung tự hạ và bố cục trước đó trở lại." = "Khung luôn 16:9; phần còn lại là ảnh nền (thêm ảnh ở thư viện Ảnh). Hết replay, khung tự hạ và bố cục trước đó trở lại.";
 "Khung neon livestream" = "Khung neon livestream";
 "Khung phối cảnh" = "Khung phối cảnh";
 "Khung replay (VAR)" = "Khung replay (VAR)";
@@ -519,6 +523,7 @@
 "Kênh âm thanh" = "Kênh âm thanh";
 "Kích thước" = "Kích thước";
 "Kích thước & vị trí" = "Kích thước & vị trí";
+"Kích thước khung" = "Kích thước khung";
 "Kết nối" = "Kết nối";
 "Kết nối %@  key %@" = "Kết nối %@  key %@";
 "Kết nối %lf  key %lf" = "Kết nối %lf  key %lf";
@@ -698,6 +703,7 @@
 "Nguồn tham gia" = "Nguồn tham gia";
 "Nguồn đang chỉnh" = "Nguồn đang chỉnh";
 "Nguồn đang có" = "Nguồn đang có";
+"Nguồn đang phát trước replay" = "Nguồn đang phát trước replay";
 "Nguồn đã bị xoá" = "Nguồn đã bị xoá";
 "Ngân hàng" = "Ngân hàng";
 "Ngôn ngữ" = "Ngôn ngữ";
@@ -746,6 +752,7 @@
 "Nạp show sẽ dừng phát và thay toàn bộ nguồn, đầu ra, title." = "Nạp show sẽ dừng phát và thay toàn bộ nguồn, đầu ra, title.";
 "Nền" = "Nền";
 "Nền bố cục" = "Nền bố cục";
+"Nền của layout PiP" = "Nền của layout PiP";
 "Nền dòng 1" = "Nền dòng 1";
 "Nền dòng 2" = "Nền dòng 2";
 "Nền khung vẽ" = "Nền khung vẽ";
@@ -801,6 +808,7 @@
 "Phần phông xanh được thay bằng nguồn này (phủ kín khung, giữ tỉ lệ)." = "Phần phông xanh được thay bằng nguồn này (phủ kín khung, giữ tỉ lệ).";
 "Phần tử có data-field=\"tên\" sẽ thành ô sửa chữ; biến màu CSS (--accent: #…) thành ô chọn màu." = "Phần tử có data-field=\"tên\" sẽ thành ô sửa chữ; biến màu CSS (--accent: #…) thành ô chọn màu.";
 "Phẳng (theo mẫu)" = "Phẳng (theo mẫu)";
+"PiP 16:9" = "PiP 16:9";
 "PiP trên Program" = "PiP trên Program";
 "Playfair Display (có chân)" = "Playfair Display (có chân)";
 "Preset: chạm = gọi, giữ = lưu" = "Preset: chạm = gọi, giữ = lưu";
@@ -815,6 +823,7 @@
 "Quên mọi DTDLive đã ghép" = "Quên mọi DTDLive đã ghép";
 "Quản lý gói" = "Quản lý gói";
 "Quản lý đích phát (RTMP · SRT · RTSP · YouTube · Facebook)" = "Quản lý đích phát (RTMP · SRT · RTSP · YouTube · Facebook)";
+"REPLAY" = "REPLAY";
 "RTMP (một cổng, nhiều stream key)" = "RTMP (một cổng, nhiều stream key)";
 "RTSP (ANNOUNCE/RECORD, nhiều đường dẫn)" = "RTSP (ANNOUNCE/RECORD, nhiều đường dẫn)";
 "RTT" = "RTT";
@@ -822,6 +831,10 @@
 "Ra sau" = "Ra sau";
 "Rally (mọi rally đều ra điểm)" = "Rally (mọi rally đều ra điểm)";
 "Replay" = "Replay";
+"Replay + Camera" = "Replay + Camera";
+"Replay PiP" = "Replay PiP";
+"Replay bên trái" = "Replay bên trái";
+"Replay lớn + camera nhỏ" = "Replay lớn + camera nhỏ";
 "Replay đang phát trên PGM — bấm DỪNG trước khi đưa đoạn khác lên Preview" = "Replay đang phát trên PGM — bấm DỪNG trước khi đưa đoạn khác lên Preview";
 "Reset" = "Reset";
 "Resize" = "Resize";
@@ -880,6 +893,7 @@
 "Thao tác" = "Thao tác";
 "Thay người mỗi set: %lld" = "Thay người mỗi set: %lld";
 "Thay đổi danh sách áp dụng cho lần phát sau. Chạm vào một clip để chuyển ngay sang clip đó." = "Thay đổi danh sách áp dụng cho lần phát sau. Chạm vào một clip để chuyển ngay sang clip đó.";
+"Theo layout" = "Theo layout";
 "Theo mẫu" = "Theo mẫu";
 "Theo thẻ" = "Theo thẻ";
 "Theo âm thanh" = "Theo âm thanh";
@@ -1313,6 +1327,7 @@
 "Ảnh / video từ Thư viện ảnh" = "Ảnh / video từ Thư viện ảnh";
 "Ảnh PNG" = "Ảnh PNG";
 "Ảnh nền từ Thư viện" = "Ảnh nền từ Thư viện";
+"Ảnh nền: nền của layout PiP" = "Ảnh nền: nền của layout PiP";
 "Ảnh từ Thư viện" = "Ảnh từ Thư viện";
 "Ảnh từ thư viện…" = "Ảnh từ thư viện…";
 "Ảnh đại diện" = "Ảnh đại diện";

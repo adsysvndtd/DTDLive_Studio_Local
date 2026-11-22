@@ -101,6 +101,7 @@
 "Bộ đệm replay" = "Replay buffer";
 "Bộ đệm replay (Program)" = "Replay buffer (Program)";
 "Bộ đệm trống — replay ghi lại tín hiệu Program khi app đang mã hoá (đang phát hoặc ghi)." = "Buffer empty — replay records Program while the app is encoding (streaming or recording).";
+"CAM" = "CAM";
 "CAM 1 · Sân khấu" = "CAM 1 · Stage";
 "CAM 3 · Khán giả" = "CAM 3 · Audience";
 "CHƯƠNG TRÌNH" = "PROGRAMME";
@@ -112,6 +113,7 @@
 "Camera gửi %@ Mbps — thấp so với bitrate phát %@ Mbps: hình bị nén hai lần nên mờ. Cập nhật DTDLive (tự gửi ~12 Mbps cho 1080p30 qua Wi‑Fi) hoặc tăng bitrate trên DTDLive." = "Camera sends %@ Mbps — low for the %@ Mbps output: the picture is compressed twice and looks soft. Update DTDLive (sends ~12 Mbps for 1080p30 over Wi‑Fi) or raise the bitrate in DTDLive.";
 "Camera mạng (SRT · RTSP · RTMP · DTDLive)" = "Network cameras (SRT · RTSP · RTMP · DTDLive)";
 "Camera trong máy & USB" = "Built-in & USB cameras";
+"Camera: nguồn đang phát trước replay" = "Camera: source on air before the replay";
 "Cao" = "Height";
 "Cao / thấp" = "Higher / lower";
 "Cao hơn = chịu được Wi‑Fi chập chờn (SRT kịp gửi lại gói) nhưng hình trễ hơn. 300 ms cho Wi‑Fi tốt, 500–800 ms cho Wi‑Fi đông. Áp dụng sau khi mở lại app." = "Higher = tolerates unsteady Wi‑Fi (SRT has time to resend) but more delay. 300 ms for good Wi‑Fi, 500–800 ms for busy Wi‑Fi. Applies after reopening the app.";
@@ -394,6 +396,7 @@
 "Gửi khung hình đầu (keyframe: %lld)" = "First video frame sent (keyframe: %lld)";
 "Gửi tới máy khác" = "Send to another device";
 "HEVC: YouTube/RTMP cần máy chủ hỗ trợ Enhanced RTMP; Facebook chỉ nhận H.264. SRT/RTSP/ghi file dùng được." = "HEVC: YouTube/RTMP needs an Enhanced-RTMP server; Facebook takes H.264 only. SRT/RTSP/recording are fine.";
+"Hai khung bằng nhau" = "Two equal windows";
 "Hai khung chia đôi" = "Split screen";
 "Hai khung ngang" = "Two across";
 "Hai khung so le" = "Two staggered";
@@ -459,6 +462,7 @@
 "Khung giờ" = "Time slot";
 "Khung hình hỏng bị bỏ qua" = "Broken frames skipped";
 "Khung hình/giây: dựng %@ · vào mã hoá %@ · ra %@ · dựng TB %@ ms, max %@ ms, quá hạn %@ · %@×%@ %@/%@ kbps%@" = "Frames/s: rendered %@ · into encoder %@ · out %@ · render avg %@ ms, max %@ ms, late %@ · %@×%@ %@/%@ kbps%@";
+"Khung luôn 16:9; phần còn lại là ảnh nền (thêm ảnh ở thư viện Ảnh). Hết replay, khung tự hạ và bố cục trước đó trở lại." = "Windows are always 16:9; the rest shows the background picture (add pictures in the Pictures library). When the replay ends the window comes down and the previous layout returns.";
 "Khung neon livestream" = "Neon livestream frame";
 "Khung phối cảnh" = "Perspective";
 "Khung replay (VAR)" = "Replay window (VAR)";
@@ -519,6 +523,7 @@
 "Kênh âm thanh" = "Audio channels";
 "Kích thước" = "Size";
 "Kích thước & vị trí" = "Size & position";
+"Kích thước khung" = "Window size";
 "Kết nối" = "Connection";
 "Kết nối %@  key %@" = "Connecting %@  key %@";
 "Kết nối %lf  key %lf" = "Connecting %lf  key %lf";
@@ -698,6 +703,7 @@
 "Nguồn tham gia" = "Sources";
 "Nguồn đang chỉnh" = "Adjusting";
 "Nguồn đang có" = "Current inputs";
+"Nguồn đang phát trước replay" = "Source on air before the replay";
 "Nguồn đã bị xoá" = "Input removed";
 "Ngân hàng" = "Bank";
 "Ngôn ngữ" = "Language";
@@ -746,6 +752,7 @@
 "Nạp show sẽ dừng phát và thay toàn bộ nguồn, đầu ra, title." = "Loading a show stops streaming and replaces all sources, outputs and titles.";
 "Nền" = "Background";
 "Nền bố cục" = "Layout background";
+"Nền của layout PiP" = "PiP layout background";
 "Nền dòng 1" = "Line 1 background";
 "Nền dòng 2" = "Line 2 background";
 "Nền khung vẽ" = "Canvas background";
@@ -801,6 +808,7 @@
 "Phần phông xanh được thay bằng nguồn này (phủ kín khung, giữ tỉ lệ)." = "The green screen is replaced by this input (fills the frame, keeps aspect).";
 "Phần tử có data-field=\"tên\" sẽ thành ô sửa chữ; biến màu CSS (--accent: #…) thành ô chọn màu." = "Elements with data-field=\"name\" become text fields; CSS colour variables (--accent: #…) become colour pickers.";
 "Phẳng (theo mẫu)" = "Flat (template)";
+"PiP 16:9" = "PiP 16:9";
 "PiP trên Program" = "PiP on Program";
 "Playfair Display (có chân)" = "Playfair Display (serif)";
 "Preset: chạm = gọi, giữ = lưu" = "Presets: tap = recall, hold = store";
@@ -815,6 +823,7 @@
 "Quên mọi DTDLive đã ghép" = "Forget all paired DTDLive";
 "Quản lý gói" = "Manage plan";
 "Quản lý đích phát (RTMP · SRT · RTSP · YouTube · Facebook)" = "Manage destinations (RTMP · SRT · RTSP · YouTube · Facebook)";
+"REPLAY" = "REPLAY";
 "RTMP (một cổng, nhiều stream key)" = "RTMP (one port, many stream keys)";
 "RTSP (ANNOUNCE/RECORD, nhiều đường dẫn)" = "RTSP (ANNOUNCE/RECORD, many paths)";
 "RTT" = "RTT";
@@ -822,6 +831,10 @@
 "Ra sau" = "Backward";
 "Rally (mọi rally đều ra điểm)" = "Rally (every rally scores)";
 "Replay" = "Replay";
+"Replay + Camera" = "Replay + Camera";
+"Replay PiP" = "Replay PiP";
+"Replay bên trái" = "Replay on the left";
+"Replay lớn + camera nhỏ" = "Large replay + small camera";
 "Replay đang phát trên PGM — bấm DỪNG trước khi đưa đoạn khác lên Preview" = "A replay is on PGM — press STOP before cueing another one to Preview";
 "Reset" = "Reset";
 "Resize" = "Resize";
@@ -880,6 +893,7 @@
 "Thao tác" = "Gestures";
 "Thay người mỗi set: %lld" = "Substitutions per set: %lld";
 "Thay đổi danh sách áp dụng cho lần phát sau. Chạm vào một clip để chuyển ngay sang clip đó." = "List changes apply to the next run. Tap a clip to jump to it now.";
+"Theo layout" = "Layout window";
 "Theo mẫu" = "Template";
 "Theo thẻ" = "Follow card";
 "Theo âm thanh" = "By audio";
@@ -1313,6 +1327,7 @@
 "Ảnh / video từ Thư viện ảnh" = "Photo / video from Photos";
 "Ảnh PNG" = "PNG image";
 "Ảnh nền từ Thư viện" = "Background from Photos";
+"Ảnh nền: nền của layout PiP" = "Background: PiP layout background";
 "Ảnh từ Thư viện" = "From Photos";
 "Ảnh từ thư viện…" = "Picture from library…";
 "Ảnh đại diện" = "Avatars";

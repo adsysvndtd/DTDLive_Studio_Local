@@ -13466,6 +13466,156 @@
           }
         }
       }
+    },
+    "PiP 16:9": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PiP 16:9"
+          }
+        }
+      }
+    },
+    "Replay + Camera": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Replay + Camera"
+          }
+        }
+      }
+    },
+    "Theo layout": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Layout window"
+          }
+        }
+      }
+    },
+    "Kích thước khung": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Window size"
+          }
+        }
+      }
+    },
+    "Hai khung bằng nhau": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Two equal windows"
+          }
+        }
+      }
+    },
+    "Replay lớn + camera nhỏ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Large replay + small camera"
+          }
+        }
+      }
+    },
+    "Replay bên trái": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Replay on the left"
+          }
+        }
+      }
+    },
+    "Nguồn đang phát trước replay": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Source on air before the replay"
+          }
+        }
+      }
+    },
+    "Camera: nguồn đang phát trước replay": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Camera: source on air before the replay"
+          }
+        }
+      }
+    },
+    "Nền của layout PiP": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PiP layout background"
+          }
+        }
+      }
+    },
+    "Ảnh nền: nền của layout PiP": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Background: PiP layout background"
+          }
+        }
+      }
+    },
+    "Khung luôn 16:9; phần còn lại là ảnh nền (thêm ảnh ở thư viện Ảnh). Hết replay, khung tự hạ và bố cục trước đó trở lại.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Windows are always 16:9; the rest shows the background picture (add pictures in the Pictures library). When the replay ends the window comes down and the previous layout returns."
+          }
+        }
+      }
+    },
+    "Replay PiP": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Replay PiP"
+          }
+        }
+      }
+    },
+    "REPLAY": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "REPLAY"
+          }
+        }
+      }
+    },
+    "CAM": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CAM"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

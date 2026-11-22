@@ -1161,12 +1161,17 @@ struct ReplayVARSection: View {
 
     var body: some View {
         SectionCard("Khung replay (VAR)", systemImage: "rectangle.inset.topright.filled") {
-            Picker("", selection: $engine.replayPlacement.inLayout) {
-                Text("Toàn màn hình").tag(false)
-                Text("Trong khung layout PiP").tag(true)
+            Picker("", selection: $engine.replayPlacement.mode) {
+                Text("Toàn màn hình").tag(StudioEngine.ReplayPlacement.Mode.full)
+                Text("PiP 16:9").tag(StudioEngine.ReplayPlacement.Mode.single)
+                Text("Replay + Camera").tag(StudioEngine.ReplayPlacement.Mode.dual)
+                Text("Theo layout").tag(StudioEngine.ReplayPlacement.Mode.layout)
             }
             .pickerStyle(.segmented)
-            if engine.replayPlacement.inLayout {
+            if engine.replayPlacement.mode == .single || engine.replayPlacement.mode == .dual {
+                pipSettings
+            }
+            if engine.replayPlacement.mode == .layout {
                 let tpl = LayoutTemplate.all.first { $0.id == engine.replayPlacement.layoutID } ?? LayoutTemplate.all[0]
                 HStack(alignment: .top, spacing: 12) {
                     VStack(alignment: .leading, spacing: 6) {
@@ -1187,6 +1192,77 @@ struct ReplayVARSection: View {
             }
             if engine.replayOnAir { varControls }
         }
+    }
+
+    /// 16:9 replay PiP: windows preview, size / arrangement, the camera beside the replay, background picture.
+    private var pipSettings: some View {
+        let p = engine.replayPlacement
+        let usable = engine.sources.filter { $0.id != engine.layoutSource.id && $0.id != engine.replay.id }
+        return HStack(alignment: .top, spacing: 12) {
+            VStack(alignment: .leading, spacing: 8) {
+                if p.mode == .single {
+                    HStack {
+                        Text("Kích thước khung").font(DS.fBody)
+                        Slider(value: $engine.replayPlacement.size, in: 0.5...0.95)
+                        Text(verbatim: "\(Int(p.size * 100))%").font(.caption.monospacedDigit()).frame(width: 36)
+                    }
+                } else {
+                    Picker("", selection: $engine.replayPlacement.dualStyle) {
+                        Text("Hai khung bằng nhau").tag(StudioEngine.ReplayPlacement.DualStyle.equal)
+                        Text("Replay lớn + camera nhỏ").tag(StudioEngine.ReplayPlacement.DualStyle.mainSide)
+                    }
+                    .pickerStyle(.segmented)
+                    Toggle("Replay bên trái", isOn: $engine.replayPlacement.replayLeft).font(DS.fBody)
+                    Menu {
+                        Button("Nguồn đang phát trước replay") { engine.replayPlacement.cameraID = nil }
+                        ForEach(usable, id: \.id) { s in
+                            Button(s.name) { engine.replayPlacement.cameraID = s.id }
+                        }
+                    } label: {
+                        Label(p.cameraID.flatMap { c in usable.first { $0.id == c }?.name } ?? L("Camera: nguồn đang phát trước replay"),
+                              systemImage: "video").font(DS.fBody).lineLimit(1)
+                            .padding(.horizontal, 10).frame(height: 30)
+                            .background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
+                    }
+                }
+                Menu {
+                    Button("Nền của layout PiP") { engine.replayPlacement.backgroundPicture = nil }
+                    ForEach(engine.library.list(.picture), id: \.self) { u in
+                        Button(u.deletingPathExtension().lastPathComponent) { engine.replayPlacement.backgroundPicture = u.lastPathComponent }
+                    }
+                } label: {
+                    Label(p.backgroundPicture.map { ($0 as NSString).deletingPathExtension } ?? L("Ảnh nền: nền của layout PiP"),
+                          systemImage: "photo").font(DS.fBody).lineLimit(1)
+                        .padding(.horizontal, 10).frame(height: 30)
+                        .background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
+                }
+                Text("Khung luôn 16:9; phần còn lại là ảnh nền (thêm ảnh ở thư viện Ảnh). Hết replay, khung tự hạ và bố cục trước đó trở lại.")
+                    .font(.caption2).foregroundStyle(DS.text3).fixedSize(horizontal: false, vertical: true)
+            }
+            pipDiagram(p).frame(width: 200)
+        }
+    }
+
+    private func pipDiagram(_ p: StudioEngine.ReplayPlacement) -> some View {
+        let a = CGFloat(engine.format.width) / CGFloat(max(engine.format.height, 1))
+        let rects = p.rects(canvasAspect: a)
+        let bg = p.backgroundPicture.flatMap { UIImage(contentsOfFile: MediaLibrary.directory(.picture).appendingPathComponent($0).path) }
+        return GeometryReader { g in
+            ZStack(alignment: .topLeading) {
+                if let bg { Image(uiImage: bg).resizable().scaledToFill().frame(width: g.size.width, height: g.size.height).clipped() }
+                else { Color(white: 0.1) }
+                ForEach(Array(rects.enumerated()), id: \.offset) { i, r in
+                    ZStack {
+                        Rectangle().fill(i == 0 ? DS.pgm.opacity(0.8) : DS.pvw.opacity(0.7))
+                        Text(i == 0 ? "REPLAY" : "CAM").font(.system(size: 9, weight: .heavy)).foregroundStyle(.white)
+                    }
+                    .frame(width: r.width * g.size.width, height: r.height * g.size.height)
+                    .offset(x: r.minX * g.size.width, y: r.minY * g.size.height)
+                }
+            }
+        }
+        .aspectRatio(a, contentMode: .fit)
+        .clipShape(RoundedRectangle(cornerRadius: 4))
     }
 
     /// Mini diagram of the layout; tap a window to put the replay there.

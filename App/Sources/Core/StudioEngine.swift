@@ -936,6 +936,10 @@ final class StudioEngine: ObservableObject {
     func refreshLayout() {
         let stores = layoutSlots.map { id in id.flatMap { i in sources.first { $0.id == i }?.frames } }
         var still: CIImage?, color: CIColor?, live: FrameStore?
+        if let o = replayLayoutOverride, let pic = o.picture,
+           let img = UIImage(contentsOfFile: MediaLibrary.directory(.picture).appendingPathComponent(pic).path)?.normalized() {
+            still = CIImage(image: img)        // replay PiP background picture
+        } else {
         switch layoutBackground {
         case .color(let hex): color = CIColor(color: UIColor(hex: hex))
         case .picture(let name):
@@ -943,8 +947,9 @@ final class StudioEngine: ObservableObject {
             if let img = UIImage(contentsOfFile: url.path)?.normalized() { still = CIImage(image: img) }
         case .source(let id): live = sources.first { $0.id == id }?.frames
         }
-        var tpl = layoutTemplate
-        if tpl.slots.count == 1 && !layoutEdited && !tpl.slots[0].perspective {
+        }
+        var tpl = replayLayoutOverride?.template ?? layoutTemplate
+        if replayLayoutOverride == nil, tpl.slots.count == 1 && !layoutEdited && !tpl.slots[0].perspective {
             // one-window layout: shrink around the centre so the background shows around it
             let k = CGFloat(min(max(layoutSingleScale, 0.2), 1))
             var slot = tpl.slots[0]
@@ -1580,15 +1585,84 @@ final class StudioEngine: ObservableObject {
     /// Where a replay goes on air: the whole frame, or one window of a PiP layout (the other windows keep
     /// their inputs). When the replay ends the previous source and the previous layout come back.
     struct ReplayPlacement: Codable, Equatable {
-        var inLayout = false
-        var layoutID = 4          // "main + side": replay big, live small
+        enum Mode: String, Codable, CaseIterable { case full, single, dual, layout }
+        enum DualStyle: String, Codable, CaseIterable { case equal, mainSide }
+        /// full = whole frame · single = one 16:9 window on a background picture · dual = replay + one camera,
+        /// both 16:9 · layout = one window of a PiP layout template
+        var mode: Mode = .full
+        var layoutID = 4          // .layout: "main + side"
         var slot = 0
+        var size = 0.8            // .single: window width (fraction of the frame)
+        var dualStyle: DualStyle = .equal
+        var replayLeft = true
+        var cameraID: UUID?       // .dual: the camera beside the replay (nil = the source that was on air)
+        var backgroundPicture: String?   // picture in the library behind the windows (nil = layout background)
+
+        var inLayout: Bool { mode != .full }
+
+        init() {}
+        private enum K: String, CodingKey { case mode, inLayout, layoutID, slot, size, dualStyle, replayLeft, cameraID, backgroundPicture }
+        init(from d: Decoder) throws {
+            let c = try d.container(keyedBy: K.self)
+            if let m = try c.decodeIfPresent(Mode.self, forKey: .mode) { mode = m }
+            else if try c.decodeIfPresent(Bool.self, forKey: .inLayout) == true { mode = .layout }   // saved before modes
+            layoutID = try c.decodeIfPresent(Int.self, forKey: .layoutID) ?? 4
+            slot = try c.decodeIfPresent(Int.self, forKey: .slot) ?? 0
+            size = try c.decodeIfPresent(Double.self, forKey: .size) ?? 0.8
+            dualStyle = try c.decodeIfPresent(DualStyle.self, forKey: .dualStyle) ?? .equal
+            replayLeft = try c.decodeIfPresent(Bool.self, forKey: .replayLeft) ?? true
+            cameraID = try c.decodeIfPresent(UUID.self, forKey: .cameraID)
+            backgroundPicture = try c.decodeIfPresent(String.self, forKey: .backgroundPicture)
+        }
+        func encode(to e: Encoder) throws {
+            var c = e.container(keyedBy: K.self)
+            try c.encode(mode, forKey: .mode); try c.encode(layoutID, forKey: .layoutID); try c.encode(slot, forKey: .slot)
+            try c.encode(size, forKey: .size); try c.encode(dualStyle, forKey: .dualStyle); try c.encode(replayLeft, forKey: .replayLeft)
+            try c.encodeIfPresent(cameraID, forKey: .cameraID); try c.encodeIfPresent(backgroundPicture, forKey: .backgroundPicture)
+        }
+
+        /// Windows for .single / .dual, exactly 16:9 on a canvas of aspect `a` (width / height); normalised,
+        /// top-left origin. Slot 0 = replay, slot 1 = camera.
+        func rects(canvasAspect a: CGFloat) -> [CGRect] {
+            func win(_ w: CGFloat) -> CGSize { CGSize(width: w, height: w * a * 9 / 16) }
+            func fit(_ ws: [CGFloat], gap: CGFloat) -> [CGSize] {
+                // shrink everything if a window would be taller than the frame (portrait canvas)
+                var s = ws.map(win)
+                let k = min(1, 0.92 / (s.map(\.height).max() ?? 1))
+                s = s.map { CGSize(width: $0.width * k, height: $0.height * k) }
+                return s
+            }
+            switch mode {
+            case .single:
+                let s = fit([CGFloat(min(max(size, 0.4), 0.95))], gap: 0)[0]
+                return [CGRect(x: (1 - s.width) / 2, y: (1 - s.height) / 2, width: s.width, height: s.height)]
+            case .dual:
+                let gap: CGFloat = 0.02
+                let ws: [CGFloat] = dualStyle == .equal ? [0.475, 0.475] : [0.63, 0.32]
+                let s = fit(ws, gap: gap)
+                let total = s[0].width + s[1].width + gap
+                let x0 = (1 - total) / 2
+                let top = (1 - s[0].height) / 2                 // windows share the top edge
+                let left = CGRect(x: x0, y: top, width: s[0].width, height: s[0].height)
+                let right = CGRect(x: x0 + s[0].width + gap, y: dualStyle == .equal ? (1 - s[1].height) / 2 : top,
+                                   width: s[1].width, height: s[1].height)
+                if replayLeft { return [left, right] }
+                // replay on the right: mirror the arrangement (the big window stays the replay's)
+                let r0 = CGRect(x: 1 - left.maxX, y: left.minY, width: left.width, height: left.height)
+                let r1 = CGRect(x: 1 - right.maxX, y: right.minY, width: right.width, height: right.height)
+                return [r0, r1]
+            default:
+                return []
+            }
+        }
     }
     @Published var replayPlacement: ReplayPlacement = StudioEngine.load(ReplayPlacement.self, key: "dtd.replay.placement") ?? ReplayPlacement() {
         didSet { UserDefaults.standard.set(try? JSONEncoder().encode(replayPlacement), forKey: "dtd.replay.placement") }
     }
     private var preReplayLayout: (id: Int, slots: [UUID?])?
     private var replayInLayout = false
+    /// While a 16:9 replay PiP (.single / .dual) is on air: its windows and background picture.
+    private var replayLayoutOverride: (template: LayoutTemplate, picture: String?)?
 
     /// VAR: hold the replay on its frame / play on.
     func replayHoldToggle() {
@@ -1630,6 +1704,7 @@ final class StudioEngine: ObservableObject {
         if replayInLayout, let saved = preReplayLayout {
             DispatchQueue.main.asyncAfter(deadline: .now() + transitionDuration + 0.15) { [weak self] in
                 guard let self else { return }
+                self.replayLayoutOverride = nil
                 self.layoutTemplateID = saved.id
                 self.layoutSlots = saved.slots
                 self.refreshLayout()
@@ -1642,7 +1717,31 @@ final class StudioEngine: ObservableObject {
     private func beginReplayOnAir(_ id: UUID) {
         if programID != id { preReplayProgram = programID }
         replayOnAir = true; replayHeld = false
-        if replayPlacement.inLayout {
+        if replayPlacement.mode == .single || replayPlacement.mode == .dual {
+            // 16:9 replay PiP: one window (replay) or two (replay + a camera), on a background picture
+            let p = replayPlacement
+            preReplayLayout = (layoutTemplateID, layoutSlots)
+            let a = CGFloat(format.width) / CGFloat(max(format.height, 1))
+            let rects = p.rects(canvasAspect: a)
+            let tpl = LayoutTemplate(id: 100, name: L("Replay PiP"), slots: rects.map { LayoutTemplate.Slot(rect: $0) })
+            var slots: [UUID?] = [id]
+            if p.mode == .dual {
+                let usable = sources.map(\.id).filter { $0 != layoutSource.id && $0 != replay.id && $0 != id }
+                let cam = p.cameraID.flatMap { c in usable.contains(c) ? c : nil }
+                    ?? preReplayProgram.flatMap { c in usable.contains(c) ? c : nil } ?? usable.first
+                slots.append(cam)
+            }
+            replayLayoutOverride = (tpl, p.backgroundPicture)
+            if !sources.contains(where: { $0.id == layoutSource.id }) {
+                sources.append(layoutSource)
+                switcher.register(layoutSource.id, store: layoutSource.frames)
+                Task { await layoutSource.start() }
+            }
+            layoutSlots = slots
+            refreshLayout()
+            replayInLayout = true
+            switcher.setPreview(layoutSource.id); syncState()
+        } else if replayPlacement.mode == .layout {
             // replay into the chosen window of the chosen layout; other windows: what they showed, else live inputs
             preReplayLayout = (layoutTemplateID, layoutSlots)
             let sameLayout = layoutTemplateID == replayPlacement.layoutID
