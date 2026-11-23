@@ -119,7 +119,7 @@ final class FileSource: VideoSource {
     let id = UUID()
     var name: String
     let kind: SourceKind = .file
-    let frames = FrameStore()
+    let frames: FrameStore
     private(set) var status: SourceStatus = .idle
 
     private let player = AVPlayer()
@@ -142,12 +142,24 @@ final class FileSource: VideoSource {
 
     /// Loop at end of file (default) or hold the last frame.
     var loops = true
+    /// Called when a non-looping file reaches its end (playlist: go to the next clip).
+    var onEnded: (() -> Void)?
+    /// Clear the frame store on stop (off for playlist clips: the next clip shares the store, the last
+    /// picture stays up until its first frame arrives — no black flash between clips).
+    var clearsOnStop = true
 
-    private(set) var isPlaying = false
+    /// Playback position and length in seconds (nil until known).
+    var currentSeconds: Double? { let t = player.currentTime().seconds; return t.isFinite ? t : nil }
+    var durationSeconds: Double? { let d = item.duration.seconds; return d.isFinite && d > 0 ? d : nil }
+    /// Paused by the operator: automatic play-when-seen leaves it paused until it is played or cued again.
+    var heldByUser = false
 
-    init(name: String, url: URL) {
+    private(set) var isPlaying = false { didSet { if isPlaying != oldValue { updateLinkRate() } } }
+
+    init(name: String, url: URL, frames: FrameStore = FrameStore()) {
         self.name = name
         self.url = url
+        self.frames = frames
         item = AVPlayerItem(url: url)
         item.add(output)
         player.replaceCurrentItem(with: item)
@@ -205,7 +217,10 @@ final class FileSource: VideoSource {
         endObserver = NotificationCenter.default.addObserver(forName: AVPlayerItem.didPlayToEndTimeNotification, object: item, queue: .main) { [weak self] _ in
             MainActor.assumeIsolated {
                 guard let self else { return }
-                if self.loops { self.player.seek(to: .zero); self.player.play() } else { self.isPlaying = false }
+                if self.loops { self.player.seek(to: .zero); self.player.play() } else {
+                    self.isPlaying = false
+                    self.onEnded?()
+                }
             }
         }
         player.play()
@@ -247,14 +262,41 @@ final class FileSource: VideoSource {
             }
         }
         player.rate = rate
+        rangeRate = rate
+        isPlaying = true
+    }
+    private var rangeRate: Float = 1
+
+    /// VAR: hold and move exactly `n` frames (AVPlayerItem.step is frame-accurate).
+    func stepFrames(_ n: Int) {
+        if isPlaying { player.pause(); isPlaying = false }
+        heldByUser = true
+        item.step(byCount: n)
+    }
+
+    /// VAR: play on from the held frame at the replay speed (to the OUT point, if a range is playing).
+    func resumeRange() {
+        heldByUser = false
+        player.rate = rangeRate
         isPlaying = true
     }
 
     func play() { player.play(); isPlaying = true }
     func pause() { player.pause(); isPlaying = false }
+    /// Paused on the first frame (shown on PVW, silent) until it is played.
+    func cueAtStart() {
+        player.pause(); isPlaying = false
+        player.seek(to: .zero, toleranceBefore: .zero, toleranceAfter: .zero)
+    }
     func restart() {
         if let b = boundary { player.removeTimeObserver(b); boundary = nil }
         player.seek(to: .zero); player.play(); isPlaying = true
+    }
+
+    /// Paused / ended: the display link only keeps the still alive, a few times a second is plenty.
+    private func updateLinkRate() {
+        link?.preferredFrameRateRange = isPlaying ? CAFrameRateRange(minimum: 24, maximum: 60, preferred: 30)
+                                                  : CAFrameRateRange(minimum: 2, maximum: 8, preferred: 4)
     }
 
     func stop() async {
@@ -263,7 +305,7 @@ final class FileSource: VideoSource {
         if let b = boundary { player.removeTimeObserver(b); boundary = nil }
         isPlaying = false
         player.pause()
-        frames.clear()
+        if clearsOnStop { frames.clear() }
         status = .idle
     }
 }

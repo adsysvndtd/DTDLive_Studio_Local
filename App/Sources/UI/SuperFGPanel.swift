@@ -13,7 +13,7 @@ struct SuperFGPanel: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 10) {
-                Label(!engine.superFGArmed ? "Chưa nạp SuperFG" : (engine.foregroundOn ? "SuperFG đang trên PGM" : "Đã nạp — bấm SuperFG On ở cột phải"),
+                Label(!engine.superFGArmed ? "Chưa nạp SuperFG" : (engine.foregroundOn ? "SuperFG đang trên PGM" : (engine.superFGStingerReady ? "Đã chọn — bấm CUT / AUTO để chuyển cảnh" : "Đã nạp — bấm SuperFG On ở cột phải")),
                       systemImage: "square.3.layers.3d").font(DS.fBody).foregroundStyle(engine.foregroundOn ? DS.pgm : DS.text2)
                 Spacer()
                 if engine.superFGArmed {
@@ -104,7 +104,7 @@ struct SuperFGPanel: View {
                     .buttonStyle(.plain)
                 }
             }
-            Text("Chạm một thẻ hoặc ảnh trong thư viện bên dưới để nạp; SuperFG On chạy hiệu ứng vào của thẻ, rồi tự ra (hoặc giữ đến khi tắt). Biểu tượng nhỏ cho biết kiểu chuyển cảnh.")
+            Text("Chọn thẻ hoặc ảnh để làm hiệu ứng chuyển cảnh, rồi bấm CUT / AUTO. SuperFG On dùng để bật riêng lớp phủ lên PGM.")
                 .font(.caption2).foregroundStyle(DS.text3)
         }
     }

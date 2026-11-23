@@ -93,6 +93,26 @@ jobs:
         with:
           name: ${{ matrix.scheme }}-unsigned-ipa
           path: ${{ matrix.scheme }}-unsigned.ipa
+      # NDI code is compiled only with the NDI® SDK (licensed by Vizrt, not in the repo). This builds the
+      # NDI_SDK code paths against a stand-in with the SDK's public API (ci/ndi-stub) — never shipped.
+      - name: NDI compile check (stub SDK)
+        run: |
+          set -o pipefail
+          mkdir -p Vendor/NDI && cp ci/ndi-stub/Processing.NDI.Lib.h ci/ndi-stub/module.modulemap Vendor/NDI/
+          xcrun -sdk iphoneos clang -arch arm64 -miphoneos-version-min=17.0 -c ci/ndi-stub/stub.c -o "$RUNNER_TEMP/ndistub.o"
+          xcrun ar rcs Vendor/NDI/libndi_ios.a "$RUNNER_TEMP/ndistub.o"
+          xcodegen generate --spec project.ndi.yml
+          xcodebuild -project DTDStudio.xcodeproj -scheme DTDStudio -configuration Release \
+            -destination 'generic/platform=iOS' -derivedDataPath build-ndi \
+            -clonedSourcePackagesDirPath build/SourcePackages \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO build 2>&1 | tee build-ndi.log
+      - name: NDI error summary
+        if: failure()
+        run: |
+          echo "### Lỗi biên dịch NDI" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          grep -E "error:|fatal error" build-ndi.log | sort -u | head -100 >> "$GITHUB_STEP_SUMMARY" || true
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
 
   screenshots:
     name: UI screenshots (${{ matrix.device }} Simulator, demo mode)

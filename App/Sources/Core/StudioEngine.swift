@@ -58,7 +58,7 @@ final class StudioEngine: ObservableObject {
     @Published var layoutSingleScale: Double = UserDefaults.standard.object(forKey: "dtd.layout.single") as? Double ?? 0.7 {
         didSet { UserDefaults.standard.set(layoutSingleScale, forKey: "dtd.layout.single"); refreshLayout() }
     }
-    @Published var layoutSlots: [UUID?] = []
+    @Published var layoutSlots: [UUID?] = [] { didSet { updateMediaPlayback() } }
     @Published var layoutSelectedSlot = 0
     var controlPort: UInt16 { control.httpPort }
     /// Lets any view jump the studio to a category (e.g. "open in Replay" from the Video library).
@@ -68,7 +68,19 @@ final class StudioEngine: ObservableObject {
     @Published var pipOn = false { didSet { pip?.visible = pipOn; if pipOn { pip?.opacity = 1; pipFade = 1 } } }
     /// PiP T-bar: 0 = hidden, 1 = fully shown.
     @Published var pipFade: Double = 1 { didSet { pip?.opacity = CGFloat(pipFade); pip?.visible = pipFade > 0.01 } }
-    @Published var logoCorner: Corner = .topRight { didSet { if let l = logo { logo?.rect = logoCorner.rect(size: l.rect.size) } } }
+    @Published var logoCorner: Corner = Corner(rawValue: UserDefaults.standard.string(forKey: "dtd.logo.corner") ?? "") ?? .topRight {
+        didSet {
+            UserDefaults.standard.set(logoCorner.rawValue, forKey: "dtd.logo.corner")
+            if let l = logo { setLogoRect(logoCorner.rect(size: l.rect.size, margin: CGFloat(logoMargin))) }
+        }
+    }
+    /// Distance from the frame edge for the position presets (fraction of the frame).
+    @Published var logoMargin: Double = UserDefaults.standard.object(forKey: "dtd.logo.margin") as? Double ?? 0.03 {
+        didSet {
+            UserDefaults.standard.set(logoMargin, forKey: "dtd.logo.margin")
+            if let l = logo { setLogoRect(logoCorner.rect(size: l.rect.size, margin: CGFloat(logoMargin))) }
+        }
+    }
     /// Logo height as a fraction of the frame (width follows the image aspect).
     @Published var logoSize: Double = UserDefaults.standard.object(forKey: "dtd.logo.size") as? Double ?? 0.12 {
         didSet { UserDefaults.standard.set(logoSize, forKey: "dtd.logo.size"); resizeLogo() }
@@ -97,6 +109,10 @@ final class StudioEngine: ObservableObject {
     @Published private(set) var nowPlayingMusic: URL?
     @Published var showSafeGuides = false
     @Published var showMonitorInfo = false
+    /// L/R VU meters over the PVW and PGM monitors.
+    @Published var showMonitorVU: Bool = UserDefaults.standard.object(forKey: "dtd.ui.monitorVU") as? Bool ?? true {
+        didSet { UserDefaults.standard.set(showMonitorVU, forKey: "dtd.ui.monitorVU") }
+    }
     /// One-line operator message (import / playback errors), shown as an alert.
     @Published var message: String?
     /// Swipe on PVW toward PGM: 1 finger = CUT, 2 fingers = AUTO.
@@ -130,42 +146,92 @@ final class StudioEngine: ObservableObject {
         }
     }
 
+    /// Logo position presets: 3 × 3 grid (corners, edges, centre).
     enum Corner: String, CaseIterable, Identifiable {
-        case topLeft, topRight, bottomLeft, bottomRight
+        case topLeft, topCenter, topRight, middleLeft, center, middleRight, bottomLeft, bottomCenter, bottomRight
         var id: String { rawValue }
-        var label: String { L(["topLeft": "Trên trái", "topRight": "Trên phải", "bottomLeft": "Dưới trái", "bottomRight": "Dưới phải"][rawValue]!) }
-        func rect(size: CGSize) -> CGRect {
-            let m: CGFloat = 0.03
+        var label: String {
+            L(["topLeft": "Trên trái", "topCenter": "Trên giữa", "topRight": "Trên phải", "middleLeft": "Giữa trái", "center": "Chính giữa",
+               "middleRight": "Giữa phải", "bottomLeft": "Dưới trái", "bottomCenter": "Dưới giữa", "bottomRight": "Dưới phải"][rawValue]!)
+        }
+        func rect(size: CGSize, margin m: CGFloat = 0.03) -> CGRect {
+            let col: Int, row: Int
             switch self {
-            case .topLeft: return CGRect(x: m, y: m, width: size.width, height: size.height)
-            case .topRight: return CGRect(x: 1 - m - size.width, y: m, width: size.width, height: size.height)
-            case .bottomLeft: return CGRect(x: m, y: 1 - m - size.height, width: size.width, height: size.height)
-            case .bottomRight: return CGRect(x: 1 - m - size.width, y: 1 - m - size.height, width: size.width, height: size.height)
+            case .topLeft: (col, row) = (0, 0)
+            case .topCenter: (col, row) = (1, 0)
+            case .topRight: (col, row) = (2, 0)
+            case .middleLeft: (col, row) = (0, 1)
+            case .center: (col, row) = (1, 1)
+            case .middleRight: (col, row) = (2, 1)
+            case .bottomLeft: (col, row) = (0, 2)
+            case .bottomCenter: (col, row) = (1, 2)
+            case .bottomRight: (col, row) = (2, 2)
             }
+            let x = [m, (1 - size.width) / 2, 1 - m - size.width][col]
+            let y = [m, (1 - size.height) / 2, 1 - m - size.height][row]
+            return CGRect(x: x, y: y, width: size.width, height: size.height)
         }
     }
     @Published var fadeToBlack = false { didSet { switcher.setFadeToBlack(fadeToBlack) } }
-    @Published private(set) var audioLevel: Float = -60
+    /// Program peak (dBFS). Lives in `meters` so only the meter views redraw ~10×/s, not the whole studio.
+    var audioLevel: Float { meters.level }
+    /// Channel list and settings (gain, mute, AFV…). Levels are in `meters.levels`; `level` here is not live.
     @Published private(set) var audioChannels: [AudioChannelState] = []
+    let meters = LiveMeters()
     @Published var titles: [TitleItem] = [] { didSet { saveTitles() } }
     @Published private(set) var processing: [UUID: SourceProcessing] = [:]
     @Published var scopeKind: ScopeKind = .waveform
     @Published var scopesEnabled = false
-    @Published private(set) var scopeResult = ScopeAnalyzer.Result()
+    var scopeResult: ScopeAnalyzer.Result { meters.scope }
     @Published var ptz: [UUID: PTZConfig] = [:]
-    @Published var externalMode: ExternalMode = .program
+    /// L/R VU meter on the external PGM output (on by default; turn off for a clean feed to a recorder).
+    @Published var externalVU: Bool = UserDefaults.standard.object(forKey: "dtd.external.vu") as? Bool ?? true {
+        didSet { UserDefaults.standard.set(externalVU, forKey: "dtd.external.vu") }
+    }
+    /// What the HDMI / USB‑C display shows (kept across launches).
+    @Published var externalMode: ExternalMode = ExternalMode(rawValue: UserDefaults.standard.string(forKey: "dtd.external.mode") ?? "") ?? .program {
+        didSet { UserDefaults.standard.set(externalMode.rawValue, forKey: "dtd.external.mode") }
+    }
+    /// Number of input tiles in the multiview (fixed slots; inputs beyond them are not shown).
+    enum MultiviewLayout: Int, CaseIterable, Identifiable {
+        case four = 4, eight = 8, ten = 10, sixteen = 16
+        var id: Int { rawValue }
+        var slots: Int { rawValue }
+        var columns: Int { self == .ten ? 5 : 4 }
+        var label: String { "2 + \(rawValue)" }
+    }
+    @Published var multiviewLayout: MultiviewLayout = MultiviewLayout(rawValue: UserDefaults.standard.integer(forKey: "dtd.multiview.layout")) ?? .eight {
+        didSet { UserDefaults.standard.set(multiviewLayout.rawValue, forKey: "dtd.multiview.layout") }
+    }
+    /// DTDStudio owns the external display (its own scene, not mirroring).
     @Published var externalDisplayConnected = false
+    /// A second screen is attached at all (also when iPadOS uses it as an extended Stage Manager display,
+    /// where apps get no external scene: the "PGM output" window is moved there instead).
+    @Published var externalScreenPresent = UIScreen.screens.count > 1
+    private var screenObservers: [NSObjectProtocol] = []
+    func watchScreens() {
+        guard screenObservers.isEmpty else { return }
+        for n in [UIScreen.didConnectNotification, UIScreen.didDisconnectNotification] {
+            screenObservers.append(NotificationCenter.default.addObserver(forName: n, object: nil, queue: .main) { [weak self] _ in
+                MainActor.assumeIsolated { self?.externalScreenPresent = UIScreen.screens.count > 1 }
+            })
+        }
+    }
     @Published private(set) var canUndo = false
     @Published private(set) var canRedo = false
     /// Bitrate actually in use (adaptive bitrate may lower it below `encoder.bitrate`).
     @Published private(set) var currentBitrate = EncoderSettings().bitrate
     private var calmSeconds = 0
 
-    enum ExternalMode: String, CaseIterable { case program, multiview }
+    enum ExternalMode: String, CaseIterable { case program, multiview, mirror }
 
     // MARK: Pipeline
     let switcher = Switcher()
     let titleRenderer = TitleRenderer()
+    /// Video list played on a schedule (import → list → stream connection).
+    private(set) lazy var playout: PlayoutController = {
+        let p = PlayoutController(); p.engine = self; return p
+    }()
     let annotation = AnnotationLayer()
     let replayBuffer = ReplayBuffer()
     private(set) lazy var replay = ReplaySource(buffer: replayBuffer)
@@ -196,6 +262,7 @@ final class StudioEngine: ObservableObject {
         Self.shared = self
 
         let om = outputManager, rb = replayBuffer, titlesR = titleRenderer, ann = annotation, chatR = liveChat.renderer
+        let nt = nTitle
         #if targetEnvironment(simulator)
         // No hardware encoder in the Simulator: skip encoding in UI-test/demo runs (outputs can't work there anyway).
         let encodeOn = !DemoMode.isOn
@@ -213,9 +280,12 @@ final class StudioEngine: ObservableObject {
         ve.onEncoded = { sb in om.video(sb); rb.append(sb) }
         ve.onProblem = { [weak self] text in Task { @MainActor in self?.logToLiveOutputs(text) } }
         switcher.onPoolRebuilt = { [weak self] in
-            Task { @MainActor in self?.logToLiveOutputs("Hết bộ đệm khung hình — đã tạo lại (khung bị giữ ở bộ mã hoá)") }
+            Task { @MainActor in self?.logToLiveOutputs(L("Hết bộ đệm khung hình — đã tạo lại (khung bị giữ ở bộ mã hoá)")) }
         }
-        audio.onBuffer = { pcm, when in ae.append(pcm, when: when) }
+        audio.onBuffer = { pcm, when in
+            ae.append(pcm, when: when)
+            ndiBox.sendAudio(pcm)          // Program audio with the NDI output (no-op when it is off)
+        }
         ae.onEncoded = { buf, when in om.audio(buf, when: when) }
         // audio always flows: the mixer, or silence when the mixer could not start (see startSilentAudio)
         om.hasAudio = { true }
@@ -227,6 +297,23 @@ final class StudioEngine: ObservableObject {
                 let k = size.width / h.extent.width
                 let hs = h.transformed(by: CGAffineTransform(scaleX: k, y: k))
                 img = img.map { hs.composited(over: $0) } ?? hs
+            }
+            // N-Title: an NDI source with alpha, scaled to fill the frame, with its own fade
+            if let (pb, a) = nt.current(now: now) {
+                var n = CIImage(cvPixelBuffer: pb)
+                let ext = n.extent
+                if ext.width > 0, ext.height > 0 {
+                    let k = max(size.width / ext.width, size.height / ext.height)
+                    n = n.transformed(by: .init(scaleX: k, y: k))
+                    n = n.transformed(by: .init(translationX: (size.width - ext.width * k) / 2, y: (size.height - ext.height * k) / 2))
+                    if a < 1 {
+                        n = n.applyingFilter("CIColorMatrix", parameters: [
+                            "inputRVector": CIVector(x: a, y: 0, z: 0, w: 0), "inputGVector": CIVector(x: 0, y: a, z: 0, w: 0),
+                            "inputBVector": CIVector(x: 0, y: 0, z: a, w: 0), "inputAVector": CIVector(x: 0, y: 0, z: 0, w: a)])
+                    }
+                    n = n.cropped(to: CGRect(origin: .zero, size: size))
+                    img = img.map { n.composited(over: $0) } ?? n
+                }
             }
             if let c = chatR.render(canvas: size, now: now) { img = img.map { c.composited(over: $0) } ?? c }
             if let a = ann.current { img = img.map { a.composited(over: $0) } ?? a }
@@ -243,6 +330,7 @@ final class StudioEngine: ObservableObject {
         titles = Self.load([TitleItem].self, key: "dtd.titles.v1") ?? Self.defaultTitles
         titlesSnapshot = titles
         MainActorBox.setTitles(titles)
+        if !DemoMode.isOn, let n = nTitleName, !n.isEmpty { setNTitleSource(n) }
         switcher.start()
         // Demo/screenshot mode: no microphone or LAN listeners, so no permission alerts cover the UI.
         if !DemoMode.isOn {
@@ -253,6 +341,7 @@ final class StudioEngine: ObservableObject {
             control.target = self
             try? control.start()
         }
+        updateIdleTimer()
 
         replay.onFinished = { [weak self] in self?.replayFinished() }
         pairing.engine = self
@@ -266,9 +355,26 @@ final class StudioEngine: ObservableObject {
             Task { @MainActor in
                 guard let self else { return }
                 // Assign only on change: every @Published write re-renders the whole studio view.
+                let m = self.meters
                 let level = (self.audio.peakDB * 2).rounded() / 2
-                if level != self.audioLevel { self.audioLevel = level }
-                let ch = self.audio.channels.map { c -> AudioChannelState in var c = c; c.level = (c.level * 2).rounded() / 2; return c }
+                if level != m.level { m.level = level }
+                let levelR = (self.audio.peakDBR * 2).rounded() / 2
+                if levelR != m.levelR { m.levelR = levelR }
+                var levels: [UUID: Float] = [:], levelsR: [UUID: Float] = [:]
+                let ch = self.audio.channels.map { c -> AudioChannelState in
+                    levels[c.id] = (c.level * 2).rounded() / 2
+                    levelsR[c.id] = (c.levelR * 2).rounded() / 2
+                    var s = c; s.level = -60; s.levelR = -60; return s
+                }
+                if levels != m.levels { m.levels = levels }
+                if levelsR != m.levelsR { m.levelsR = levelsR }
+                var pL: [UUID: Float] = [:], pR: [UUID: Float] = [:]
+                for (id, v) in self.audio.preFaderLevels() { pL[id] = (v.0 * 2).rounded() / 2; pR[id] = (v.1 * 2).rounded() / 2 }
+                if pL != m.pflL { m.pflL = pL }
+                if pR != m.pflR { m.pflR = pR }
+                let air = self.audio.onAirChannels()
+                if air != m.onAir { m.onAir = air }
+                // the channel list itself only changes when a source, gain, mute… changes
                 if ch != self.audioChannels { self.audioChannels = ch }
             }
         })
@@ -278,6 +384,7 @@ final class StudioEngine: ObservableObject {
         timers.append(Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
             Task { @MainActor in
                 guard let self else { return }
+                self.renderWatchdog()
                 StreamStats.bitrateKbps = self.currentBitrate / 1000
                 StreamStats.fps = self.format.fps
                 self.encoderWatchdog()
@@ -312,7 +419,23 @@ final class StudioEngine: ObservableObject {
 
     // MARK: Sources
 
+    /// The same camera / stream / NDI source is already an input (a second copy would fight for the device
+    /// or the port and show the same picture twice).
+    func isDuplicate(_ source: any VideoSource) -> Bool {
+        sources.contains { s in
+            if let a = s as? CameraSource, let b = source as? CameraSource { return a.deviceID == b.deviceID }
+            if let a = s as? SRTInputSource, let b = source as? SRTInputSource { return a.url == b.url }
+            if let a = s as? RTMPInputSource, let b = source as? RTMPInputSource { return a.url == b.url }
+            if let a = s as? RTSPInputSource, let b = source as? RTSPInputSource { return a.url == b.url }
+            #if NDI_SDK
+            if let a = s as? NDIInputSource, let b = source as? NDIInputSource { return a.ndiName == b.ndiName }
+            #endif
+            return false
+        }
+    }
+
     func add(_ source: any VideoSource) {
+        guard !isDuplicate(source) else { return }
         sources.append(source)
         switcher.register(source.id, store: source.frames)
         let a = audio, id = source.id, name = source.name
@@ -320,8 +443,16 @@ final class StudioEngine: ObservableObject {
         if let s = source as? RTMPInputSource { s.sink.onAudio = { a.feed(sourceID: id, name: name, buffer: $0) } }
         if let s = source as? RTSPInputSource { s.onAudio = { a.feed(sourceID: id, name: name, buffer: $0) } }
         if let s = source as? FileSource { s.onAudio = { a.feed(sourceID: id, name: name, buffer: $0) } }
-        Task { await source.start(); objectWillChange.send() }
-        if programID == nil { switcher.take(source.id) } else if previewID == nil { switcher.setPreview(source.id) }
+        if let s = source as? PlaylistSource { s.onAudio = { a.feed(sourceID: id, name: name, buffer: $0) } }
+        #if NDI_SDK
+        if let s = source as? NDIInputSource {
+            s.onAudio = { a.feed(sourceID: id, name: name, buffer: $0) }
+            s.onStatus = { [weak self] in self?.objectWillChange.send() }
+        }
+        #endif
+        Task { await source.start(); updateMediaPlayback(); objectWillChange.send() }
+        // A new source only goes to PVW (when PVW is empty): PGM changes only with a transition (CUT / AUTO / T-bar).
+        if previewID == nil { switcher.setPreview(source.id) }
         syncState()
     }
 
@@ -338,20 +469,59 @@ final class StudioEngine: ObservableObject {
 
     // MARK: Switching
 
-    func select(_ id: UUID) { switcher.setPreview(id); syncState() }
-    func take(_ id: UUID) { switcher.take(id); syncState() }
-    func cut() {
-        if superFGStingerReady { stinger(hold: 0.1); return }
-        switcher.cut(); syncState()
+    func select(_ id: UUID) {
+        // choosing a video for PVW plays it (also one the operator had paused)
+        (sources.first { $0.id == id } as? FileSource)?.heldByUser = false
+        switcher.setPreview(id); syncState()
+        updateMediaPlayback()
     }
-    func autoTransition() {
-        if superFGStingerReady { stinger(hold: max(0.15, transitionDuration * 0.4)); return }
+    func take(_ id: UUID) { switcher.take(id); syncState(); autoSwitcher.noteManualTake() }
+    /// CUT and AUTO both take the selected effect; choose the CUT effect for an instant take.
+    func cut() { takePreviewWithSelectedTransition(stingerHold: 0.1) }
+    func autoTransition() { takePreviewWithSelectedTransition(stingerHold: max(0.15, transitionDuration * 0.4)) }
+
+    private func takePreviewWithSelectedTransition(stingerHold: Double) {
+        if !replayOnAir, let id = cuedReplayID, previewID == id {
+            guard validateReplayLayout() else { return }
+            beginReplayOnAir(id, stingerHold: stingerHold)
+        } else {
+            performSelectedTransition(stingerHold: stingerHold)
+        }
+    }
+
+    private var selectedTransitionEndsAt: CFTimeInterval = 0
+
+    private func performSelectedTransition(stingerHold: Double) {
+        guard takeAllowed() else { return }
+        autoSwitcher.noteManualTake()
+        if superFGStingerReady {
+            selectedTransitionEndsAt = CACurrentMediaTime() + Switcher.cardIn + stingerHold + Switcher.cardOut
+            stinger(hold: stingerHold)
+            return
+        }
+        if transition == .cut {
+            switcher.cut(); syncState()
+            return
+        }
+        selectedTransitionEndsAt = CACurrentMediaTime() + transitionDuration
         switcher.auto(transition, duration: transitionDuration)
         DispatchQueue.main.asyncAfter(deadline: .now() + transitionDuration + 0.05) { [weak self] in self?.syncState() }
     }
 
+    /// CUT / AUTO arriving twice in a row (double tap, the same key on two views, a controller sending
+    /// press + release) flipped program straight back to the previous camera; and a take while a SuperFG
+    /// stinger is still covering the screen switched the cameras a second time behind it.
+    private var lastTakeAt: CFTimeInterval = 0
+    private func takeAllowed() -> Bool {
+        let now = CACurrentMediaTime()
+        if switcher.stingerBusy || now < selectedTransitionEndsAt || now - lastTakeAt < 0.3 { return false }
+        lastTakeAt = now
+        return true
+    }
+
     /// T-bar position 0...1; releasing at the end completes the transition.
     func tbar(_ p: Double) {
+        if p > 0.001 { autoSwitcher.noteManualTake() }
         if superFGStingerReady || switcher.stingerBusy, let c = stingerArt() {
             if switcher.stingerManual(p, background: c.bg, text: c.text, motion: c.motion, textMotion: superFGTextMotion) { syncState() }
             return
@@ -385,7 +555,14 @@ final class StudioEngine: ObservableObject {
         guard program != tally.program || preview != tally.preview else { return }
         let old = tally.program
         tally = (program, preview)
-        audio.setProgram(program, main: switcher.state.program)
+        layoutSource.setActive(program.contains(layoutSource.id) || preview.contains(layoutSource.id))
+        updateMediaPlayback()
+        // The iPad's own cameras have no audio of their own: their sound is the Mic channel. With AFV on the
+        // Mic, it is on air while an iPad camera is on PGM.
+        let cams = Set(sources.compactMap { $0 as? CameraSource }.map(\.id))
+        let main = switcher.state.program
+        let camOnAir = audio.afvMode == .afv1 ? main.map(cams.contains) ?? false : !program.isDisjoint(with: cams)
+        audio.setProgram(program, main: main, micOnAir: cams.isEmpty || camOnAir)
         for id in program.symmetricDifference(old) {
             Task { await ptzControllers[id]?.tally(program.contains(id)) }
         }
@@ -393,6 +570,23 @@ final class StudioEngine: ObservableObject {
         for case let s as NDIInputSource in sources { s.setTally(program: program.contains(s.id), preview: preview.contains(s.id)) }
         #endif
         syncState()
+    }
+
+    /// Movie inputs play only while they are seen: on PVW or PGM (also as PiP, inside a layout window that
+    /// is on PVW / PGM, or as the chroma background of a source there). Clicking a video puts it on PVW and
+    /// it plays; the other videos in "Video đang dùng" wait paused where they were (no sound, no decoding).
+    func updateMediaPlayback() {
+        var active = tally.program.union(tally.preview)
+        if active.contains(layoutSource.id) { active.formUnion(layoutSlots.compactMap { $0 }) }
+        for id in active { if let bg = processing[id]?.keyBackgroundID { active.insert(bg) } }
+        for case let f as FileSource in sources {
+            let on = active.contains(f.id)
+            if on && !f.isPlaying && !f.heldByUser { f.play() } else if !on && f.isPlaying { f.pause() }
+        }
+        // a cued playlist starts rolling when a transition puts it on PGM (also inside a layout on PGM)
+        var onAir = tally.program
+        if onAir.contains(layoutSource.id) { onAir.formUnion(layoutSlots.compactMap { $0 }) }
+        playout.programChanged(onAir)
     }
 
     // MARK: Graphics
@@ -405,13 +599,14 @@ final class StudioEngine: ObservableObject {
 
     /// Adds (or reuses) a movie as an input and puts it on preview.
     func cueMovie(_ url: URL) {
-        if let s = sources.first(where: { ($0 as? FileSource)?.url == url }) { select(s.id); (s as? FileSource)?.restart(); return }
+        if let s = sources.first(where: { ($0 as? FileSource)?.url == url }) {
+            (s as? FileSource)?.heldByUser = false
+            select(s.id); (s as? FileSource)?.restart(); return
+        }
         guard FileManager.default.isReadableFile(atPath: url.path) else { message = LF("Không đọc được video %@", "\(url.lastPathComponent)"); return }
         let s = FileSource(name: url.deletingPathExtension().lastPathComponent, url: url)
         add(s); select(s.id)
     }
-
-    /// Double-tap on a library item: straight to program (cut).
 
     func cuePicture(_ url: URL) {
         if let id = libraryInput(url, movie: false) { select(id) }
@@ -428,7 +623,7 @@ final class StudioEngine: ObservableObject {
             add(s); return s.id
         }
         if let s = sources.first(where: { ($0 as? ImageSource)?.url == url }) { return s.id }
-        guard UIImage(contentsOfFile: url.path) != nil else { message = LF("Không đọc được ảnh %@", "\(url.lastPathComponent)"); return nil }
+        guard PictureIO.isReadable(url) else { message = LF("Không đọc được ảnh %@", "\(url.lastPathComponent)"); return nil }
         let s = ImageSource(url: url)
         add(s); return s.id
     }
@@ -439,7 +634,7 @@ final class StudioEngine: ObservableObject {
         }
         checkpoint()
         logoAspect = px.width / max(px.height, 1)
-        var l = OverlayLayer(image: ci, rect: logoCorner.rect(size: logoFrameSize()))
+        var l = OverlayLayer(image: ci, rect: savedLogoRect(size: logoFrameSize()))
         l.visible = logoOn                      // armed; goes on air with the Logo key (live swap if already on)
         l.opacity = CGFloat(logoOpacity)
         logo = l; currentLogoURL = url
@@ -459,12 +654,47 @@ final class StudioEngine: ObservableObject {
     /// Applies the size slider, keeping the logo pinned to the corner it sits nearest to
     /// (so a logo dragged with "Sắp xếp" stays where it was put).
     private func resizeLogo() {
-        guard let cur = logo?.rect else { return }
+        guard !resizingFromEditor, let cur = logo?.rect else { return }
         let sz = logoFrameSize()
         let right = cur.midX > 0.5, bottom = cur.midY > 0.5
         let x = right ? cur.maxX - sz.width : cur.minX
         let y = bottom ? cur.maxY - sz.height : cur.minY
-        logo?.rect = CGRect(x: min(max(x, 0), 1 - sz.width), y: min(max(y, 0), 1 - sz.height), width: sz.width, height: sz.height)
+        setLogoRect(CGRect(x: x, y: y, width: sz.width, height: sz.height))
+    }
+
+    // MARK: Logo editor (move / resize / place)
+
+    private var resizingFromEditor = false
+
+    /// Puts the logo box at `r` (normalised, top-left origin), kept inside the frame, and remembers it.
+    func setLogoRect(_ r: CGRect) {
+        let w = min(r.width, 1), h = min(r.height, 1)
+        let c = CGRect(x: min(max(r.minX, 0), 1 - w), y: min(max(r.minY, 0), 1 - h), width: w, height: h)
+        logo?.rect = c
+        UserDefaults.standard.set([Double(c.minX), Double(c.minY)], forKey: "dtd.logo.origin")
+    }
+
+    /// Drag in the editor: moves the logo's top-left corner.
+    func moveLogo(to origin: CGPoint) {
+        guard let r = logo?.rect else { return }
+        setLogoRect(CGRect(origin: origin, size: r.size))
+    }
+
+    /// Resize handle in the editor: new height (fraction of the frame), top-left corner stays put.
+    func resizeLogo(height: Double) {
+        guard let r = logo?.rect else { return }
+        resizingFromEditor = true
+        logoSize = min(max(height, 0.03), 0.6)
+        resizingFromEditor = false
+        setLogoRect(CGRect(origin: r.origin, size: logoFrameSize()))
+    }
+
+    /// Where the logo was left last time (the preset position if it was never moved).
+    private func savedLogoRect(size: CGSize) -> CGRect {
+        if let o = UserDefaults.standard.array(forKey: "dtd.logo.origin") as? [Double], o.count == 2 {
+            return CGRect(x: min(max(o[0], 0), 1 - size.width), y: min(max(o[1], 0), 1 - size.height), width: size.width, height: size.height)
+        }
+        return logoCorner.rect(size: size, margin: CGFloat(logoMargin))
     }
 
     /// Reads a still (PNG/JPEG/HEIC) with its EXIF orientation applied and alpha kept,
@@ -486,7 +716,7 @@ final class StudioEngine: ObservableObject {
         let url = MediaLibrary.directory(.logo).appendingPathComponent(name)
         guard FileManager.default.fileExists(atPath: url.path), let (ci, px) = Self.loadOverlayImage(url) else { return }
         logoAspect = px.width / max(px.height, 1)
-        var l = OverlayLayer(image: ci, rect: logoCorner.rect(size: logoFrameSize()))
+        var l = OverlayLayer(image: ci, rect: savedLogoRect(size: logoFrameSize()))
         l.visible = false
         l.opacity = CGFloat(logoOpacity)
         logo = l; currentLogoURL = url
@@ -724,6 +954,7 @@ final class StudioEngine: ObservableObject {
     func refreshLayout() {
         let stores = layoutSlots.map { id in id.flatMap { i in sources.first { $0.id == i }?.frames } }
         var still: CIImage?, color: CIColor?, live: FrameStore?
+        do {
         switch layoutBackground {
         case .color(let hex): color = CIColor(color: UIColor(hex: hex))
         case .picture(let name):
@@ -731,8 +962,9 @@ final class StudioEngine: ObservableObject {
             if let img = UIImage(contentsOfFile: url.path)?.normalized() { still = CIImage(image: img) }
         case .source(let id): live = sources.first { $0.id == id }?.frames
         }
-        var tpl = layoutTemplate
-        if tpl.slots.count == 1 && !layoutEdited && !tpl.slots[0].perspective {
+        }
+        var tpl = replayLayoutOverride?.template ?? layoutTemplate
+        if replayLayoutOverride == nil, tpl.slots.count == 1 && !layoutEdited && !tpl.slots[0].perspective {
             // one-window layout: shrink around the centre so the background shows around it
             let k = CGFloat(min(max(layoutSingleScale, 0.2), 1))
             var slot = tpl.slots[0]
@@ -745,7 +977,8 @@ final class StudioEngine: ObservableObject {
         }
         layoutSource.configure(template: tpl, inputs: stores,
                                size: CGSize(width: format.width, height: format.height), background: live,
-                               still: still, color: color, frame: layoutFrame, frameImage: frameImg)
+                               still: still, color: color, frame: layoutFrame, frameImage: frameImg,
+                               slotStills: replayLayoutOverride?.stills ?? [:])
     }
 
     /// What fills the frame behind the PiP layout windows when the cameras don't cover it.
@@ -935,7 +1168,7 @@ final class StudioEngine: ObservableObject {
         let s = scopes
         Task.detached(priority: .utility) {
             let r = s.analyze(pb)
-            await MainActor.run { [weak self] in self?.scopeResult = r }
+            await MainActor.run { [weak self] in self?.meters.scope = r }
         }
     }
 
@@ -1102,7 +1335,7 @@ final class StudioEngine: ObservableObject {
         var r: [UUID: String] = [:]
         for (id, c) in now {
             let p = lastCounts[id] ?? (0, 0)
-            r[id] = "Hình \(max(0, c.0 - p.0))/s · Tiếng \(max(0, c.1 - p.1))/s"
+            r[id] = LF("Hình %@/s · Tiếng %@/s", "\(max(0, c.0 - p.0))", "\(max(0, c.1 - p.1))")
         }
         lastCounts = now
         if r != outputRates { outputRates = r }
@@ -1137,6 +1370,39 @@ final class StudioEngine: ObservableObject {
         #endif
     }
 
+    // MARK: N-Title (an NDI source with alpha used as a title layer over PGM)
+
+    let nTitle = NTitleFeed()
+    private var nTitleRecv: (any VideoSource)?
+    /// The chosen NDI title source (nil = none). Persisted; the receiver is (re)started when set.
+    @Published var nTitleName: String? = UserDefaults.standard.string(forKey: "dtd.ntitle.name") {
+        didSet { UserDefaults.standard.set(nTitleName, forKey: "dtd.ntitle.name") }
+    }
+    /// On-air state of the N-Title (its own key / toggle), with a fade in NTitleFeed.
+    @Published private(set) var nTitleVisible = false
+
+    /// Point the N-Title at an NDI source (or nil to clear); starts a dedicated receiver with alpha.
+    func setNTitleSource(_ name: String?) {
+        if let old = nTitleRecv { Task { await old.stop() } }
+        nTitleRecv = nil; nTitle.setStore(nil)
+        nTitleName = name
+        guard let name, !name.isEmpty else { return }
+        #if NDI_SDK
+        let r = NDIInputSource(ndiName: name)
+        nTitleRecv = r
+        Task { await r.start(); nTitle.setStore(r.frames) }
+        #else
+        message = L("NDI chưa khả dụng trong bản này")
+        #endif
+    }
+
+    func setNTitleVisible(_ on: Bool) {
+        guard nTitleRecv != nil || !on else { message = L("Chưa chọn nguồn NDI cho N-Title"); return }
+        nTitleVisible = on
+        nTitle.setOn(on)
+    }
+    func toggleNTitle() { setNTitleVisible(!nTitleVisible) }
+
     /// Writes a line into the diagnostic log of every destination that is running.
     func logToLiveOutputs(_ text: String) {
         for o in outputs where (outputStatus[o.id] ?? .idle) != .idle { OutputLog.shared.add(o.id, text) }
@@ -1153,7 +1419,10 @@ final class StudioEngine: ObservableObject {
         watchdogTick += 1
         if watchdogTick % 5 == 1 {
             let st = switcher.renderStats.take()
-            logToLiveOutputs("Khung hình/giây: dựng \(r - lastRendered) · vào mã hoá \(i - lastEncIn) · ra \(o - lastEncOut) · dựng TB \(String(format: "%.1f", st.avg)) ms, max \(String(format: "%.0f", st.max)) ms, quá hạn \(st.over) · \(format.width)×\(format.height) \(currentBitrate / 1000)/\(encoder.bitrate / 1000) kbps\(thermalThrottled ? " (máy nóng)" : "")")
+            logToLiveOutputs(LF("Khung hình/giây: dựng %@ · vào mã hoá %@ · ra %@ · dựng TB %@ ms, max %@ ms, quá hạn %@ · %@×%@ %@/%@ kbps%@",
+                                 "\(r - lastRendered)", "\(i - lastEncIn)", "\(o - lastEncOut)", String(format: "%.1f", st.avg),
+                                 String(format: "%.0f", st.max), "\(st.over)", "\(format.width)", "\(format.height)",
+                                 "\(currentBitrate / 1000)", "\(encoder.bitrate / 1000)", thermalThrottled ? L(" (máy nóng)") : ""))
         }
     }
 
@@ -1299,23 +1568,153 @@ final class StudioEngine: ObservableObject {
 
     // MARK: Replay
 
+    /// Instant replay (REPLAY key on the remote page / OSC / API). First press: the last seconds go to PVW
+    /// only (PGM untouched). Next press, while it is still on PVW: the same moment plays on PGM.
     func startReplay(speed: Double = 0.5, length: Double = 8) {
-        if !sources.contains(where: { $0.id == replay.id }) {
-            sources.append(replay)
-            switcher.register(replay.id, store: replay.frames)
-            Task { await replay.start() }
+        if previewID == replay.id, !replayOnAir, programID != replay.id {
+            guard validateReplayLayout() else { return }
+            replay.playAgain()
+            beginReplayOnAir(replay.id)
+            return
         }
+        guard replayCanCue() else { return }
+        ensureReplaySource()
         replay.speed = speed; replay.length = length
         replay.play()
-        switcher.setPreview(replay.id)
-        autoTransition()
+        switcher.setPreview(replay.id); syncState()
+        cuedReplayID = replay.id
+    }
+
+    /// There is one REPLAY input: while it is on PGM, cueing another moment would change PGM itself.
+    private func replayCanCue(file url: URL? = nil) -> Bool {
+        let fileOnAir = url.flatMap { u in sources.first { ($0 as? FileSource)?.url == u } }.map { $0.id == programID } ?? false
+        if replayOnAir || programID == replay.id || fileOnAir || (replayFileID != nil && programID == replayFileID) {
+            message = L("Replay đang phát trên PGM — bấm DỪNG trước khi đưa đoạn khác lên Preview")
+            return false
+        }
+        return true
     }
 
     /// True while a replay is on PGM (drives the PLAY REPLAY / STOP button).
     @Published private(set) var replayOnAir = false
+    /// Replay held on a frame (VAR): it stays on air until played on or stopped.
+    @Published private(set) var replayHeld = false
+
+    /// Where a replay goes on air: the whole frame, or one window of a PiP layout (the other windows keep
+    /// their inputs). When the replay ends the previous source and the previous layout come back.
+    struct ReplayPlacement: Codable, Equatable {
+        enum Mode: String, Codable, CaseIterable { case full, pip, layout }
+        enum Corner: String, Codable, CaseIterable { case topRight, bottomRight, topLeft, bottomLeft }
+        enum Below: String, Codable, CaseIterable { case none, input, image }
+        /// full = replay on the whole frame · pip = the live picture stays full frame, a PiP column holds the
+        /// replay (16:9) and below it an optional second 16:9 window (an input or a picture) · layout = one
+        /// window of a PiP layout template
+        var mode: Mode = .full
+        var layoutID = 4          // .layout: "main + side"
+        var slot = 0
+        var sourcesBySlot: [Int: UUID] = [:]
+        var corner: Corner = .topRight
+        var pipWidth = 0.32       // PiP window width (fraction of the frame)
+        var below: Below = .none
+        var belowInputID: UUID?   // .input (nil = the preview source, else the first free input)
+        var belowPicture: String? // .image: picture in the library
+
+        var inLayout: Bool { mode != .full }
+
+        init() {}
+        private enum K: String, CodingKey { case mode, inLayout, layoutID, slot, sourcesBySlot, corner, pipWidth, below, belowInputID, belowPicture }
+        init(from d: Decoder) throws {
+            let c = try d.container(keyedBy: K.self)
+            let raw = try c.decodeIfPresent(String.self, forKey: .mode)
+            if let raw { mode = Mode(rawValue: raw) ?? .pip }                       // "single"/"dual" (earlier build) → pip
+            else if try c.decodeIfPresent(Bool.self, forKey: .inLayout) == true { mode = .layout }
+            layoutID = try c.decodeIfPresent(Int.self, forKey: .layoutID) ?? 4
+            slot = try c.decodeIfPresent(Int.self, forKey: .slot) ?? 0
+            sourcesBySlot = try c.decodeIfPresent([Int: UUID].self, forKey: .sourcesBySlot) ?? [:]
+            corner = try c.decodeIfPresent(Corner.self, forKey: .corner) ?? .topRight
+            pipWidth = try c.decodeIfPresent(Double.self, forKey: .pipWidth) ?? 0.32
+            below = try c.decodeIfPresent(Below.self, forKey: .below) ?? .none
+            belowInputID = try c.decodeIfPresent(UUID.self, forKey: .belowInputID)
+            belowPicture = try c.decodeIfPresent(String.self, forKey: .belowPicture)
+        }
+        func encode(to e: Encoder) throws {
+            var c = e.container(keyedBy: K.self)
+            try c.encode(mode, forKey: .mode); try c.encode(layoutID, forKey: .layoutID); try c.encode(slot, forKey: .slot)
+            try c.encode(sourcesBySlot, forKey: .sourcesBySlot)
+            try c.encode(corner, forKey: .corner); try c.encode(pipWidth, forKey: .pipWidth); try c.encode(below, forKey: .below)
+            try c.encodeIfPresent(belowInputID, forKey: .belowInputID); try c.encodeIfPresent(belowPicture, forKey: .belowPicture)
+        }
+
+        /// .pip windows on a canvas of aspect `a` (width / height), normalised, top-left origin:
+        /// [full frame (live), replay 16:9, (below 16:9)].
+        func rects(canvasAspect a: CGFloat) -> [CGRect] {
+            guard mode == .pip else { return [] }
+            var w = CGFloat(min(max(pipWidth, 0.18), 0.48))
+            var h = w * a * 9 / 16                                   // exactly 16:9 in pixels
+            let mx: CGFloat = 0.025, my = mx * a, gap = 0.012 * a
+            let two = below != .none
+            let colH = { two ? 2 * h + gap : h }
+            if colH() > 1 - 2 * my { let k = (1 - 2 * my) / colH(); w *= k; h *= k }   // keep the column on screen
+            let right = corner == .topRight || corner == .bottomRight
+            let top = corner == .topRight || corner == .topLeft
+            let x = right ? 1 - mx - w : mx
+            let y = top ? my : 1 - my - colH()
+            var r = [CGRect(x: 0, y: 0, width: 1, height: 1), CGRect(x: x, y: y, width: w, height: h)]
+            if two { r.append(CGRect(x: x, y: y + h + gap, width: w, height: h)) }
+            return r
+        }
+    }
+    @Published var replayPlacement: ReplayPlacement = StudioEngine.load(ReplayPlacement.self, key: "dtd.replay.placement") ?? ReplayPlacement() {
+        didSet { UserDefaults.standard.set(try? JSONEncoder().encode(replayPlacement), forKey: "dtd.replay.placement") }
+    }
+    private func validateReplayLayout() -> Bool {
+        guard replayPlacement.mode == .layout else { return true }
+        guard let template = LayoutTemplate.all.first(where: { $0.id == replayPlacement.layoutID }),
+              template.slots.indices.contains(replayPlacement.slot) else {
+            replayEditor.message = L("Chọn lại layout và khung Replay.")
+            message = replayEditor.message
+            return false
+        }
+        let usable = Set(sources.filter { $0.id != layoutSource.id && $0.id != replay.id }.map(\.id))
+        let missing = template.slots.indices.filter {
+            $0 != replayPlacement.slot && !(replayPlacement.sourcesBySlot[$0].map { usable.contains($0) } ?? false)
+        }
+        guard missing.isEmpty else {
+            replayEditor.message = LF("Chọn source cho khung %@ trước khi phát Replay.", missing.map { String($0 + 1) }.joined(separator: ", "))
+            message = replayEditor.message
+            return false
+        }
+        return true
+    }
+
+    private var preReplayLayout: (id: Int, slots: [UUID?])?
+    private var replayInLayout = false
+    /// While the replay PiP is on air: its windows and the picture for the window below the replay.
+    private var replayLayoutOverride: (template: LayoutTemplate, stills: [Int: CIImage])?
+
+    /// VAR: hold the replay on its frame / play on.
+    func replayHoldToggle() {
+        if let f = replayFile {
+            if replayHeld { f.resumeRange(); replayHeld = false } else { f.pause(); f.heldByUser = true; replayHeld = true }
+        } else if replay.isPlaying {
+            if replayHeld { replay.resume(speed: replayEditor.speed); replayHeld = false } else { replay.pause(); replayHeld = true }
+        }
+    }
+
+    /// VAR: exactly `n` frames forward / back (holds the replay).
+    func replayStep(_ n: Int) {
+        if let f = replayFile { f.stepFrames(n); replayHeld = true }
+        else if replay.isPlaying { replay.step(n); replayHeld = true }
+    }
+
+    private var replayFile: FileSource? {
+        replayFileID.flatMap { id in sources.first { $0.id == id } as? FileSource }
+    }
     /// Program source before the replay was taken to air; restored when the replay ends or is stopped.
     private var preReplayProgram: UUID?
     private var replayFileID: UUID?
+    private var cuedReplayID: UUID?
+    private var replayReturnScheduled = false
 
     func stopReplay() {
         replay.cancel()
@@ -1325,18 +1724,96 @@ final class StudioEngine: ObservableObject {
 
     /// Takes the previous source back to air (if the replay is still on PGM) and clears the replay state.
     private func returnFromReplay() {
+        guard replayOnAir else { return }
+        let wait = max(selectedTransitionEndsAt, lastTakeAt + 0.3) - CACurrentMediaTime()
+        if wait > 0 || switcher.stingerBusy {
+            guard !replayReturnScheduled else { return }
+            replayReturnScheduled = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + max(0.05, wait) + 0.05) { [weak self] in
+                self?.replayReturnScheduled = false
+                self?.returnFromReplay()
+            }
+            return
+        }
         let onAir = programID == replay.id || (replayFileID != nil && programID == replayFileID)
+            || (replayInLayout && programID == layoutSource.id)
         if onAir, let back = preReplayProgram, sources.contains(where: { $0.id == back }) {
             switcher.setPreview(back); syncState()
-            autoTransition()
+            performSelectedTransition(stingerHold: max(0.15, transitionDuration * 0.4))
         }
-        replayOnAir = false; preReplayProgram = nil; replayFileID = nil
+        // the replay window is taken down: the layout as it was before, once the transition back is over
+        if replayInLayout, let saved = preReplayLayout {
+            DispatchQueue.main.asyncAfter(deadline: .now() + max(0, selectedTransitionEndsAt - CACurrentMediaTime()) + 0.15) { [weak self] in
+                guard let self, !self.replayOnAir else { return }
+                self.replayLayoutOverride = nil
+                self.layoutTemplateID = saved.id
+                self.layoutSlots = saved.slots
+                self.refreshLayout()
+            }
+        }
+        replayOnAir = false; replayHeld = false; preReplayProgram = nil; replayFileID = nil
+        replayInLayout = false; preReplayLayout = nil
     }
 
-    private func beginReplayOnAir(_ id: UUID) {
+    private func beginReplayOnAir(_ id: UUID, stingerHold: Double? = nil) {
+        guard !replayOnAir, !switcher.stingerBusy,
+              CACurrentMediaTime() >= selectedTransitionEndsAt,
+              CACurrentMediaTime() - lastTakeAt >= 0.3 else { return }
+        cuedReplayID = nil
+        if id != replay.id { replayFileID = id }
         if programID != id { preReplayProgram = programID }
-        replayOnAir = true
-        autoTransition()
+        replayOnAir = true; replayHeld = false
+        if replayPlacement.mode == .pip {
+            // the live picture stays full frame; PiP column: replay (16:9) + optional input / picture below
+            let p = replayPlacement
+            preReplayLayout = (layoutTemplateID, layoutSlots)
+            let a = CGFloat(format.width) / CGFloat(max(format.height, 1))
+            let rects = p.rects(canvasAspect: a)
+            let tpl = LayoutTemplate(id: 100, name: L("Replay PiP"), slots: rects.map { LayoutTemplate.Slot(rect: $0) })
+            let usable = sources.map(\.id).filter { $0 != layoutSource.id && $0 != replay.id && $0 != id }
+            let main = preReplayProgram.flatMap { c in usable.contains(c) ? c : nil } ?? usable.first
+            var slots: [UUID?] = [main, id]
+            var stills: [Int: CIImage] = [:]
+            switch p.below {
+            case .none: break
+            case .input:
+                let others = usable.filter { $0 != main }
+                slots.append(p.belowInputID.flatMap { c in usable.contains(c) ? c : nil }
+                             ?? previewID.flatMap { c in others.contains(c) ? c : nil } ?? others.first)
+            case .image:
+                slots.append(nil)
+                if let n = p.belowPicture,
+                   let img = UIImage(contentsOfFile: MediaLibrary.directory(.picture).appendingPathComponent(n).path)?.normalized(),
+                   let ci = CIImage(image: img) { stills[2] = ci }
+            }
+            replayLayoutOverride = (tpl, stills)
+            if !sources.contains(where: { $0.id == layoutSource.id }) {
+                sources.append(layoutSource)
+                switcher.register(layoutSource.id, store: layoutSource.frames)
+                Task { await layoutSource.start() }
+            }
+            layoutSlots = slots
+            refreshLayout()
+            replayInLayout = true
+            switcher.setPreview(layoutSource.id); syncState()
+        } else if replayPlacement.mode == .layout {
+            preReplayLayout = (layoutTemplateID, layoutSlots)
+            layoutTemplateID = replayPlacement.layoutID
+            guard let template = LayoutTemplate.all.first(where: { $0.id == replayPlacement.layoutID }) else { return }
+            replayLayoutOverride = (template, [:])
+            var slots = template.slots.indices.map { replayPlacement.sourcesBySlot[$0] }
+            slots[replayPlacement.slot] = id
+            if !sources.contains(where: { $0.id == layoutSource.id }) {
+                sources.append(layoutSource)
+                switcher.register(layoutSource.id, store: layoutSource.frames)
+                Task { await layoutSource.start() }
+            }
+            layoutSlots = slots
+            refreshLayout()
+            replayInLayout = true
+            switcher.setPreview(layoutSource.id); syncState()
+        }
+        performSelectedTransition(stingerHold: stingerHold ?? max(0.15, transitionDuration * 0.4))
     }
 
     private func ensureReplaySource() {
@@ -1349,7 +1826,10 @@ final class StudioEngine: ObservableObject {
 
     /// Plays the editor's current MARK IN → MARK OUT range and takes it to air.
     func playEditorRange(toAir: Bool = true) {
+        if toAir { guard !replayOnAir, !switcher.stingerBusy, CACurrentMediaTime() >= selectedTransitionEndsAt, validateReplayLayout() else { return } }
         let ed = replayEditor
+        if !toAir, case .file(let u) = ed.material { guard replayCanCue(file: u) else { return } }
+        else if !toAir { guard replayCanCue() else { return } }
         switch ed.material {
         case .buffer:
             let r = ed.bufferRange()
@@ -1367,11 +1847,15 @@ final class StudioEngine: ObservableObject {
             }
         }
         syncState()
+        cuedReplayID = previewID
         if toAir { beginReplayOnAir(previewID ?? replay.id) }
     }
 
     func playClip(_ c: ReplayClip, toAir: Bool = true) {
+        if toAir { guard !replayOnAir, !switcher.stingerBusy, CACurrentMediaTime() >= selectedTransitionEndsAt, validateReplayLayout() else { return } }
         let ed = replayEditor
+        if !toAir, case .file(let u) = c.material { guard replayCanCue(file: u) else { return } }
+        else if !toAir { guard replayCanCue() else { return } }
         switch c.material {
         case .buffer:
             ensureReplaySource()
@@ -1387,6 +1871,7 @@ final class StudioEngine: ObservableObject {
             }
         }
         syncState()
+        cuedReplayID = previewID
         if toAir { beginReplayOnAir(previewID ?? replay.id) }
     }
 
@@ -1408,15 +1893,57 @@ final class StudioEngine: ObservableObject {
         ptzControllers[id] = c.map { PTZController(config: $0) }
     }
 
+    /// PTZ: VISCA when an IP is set for the source, otherwise PTZ over NDI for an NDI camera that supports it.
     func ptzMove(_ id: UUID, pan: Double, tilt: Double, zoom: Double) {
-        guard let p = ptzControllers[id] else { return }
-        Task { await p.move(pan: pan, tilt: tilt, zoom: zoom) }
+        if let p = ptzControllers[id] { Task { await p.move(pan: pan, tilt: tilt, zoom: zoom) }; return }
+        #if NDI_SDK
+        ndiSource(id)?.ptz(pan: Float(-pan), tilt: Float(tilt), zoom: Float(zoom))   // NDI: positive pan = left
+        #endif
     }
 
     func ptzPreset(_ id: UUID, _ n: Int, store: Bool) {
-        guard let p = ptzControllers[id] else { return }
-        Task { store ? await p.storePreset(n) : await p.recallPreset(n) }
+        if let p = ptzControllers[id] { Task { store ? await p.storePreset(n) : await p.recallPreset(n) }; return }
+        #if NDI_SDK
+        if let s = ndiSource(id) { store ? s.ptzStore(Int32(n)) : s.ptzRecall(Int32(n)) }
+        #endif
+        if store { message = LF("Đã lưu preset %@", "\(n)") }
     }
+
+    /// Focus over NDI: speed -1 (near) … 1 (far), 0 = stop; nil = auto focus.
+    func ptzFocus(_ id: UUID, speed: Double?) {
+        #if NDI_SDK
+        guard let s = ndiSource(id) else { return }
+        if let speed { s.ptzFocus(speed: Float(speed)) } else { s.ptzAutoFocus() }
+        #endif
+    }
+
+    /// Audio channel that carries a source's sound: the Mic for the iPad's own cameras, else the source.
+    func audioChannelID(_ id: UUID?) -> UUID? {
+        guard let id else { return nil }
+        return sources.first { $0.id == id } is CameraSource ? AudioCapture.micID : id
+    }
+
+    /// The source is an NDI input.
+    func isNDISource(_ id: UUID) -> Bool {
+        #if NDI_SDK
+        return ndiSource(id) != nil
+        #else
+        return false
+        #endif
+    }
+
+    /// The NDI camera accepts PTZ over NDI.
+    func ndiPTZSupported(_ id: UUID) -> Bool {
+        #if NDI_SDK
+        return ndiSource(id)?.ptzSupported ?? false
+        #else
+        return false
+        #endif
+    }
+
+    #if NDI_SDK
+    private func ndiSource(_ id: UUID) -> NDIInputSource? { sources.first { $0.id == id } as? NDIInputSource }
+    #endif
 
     // MARK: Outputs
 
@@ -1445,6 +1972,7 @@ final class StudioEngine: ObservableObject {
     private func setOutputStatus(_ id: UUID, _ st: OutputStatus) {
         let was = outputStatus[id]
         outputStatus[id] = st
+        if (st == .live) != (was == .live) { updateIdleTimer() }
         guard st == .live, was != .live, let o = outputs.first(where: { $0.id == id }), o.proto != .record else { return }
         let u = o.url.lowercased()
         let live = PlatformLive.shared
@@ -1455,6 +1983,88 @@ final class StudioEngine: ObservableObject {
         }
     }
     var isRecording: Bool { outputs.contains { $0.proto == .record && outputStatus[$0.id] == .live } }
+
+    // MARK: Background / screen off (battery)
+
+    /// "Luôn giữ màn hình sáng": off = the screen stays on only while streaming or recording,
+    /// otherwise it follows the iPad's Auto-Lock.
+    @Published var keepScreenOn = UserDefaults.standard.bool(forKey: "dtd.keepScreenOn") {
+        didSet { UserDefaults.standard.set(keepScreenOn, forKey: "dtd.keepScreenOn"); updateIdleTimer() }
+    }
+    /// Work stopped because the app went to the background with nothing on air.
+    private(set) var suspendedInBackground = false
+    private var wentBackgroundWhileLive = false
+    private var backgroundTask: Task<Void, Never>?
+
+    func updateIdleTimer() {
+        let on = keepScreenOn || isAnyLive || isRecording || playout.keepsScreenOn
+        if UIApplication.shared.isIdleTimerDisabled != on { UIApplication.shared.isIdleTimerDisabled = on }
+    }
+
+    /// Home button, app switch or screen locked. Nothing on air → after a short grace period (a quick look at
+    /// another app keeps everything connected) the render clock, microphone, media players and network
+    /// listeners stop and iOS suspends the app: no battery use while it is not in front.
+    /// Streaming / recording → keep running: the sound goes on, but iOS stops the cameras and the GPU for apps
+    /// in the background, so the picture holds until the app is back in front.
+    func appDidEnterBackground() {
+        guard !DemoMode.isOn else { return }
+        if isAnyLive || isRecording { wentBackgroundWhileLive = true; return }
+        backgroundTask?.cancel()
+        backgroundTask = Task { @MainActor [weak self] in
+            try? await Task.sleep(nanoseconds: 15_000_000_000)
+            guard let self, !Task.isCancelled, !self.isAnyLive, !self.isRecording else { return }
+            self.suspendForBackground()
+        }
+    }
+
+    func appDidBecomeActive() {
+        backgroundTask?.cancel(); backgroundTask = nil
+        if suspendedInBackground { resumeFromBackground() }
+        // cameras iOS stopped while the app was away (interruption, media services reset) start again
+        for case let c as CameraSource in sources { c.ensureRunning() }
+        stalledSeconds = 0
+        if wentBackgroundWhileLive {
+            wentBackgroundWhileLive = false
+            message = L("Ứng dụng đã chạy nền trong lúc phát: iPad dừng camera và xử lý hình khi app không ở phía trước, chỉ âm thanh tiếp tục. Hãy giữ DTDStudio mở khi đang phát.")
+        }
+        updateIdleTimer()
+    }
+
+    private func suspendForBackground() {
+        guard !suspendedInBackground else { return }
+        suspendedInBackground = true
+        switcher.stop()
+        for case let f as FileSource in sources where f.isPlaying { f.pause() }
+        for case let p as PlaylistSource in sources where p.isPlaying { p.pause() }
+        audio.suspend()
+        control.stop()
+        ingest.stop()
+    }
+
+    /// Program frames stopped while the app is in front (render clock lost, pool stuck): restart the
+    /// render pipeline and the cameras instead of leaving PVW/PGM black until the app is reopened.
+    private var stalledSeconds = 0
+    private func renderWatchdog() {
+        guard !suspendedInBackground, !DemoMode.isOn, UIApplication.shared.applicationState == .active else { stalledSeconds = 0; return }
+        if switcher.programMonitor.latestFrame(staleAfter: 1.5) != nil { stalledSeconds = 0; return }
+        stalledSeconds += 1
+        guard stalledSeconds >= 3 else { return }
+        stalledSeconds = 0
+        switcher.recover()
+        for case let c as CameraSource in sources { c.ensureRunning() }
+        logToLiveOutputs(L("PGM không có khung mới — đã khởi động lại xử lý hình"))
+    }
+
+    private func resumeFromBackground() {
+        suspendedInBackground = false
+        try? audio.resume()
+        control.stop()
+        try? control.start()
+        ingest.start()
+        switcher.start()
+        updateMediaPlayback()
+        if playout.state == .playing && !playout.offAir { playout.source?.resume() }
+    }
 
     func toggleRecording() {
         if let r = outputs.first(where: { $0.proto == .record }) {
@@ -1541,5 +2151,36 @@ extension StudioEngine: ControlTarget {
         let ids = sources.filter { $0.name == name || $0.name.hasSuffix(name) || (($0 as? SRTInputSource)?.url.absoluteString.contains(name) ?? false) }.map(\.id)
         let pgm = ids.contains { tally.program.contains($0) }, pvw = ids.contains { tally.preview.contains($0) }
         return Data("{\"program\":\(pgm),\"preview\":\(pvw)}".utf8)
+    }
+}
+
+/// Values that change many times a second (audio peaks, scopes). Observed only by the small views that
+/// draw them, so the rest of the interface does not redraw with every meter tick.
+@MainActor
+final class LiveMeters: ObservableObject {
+    @Published var level: Float = -60
+    @Published var levels: [UUID: Float] = [:]
+    @Published var levelR: Float = -60
+    @Published var levelsR: [UUID: Float] = [:]
+    /// Pre-fader (PFL) L/R per source — the PVW meter.
+    @Published var pflL: [UUID: Float] = [:]
+    @Published var pflR: [UUID: Float] = [:]
+    /// Mixer channels heard in the program right now.
+    @Published var onAir: Set<UUID> = []
+    /// Input level of a mixer channel (after trim, before fader); falls back to the post-fader level.
+    func input(_ id: UUID) -> (Float, Float) {
+        if let l = pflL[id] { return (l, pflR[id] ?? l) }
+        return (levels[id] ?? -60, levelsR[id] ?? levels[id] ?? -60)
+    }
+    func preFader(_ id: UUID?) -> (Float, Float) {
+        guard let id else { return (-60, -60) }
+        return (pflL[id] ?? -60, pflR[id] ?? pflL[id] ?? -60)
+    }
+    @Published var scope = ScopeAnalyzer.Result()
+    func level(_ id: UUID?) -> Float { id.map { levels[$0] ?? -60 } ?? level }
+    /// L / R peak dBFS of a channel, or of Program (the mixer output) when id is nil.
+    func stereo(_ id: UUID?) -> (Float, Float) {
+        guard let id else { return (level, levelR) }
+        return (levels[id] ?? -60, levelsR[id] ?? levels[id] ?? -60)
     }
 }

@@ -48,7 +48,15 @@ final class VideoEncoder: @unchecked Sendable {
     private var settings: EncoderSettings
     private var size: (Int32, Int32) = (0, 0)
     private var forceKeyframe = false
-    private var needsRebuild = false
+    /// Set from VideoToolbox callbacks. Its own tiny lock, never the session lock: invalidate() holds the
+    /// session lock while VTCompressionSessionCompleteFrames waits for pending callbacks — a callback
+    /// waiting for that lock froze the render queue for good (PVW/PGM black until the app was restarted).
+    private let rebuildLock = NSLock()
+    private var rebuildFlag = false
+    private var needsRebuild: Bool {
+        get { rebuildLock.lock(); defer { rebuildLock.unlock() }; return rebuildFlag }
+        set { rebuildLock.lock(); rebuildFlag = newValue; rebuildLock.unlock() }
+    }
     private var liveBitrate: Int
     /// Program frame rate; changing it rebuilds the session on the next frame.
     var fps: Double = 30 { didSet { if fps != oldValue { invalidate(); forceKeyframe = true } } }
@@ -81,15 +89,15 @@ final class VideoEncoder: @unchecked Sendable {
             guard status == noErr, let sample else {
                 // Session died (interruption, memory pressure, media services reset): rebuild on the next frame.
                 // never tear the session down from inside its own callback — flag it, encode() rebuilds
-                self.lock.lock(); self.needsRebuild = true; self.lock.unlock()
-                self.onProblem?("VideoToolbox lỗi \(status) \(Self.explain(status)) — tạo lại bộ mã hoá")
+                self.needsRebuild = true
+                self.onProblem?(LF("VideoToolbox lỗi %@ %@ — tạo lại bộ mã hoá", "\(status)", Self.explain(status)))
                 return
             }
             self.framesOut.add(1)
             self.onEncoded?(sample)
         }
         if st != noErr {
-            onProblem?("VideoToolbox lỗi \(st) \(Self.explain(st)) — tạo lại bộ mã hoá")
+            onProblem?(LF("VideoToolbox lỗi %@ %@ — tạo lại bộ mã hoá", "\(st)", Self.explain(st)))
             invalidate(); forceKeyframe = true
         }
     }
@@ -97,12 +105,12 @@ final class VideoEncoder: @unchecked Sendable {
     /// Short reason for the common VideoToolbox codes (shown in the output log).
     static func explain(_ st: OSStatus) -> String {
         switch st {
-        case -12902: return "(tham số/thời gian khung không hợp lệ)"
-        case -12903: return "(phiên mã hoá mất hiệu lực — app vào nền / bị gián đoạn)"
-        case -12904: return "(không tạo được bộ mã hoá)"
-        case -12911: return "(bộ mã hoá phần cứng lỗi / quá tải)"
-        case -12915: return "(phần cứng mã hoá đang bận)"
-        case -16991, -16990: return "(hết bộ nhớ đệm)"
+        case -12902: return L("(tham số/thời gian khung không hợp lệ)")
+        case -12903: return L("(phiên mã hoá mất hiệu lực — app vào nền / bị gián đoạn)")
+        case -12904: return L("(không tạo được bộ mã hoá)")
+        case -12911: return L("(bộ mã hoá phần cứng lỗi / quá tải)")
+        case -12915: return L("(phần cứng mã hoá đang bận)")
+        case -16991, -16990: return L("(hết bộ nhớ đệm)")
         default: return ""
         }
     }
@@ -113,8 +121,8 @@ final class VideoEncoder: @unchecked Sendable {
     /// Watchdog: frames go in but nothing comes out → drop the session and start a new one.
     func restartIfStalled(_ inSinceLast: Int, _ outSinceLast: Int) -> Bool {
         guard inSinceLast >= 20, outSinceLast == 0 else { return false }
-        onProblem?("Bộ mã hoá không ra hình (\(inSinceLast) khung vào, 0 ra) — khởi động lại")
-        lock.lock(); needsRebuild = true; lock.unlock()
+        onProblem?(LF("Bộ mã hoá không ra hình (%@ khung vào, 0 ra) — khởi động lại", "\(inSinceLast)"))
+        needsRebuild = true
         return true
     }
 
@@ -176,7 +184,7 @@ final class VideoEncoder: @unchecked Sendable {
         // (bitrate, GOP, frame rate) from applying. Rejected optional keys are only logged.
         for (k, v) in p {
             let st = VTSessionSetProperty(s, key: k, value: v as CFTypeRef)
-            if st != noErr { onProblem?("Bộ mã hoá không nhận thuộc tính \(k) (\(st))") }
+            if st != noErr { onProblem?(LF("Bộ mã hoá không nhận thuộc tính %@ (%@)", "\(k)", "\(st)")) }
         }
         if settings.codec == .h264 {
             VTSessionSetProperty(s, key: kVTCompressionPropertyKey_H264EntropyMode, value: kVTH264EntropyMode_CABAC)

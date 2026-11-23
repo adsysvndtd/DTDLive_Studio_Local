@@ -11,6 +11,7 @@ struct StudioView: View {
     @State private var drawing = false
     @State private var clearDrawing = 0
     @State private var showShows = false
+    @State private var showMultiview = false
     @State private var tbarValue = 0.0
     // SceneStorage: survives the root rebuild done on a language switch
     @SceneStorage("ui.category") private var category: ProdCategory = ProdCategory(rawValue: DemoMode.arg("-category") ?? "") ?? .camera
@@ -18,6 +19,7 @@ struct StudioView: View {
     @State private var arranging = false
     @State private var showSettings = false
     @Environment(\.verticalSizeClass) private var vSize
+    @Environment(\.openWindow) private var openWindow
 
     /// iPhone (or any height-compact window): smaller chrome, same structure.
     private var compact: Bool { vSize == .compact || UIDevice.current.userInterfaceIdiom == .phone }
@@ -78,6 +80,9 @@ struct StudioView: View {
         .sheet(isPresented: $showAddSource) { AddSourceSheet(engine: engine) }
         .sheet(isPresented: $showOutputs) { OutputsSheet(engine: engine) }
         .sheet(isPresented: $showShows) { ShowsSheet(engine: engine) }
+        .fullScreenCover(isPresented: $showMultiview) { MultiviewScreen(engine: engine) }
+        // iOS 27+: registers the external-display content (otherwise the HDMI screen only mirrors the iPad)
+        .background(ExternalDisplayAccessory(engine: engine).frame(width: 0, height: 0).allowsHitTesting(false))
         .sheet(isPresented: $showSettings) { SettingsSheet(engine: engine) }
         .alert(engine.message ?? "", isPresented: Binding(get: { engine.message != nil }, set: { if !$0 { engine.message = nil } })) {
             Button("OK", role: .cancel) {}
@@ -111,22 +116,32 @@ struct StudioView: View {
             if engine.isRecording { Pill(text: "REC", color: DS.pgm.opacity(0.25), dot: DS.pgm) }
             Spacer(minLength: 4)
             if !compact { Pill(text: String(format: "%.1f Mbps", Double(engine.currentBitrate) / 1e6)) }
-            LevelMeter(db: engine.audioLevel).frame(width: compact ? 50 : 90, height: 5)
+            LiveLevel(meters: engine.meters, id: nil) { LevelMeter(db: $0) }.frame(width: compact ? 50 : 90, height: 5)
             barButton("arrow.uturn.backward", "Hoàn tác") { engine.undo() }.disabled(!engine.canUndo).opacity(engine.canUndo ? 1 : 0.4)
                 .keyboardShortcut("z", modifiers: .command)
             barButton("arrow.uturn.forward", "Làm lại") { engine.redo() }.disabled(!engine.canRedo).opacity(engine.canRedo ? 1 : 0.4)
                 .keyboardShortcut("z", modifiers: [.command, .shift])
             barButton(engine.isRecording ? "record.circle.fill" : "record.circle", "Ghi", tint: engine.isRecording ? DS.pgm : .white) { engine.toggleRecording() }
+            Menu {
+                Button { showMultiview = true } label: { Label("Multiview trên iPad", systemImage: "square.grid.3x3") }
+                Section(L("Màn hình ngoài (USB‑C / HDMI)")) {
+                    Picker("Xuất ra màn ngoài", selection: $engine.externalMode) {
+                        Label("PGM (chỉ hình phát)", systemImage: "play.rectangle").tag(StudioEngine.ExternalMode.program)
+                        Label("Multiview", systemImage: "square.grid.3x3").tag(StudioEngine.ExternalMode.multiview)
+                        Label("Phản chiếu màn iPad", systemImage: "rectangle.on.rectangle").tag(StudioEngine.ExternalMode.mirror)
+                    }
+                    Toggle("VU meter trên hình PGM ra màn ngoài", isOn: $engine.externalVU)
+                    Button { openWindow(id: "pgm-output") } label: {
+                        Label("Mở cửa sổ xuất hình (Stage Manager)", systemImage: "macwindow.on.rectangle")
+                    }
+                    Text(externalStatus)
+                }
+            } label: {
+                barLabel(engine.externalDisplayConnected ? "tv.fill" : "square.grid.3x3", "Multiview",
+                         tint: engine.externalDisplayConnected ? DS.pgm : .white)
+            }
             barButton("folder", "Show") { showShows = true }
             barButton("gearshape", "Cài đặt") { showSettings = true }
-            if engine.externalDisplayConnected {
-                Menu {
-                    Picker("Màn ngoài", selection: $engine.externalMode) {
-                        Text("Program").tag(StudioEngine.ExternalMode.program)
-                        Text("Multiview").tag(StudioEngine.ExternalMode.multiview)
-                    }
-                } label: { barLabel("tv", "Màn ngoài") }
-            }
             Button { showOutputs = true } label: {
                 Label(LocalizedStringKey(engine.isAnyLive ? "Đang phát" : (compact ? "Phát" : "Phát trực tiếp")), systemImage: "dot.radiowaves.left.and.right")
                     .font(.caption.weight(.bold)).lineLimit(1).fixedSize()
@@ -138,6 +153,20 @@ struct StudioView: View {
         }
         .padding(.horizontal, 10).frame(height: compact ? 32 : 44)
         .background(DS.surface)
+    }
+
+    /// One line on what the external screen is doing.
+    private var externalStatus: String {
+        if engine.externalMode == .mirror {
+            return engine.externalScreenPresent ? L("Màn ngoài đang phản chiếu màn iPad") : L("Chưa cắm màn hình ngoài")
+        }
+        if engine.externalDisplayConnected {
+            return engine.externalMode == .program ? L("Đang xuất PGM ra màn ngoài") : L("Đang xuất Multiview ra màn ngoài")
+        }
+        if engine.externalScreenPresent {
+            return L("Màn ngoài đang là màn mở rộng (Stage Manager): mở cửa sổ xuất hình, kéo sang màn ngoài và phóng to toàn màn hình")
+        }
+        return L("Chưa cắm màn hình ngoài")
     }
 
     private func barButton(_ icon: String, _ title: String, tint: Color = .white, action: @escaping () -> Void) -> some View {
@@ -240,6 +269,18 @@ struct StudioView: View {
                 MonitorView(store: store)
                 if engine.showSafeGuides { SafeGuides() }
                 sourceCaption(isProgram ? engine.programID : engine.previewID, color: color)
+                if engine.showMonitorVU {
+                    // PGM: the program mix; PVW: the audio of the source waiting on preview
+                    // Each meter on the monitor's OUTER edge (PVW left, PGM right): at the inner edges the PVW meter
+                    // sat right next to PGM and read as PGM's.
+                    MonitorVU(meters: engine.meters, id: isProgram ? nil : engine.audioChannelID(engine.previewID), preFader: !isProgram,
+                              marksOnLeading: isProgram, compact: compact)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: isProgram ? .trailing : .leading)
+                        .padding(isProgram ? .trailing : .leading, compact ? 6 : 10)
+                        // clear of the PVW/PGM tag at the top and the source name at the bottom
+                        .padding(.top, compact ? 22 : 34)
+                        .padding(.bottom, compact ? 26 : 44)
+                }
                 if !isProgram && engine.swipeToTake && !scopesOnPreview {
                     SwipeTakeOverlay(onCut: { engine.cut() }, onAuto: { engine.autoTransition() })
                 }
@@ -252,7 +293,7 @@ struct StudioView: View {
                                          clearToken: $clearDrawing)
                     }
                 } else if scopesOnPreview {
-                    ScopeView(kind: engine.scopeKind, result: engine.scopeResult)
+                    LiveScope(meters: engine.meters, kind: engine.scopeKind)
                         .frame(width: compact ? 130 : 200, height: compact ? 70 : 110)
                         .opacity(0.9)
                         .overlay(alignment: .topTrailing) {
@@ -289,7 +330,9 @@ struct StudioView: View {
     private var monitorInfo: some View {
         VStack(alignment: .leading, spacing: 1) {
             Text("\(engine.format.width)×\(engine.format.height) · \(engine.format.fps) fps · \(engine.encoder.codec.label)")
-            Text(String(format: L("%.1f Mbps · Âm thanh %.0f dBFS"), Double(engine.currentBitrate) / 1e6, engine.audioLevel))
+            LiveLevel(meters: engine.meters, id: nil) { lvl in
+                Text(String(format: L("%.1f Mbps · Âm thanh %.0f dBFS"), Double(engine.currentBitrate) / 1e6, lvl))
+            }
         }
         .font(.system(size: 10, weight: .semibold, design: .monospaced))
         .padding(5).background(Color.black.opacity(0.55), in: Rectangle())
@@ -380,6 +423,7 @@ struct TBar: View {
     var onChange: (Double) -> Void
     @State private var rest: Double = 0  // end the current stroke starts from (0 or 1)
     @State private var grab: Double?     // finger offset from the handle when the drag began
+    @State private var done = false      // this drag already completed a take: ignore it until the finger lifts
 
     var body: some View {
         GeometryReader { g in
@@ -399,19 +443,27 @@ struct TBar: View {
             .contentShape(Rectangle())
             .gesture(DragGesture(minimumDistance: 0)
                 .onChanged { d in
-                    // relative drag: touching the bar never makes the handle jump to the finger
-                    if grab == nil { grab = d.startLocation.y / travel - value }
+                    if grab == nil {
+                        // relative drag: touching the bar never makes the handle jump to the finger
+                        grab = d.startLocation.y / travel - value
+                        // A stroke always starts from the end the handle rests at. (The rest end used to be kept
+                        // only in this view: after the layout switched, a touch on a handle sitting at the far end
+                        // counted as a finished stroke and took the previous camera straight back to air.)
+                        if value <= 0.001 { rest = 0 } else if value >= 0.999 { rest = 1 }
+                    }
+                    guard !done else { return }
                     let v = min(1, max(0, d.location.y / travel - (grab ?? 0)))
                     value = v
                     let p = abs(v - rest)
                     if p >= 0.999 {
                         onChange(1)                    // take completes at the far end
                         rest = v > 0.5 ? 1 : 0         // …which is the new rest position
+                        done = true                    // finger jitter at the end must not start the reverse stroke
                     } else {
                         onChange(p)                    // held / reversible mix
                     }
                 }
-                .onEnded { _ in grab = nil })          // stays where it was left
+                .onEnded { _ in grab = nil; done = false })   // stays where it was left
         }
     }
 }
@@ -436,6 +488,92 @@ struct TBarLEDs: View {
     }
 }
 
+/// Redraws only its content when a meter changes (see LiveMeters).
+struct LiveLevel<Content: View>: View {
+    @ObservedObject var meters: LiveMeters
+    let id: UUID?
+    @ViewBuilder var content: (Float) -> Content
+    var body: some View { content(meters.level(id)) }
+}
+
+struct LiveScope: View {
+    @ObservedObject var meters: LiveMeters
+    let kind: ScopeKind
+    var body: some View { ScopeView(kind: kind, result: meters.scope) }
+}
+
+/// Transparent L/R VU meter drawn over a monitor: two thin bars (green → yellow −18 dB → red −6 dB)
+/// on a faint track, with −6 / −18 / −40 marks and a 1.5 s peak hold. No background, no hit testing.
+struct MonitorVU: View {
+    @ObservedObject var meters: LiveMeters
+    let id: UUID?
+    /// PVW: the source's own level before its fader / AFV (it is not on air yet).
+    var preFader = false
+    /// dB marks on the side facing the picture
+    var marksOnLeading = true
+    var compact = false
+    @State private var hold: (Float, Float) = (-60, -60)
+    @State private var holdAt: (Date, Date) = (.distantPast, .distantPast)
+
+    // Explicit: the memberwise init would be private (private @State) and unusable from the multiview file.
+    init(meters: LiveMeters, id: UUID?, preFader: Bool = false, marksOnLeading: Bool = true, compact: Bool = false) {
+        self.meters = meters; self.id = id; self.preFader = preFader
+        self.marksOnLeading = marksOnLeading; self.compact = compact
+    }
+
+    var body: some View {
+        let (l, r) = preFader ? meters.preFader(id) : meters.stereo(id)
+        let w: CGFloat = compact ? 3 : 5
+        HStack(spacing: compact ? 1.5 : 2) {
+            bar(l, hold.0, w)
+            bar(r, hold.1, w)
+        }
+        .overlay(alignment: marksOnLeading ? .leading : .trailing) { marks(leading: marksOnLeading) }
+        .shadow(color: .black.opacity(0.6), radius: 1)
+        .allowsHitTesting(false)
+        .onChange(of: l) { _, v in update(v, left: true) }
+        .onChange(of: r) { _, v in update(v, left: false) }
+    }
+
+    private func bar(_ db: Float, _ peak: Float, _ w: CGFloat) -> some View {
+        VUBarCanvas(level: db, peak: peak, track: Color.white.opacity(0.12)).frame(width: w)
+    }
+
+    /// dB scale beside the bars: ticks every 6 dB down to −30, then −40 / −60; numbers on the larger meters.
+    private func marks(leading: Bool) -> some View {
+        GeometryReader { g in
+            let ticks: [Int] = compact ? [0, -6, -18, -40] : [0, -6, -12, -18, -24, -30, -40, -60]
+            let labelled: Set<Int> = [0, -6, -12, -18, -30, -60]
+            ForEach(ticks, id: \.self) { d in
+                let y = g.size.height * (1 - Self.pos(Float(d)))
+                let major = d == 0 || d == -6 || d == -18
+                Rectangle().fill(d >= -6 ? Color.red.opacity(0.8) : d >= -18 ? Color.yellow.opacity(0.7) : Color.white.opacity(0.45))
+                    .frame(width: major ? 5 : 3, height: 1)
+                    .position(x: leading ? -(major ? 3.5 : 2.5) : g.size.width + (major ? 3.5 : 2.5), y: y)
+                if !compact && labelled.contains(d) {
+                    Text(verbatim: d == 0 ? "0" : "\(d)")
+                        .font(.system(size: 7, weight: .semibold).monospacedDigit())
+                        .foregroundStyle(.white.opacity(0.75))
+                        .fixedSize()
+                        .position(x: leading ? -15 : g.size.width + 15, y: y)
+                }
+            }
+        }
+    }
+
+    private func update(_ v: Float, left: Bool) {
+        let now = Date()
+        if left {
+            if v >= hold.0 || now.timeIntervalSince(holdAt.0) > 1.5 { hold.0 = v; holdAt.0 = now }
+        } else {
+            if v >= hold.1 || now.timeIntervalSince(holdAt.1) > 1.5 { hold.1 = v; holdAt.1 = now }
+        }
+    }
+
+    /// −60…0 dBFS → 0…1
+    static func pos(_ db: Float) -> CGFloat { CGFloat(max(0, min(1, (db + 60) / 60))) }
+}
+
 struct LevelMeter: View {
     let db: Float
     var body: some View {
@@ -458,6 +596,8 @@ struct AddSourceSheet: View {
     @State private var showFile = false
     @State private var ndiFound: [String] = []
     @State private var ndiSearching = false
+    @StateObject private var cameras = CameraDeviceList()
+    @State private var duplicate = false
 
     var body: some View {
         NavigationStack {
@@ -475,8 +615,22 @@ struct AddSourceSheet: View {
                 Picker("Loại", selection: $kind) { ForEach(SourceKind.allCases) { Text($0.label).tag($0) } }
                 switch kind {
                 case .camera:
-                    ForEach(CameraSource.availableDevices(), id: \.uniqueID) { d in
-                        Button(d.localizedName) { engine.add(CameraSource(device: d)); dismiss() }
+                    // built-in cameras and USB-C cameras / capture cards (iPadOS 17+); one input per device
+                    ForEach(cameras.devices, id: \.uniqueID) { d in
+                        let added = engine.sources.contains { ($0 as? CameraSource)?.deviceID == d.uniqueID }
+                        Button { engine.add(CameraSource(device: d)); dismiss() } label: {
+                            HStack {
+                                Label(d.localizedName, systemImage: CameraSource.isExternal(d) ? "cable.connector" : "camera")
+                                Spacer()
+                                if added { Text("Đã thêm").font(.caption).foregroundStyle(.secondary) }
+                                else if CameraSource.isExternal(d) { Text("USB-C").font(.caption.bold()).foregroundStyle(DS.accent) }
+                            }
+                        }
+                        .disabled(added)
+                    }
+                    if !cameras.devices.contains(where: CameraSource.isExternal) {
+                        Text("Cắm camera USB-C hoặc thiết bị capture (UVC) vào iPad — nó hiện ở đây ngay (iPadOS 17 trở lên).")
+                            .font(.footnote).foregroundStyle(.secondary)
                     }
                 case .srt, .rtmpPull, .rtsp:
                     TextField("Tên", text: $name)
@@ -486,13 +640,17 @@ struct AddSourceSheet: View {
                     Button("Thêm") {
                         guard let u = URL(string: url) else { return }
                         let n = name.isEmpty ? kind.label : name
+                        let s: any VideoSource
                         switch kind {
-                        case .srt: engine.add(SRTInputSource(name: n, url: u))
-                        case .rtsp: engine.add(RTSPInputSource(name: n, url: u))
-                        default: engine.add(RTMPInputSource(name: n, url: u))
+                        case .srt: s = SRTInputSource(name: n, url: u)
+                        case .rtsp: s = RTSPInputSource(name: n, url: u)
+                        default: s = RTMPInputSource(name: n, url: u)
                         }
+                        if engine.isDuplicate(s) { duplicate = true; return }
+                        engine.add(s)
                         dismiss()
                     }
+                    if duplicate { Text("Nguồn này đã có trong danh sách đầu vào.").font(.footnote).foregroundStyle(.orange) }
                 case .file:
                     Button("Chọn video…") { showFile = true }
                 }
@@ -846,5 +1004,37 @@ struct OutputLogView: View {
                 }
             }
         }
+    }
+}
+
+/// One VU bar drawn directly (no layout): the base stays on the bottom edge and only the top moves with the
+/// level. Green to −18 dB, yellow to −6 dB, red above (each zone appears only once the level reaches it);
+/// peak-hold line. Used by the monitor / multiview meters and the mixer strips.
+struct VUBarCanvas: View {
+    let level: Float
+    let peak: Float
+    var track: Color = .black
+
+    var body: some View {
+        Canvas { ctx, size in
+            let h = size.height, w = size.width
+            ctx.fill(Path(CGRect(x: 0, y: 0, width: w, height: h)), with: .color(track))
+            let top = h * MonitorVU.pos(level)                    // filled height from the bottom
+            let zones: [(from: CGFloat, to: CGFloat, color: Color)] = [
+                (0, MonitorVU.pos(-18), .green),
+                (MonitorVU.pos(-18), MonitorVU.pos(-6), .yellow),
+                (MonitorVU.pos(-6), 1, .red)]
+            for z in zones {
+                let lo = h * z.from, hi = min(h * z.to, top)
+                guard hi > lo else { continue }
+                ctx.fill(Path(CGRect(x: 0, y: h - hi, width: w, height: hi - lo)), with: .color(z.color))
+            }
+            if peak > -59 {
+                let y = h - h * MonitorVU.pos(peak)
+                ctx.fill(Path(CGRect(x: 0, y: max(0, y - 1), width: w, height: 1.5)),
+                         with: .color(peak > -6 ? .red : .white))
+            }
+        }
+        .allowsHitTesting(false)
     }
 }

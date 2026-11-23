@@ -7726,6 +7726,6036 @@
           }
         }
       }
+    },
+    "Nạp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Load"
+          }
+        }
+      }
+    },
+    "Nạp (tắt mẫu đang phát)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Load (takes the current one off air)"
+          }
+        }
+      }
+    },
+    "Đã nạp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loaded"
+          }
+        }
+      }
+    },
+    "Chọn một mẫu trong danh sách để xem trước": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pick a template in the list to preview it"
+          }
+        }
+      }
+    },
+    "Xem trước · chưa nạp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preview · not loaded"
+          }
+        }
+      }
+    },
+    "Replay đang phát trên PGM — bấm DỪNG trước khi đưa đoạn khác lên Preview": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A replay is on PGM — press STOP before cueing another one to Preview"
+          }
+        }
+      }
+    },
+    "Bảng tỉ số (web)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scoreboard (web)"
+          }
+        }
+      }
+    },
+    "Đổi key bảo mật (link cũ hết hiệu lực)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New security key (old links stop working)"
+          }
+        }
+      }
+    },
+    "Gói DTDStudio": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DTDStudio plan"
+          }
+        }
+      }
+    },
+    "Mua qua App Store": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buy on the App Store"
+          }
+        }
+      }
+    },
+    "Gói tháng / năm tự gia hạn cho tới khi huỷ trong Cài đặt › Apple ID › Đăng ký, ít nhất 24 giờ trước khi hết kỳ; tiền trừ vào tài khoản Apple ID khi xác nhận mua. Gói ngày dùng 24 giờ, không tự gia hạn.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monthly / yearly plans renew automatically until cancelled in Settings › Apple ID › Subscriptions at least 24 hours before the period ends; payment is charged to your Apple ID when you confirm. The day pass lasts 24 hours and does not renew."
+          }
+        }
+      }
+    },
+    "Khôi phục giao dịch": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore purchases"
+          }
+        }
+      }
+    },
+    "Quản lý gói": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Manage plan"
+          }
+        }
+      }
+    },
+    "Tài khoản DTD": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DTD account"
+          }
+        }
+      }
+    },
+    "Chuyển khoản ngân hàng (VietQR)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bank transfer (VietQR)"
+          }
+        }
+      }
+    },
+    "Chính sách quyền riêng tư": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Privacy policy"
+          }
+        }
+      }
+    },
+    "Điều khoản sử dụng (EULA)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terms of use (EULA)"
+          }
+        }
+      }
+    },
+    "Đang dùng gói": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plan active"
+          }
+        }
+      }
+    },
+    "Đến %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Until %@"
+          }
+        }
+      }
+    },
+    "Tự gia hạn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Renews automatically"
+          }
+        }
+      }
+    },
+    "Chưa có gói": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No plan"
+          }
+        }
+      }
+    },
+    "Hiện mọi tính năng vẫn dùng được.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All features are available for now."
+          }
+        }
+      }
+    },
+    "Đang dùng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Active"
+          }
+        }
+      }
+    },
+    "Email": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Email"
+          }
+        }
+      }
+    },
+    "Chưa có": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "None"
+          }
+        }
+      }
+    },
+    "Làm mới": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Refresh"
+          }
+        }
+      }
+    },
+    "Đã có gói DTDStudio trên tài khoản DTD? Đăng nhập để dùng.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Have a DTDStudio plan on your DTD account? Sign in to use it."
+          }
+        }
+      }
+    },
+    "Mật khẩu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Password"
+          }
+        }
+      }
+    },
+    "Tạo tài khoản": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Create account"
+          }
+        }
+      }
+    },
+    "Máy chủ chưa cấu hình tài khoản nhận tiền.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The server has no receiving bank account yet."
+          }
+        }
+      }
+    },
+    "%@ ngày": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ days"
+          }
+        }
+      }
+    },
+    "Chưa có gói DTDStudio trên máy chủ.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No DTDStudio plans on the server."
+          }
+        }
+      }
+    },
+    "Đã nhận tiền — gói đã kích hoạt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Payment received — plan activated"
+          }
+        }
+      }
+    },
+    "Đơn đã hết hạn hoặc bị huỷ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Order expired or cancelled"
+          }
+        }
+      }
+    },
+    "Chọn lại gói": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose again"
+          }
+        }
+      }
+    },
+    "Quét bằng app ngân hàng bất kỳ – số tiền và nội dung đã điền sẵn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scan with any banking app – amount and reference are filled in"
+          }
+        }
+      }
+    },
+    "Ngân hàng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bank"
+          }
+        }
+      }
+    },
+    "Số tài khoản": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Account number"
+          }
+        }
+      }
+    },
+    "Chủ tài khoản": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Account name"
+          }
+        }
+      }
+    },
+    "Số tiền": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Amount"
+          }
+        }
+      }
+    },
+    "Đang chờ ngân hàng xác nhận…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waiting for the bank…"
+          }
+        }
+      }
+    },
+    "Huỷ đơn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel order"
+          }
+        }
+      }
+    },
+    "Mua gói ngày / tháng / năm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buy a day / month / year plan"
+          }
+        }
+      }
+    },
+    "Chưa tải được gói từ App Store (bản cài nội bộ, hoặc gói chưa được tạo trong App Store Connect).": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't load plans from the App Store (internal build, or the products aren't created in App Store Connect yet)."
+          }
+        }
+      }
+    },
+    "Không xác thực được giao dịch": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't verify the transaction"
+          }
+        }
+      }
+    },
+    "Giao dịch đang chờ duyệt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Purchase pending approval"
+          }
+        }
+      }
+    },
+    "Không tìm thấy gói DTDStudio đã mua với Apple ID này": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No DTDStudio purchase found for this Apple ID"
+          }
+        }
+      }
+    },
+    "1 ngày": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 day"
+          }
+        }
+      }
+    },
+    "1 tháng · tự gia hạn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 month · auto-renews"
+          }
+        }
+      }
+    },
+    "1 năm · tự gia hạn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 year · auto-renews"
+          }
+        }
+      }
+    },
+    "Máy chủ trả lỗi %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Server error %@"
+          }
+        }
+      }
+    },
+    "Phản hồi máy chủ không hợp lệ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invalid server response"
+          }
+        }
+      }
+    },
+    "GIẢI LAO": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BREAK"
+          }
+        }
+      }
+    },
+    "CẢM ƠN": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "THANK YOU"
+          }
+        }
+      }
+    },
+    "ĐÃ THEO DÕI": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "FOR WATCHING"
+          }
+        }
+      }
+    },
+    "Oswald (cao, hẹp)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oswald (tall, narrow)"
+          }
+        }
+      }
+    },
+    "Barlow Condensed (hẹp)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Barlow Condensed (narrow)"
+          }
+        }
+      }
+    },
+    "Anton (tiêu đề đậm)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anton (bold headline)"
+          }
+        }
+      }
+    },
+    "Playfair Display (có chân)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Playfair Display (serif)"
+          }
+        }
+      }
+    },
+    "SF (hệ thống)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SF (system)"
+          }
+        }
+      }
+    },
+    "Cầu lông": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Badminton"
+          }
+        }
+      }
+    },
+    "Bóng chuyền": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Volleyball"
+          }
+        }
+      }
+    },
+    "Bóng đá": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Football"
+          }
+        }
+      }
+    },
+    "Bi-a": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Billiards"
+          }
+        }
+      }
+    },
+    "Thẻ vàng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yellow card"
+          }
+        }
+      }
+    },
+    "Thẻ đỏ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Red card"
+          }
+        }
+      }
+    },
+    "CAM 1 · Sân khấu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CAM 1 · Stage"
+          }
+        }
+      }
+    },
+    "CAM 3 · Khán giả": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CAM 3 · Audience"
+          }
+        }
+      }
+    },
+    "Giám đốc Trung tâm Truyền hình": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Director, Television Centre"
+          }
+        }
+      }
+    },
+    "Hà Nội": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hanoi"
+          }
+        }
+      }
+    },
+    "Tin nhanh: DTDStudio — bàn trộn hình nhiều camera và phát trực tiếp RTMP · SRT · RTSP": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "News: DTDStudio — multi-camera switcher and live streaming over RTMP · SRT · RTSP"
+          }
+        }
+      }
+    },
+    "Nhà tài trợ: DTD Solution": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sponsor: DTD Solution"
+          }
+        }
+      }
+    },
+    "Tự do": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Free"
+          }
+        }
+      }
+    },
+    "Tự do (+/−)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Free (+/−)"
+          }
+        }
+      }
+    },
+    "Đổi môn sẽ bắt đầu trận mới (tỉ số hiện tại bị xoá).": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Changing the sport starts a new match (the current score is cleared)."
+          }
+        }
+      }
+    },
+    "Đổi môn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Change sport"
+          }
+        }
+      }
+    },
+    "Nhập điểm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Score entry"
+          }
+        }
+      }
+    },
+    "Trên sóng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "On air"
+          }
+        }
+      }
+    },
+    "Trận mới (giữ luật)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New match (same rules)"
+          }
+        }
+      }
+    },
+    "LUẬT THI ĐẤU": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MATCH RULES"
+          }
+        }
+      }
+    },
+    "Đổi luật giữa trận áp dụng từ điểm tiếp theo. Dùng \"Trận mới\" để bắt đầu lại với luật này.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rule changes mid-match apply from the next point. Use \"New match\" to start over with these rules."
+          }
+        }
+      }
+    },
+    "Chấm điểm tự do. Chọn môn để tính điểm, set, game theo luật:": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Free scoring. Pick a sport to score points, sets and games by its rules:"
+          }
+        }
+      }
+    },
+    "Thể thức": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Format"
+          }
+        }
+      }
+    },
+    "Đơn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Singles"
+          }
+        }
+      }
+    },
+    "Tính điểm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scoring"
+          }
+        }
+      }
+    },
+    "Side-out (chỉ bên giao ghi điểm)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Side-out (only the serving side scores)"
+          }
+        }
+      }
+    },
+    "Rally (mọi rally đều ra điểm)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rally (every rally scores)"
+          }
+        }
+      }
+    },
+    "Game đến %lld điểm, cách %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Game to %lld points, win by %lld"
+          }
+        }
+      }
+    },
+    "Hội ý mỗi game: %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Timeouts per game: %lld"
+          }
+        }
+      }
+    },
+    "Đổi sân giữa game quyết định": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Switch ends in the deciding game"
+          }
+        }
+      }
+    },
+    "Hệ điểm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scoring system"
+          }
+        }
+      }
+    },
+    "Game 21, cách 2, chạm 30 thắng; nghỉ ở 11.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Game to 21, win by 2, cap 30; interval at 11."
+          }
+        }
+      }
+    },
+    "Game 15, cách 2, chạm 21 thắng; nghỉ ở 8.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Game to 15, win by 2, cap 21; interval at 8."
+          }
+        }
+      }
+    },
+    "Trong nhà": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Indoor"
+          }
+        }
+      }
+    },
+    "Bãi biển": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beach"
+          }
+        }
+      }
+    },
+    "Set đến %lld điểm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set to %lld points"
+          }
+        }
+      }
+    },
+    "Set quyết định đến %lld điểm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deciding set to %lld points"
+          }
+        }
+      }
+    },
+    "Hội ý mỗi set: %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Timeouts per set: %lld"
+          }
+        }
+      }
+    },
+    "Thay người mỗi set: %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Substitutions per set: %lld"
+          }
+        }
+      }
+    },
+    "Sân": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pitch"
+          }
+        }
+      }
+    },
+    "Sân 5": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "5-a-side"
+          }
+        }
+      }
+    },
+    "Sân 7": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "7-a-side"
+          }
+        }
+      }
+    },
+    "Sân 11": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "11-a-side"
+          }
+        }
+      }
+    },
+    "Số hiệp: %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Periods: %lld"
+          }
+        }
+      }
+    },
+    "Mỗi hiệp %lld phút": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld minutes per period"
+          }
+        }
+      }
+    },
+    "Đồng hồ đếm ngược (futsal)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Count-down clock (futsal)"
+          }
+        }
+      }
+    },
+    "Lỗi tích lũy": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Accumulated fouls"
+          }
+        }
+      }
+    },
+    "Giới hạn lỗi mỗi hiệp: %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Foul limit per period: %lld"
+          }
+        }
+      }
+    },
+    "Hội ý mỗi hiệp: %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Timeouts per period: %lld"
+          }
+        }
+      }
+    },
+    "Khi hoà": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "If tied"
+          }
+        }
+      }
+    },
+    "Kết thúc hoà": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ends in a draw"
+          }
+        }
+      }
+    },
+    "Đá luân lưu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Penalty shoot-out"
+          }
+        }
+      }
+    },
+    "Hiệp phụ rồi luân lưu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extra time, then shoot-out"
+          }
+        }
+      }
+    },
+    "Hiệp phụ %lld × %lld phút": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extra time %lld × %lld minutes"
+          }
+        }
+      }
+    },
+    "Luân lưu %lld lượt rồi đột tử": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shoot-out %lld kicks, then sudden death"
+          }
+        }
+      }
+    },
+    "Đánh đến %lld điểm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Play to %lld points"
+          }
+        }
+      }
+    },
+    "Giới hạn lượt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inning limit"
+          }
+        }
+      }
+    },
+    "Tối đa %lld lượt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "At most %lld innings"
+          }
+        }
+      }
+    },
+    "Lượt cân bằng (người sau được đánh lượt cuối)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Equalizing inning (second player gets the last turn)"
+          }
+        }
+      }
+    },
+    "Chạm %lld rack": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Race to %lld racks"
+          }
+        }
+      }
+    },
+    "Quyền phá": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Break"
+          }
+        }
+      }
+    },
+    "Luân phiên": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alternate"
+          }
+        }
+      }
+    },
+    "Thắng rack được phá": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Winner breaks"
+          }
+        }
+      }
+    },
+    "Đồng hồ cơ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shot clock"
+          }
+        }
+      }
+    },
+    "%lld giây / cú, gia hạn %lld giây": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld s per shot, %lld s extension"
+          }
+        }
+      }
+    },
+    "Số ván / set": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Games / sets"
+          }
+        }
+      }
+    },
+    "1 ván": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 game"
+          }
+        }
+      }
+    },
+    "Thắng %@/%@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Best %@ of %@"
+          }
+        }
+      }
+    },
+    "Nạp %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Load %@"
+          }
+        }
+      }
+    },
+    "Bảng nhập điểm…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Score entry…"
+          }
+        }
+      }
+    },
+    "Sửa tên, logo, màu, luật…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edit names, logos, colours, rules…"
+          }
+        }
+      }
+    },
+    "Hết bộ đệm khung hình — đã tạo lại (khung bị giữ ở bộ mã hoá)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Out of frame buffers — recreated (frames held by the encoder)"
+          }
+        }
+      }
+    },
+    "Khung hình/giây: dựng %@ · vào mã hoá %@ · ra %@ · dựng TB %@ ms, max %@ ms, quá hạn %@ · %@×%@ %@/%@ kbps%@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Frames/s: rendered %@ · into encoder %@ · out %@ · render avg %@ ms, max %@ ms, late %@ · %@×%@ %@/%@ kbps%@"
+          }
+        }
+      }
+    },
+    " (máy nóng)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": " (device hot)"
+          }
+        }
+      }
+    },
+    "VideoToolbox lỗi %@ %@ — tạo lại bộ mã hoá": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "VideoToolbox error %@ %@ — recreating the encoder"
+          }
+        }
+      }
+    },
+    "(tham số/thời gian khung không hợp lệ)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "(invalid parameter / frame timing)"
+          }
+        }
+      }
+    },
+    "(phiên mã hoá mất hiệu lực — app vào nền / bị gián đoạn)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "(encoder session invalidated — app in background / interrupted)"
+          }
+        }
+      }
+    },
+    "(không tạo được bộ mã hoá)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "(couldn't create the encoder)"
+          }
+        }
+      }
+    },
+    "(bộ mã hoá phần cứng lỗi / quá tải)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "(hardware encoder failed / overloaded)"
+          }
+        }
+      }
+    },
+    "(phần cứng mã hoá đang bận)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "(hardware encoder busy)"
+          }
+        }
+      }
+    },
+    "(hết bộ nhớ đệm)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "(out of buffers)"
+          }
+        }
+      }
+    },
+    "Bộ mã hoá không ra hình (%@ khung vào, 0 ra) — khởi động lại": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Encoder produced no frames (%@ in, 0 out) — restarting"
+          }
+        }
+      }
+    },
+    "Bộ mã hoá không nhận thuộc tính %@ (%@)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Encoder rejected property %@ (%@)"
+          }
+        }
+      }
+    },
+    "Bộ mã hoá đổi thông số (SPS/PPS) — kết nối lại": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Encoder parameters changed (SPS/PPS) — reconnecting"
+          }
+        }
+      }
+    },
+    "Tin tức · Xanh dương": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "News · Blue"
+          }
+        }
+      }
+    },
+    "Tin tức · Xanh đá": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "News · Slate"
+          }
+        }
+      }
+    },
+    "Tin tức · Cam": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "News · Orange"
+          }
+        }
+      }
+    },
+    "Tin tức · Đỏ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "News · Red"
+          }
+        }
+      }
+    },
+    "LIVE · Xanh dương": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LIVE · Blue"
+          }
+        }
+      }
+    },
+    "LIVE · Xanh đá": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LIVE · Slate"
+          }
+        }
+      }
+    },
+    "LIVE · Cam": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LIVE · Orange"
+          }
+        }
+      }
+    },
+    "LIVE · Đỏ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LIVE · Red"
+          }
+        }
+      }
+    },
+    "Lower third trượt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sliding lower third"
+          }
+        }
+      }
+    },
+    "Lower third kính mờ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Frosted-glass lower third"
+          }
+        }
+      }
+    },
+    "Chữ chạy tin tức": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "News ticker"
+          }
+        }
+      }
+    },
+    "Lower third neon": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neon lower third"
+          }
+        }
+      }
+    },
+    "Lower third vát hai tầng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Two-tier angled lower third"
+          }
+        }
+      }
+    },
+    "Khung bản tin trực tiếp · Xanh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Live news frame · Blue"
+          }
+        }
+      }
+    },
+    "Khung bản tin trực tiếp · Đỏ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Live news frame · Red"
+          }
+        }
+      }
+    },
+    "Khung neon livestream": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neon livestream frame"
+          }
+        }
+      }
+    },
+    "Banner podcast": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Podcast banner"
+          }
+        }
+      }
+    },
+    "Màn chờ · Sắp bắt đầu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Standby · Starting soon"
+          }
+        }
+      }
+    },
+    "Màn chờ · Quay lại ngay": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Standby · Be right back"
+          }
+        }
+      }
+    },
+    "Chân trang": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Footer"
+          }
+        }
+      }
+    },
+    "Chữ LIVE (trống = ẩn)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LIVE text (empty = hidden)"
+          }
+        }
+      }
+    },
+    "Chữ chạy (ngăn bằng |, trống = ẩn)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ticker (separate with |, empty = hidden)"
+          }
+        }
+      }
+    },
+    "Chữ khi hết giờ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Text when time is up"
+          }
+        }
+      }
+    },
+    "Chữ lớn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Big text"
+          }
+        }
+      }
+    },
+    "Chữ nhỏ dưới nhãn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Small text under the tag"
+          }
+        }
+      }
+    },
+    "Dòng mô tả": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Description"
+          }
+        }
+      }
+    },
+    "Dòng phụ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Subline"
+          }
+        }
+      }
+    },
+    "Giờ (trống = giờ thực)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time (empty = real time)"
+          }
+        }
+      }
+    },
+    "Giờ (trống = giờ thực, - = ẩn)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time (empty = real time, - = hidden)"
+          }
+        }
+      }
+    },
+    "Khách mời (trống = ẩn)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guest (empty = hidden)"
+          }
+        }
+      }
+    },
+    "Logo (thay chữ nhãn)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logo (replaces the tag text)"
+          }
+        }
+      }
+    },
+    "Logo (thay micro)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logo (replaces the mic)"
+          }
+        }
+      }
+    },
+    "Logo (thay tên kênh)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logo (replaces the channel name)"
+          }
+        }
+      }
+    },
+    "Logo (thư viện Logo)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logo (Logo library)"
+          }
+        }
+      }
+    },
+    "Nhãn (tự xuống dòng)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tag (wraps)"
+          }
+        }
+      }
+    },
+    "Nhãn chữ chạy": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ticker tag"
+          }
+        }
+      }
+    },
+    "Nhãn khách mời": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guest tag"
+          }
+        }
+      }
+    },
+    "Nội dung (ngăn bằng |)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Content (separate with |)"
+          }
+        }
+      }
+    },
+    "Số phút đếm ngược (trống = không)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Countdown minutes (empty = none)"
+          }
+        }
+      }
+    },
+    "Tiêu đề": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Headline"
+          }
+        }
+      }
+    },
+    "Tiêu đề chính": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Main headline"
+          }
+        }
+      }
+    },
+    "Tiêu đề trên": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Top line"
+          }
+        }
+      }
+    },
+    "Tiêu đề tập": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Episode title"
+          }
+        }
+      }
+    },
+    "Tài khoản / lời chào": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Handle / greeting"
+          }
+        }
+      }
+    },
+    "Tên chương trình": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show name"
+          }
+        }
+      }
+    },
+    "Tên kênh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Channel name"
+          }
+        }
+      }
+    },
+    "Địa điểm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Location"
+          }
+        }
+      }
+    },
+    "Ảnh đại diện / logo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avatar / logo"
+          }
+        }
+      }
+    },
+    "Gói DTDStudio dùng được cả DTDLive Pro: đăng nhập cùng tài khoản DTD trên DTDLive.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A DTDStudio plan also unlocks DTDLive Pro: sign in with the same DTD account in DTDLive."
+          }
+        }
+      }
+    },
+    "Gói ngày": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Day pass"
+          }
+        }
+      }
+    },
+    "Gói tháng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monthly"
+          }
+        }
+      }
+    },
+    "Gói năm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yearly"
+          }
+        }
+      }
+    },
+    "Đang tải giá từ App Store…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loading prices from the App Store…"
+          }
+        }
+      }
+    },
+    "Tỉ giá tham khảo: 1 USD ≈ %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reference rate: 1 USD ≈ %@"
+          }
+        }
+      }
+    },
+    "Chưa mở bán trên App Store": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not on sale in the App Store yet"
+          }
+        }
+      }
+    },
+    "Tắt tự động chuyển cảnh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Turn off auto switching"
+          }
+        }
+      }
+    },
+    "Tỉ giá quy đổi": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exchange rate"
+          }
+        }
+      }
+    },
+    "Xoá tài khoản": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete account"
+          }
+        }
+      }
+    },
+    "Xoá vĩnh viễn tài khoản và dữ liệu đăng nhập. Gói đang dùng trên tài khoản sẽ mất; thuê bao App Store vẫn huỷ trong Cài đặt › Apple ID.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Permanently deletes the account and its sign-in data. Plans on the account are lost; App Store subscriptions are still cancelled in Settings › Apple ID."
+          }
+        }
+      }
+    },
+    "Mật khẩu để xác nhận": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Password to confirm"
+          }
+        }
+      }
+    },
+    "Xoá vĩnh viễn tài khoản này?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete this account permanently?"
+          }
+        }
+      }
+    },
+    "Đăng nhập để dùng gói trên mọi thiết bị và với DTDLive.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign in to use your plan on all your devices and with DTDLive."
+          }
+        }
+      }
+    },
+    "Chưa cho phép dùng camera": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Camera access not allowed"
+          }
+        }
+      }
+    },
+    "Chưa cắm camera USB-C": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "USB-C camera not plugged in"
+          }
+        }
+      }
+    },
+    "Không mở được camera": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't open the camera"
+          }
+        }
+      }
+    },
+    "Đã rút camera": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Camera unplugged"
+          }
+        }
+      }
+    },
+    "Đã thêm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Added"
+          }
+        }
+      }
+    },
+    "Cắm camera USB-C hoặc thiết bị capture (UVC) vào iPad — nó hiện ở đây ngay (iPadOS 17 trở lên).": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plug a USB-C camera or UVC capture device into the iPad — it shows up here right away (iPadOS 17 or later)."
+          }
+        }
+      }
+    },
+    "Nguồn này đã có trong danh sách đầu vào.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This source is already an input."
+          }
+        }
+      }
+    },
+    "Camera / USB-C": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Camera / USB-C"
+          }
+        }
+      }
+    },
+    "Multiview": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Multiview"
+          }
+        }
+      }
+    },
+    "Ô đầu vào": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Input tiles"
+          }
+        }
+      }
+    },
+    "Cut": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cut"
+          }
+        }
+      }
+    },
+    "Auto": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auto"
+          }
+        }
+      }
+    },
+    "Mờ + trượt nhẹ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fade + short slide"
+          }
+        }
+      }
+    },
+    "Cắt (không hiệu ứng)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cut (no effect)"
+          }
+        }
+      }
+    },
+    "Trượt vào từ trái": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slide in from left"
+          }
+        }
+      }
+    },
+    "Trượt vào từ phải": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slide in from right"
+          }
+        }
+      }
+    },
+    "Trượt lên từ dưới": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slide up from below"
+          }
+        }
+      }
+    },
+    "Lau ngang": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wipe"
+          }
+        }
+      }
+    },
+    "Xoá title “%@”?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete title “%@”?"
+          }
+        }
+      }
+    },
+    "Tắt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Off"
+          }
+        }
+      }
+    },
+    "On": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "On"
+          }
+        }
+      }
+    },
+    "FX": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "FX"
+          }
+        }
+      }
+    },
+    "Hiệu ứng vào / ra": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In / out effect"
+          }
+        }
+      }
+    },
+    "Gán phím T1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Assign to T1"
+          }
+        }
+      }
+    },
+    "Gán phím T2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Assign to T2"
+          }
+        }
+      }
+    },
+    "Thêm thao tác": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "More"
+          }
+        }
+      }
+    },
+    "Stinger ảnh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Image stinger"
+          }
+        }
+      }
+    },
+    "Chuyển động": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Motion"
+          }
+        }
+      }
+    },
+    "Bỏ stinger": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove stinger"
+          }
+        }
+      }
+    },
+    "Nhập ảnh PNG (nền trong suốt) làm stinger — nó quét qua khung hình, camera chuyển khi ảnh che kín.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import a PNG (transparent background) as a stinger — it sweeps across the frame and the cameras switch while it covers the screen."
+          }
+        }
+      }
+    },
+    "Chạm một ảnh để dùng làm chuyển cảnh cho Cut / Auto / T-bar": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap a picture to use it as the transition for Cut / Auto / T-bar"
+          }
+        }
+      }
+    },
+    "Vị trí & kích thước": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Position & size"
+          }
+        }
+      }
+    },
+    "Chữ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Text"
+          }
+        }
+      }
+    },
+    "Màu & hiệu ứng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Colour & effects"
+          }
+        }
+      }
+    },
+    "Chỉnh nhích": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nudge"
+          }
+        }
+      }
+    },
+    "Về vị trí gốc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back to origin"
+          }
+        }
+      }
+    },
+    "Nội dung & thiết kế": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Content & design"
+          }
+        }
+      }
+    },
+    "Trên giữa": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Top centre"
+          }
+        }
+      }
+    },
+    "Giữa trái": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Middle left"
+          }
+        }
+      }
+    },
+    "Chính giữa": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Centre"
+          }
+        }
+      }
+    },
+    "Giữa phải": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Middle right"
+          }
+        }
+      }
+    },
+    "Dưới giữa": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bottom centre"
+          }
+        }
+      }
+    },
+    "Vị trí đặt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Position"
+          }
+        }
+      }
+    },
+    "Kéo logo trên khung để di chuyển, kéo chấm ở góc để đổi cỡ.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drag the logo on the frame to move it, drag the corner dot to resize it."
+          }
+        }
+      }
+    },
+    "Cách mép": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Margin"
+          }
+        }
+      }
+    },
+    "Khung replay (VAR)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Replay window (VAR)"
+          }
+        }
+      }
+    },
+    "Trong khung layout PiP": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In a PiP layout window"
+          }
+        }
+      }
+    },
+    "Chạm một khung trong sơ đồ để chọn chỗ đặt replay. Hết replay, khung tự hạ và layout trước đó trở lại.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap a window in the diagram to place the replay there. When the replay ends the window comes down and the previous layout returns."
+          }
+        }
+      }
+    },
+    "VAR · ĐANG GIỮ HÌNH": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "VAR · HOLDING"
+          }
+        }
+      }
+    },
+    "VAR · ĐANG PHÁT": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "VAR · PLAYING"
+          }
+        }
+      }
+    },
+    "−5 khung": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "−5 frames"
+          }
+        }
+      }
+    },
+    "−1 khung": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "−1 frame"
+          }
+        }
+      }
+    },
+    "+1 khung": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "+1 frame"
+          }
+        }
+      }
+    },
+    "+5 khung": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "+5 frames"
+          }
+        }
+      }
+    },
+    "Phát tiếp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Play on"
+          }
+        }
+      }
+    },
+    "Giữ hình": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hold"
+          }
+        }
+      }
+    },
+    "Hạ replay": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Take replay down"
+          }
+        }
+      }
+    },
+    "Giữ hình rồi bước từng khung để soi tình huống; ‹ › trên bàn phím cũng bước 1 khung.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hold, then step frame by frame to check the incident; ‹ › on a keyboard also step 1 frame."
+          }
+        }
+      }
+    },
+    "Video từ Ảnh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Videos from Photos"
+          }
+        }
+      }
+    },
+    "Từ Tệp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "From Files"
+          }
+        }
+      }
+    },
+    "Ảnh từ Thư viện": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "From Photos"
+          }
+        }
+      }
+    },
+    "Âm thanh của video trong Ảnh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sound of a video in Photos"
+          }
+        }
+      }
+    },
+    "Đang nhập từ Ảnh %@/%@…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Importing from Photos %@/%@…"
+          }
+        }
+      }
+    },
+    "Không nhập được %@ mục từ Ảnh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not import %@ item(s) from Photos"
+          }
+        }
+      }
+    },
+    "%@ video không có âm thanh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ video(s) have no sound"
+          }
+        }
+      }
+    },
+    "Luôn giữ màn hình sáng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep the screen on"
+          }
+        }
+      }
+    },
+    "Tắt (tiết kiệm pin): màn hình chỉ luôn sáng khi đang phát / ghi; lúc khác iPad tự khoá theo Tự động khoá. Khi app ở nền hoặc màn hình tắt mà không phát, sau 15 giây app dừng camera, micro, xử lý hình và kết nối để không tốn pin; mở lại app là chạy tiếp.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Off (saves battery): the screen stays on only while streaming / recording; otherwise the iPad locks by Auto-Lock. When the app is in the background or the screen is off and nothing is on air, after 15 seconds the app stops cameras, microphone, picture processing and connections to save battery; open the app again to continue."
+          }
+        }
+      }
+    },
+    "Ứng dụng đã chạy nền trong lúc phát: iPad dừng camera và xử lý hình khi app không ở phía trước, chỉ âm thanh tiếp tục. Hãy giữ DTDStudio mở khi đang phát.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The app was in the background while on air: the iPad stops cameras and picture processing when the app is not in front, only sound continues. Keep DTDStudio open while streaming."
+          }
+        }
+      }
+    },
+    "Tùy chỉnh (nhiều lớp)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Custom (multi-layer)"
+          }
+        }
+      }
+    },
+    "Hình chữ nhật": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rectangle"
+          }
+        }
+      }
+    },
+    "Chữ nhật bo góc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rounded rectangle"
+          }
+        }
+      }
+    },
+    "Hình bầu dục": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ellipse"
+          }
+        }
+      }
+    },
+    "Đường kẻ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Line"
+          }
+        }
+      }
+    },
+    "Ảnh / logo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Image / logo"
+          }
+        }
+      }
+    },
+    "Thiết kế Title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Title designer"
+          }
+        }
+      }
+    },
+    "Thêm lớp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add layer"
+          }
+        }
+      }
+    },
+    "Các lớp (trên = trước)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Layers (top = front)"
+          }
+        }
+      }
+    },
+    "Xoá lớp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete layer"
+          }
+        }
+      }
+    },
+    "Mẫu đã lưu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saved templates"
+          }
+        }
+      }
+    },
+    "Lưu mẫu này": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save this template"
+          }
+        }
+      }
+    },
+    "Chưa có mẫu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No templates yet"
+          }
+        }
+      }
+    },
+    "Nạp mẫu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Load template"
+          }
+        }
+      }
+    },
+    "Tên mẫu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Template name"
+          }
+        }
+      }
+    },
+    "Xoá title này": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete this title"
+          }
+        }
+      }
+    },
+    "Đậm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bold"
+          }
+        }
+      }
+    },
+    "Nghiêng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Italic"
+          }
+        }
+      }
+    },
+    "Căn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Align"
+          }
+        }
+      }
+    },
+    "Chọn ảnh / logo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose image / logo"
+          }
+        }
+      }
+    },
+    "Nền sau chữ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Background behind text"
+          }
+        }
+      }
+    },
+    "Tô màu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fill"
+          }
+        }
+      }
+    },
+    "Màu tô": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fill colour"
+          }
+        }
+      }
+    },
+    "Độ đục": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Opacity"
+          }
+        }
+      }
+    },
+    "Bo góc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Corner radius"
+          }
+        }
+      }
+    },
+    "Màu viền": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Border colour"
+          }
+        }
+      }
+    },
+    "Dày viền": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Border width"
+          }
+        }
+      }
+    },
+    "Độ đục lớp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Layer opacity"
+          }
+        }
+      }
+    },
+    "Thiết kế nhiều lớp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Multi-layer design"
+          }
+        }
+      }
+    },
+    "Tùy chỉnh (nhiều lớp)…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Custom (multi-layer)…"
+          }
+        }
+      }
+    },
+    "Vạch nhấn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Accent tab"
+          }
+        }
+      }
+    },
+    "Nhập ảnh / logo ở các mục Ảnh và Logo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import images / logos in the Pictures and Logo sections"
+          }
+        }
+      }
+    },
+    "Lớp đang chọn · %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selected layer · %@"
+          }
+        }
+      }
+    },
+    "NDI chưa khả dụng trong bản này": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "NDI is not available in this build"
+          }
+        }
+      }
+    },
+    "Chưa chọn nguồn NDI cho N-Title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No NDI source chosen for N-Title"
+          }
+        }
+      }
+    },
+    "N-Title (NDI có alpha)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "N-Title (NDI with alpha)"
+          }
+        }
+      }
+    },
+    "Chưa chọn nguồn NDI": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No NDI source chosen"
+          }
+        }
+      }
+    },
+    "Chọn nguồn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose source"
+          }
+        }
+      }
+    },
+    "N-Title đang trên PGM — bấm để hạ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "N-Title is on PGM — tap to take down"
+          }
+        }
+      }
+    },
+    "Đưa N-Title lên PGM": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Put N-Title on PGM"
+          }
+        }
+      }
+    },
+    "Nguồn NDI phải có kênh alpha (nền trong suốt). Phần trong suốt cho thấy Program, phần có hình là lớp chữ.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The NDI source must carry an alpha channel (transparent background). Transparent areas show Program; the opaque part is the title layer."
+          }
+        }
+      }
+    },
+    "Đang tìm nguồn NDI…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Searching for NDI sources…"
+          }
+        }
+      }
+    },
+    "Nguồn NDI cho N-Title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "NDI source for N-Title"
+          }
+        }
+      }
+    },
+    "Không thấy nguồn NDI nào trên mạng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No NDI sources found on the network"
+          }
+        }
+      }
+    },
+    "Xoá title này?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete this title?"
+          }
+        }
+      }
+    },
+    "Lên trước": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Forward"
+          }
+        }
+      }
+    },
+    "Ra sau": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backward"
+          }
+        }
+      }
+    },
+    "Căn trái": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Align left"
+          }
+        }
+      }
+    },
+    "Giữa ngang": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Centre horizontally"
+          }
+        }
+      }
+    },
+    "Căn phải": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Align right"
+          }
+        }
+      }
+    },
+    "Căn trên": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Align top"
+          }
+        }
+      }
+    },
+    "Giữa dọc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Centre vertically"
+          }
+        }
+      }
+    },
+    "Căn dưới": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Align bottom"
+          }
+        }
+      }
+    },
+    "Căn chỉnh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Align"
+          }
+        }
+      }
+    },
+    "Bắt dóng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Snap"
+          }
+        }
+      }
+    },
+    "Nền khung vẽ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Canvas background"
+          }
+        }
+      }
+    },
+    "Hình Program": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Program picture"
+          }
+        }
+      }
+    },
+    "Ô vuông (trong suốt)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Checkerboard (transparent)"
+          }
+        }
+      }
+    },
+    "Đen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Black"
+          }
+        }
+      }
+    },
+    "Xám": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Grey"
+          }
+        }
+      }
+    },
+    "Xem thử": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preview"
+          }
+        }
+      }
+    },
+    "Bấm “Thêm lớp” để bắt đầu thiết kế": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap “Add layer” to start designing"
+          }
+        }
+      }
+    },
+    "Thuộc tính": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Properties"
+          }
+        }
+      }
+    },
+    "Lớp (%lld)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Layers (%lld)"
+          }
+        }
+      }
+    },
+    "Mẫu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Templates"
+          }
+        }
+      }
+    },
+    "Bỏ chọn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deselect"
+          }
+        }
+      }
+    },
+    "Chưa chọn lớp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No layer selected"
+          }
+        }
+      }
+    },
+    "Chạm vào một lớp trên khung vẽ để chọn (chạm đúp vào chữ để sửa nội dung), hoặc thêm lớp mới:": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap a layer on the canvas to select it (double-tap text to edit it), or add a new layer:"
+          }
+        }
+      }
+    },
+    "Hiệu ứng vào / ra của title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Title in / out effect"
+          }
+        }
+      }
+    },
+    "Xem thử trên khung vẽ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preview on the canvas"
+          }
+        }
+      }
+    },
+    "Phông": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Font"
+          }
+        }
+      }
+    },
+    "Hệ thống": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "System"
+          }
+        }
+      }
+    },
+    "Bo tròn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rounded"
+          }
+        }
+      }
+    },
+    "Có chân": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Serif"
+          }
+        }
+      }
+    },
+    "Đơn cách": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monospaced"
+          }
+        }
+      }
+    },
+    "Độ rộng chữ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Letter width"
+          }
+        }
+      }
+    },
+    "Thường": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Regular"
+          }
+        }
+      }
+    },
+    "Hẹp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Condensed"
+          }
+        }
+      }
+    },
+    "Rất hẹp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compressed"
+          }
+        }
+      }
+    },
+    "Vừa": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Medium"
+          }
+        }
+      }
+    },
+    "Hơi đậm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Semibold"
+          }
+        }
+      }
+    },
+    "Rất đậm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heavy"
+          }
+        }
+      }
+    },
+    "Khung ôm theo chữ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Box fits the text"
+          }
+        }
+      }
+    },
+    "Màu bóng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shadow colour"
+          }
+        }
+      }
+    },
+    "Độ nhoè": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blur"
+          }
+        }
+      }
+    },
+    "Màu viền chữ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Outline colour"
+          }
+        }
+      }
+    },
+    "Dày viền chữ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Outline width"
+          }
+        }
+      }
+    },
+    "Đổi ảnh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Change image"
+          }
+        }
+      }
+    },
+    "Giữ tỉ lệ khi kéo góc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep proportions on corner drag"
+          }
+        }
+      }
+    },
+    "Màu đường kẻ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Line colour"
+          }
+        }
+      }
+    },
+    "Có nền": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Background"
+          }
+        }
+      }
+    },
+    "Viền khung": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Box border"
+          }
+        }
+      }
+    },
+    "Có viền": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Border"
+          }
+        }
+      }
+    },
+    "Dịch": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nudge"
+          }
+        }
+      }
+    },
+    "Về 0°": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset to 0°"
+          }
+        }
+      }
+    },
+    "Khoá lớp (không chọn / kéo trên khung vẽ)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lock layer (not picked / dragged on the canvas)"
+          }
+        }
+      }
+    },
+    "Lớp trên cùng nằm phía trước. Chạm để chọn, kéo trên khung vẽ để di chuyển.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The top layer is in front. Tap to select, drag on the canvas to move."
+          }
+        }
+      }
+    },
+    "Chưa có lớp nào": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No layers yet"
+          }
+        }
+      }
+    },
+    "Hiện lớp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show layer"
+          }
+        }
+      }
+    },
+    "Ẩn lớp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hide layer"
+          }
+        }
+      }
+    },
+    "Mở khoá lớp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlock layer"
+          }
+        }
+      }
+    },
+    "Khoá lớp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lock layer"
+          }
+        }
+      }
+    },
+    "Đưa lên trên cùng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bring to front"
+          }
+        }
+      }
+    },
+    "Lên 1 lớp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Up one layer"
+          }
+        }
+      }
+    },
+    "Xuống 1 lớp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Down one layer"
+          }
+        }
+      }
+    },
+    "Xuống dưới cùng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Send to back"
+          }
+        }
+      }
+    },
+    "Lưu thiết kế này": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save this design"
+          }
+        }
+      }
+    },
+    "Lưu thành mẫu…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save as template…"
+          }
+        }
+      }
+    },
+    "Mẫu có sẵn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Built-in templates"
+          }
+        }
+      }
+    },
+    "Lower third cơ bản": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Basic lower third"
+          }
+        }
+      }
+    },
+    "Chưa có mẫu nào": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No templates yet"
+          }
+        }
+      }
+    },
+    "Nạp mẫu sẽ thay toàn bộ thiết kế hiện tại (có thể Hoàn tác).": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loading a template replaces the whole current design (you can Undo)."
+          }
+        }
+      }
+    },
+    "CHỮ HOA": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "UPPERCASE"
+          }
+        }
+      }
+    },
+    "Kéo title trên khung để đặt vị trí · chụm 2 ngón để đổi cỡ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drag the title on the preview to place it · pinch to resize"
+          }
+        }
+      }
+    },
+    "Chụm 2 ngón trên khung để đổi cỡ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pinch on the preview to resize"
+          }
+        }
+      }
+    },
+    "Rộng ra": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Expanded"
+          }
+        }
+      }
+    },
+    "Lower third có tiêu đề": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lower third with header"
+          }
+        }
+      }
+    },
+    "CHƯƠNG TRÌNH": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PROGRAMME"
+          }
+        }
+      }
+    },
+    "Chữ logo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logo text"
+          }
+        }
+      }
+    },
+    "Tổng thể": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Overall"
+          }
+        }
+      }
+    },
+    "Từng lớp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Layer"
+          }
+        }
+      }
+    },
+    "Chưa có thiết kế": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No design yet"
+          }
+        }
+      }
+    },
+    "Thêm lớp từ thanh công cụ, hoặc nạp một mẫu lower third có sẵn.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add layers from the toolbar, or load a ready-made lower third."
+          }
+        }
+      }
+    },
+    "Mở tab Mẫu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Templates"
+          }
+        }
+      }
+    },
+    "Kéo trên khung vẽ để dời cả lower third, kéo góc để đổi cỡ đồng bộ. Chạm vào một phần để sửa riêng phần đó.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drag on the canvas to move the whole lower third, drag a corner to resize everything together. Tap a part to edit it on its own."
+          }
+        }
+      }
+    },
+    "Kích thước & vị trí": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Size & position"
+          }
+        }
+      }
+    },
+    "Cỡ tổng thể": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Overall size"
+          }
+        }
+      }
+    },
+    "Mọi lớp to / nhỏ cùng lúc, kể cả chữ (số = chiều cao so với khung hình).": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All layers grow / shrink together, text included (value = height relative to the frame)."
+          }
+        }
+      }
+    },
+    "Độ dài": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Length"
+          }
+        }
+      }
+    },
+    "Thanh nền dài / ngắn lại, chữ giữ nguyên cỡ.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Background bars get longer / shorter, text keeps its size."
+          }
+        }
+      }
+    },
+    "Cao / thấp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Higher / lower"
+          }
+        }
+      }
+    },
+    "Sát đáy": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bottom"
+          }
+        }
+      }
+    },
+    "Thấp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Low"
+          }
+        }
+      }
+    },
+    "Giữa khung": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Middle"
+          }
+        }
+      }
+    },
+    "Trên cùng": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Top"
+          }
+        }
+      }
+    },
+    "Trái": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Left"
+          }
+        }
+      }
+    },
+    "Phải": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Right"
+          }
+        }
+      }
+    },
+    "Phông chữ (tất cả chữ)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Font (all text)"
+          }
+        }
+      }
+    },
+    "Nhỏ hơn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Smaller"
+          }
+        }
+      }
+    },
+    "To hơn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Larger"
+          }
+        }
+      }
+    },
+    "Đổ bóng cho chữ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Text shadow"
+          }
+        }
+      }
+    },
+    "Chữ in hoa": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uppercase"
+          }
+        }
+      }
+    },
+    "Chưa có lớp chữ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No text layers"
+          }
+        }
+      }
+    },
+    "Màu nền & màu nhấn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Background & accent colours"
+          }
+        }
+      }
+    },
+    "Chưa có lớp có màu nền": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No filled layers"
+          }
+        }
+      }
+    },
+    "Độ đục nền": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Background opacity"
+          }
+        }
+      }
+    },
+    "Dừng xem thử": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stop preview"
+          }
+        }
+      }
+    },
+    "PGM": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PGM"
+          }
+        }
+      }
+    },
+    "Thiết kế vẽ ở khung 16:9. PGM có tỉ lệ khác nên lower third tự co cho vừa khung và giữ khoảng cách tới mép dưới.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The design is drawn on a 16:9 frame. PGM has another shape, so the lower third resizes to fit and keeps its distance from the bottom edge."
+          }
+        }
+      }
+    },
+    "lower third tự co theo khung, xem ở tab Tổng thể": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "the lower third adapts to the frame, see the Overall tab"
+          }
+        }
+      }
+    },
+    "Danh sách phát": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Playlist"
+          }
+        }
+      }
+    },
+    "Chuyển PGM về nguồn trước đó": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Return PGM to the previous source"
+          }
+        }
+      }
+    },
+    "Tắt các kết nối phát đã bật": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stop the stream connections it started"
+          }
+        }
+      }
+    },
+    "Giữ khung hình cuối": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hold the last frame"
+          }
+        }
+      }
+    },
+    "Danh sách phát chưa có video": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The playlist has no videos"
+          }
+        }
+      }
+    },
+    "Danh sách phát chưa có video (hoặc video đã bị xoá khỏi thư viện)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The playlist has no videos (or they were removed from the library)"
+          }
+        }
+      }
+    },
+    "Bỏ qua các video đã bị xoá khỏi thư viện": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skipping videos removed from the library"
+          }
+        }
+      }
+    },
+    "Danh sách bắt đầu trễ %@ phút (ứng dụng không mở đúng giờ)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The playlist started %@ min late (the app was not open at the start time)"
+          }
+        }
+      }
+    },
+    "Dừng danh sách phát?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stop the playlist?"
+          }
+        }
+      }
+    },
+    "PGM chuyển về nguồn trước đó.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PGM returns to the previous source."
+          }
+        }
+      }
+    },
+    "Bắt đầu ngay": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start now"
+          }
+        }
+      }
+    },
+    "Hẹn giờ phát": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schedule"
+          }
+        }
+      }
+    },
+    "Sẽ phát lúc %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Starts at %@"
+          }
+        }
+      }
+    },
+    "Còn %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In %@"
+          }
+        }
+      }
+    },
+    "Huỷ hẹn giờ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel schedule"
+          }
+        }
+      }
+    },
+    "Clip trước": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Previous clip"
+          }
+        }
+      }
+    },
+    "Clip sau": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Next clip"
+          }
+        }
+      }
+    },
+    "Đã phát hết danh sách": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The playlist has finished"
+          }
+        }
+      }
+    },
+    "Đóng danh sách": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close the playlist"
+          }
+        }
+      }
+    },
+    "Giữ DTDStudio mở trên màn hình cho đến khi phát xong: iPad không cho ứng dụng xử lý hình khi ở nền. Màn hình được giữ sáng tự động.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep DTDStudio open on screen until the playlist is done: iPad does not let apps process video in the background. The screen is kept on automatically."
+          }
+        }
+      }
+    },
+    "ĐANG PHÁT": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ON AIR"
+          }
+        }
+      }
+    },
+    "Lặp lại": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loop"
+          }
+        }
+      }
+    },
+    "Chưa có video. Nhập video ở mục Video (Từ Ảnh / Từ Tệp), rồi thêm vào đây.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No videos yet. Import videos in Video (From Photos / From Files), then add them here."
+          }
+        }
+      }
+    },
+    "Thêm video từ thư viện": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add videos from the library"
+          }
+        }
+      }
+    },
+    "Lặp lại cả danh sách": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loop the whole list"
+          }
+        }
+      }
+    },
+    "Danh sách · %@ video · %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "List · %@ videos · %@"
+          }
+        }
+      }
+    },
+    "Thay đổi danh sách áp dụng cho lần phát sau. Chạm vào một clip để chuyển ngay sang clip đó.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "List changes apply to the next run. Tap a clip to jump to it now."
+          }
+        }
+      }
+    },
+    "Vuốt sang trái để xoá, giữ và kéo để đổi thứ tự.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Swipe left to delete, touch and hold then drag to reorder."
+          }
+        }
+      }
+    },
+    "Không còn trong thư viện": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No longer in the library"
+          }
+        }
+      }
+    },
+    "Lên trên": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Move up"
+          }
+        }
+      }
+    },
+    "Xuống dưới": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Move down"
+          }
+        }
+      }
+    },
+    "Nhân đôi": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Duplicate"
+          }
+        }
+      }
+    },
+    "Xoá khỏi danh sách": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove from the list"
+          }
+        }
+      }
+    },
+    "Khi bấm Bắt đầu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "When I tap Start"
+          }
+        }
+      }
+    },
+    "Hẹn giờ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scheduled"
+          }
+        }
+      }
+    },
+    "Giờ bắt đầu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start time"
+          }
+        }
+      }
+    },
+    "Kết thúc dự kiến": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Expected end"
+          }
+        }
+      }
+    },
+    "Khi hết danh sách": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "When the list ends"
+          }
+        }
+      }
+    },
+    "Lịch phát": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schedule"
+          }
+        }
+      }
+    },
+    "Đang bật Lặp lại: danh sách phát mãi cho đến khi bấm Dừng.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loop is on: the list plays until you tap Stop."
+          }
+        }
+      }
+    },
+    "Chưa có kết nối phát. Thêm ở mục Đầu ra (YouTube, Facebook, RTMP, SRT…).": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No stream connections yet. Add them in Outputs (YouTube, Facebook, RTMP, SRT…)."
+          }
+        }
+      }
+    },
+    "Kết nối phát khi bắt đầu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stream connections at start"
+          }
+        }
+      }
+    },
+    "Các kết nối được chọn tự bật lúc danh sách bắt đầu; kết nối đang phát sẵn được giữ nguyên. Logo, title và bảng tỉ số vẫn hiện trên hình phát.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The chosen connections start when the list starts; connections already live are left as they are. Logo, titles and scoreboard stay on the output."
+          }
+        }
+      }
+    },
+    "Thư viện Video chưa có video. Nhập ở mục Video › Video từ Ảnh / Từ Tệp.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Video library is empty. Import in Video › Videos from Photos / From Files."
+          }
+        }
+      }
+    },
+    "Chọn video": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose videos"
+          }
+        }
+      }
+    },
+    "Thêm (%@)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add (%@)"
+          }
+        }
+      }
+    },
+    "Mở": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open"
+          }
+        }
+      }
+    },
+    "Danh sách phát: hẹn %@ · còn %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Playlist: scheduled %@ · in %@"
+          }
+        }
+      }
+    },
+    "Danh sách phát %@/%@: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Playlist %@/%@: %@"
+          }
+        }
+      }
+    },
+    "Danh sách phát đã phát hết": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Playlist finished"
+          }
+        }
+      }
+    },
+    "Đưa lên PVW": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Put on PVW"
+          }
+        }
+      }
+    },
+    "Lên PVW lúc %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "To PVW at %@"
+          }
+        }
+      }
+    },
+    "Đưa lên PVW ngay": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Put on PVW now"
+          }
+        }
+      }
+    },
+    "Sẵn sàng trên PVW": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ready on PVW"
+          }
+        }
+      }
+    },
+    "Bấm CUT / AUTO / kéo T-bar để đưa lên PGM — danh sách bắt đầu chạy khi lên PGM.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Press CUT / AUTO / pull the T-bar to take it to PGM — the list starts rolling on PGM."
+          }
+        }
+      }
+    },
+    "Đã phát hết — đang giữ khung cuối": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finished — holding the last frame"
+          }
+        }
+      }
+    },
+    "Đưa lại lên PVW": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Put on PVW again"
+          }
+        }
+      }
+    },
+    "PGM không tự đổi: nếu danh sách đang trên PGM, hình đứng ở khung hiện tại cho đến khi anh bấm chuyển cảnh.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PGM does not change by itself: if the list is on PGM, the picture holds until you press a transition."
+          }
+        }
+      }
+    },
+    "Đến giờ hẹn, danh sách lên PVW và dừng ở khung đầu. Hết danh sách thì giữ khung cuối.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "At the scheduled time the list goes to PVW, waiting on its first frame. At the end it holds the last frame."
+          }
+        }
+      }
+    },
+    "Giờ lên PVW": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time to PVW"
+          }
+        }
+      }
+    },
+    "Quy trình": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Workflow"
+          }
+        }
+      }
+    },
+    "Bấm Đưa lên PVW (hoặc đến giờ hẹn): danh sách chờ ở khung đầu.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap Put on PVW (or wait for the scheduled time): the list waits on its first frame."
+          }
+        }
+      }
+    },
+    "Chuyển cảnh lên PGM": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transition to PGM"
+          }
+        }
+      }
+    },
+    "CUT / AUTO / T-bar / stinger: danh sách bắt đầu chạy.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CUT / AUTO / T-bar / stinger: the list starts rolling."
+          }
+        }
+      }
+    },
+    "Bật kết nối ở mục Đầu ra (YouTube, Facebook, RTMP, SRT…) như bình thường.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start the connections in Outputs (YouTube, Facebook, RTMP, SRT…) as usual."
+          }
+        }
+      }
+    },
+    "Bấm vào nguồn hay danh sách chỉ đưa lên PVW; chỉ các nút chuyển cảnh mới đổi PGM. Logo, title và bảng tỉ số vẫn hiện trên hình phát.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tapping a source or the list only puts it on PVW; only the transition buttons change PGM. Logo, titles and scoreboard stay on the output."
+          }
+        }
+      }
+    },
+    "Danh sách phát: lên PVW lúc %@ · còn %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Playlist: to PVW at %@ · in %@"
+          }
+        }
+      }
+    },
+    "Danh sách phát sẵn sàng trên PVW — chuyển cảnh để phát": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Playlist ready on PVW — transition to play"
+          }
+        }
+      }
+    },
+    "Danh sách lên PVW trễ %@ phút (ứng dụng không mở đúng giờ)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The playlist went to PVW %@ min late (the app was not open at the time)"
+          }
+        }
+      }
+    },
+    "Danh sách phát đã lên PVW — bấm CUT / AUTO / T-bar để phát lên PGM": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The playlist is on PVW — press CUT / AUTO / T-bar to play it on PGM"
+          }
+        }
+      }
+    },
+    "Danh sách phát đã hết — giữ khung cuối, bấm chuyển cảnh để rời": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The playlist has finished — holding the last frame, transition to leave it"
+          }
+        }
+      }
+    },
+    "%@ video · %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ videos · %@"
+          }
+        }
+      }
+    },
+    "%@ đã lên PVW — bấm CUT / AUTO / T-bar để phát lên PGM": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ is on PVW — press CUT / AUTO / T-bar to play it on PGM"
+          }
+        }
+      }
+    },
+    "Bật khung giờ này": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enable this slot"
+          }
+        }
+      }
+    },
+    "Bỏ qua khung giờ %@ lúc %@: ứng dụng không mở đúng giờ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skipped slot %@ at %@: the app was not open on time"
+          }
+        }
+      }
+    },
+    "Chưa có khung giờ nào sắp tới": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No upcoming slots"
+          }
+        }
+      }
+    },
+    "Chưa có khung giờ nào trong ngày này.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No slots on this day."
+          }
+        }
+      }
+    },
+    "Chưa có video": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No videos"
+          }
+        }
+      }
+    },
+    "Chưa có video trong khung giờ này.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No videos in this slot yet."
+          }
+        }
+      }
+    },
+    "Chạm vào một khung để sửa giờ, video, lặp lại theo ngày / theo thứ.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap a slot to edit its time, videos and repeat (daily / weekdays)."
+          }
+        }
+      }
+    },
+    "Chạy lịch tự động": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Run schedule automatically"
+          }
+        }
+      }
+    },
+    "Chỉ ngày này": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This day only"
+          }
+        }
+      }
+    },
+    "Chọn thứ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weekdays"
+          }
+        }
+      }
+    },
+    "Chồng giờ với khung sau": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Overlaps the next slot"
+          }
+        }
+      }
+    },
+    "Danh sách": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "List"
+          }
+        }
+      }
+    },
+    "Hằng ngày": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Every day"
+          }
+        }
+      }
+    },
+    "Khung %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slot %@"
+          }
+        }
+      }
+    },
+    "Khung giờ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time slot"
+          }
+        }
+      }
+    },
+    "Kết thúc khoảng %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ends around %@"
+          }
+        }
+      }
+    },
+    "Lặp lại từ ngày bắt đầu trở đi, cùng giờ.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Repeats from the start date onward, at the same time."
+          }
+        }
+      }
+    },
+    "Lặp lại: danh sách chạy mãi cho đến khi khung giờ sau lên PVW và anh chuyển cảnh, hoặc bấm Dừng.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loop: the list keeps playing until the next slot is on PVW and you transition, or you press Stop."
+          }
+        }
+      }
+    },
+    "Lịch theo ngày": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Day schedule"
+          }
+        }
+      }
+    },
+    "Lịch theo ngày · tiếp theo %@ %@ · còn %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Day schedule · next %@ %@ · in %@"
+          }
+        }
+      }
+    },
+    "Lịch theo ngày đang chạy · không còn khung giờ nào sắp tới": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Day schedule running · no upcoming slots"
+          }
+        }
+      }
+    },
+    "Thêm khung giờ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add time slot"
+          }
+        }
+      }
+    },
+    "Tiếp theo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Next"
+          }
+        }
+      }
+    },
+    "Tên khung giờ (ví dụ: Bản tin trưa)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slot name (e.g. Noon news)"
+          }
+        }
+      }
+    },
+    "Video · %@ · %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Videos · %@ · %@"
+          }
+        }
+      }
+    },
+    "Về hôm nay": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back to today"
+          }
+        }
+      }
+    },
+    "Xoá khung giờ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete slot"
+          }
+        }
+      }
+    },
+    "Xoá khung giờ này?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete this slot?"
+          }
+        }
+      }
+    },
+    "còn %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "in %@"
+          }
+        }
+      }
+    },
+    "Đang tắt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Off"
+          }
+        }
+      }
+    },
+    "Đến giờ của mỗi khung, danh sách của khung đó lên PVW (dừng ở khung đầu); bấm chuyển cảnh để phát. Giữ DTDStudio mở trên màn hình khi lịch đang chạy.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "At each slot's time its list goes to PVW (held on the first frame); a transition plays it. Keep DTDStudio open on screen while the schedule is running."
+          }
+        }
+      }
+    },
+    "%@ phát thẳng lên PGM": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ cut straight to PGM"
+          }
+        }
+      }
+    },
+    "Phát lên PGM ngay": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Play on PGM now"
+          }
+        }
+      }
+    },
+    "Lên PGM ngay (bỏ qua PVW)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Straight to PGM (skip PVW)"
+          }
+        }
+      }
+    },
+    "Lên PGM ngay": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Straight to PGM"
+          }
+        }
+      }
+    },
+    "Giờ phát": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Play time"
+          }
+        }
+      }
+    },
+    "Lên PGM ngay: bấm Phát (hoặc đến giờ hẹn) là danh sách cắt thẳng lên PGM và chạy, PVW giữ nguyên. Hết danh sách thì giữ khung cuối.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Straight to PGM: press Play (or at the scheduled time) and the list cuts straight to PGM and plays; PVW is unchanged. At the end the last frame is held."
+          }
+        }
+      }
+    },
+    "Đến giờ, danh sách cắt thẳng lên PGM và chạy ngay; PVW giữ nguyên.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "At its time the list cuts straight to PGM and plays; PVW is unchanged."
+          }
+        }
+      }
+    },
+    "Đến giờ, danh sách lên PVW (dừng ở khung đầu); bấm chuyển cảnh để phát.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "At its time the list goes to PVW (held on the first frame); a transition plays it."
+          }
+        }
+      }
+    },
+    "Đến giờ của mỗi khung, danh sách của khung đó lên PVW (dừng ở khung đầu); bấm chuyển cảnh để phát. Khung bật \"Lên PGM ngay\" thì cắt thẳng lên PGM. Giữ DTDStudio mở trên màn hình khi lịch đang chạy.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "At each slot's time its list goes to PVW (held on the first frame); a transition plays it. Slots set to \"Straight to PGM\" cut straight to PGM. Keep DTDStudio open on screen while the schedule is running."
+          }
+        }
+      }
+    },
+    "Tạm dừng — đã rời PGM. Chuyển cảnh lại lên PGM để chạy tiếp từ chỗ này.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paused — off PGM. Transition back to PGM to continue from here."
+          }
+        }
+      }
+    },
+    "Tạm dừng (rời PGM)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paused (off PGM)"
+          }
+        }
+      }
+    },
+    "Màu đơn sắc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Solid colour"
+          }
+        }
+      }
+    },
+    "Ảnh từ thư viện…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Picture from library…"
+          }
+        }
+      }
+    },
+    "Video từ thư viện…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video from library…"
+          }
+        }
+      }
+    },
+    "Nguồn đang có": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Current inputs"
+          }
+        }
+      }
+    },
+    "Nguồn đã bị xoá": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Input removed"
+          }
+        }
+      }
+    },
+    "Phần phông xanh được thay bằng nguồn này (phủ kín khung, giữ tỉ lệ).": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The green screen is replaced by this input (fills the frame, keeps aspect)."
+          }
+        }
+      }
+    },
+    "Phần phông xanh được thay bằng màu này.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The green screen is replaced by this colour."
+          }
+        }
+      }
+    },
+    "Trong suốt: phần phông xanh để trống — dùng khi nguồn này làm lớp chồng (PiP / layout / key).": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transparent: the green screen is left empty — use it when this input is an overlay (PiP / layout / key)."
+          }
+        }
+      }
+    },
+    "Thư viện chưa có ảnh. Nhập ở mục Ảnh › Ảnh từ Thư viện / Từ Tệp.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The picture library is empty. Import in Pictures › From Photos / From Files."
+          }
+        }
+      }
+    },
+    "Chọn video làm nền": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose background video"
+          }
+        }
+      }
+    },
+    "Chọn ảnh làm nền": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose background picture"
+          }
+        }
+      }
+    },
+    "Không tạo được bộ nhận NDI": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not create the NDI receiver"
+          }
+        }
+      }
+    },
+    "PTZ qua NDI®": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PTZ over NDI®"
+          }
+        }
+      }
+    },
+    "Camera NDI chưa báo hỗ trợ PTZ (đang kết nối, hoặc camera không có PTZ qua NDI). Có thể điều khiển bằng VISCA ở dưới.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The NDI camera has not reported PTZ support (still connecting, or no PTZ over NDI). You can control it with VISCA below."
+          }
+        }
+      }
+    },
+    "Điều khiển bằng VISCA (IP)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Control with VISCA (IP)"
+          }
+        }
+      }
+    },
+    "Đã lưu preset %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preset %@ saved"
+          }
+        }
+      }
+    },
+    "VISCA over IP": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "VISCA over IP"
+          }
+        }
+      }
+    },
+    "IP camera": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Camera IP"
+          }
+        }
+      }
+    },
+    "VU meter âm thanh trên PVW / PGM": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Audio VU meters on PVW / PGM"
+          }
+        }
+      }
+    },
+    "Multiview trên iPad": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Multiview on iPad"
+          }
+        }
+      }
+    },
+    "Màn hình ngoài (USB‑C / HDMI)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "External display (USB‑C / HDMI)"
+          }
+        }
+      }
+    },
+    "Xuất ra màn ngoài": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Send to external display"
+          }
+        }
+      }
+    },
+    "PGM (chỉ hình phát)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PGM (program only)"
+          }
+        }
+      }
+    },
+    "Mở cửa sổ xuất hình (Stage Manager)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open output window (Stage Manager)"
+          }
+        }
+      }
+    },
+    "Đang xuất PGM ra màn ngoài": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sending PGM to the external display"
+          }
+        }
+      }
+    },
+    "Đang xuất Multiview ra màn ngoài": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sending Multiview to the external display"
+          }
+        }
+      }
+    },
+    "Màn ngoài đang là màn mở rộng (Stage Manager): mở cửa sổ xuất hình, kéo sang màn ngoài và phóng to toàn màn hình": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The external screen is an extended display (Stage Manager): open the output window, drag it to that screen and make it full screen"
+          }
+        }
+      }
+    },
+    "Chưa cắm màn hình ngoài": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No external display connected"
+          }
+        }
+      }
+    },
+    "Cắm màn hình / bộ chuyển USB‑C sang HDMI: DTDStudio tự xuất hình đã chọn ra màn ngoài (không phản chiếu màn iPad). Nếu iPad dùng màn ngoài làm màn mở rộng (Stage Manager), mở menu Multiview › Mở cửa sổ xuất hình rồi kéo cửa sổ sang màn ngoài.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connect a display or a USB‑C to HDMI adapter: DTDStudio sends the chosen picture to it (not a mirror of the iPad). If the iPad uses it as an extended display (Stage Manager), open Multiview › Open output window and drag the window to that screen."
+          }
+        }
+      }
+    },
+    "PGM không có khung mới — đã khởi động lại xử lý hình": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PGM produced no new frames — the video pipeline was restarted"
+          }
+        }
+      }
+    },
+    "Phản chiếu màn iPad": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mirror the iPad screen"
+          }
+        }
+      }
+    },
+    "Màn ngoài đang phản chiếu màn iPad": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The external display mirrors the iPad screen"
+          }
+        }
+      }
+    },
+    "VU meter trên hình PGM ra màn ngoài": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "VU meter on the external PGM output"
+          }
+        }
+      }
+    },
+    "theo Cam iPad": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "follows iPad cam"
+          }
+        }
+      }
+    },
+    "MASTER": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MASTER"
+          }
+        }
+      }
+    },
+    "PiP 16:9": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PiP 16:9"
+          }
+        }
+      }
+    },
+    "Replay + Camera": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Replay + Camera"
+          }
+        }
+      }
+    },
+    "Theo layout": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Layout window"
+          }
+        }
+      }
+    },
+    "Kích thước khung": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Window size"
+          }
+        }
+      }
+    },
+    "Hai khung bằng nhau": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Two equal windows"
+          }
+        }
+      }
+    },
+    "Replay lớn + camera nhỏ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Large replay + small camera"
+          }
+        }
+      }
+    },
+    "Replay bên trái": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Replay on the left"
+          }
+        }
+      }
+    },
+    "Nguồn đang phát trước replay": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Source on air before the replay"
+          }
+        }
+      }
+    },
+    "Camera: nguồn đang phát trước replay": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Camera: source on air before the replay"
+          }
+        }
+      }
+    },
+    "Nền của layout PiP": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PiP layout background"
+          }
+        }
+      }
+    },
+    "Ảnh nền: nền của layout PiP": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Background: PiP layout background"
+          }
+        }
+      }
+    },
+    "Khung luôn 16:9; phần còn lại là ảnh nền (thêm ảnh ở thư viện Ảnh). Hết replay, khung tự hạ và bố cục trước đó trở lại.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Windows are always 16:9; the rest shows the background picture (add pictures in the Pictures library). When the replay ends the window comes down and the previous layout returns."
+          }
+        }
+      }
+    },
+    "Replay PiP": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Replay PiP"
+          }
+        }
+      }
+    },
+    "REPLAY": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "REPLAY"
+          }
+        }
+      }
+    },
+    "CAM": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CAM"
+          }
+        }
+      }
+    },
+    "PiP replay": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Replay PiP"
+          }
+        }
+      }
+    },
+    "Phải trên": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Top right"
+          }
+        }
+      }
+    },
+    "Phải dưới": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bottom right"
+          }
+        }
+      }
+    },
+    "Trái trên": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Top left"
+          }
+        }
+      }
+    },
+    "Trái dưới": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bottom left"
+          }
+        }
+      }
+    },
+    "Cỡ khung PiP": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PiP size"
+          }
+        }
+      }
+    },
+    "Khung dưới replay": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Window below the replay"
+          }
+        }
+      }
+    },
+    "Input": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Input"
+          }
+        }
+      }
+    },
+    "Nguồn đang ở PVW": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Source on PVW"
+          }
+        }
+      }
+    },
+    "Input: nguồn đang ở PVW": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Input: source on PVW"
+          }
+        }
+      }
+    },
+    "Chọn ảnh trong thư viện": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose a picture from the library"
+          }
+        }
+      }
+    },
+    "Hình đang phát vẫn toàn khung; replay hiện trong khung PiP 16:9, bên dưới có thể thêm một input hoặc ảnh 16:9. Hết replay, khung PiP tự hạ.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The live picture stays full frame; the replay shows in a 16:9 PiP window, with an optional 16:9 input or picture below it. When the replay ends the PiP comes down."
+          }
+        }
+      }
+    },
+    "ẢNH": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PICTURE"
+          }
+        }
+      }
+    },
+    "INPUT": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "INPUT"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

@@ -4,10 +4,11 @@ import SwiftUI
 import UIKit
 
 enum TitleStyle: String, Codable, CaseIterable, Identifiable {
-    case lowerThird, nameStrap, logoStrap, fullScreen, ticker, scoreBug, clock, countdown
+    case lowerThird, nameStrap, logoStrap, fullScreen, ticker, scoreBug, clock, countdown, custom
     var id: String { rawValue }
     var label: String {
         switch self {
+        case .custom: return L("Tùy chỉnh (nhiều lớp)")
         case .lowerThird: return "Lower third"
         case .nameStrap: return L("Tên + chức danh")
         case .logoStrap: return L("Logo + tên + chức danh")
@@ -51,6 +52,41 @@ struct TitleItem: Identifiable, Codable, Equatable {
     var bg1Hex: String? = nil
     var bg2Hex: String? = nil
     var bgOpacity: CGFloat? = nil
+    /// In / out effect (nil = fade + short slide, the original look) and its duration in seconds.
+    var fx: TitleFX? = nil
+    var fxDuration: Double? = nil
+    /// Custom style: the design, a stack of layers in 1920×1080 space (back to front). nil for the built-in styles.
+    var layers: [TitleLayer]? = nil
+}
+
+/// How a title comes on and goes off.
+enum TitleFX: String, Codable, CaseIterable, Identifiable {
+    case fadeSlide, fade, cut, slideLeft, slideRight, slideUp, wipe, zoom
+    var id: String { rawValue }
+    var label: String {
+        switch self {
+        case .fadeSlide: return L("Mờ + trượt nhẹ")
+        case .fade: return L("Mờ dần")
+        case .cut: return L("Cắt (không hiệu ứng)")
+        case .slideLeft: return L("Trượt vào từ trái")
+        case .slideRight: return L("Trượt vào từ phải")
+        case .slideUp: return L("Trượt lên từ dưới")
+        case .wipe: return L("Lau ngang")
+        case .zoom: return L("Phóng to")
+        }
+    }
+    var icon: String {
+        switch self {
+        case .fadeSlide: return "arrow.right.circle"
+        case .fade: return "circle.lefthalf.filled"
+        case .cut: return "scissors"
+        case .slideLeft: return "arrow.right.to.line"
+        case .slideRight: return "arrow.left.to.line"
+        case .slideUp: return "arrow.up.to.line"
+        case .wipe: return "rectangle.lefthalf.inset.filled.arrow.left"
+        case .zoom: return "arrow.up.left.and.arrow.down.right"
+        }
+    }
 }
 
 /// Renders TitleItems to CIImages (cached; re-rendered only when content changes),
@@ -59,6 +95,7 @@ final class TitleRenderer: @unchecked Sendable {
     private var cache: [UUID: (TitleItem, CGSize, CIImage)] = [:]
     private var tickCache: [UUID: Int] = [:]
     private var boardCache: [UUID: (String, CGSize, CIImage)] = [:]
+    private var flashCache: (UUID, CGSize, CIImage)?
     private var shownAt: [UUID: CFTimeInterval] = [:]
     private var hiddenAt: [UUID: CFTimeInterval] = [:]
     private let lock = NSLock()
@@ -85,15 +122,57 @@ final class TitleRenderer: @unchecked Sendable {
             lock.lock()
             let shown = shownAt[item.id], hidden = hiddenAt[item.id]
             lock.unlock()
-            var alpha: CGFloat = 1
-            if item.visible, let shown { alpha = min(1, (now - shown) / animation) }
-            else if !item.visible, let hidden { alpha = max(0, 1 - (now - hidden) / animation); if alpha == 0 { continue } }
+            let fx = item.fx ?? .fadeSlide
+            let dur = fx == .cut ? 0 : max(0.05, item.fxDuration ?? animation)
+            var p: CGFloat = 1
+            if item.visible, let shown { p = dur == 0 ? 1 : CGFloat(min(1, (now - shown) / dur)) }
+            else if !item.visible, let hidden { p = dur == 0 ? 0 : CGFloat(max(0, 1 - (now - hidden) / dur)); if p <= 0 { continue } }
             else if !item.visible { continue }
+            let e = 1 - pow(1 - p, 3)              // ease-out
+            var alpha: CGFloat = (fx == .fadeSlide || fx == .fade || fx == .zoom) ? e : 1
 
             guard var img = image(for: item, canvas: canvas, now: now) else { continue }
-            let slide = (1 - alpha) * 40
-            let x = item.position.x * canvas.width - slide
-            let y = (1 - item.position.y) * canvas.height - img.extent.height
+            // Custom design is already a full-frame image: whole-frame fade / slide / wipe / zoom, no placement.
+            if item.style == .custom {
+                switch fx {
+                case .slideLeft:  img = img.transformed(by: .init(translationX: -(1 - e) * canvas.width, y: 0))
+                case .slideRight: img = img.transformed(by: .init(translationX: (1 - e) * canvas.width, y: 0))
+                case .slideUp:    img = img.transformed(by: .init(translationX: 0, y: (1 - e) * canvas.height))
+                case .fadeSlide:  img = img.transformed(by: .init(translationX: -(1 - e) * 40 * canvas.width / 1920, y: 0))
+                case .wipe:       if e < 1 { img = img.cropped(to: CGRect(x: 0, y: 0, width: canvas.width * e, height: canvas.height)) }; if e <= 0.001 { continue }
+                case .zoom:
+                    let s = 0.85 + 0.15 * e, cx = canvas.width / 2, cy = canvas.height / 2
+                    img = img.transformed(by: CGAffineTransform(translationX: -cx, y: -cy)
+                        .concatenating(.init(scaleX: s, y: s)).concatenating(.init(translationX: cx, y: cy)))
+                case .fade, .cut: break
+                }
+                if alpha < 1 {
+                    img = img.applyingFilter("CIColorMatrix", parameters: [
+                        "inputRVector": CIVector(x: alpha, y: 0, z: 0, w: 0), "inputGVector": CIVector(x: 0, y: alpha, z: 0, w: 0),
+                        "inputBVector": CIVector(x: 0, y: 0, z: alpha, w: 0), "inputAVector": CIVector(x: 0, y: 0, z: 0, w: alpha)])
+                }
+                out = out.map { img.composited(over: $0) } ?? img
+                continue
+            }
+            let w = img.extent.width, h = img.extent.height, k = canvas.width / 1920
+            var x = item.position.x * canvas.width
+            var y = (1 - item.position.y) * canvas.height - h
+            switch fx {
+            case .fadeSlide: x -= (1 - e) * 40 * k
+            case .slideLeft: x -= (1 - e) * (x + w)
+            case .slideRight: x += (1 - e) * (canvas.width - x)
+            case .slideUp: y -= (1 - e) * (y + h)
+            case .wipe:
+                if e < 1 { img = img.cropped(to: CGRect(x: img.extent.minX, y: img.extent.minY, width: w * e, height: h)) }
+                if e <= 0.001 { continue }
+            case .zoom:
+                let s = 0.7 + 0.3 * e
+                img = img.transformed(by: CGAffineTransform(translationX: -w / 2, y: -h / 2)
+                    .concatenating(CGAffineTransform(scaleX: s, y: s))
+                    .concatenating(CGAffineTransform(translationX: w / 2, y: h / 2)))
+            case .fade, .cut: break
+            }
+            if item.style == .ticker { alpha = e }
             if item.style == .ticker {
                 let travel = canvas.width + img.extent.width
                 let offset = CGFloat((now - (shown ?? now))) * item.tickerSpeed * canvas.width / 1920
@@ -115,6 +194,10 @@ final class TitleRenderer: @unchecked Sendable {
                     "inputBVector": CIVector(x: 0, y: 0, z: alpha, w: 0), "inputAVector": CIVector(x: 0, y: 0, z: 0, w: alpha)])
             }
             out = out.map { img.composited(over: $0) } ?? img
+            // Sport event overlay (goal, card, added time…) while the scoreboard is on air
+            if item.style == .scoreBug, item.visible, let fl = item.board?.flash, let fx = flashImage(fl, canvas: canvas, boardY: item.position.y) {
+                out = out.map { fx.composited(over: $0) } ?? fx
+            }
             // Countdown reached 00:00 → fireworks over the whole frame for a few seconds
             if item.style == .countdown, item.visible, let shown {
                 let past = now - shown - Double(item.scoreA * 60 + item.scoreB)
@@ -126,7 +209,44 @@ final class TitleRenderer: @unchecked Sendable {
         return out?.cropped(to: CGRect(origin: .zero, size: canvas))
     }
 
+    /// The flash placed and faded for this moment: centred, in the lower third when the scoreboard sits in the
+    /// top half of the frame, otherwise near the top.
+    private func flashImage(_ fl: SportFlash, canvas: CGSize, boardY: CGFloat) -> CIImage? {
+        guard let p = fl.progress(Date()) else { return nil }
+        lock.lock()
+        var base = flashCache?.0 == fl.id && flashCache?.1 == canvas ? flashCache?.2 : nil
+        lock.unlock()
+        if base == nil {
+            guard let cg = SportFlashRenderer.render(fl).cgImage else { return nil }
+            let k = canvas.width / 1920
+            base = CIImage(cgImage: cg).transformed(by: .init(scaleX: k, y: k))
+            lock.lock(); flashCache = (fl.id, canvas, base!); lock.unlock()
+        }
+        guard var img = base else { return nil }
+        let w = img.extent.width, h = img.extent.height
+        let topNorm: CGFloat = boardY < 0.5 ? 0.64 : 0.08
+        let x = (canvas.width - w) / 2 + p.slide * 160 * canvas.width / 1920
+        let y = (1 - topNorm) * canvas.height - h
+        img = img.transformed(by: .init(translationX: x, y: y))
+        if p.alpha < 1 {
+            let a = p.alpha
+            img = img.applyingFilter("CIColorMatrix", parameters: [
+                "inputRVector": CIVector(x: a, y: 0, z: 0, w: 0), "inputGVector": CIVector(x: 0, y: a, z: 0, w: 0),
+                "inputBVector": CIVector(x: 0, y: 0, z: a, w: 0), "inputAVector": CIVector(x: 0, y: 0, z: 0, w: a)])
+        }
+        return img
+    }
+
     private func image(for item: TitleItem, canvas: CGSize, now: CFTimeInterval) -> CIImage? {
+        if item.style == .custom {
+            lock.lock()
+            if let c = cache[item.id], c.0 == item, c.1 == canvas { lock.unlock(); return c.2 }
+            lock.unlock()
+            guard let cg = Self.drawCustom(item, canvas: canvas)?.cgImage else { return nil }
+            let ci = CIImage(cgImage: cg)
+            lock.lock(); cache[item.id] = (item, canvas, ci); tickCache[item.id] = -1; lock.unlock()
+            return ci
+        }
         if item.style == .scoreBug {
             // Scoreboard: re-drawn only when its signature (scores, names, clock second…) changes.
             let sig = ScoreboardRenderer.signature(item) + "|\(item.scale)"
@@ -141,7 +261,8 @@ final class TitleRenderer: @unchecked Sendable {
         }
         // Clock / countdown change once a second: redraw only when the shown second changes
         // (drawing text on the CPU every frame made program stutter).
-        let k = canvas.height / 1080 * item.scale
+        // by height on 16:9 / 4:3, limited by the width on square / vertical frames (no overflow on 9:16)
+        let k = Self.graphicsScale(canvas) * item.scale
         var remaining: Int?
         if item.style == .countdown {
             lock.lock(); let start = shownAt[item.id]; lock.unlock()
@@ -182,6 +303,8 @@ final class TitleRenderer: @unchecked Sendable {
         }
         let fmt = UIGraphicsImageRendererFormat(); fmt.scale = 1; fmt.opaque = false
         switch t.style {
+        case .custom:
+            return drawCustom(t, canvas: CGSize(width: 1920 * k, height: 1080 * k)) ?? UIImage()
         case .lowerThird, .nameStrap:
             let a = attr(t.line1, big, text1 ?? .white), b = attr(t.line2, small, text2 ?? .white)
             let w = fixedW.map { max(60 * k, $0 - 12 * k) } ?? (max(a.size().width, b.size().width) + 60 * k)

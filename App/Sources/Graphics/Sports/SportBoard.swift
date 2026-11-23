@@ -31,13 +31,17 @@ struct SportControlItem: Identifiable {
     let role: SportControlRole
     let enabled: Bool
     let inputPrompt: String?
+    let choices: [String]
+    let minusOf: String?
+    let value: String?
     let make: (String?) -> SportAction
 }
 
 private func erase<A>(_ controls: [SportControl<A>], _ wrap: @escaping (A) -> SportAction) -> [SportControlItem] {
     controls.map { c in
         SportControlItem(id: c.id, title: c.title, side: c.side, role: c.role, enabled: c.enabled,
-                        inputPrompt: c.inputPrompt, make: { wrap(c.make($0)) })
+                        inputPrompt: c.inputPrompt, choices: c.choices,
+                        minusOf: c.minusOf, value: c.value, make: { wrap(c.make($0)) })
     }
 }
 

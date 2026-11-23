@@ -101,7 +101,12 @@ struct CategoryContent: View {
     /// (which clears photoKind / importing) never sends a Logo into Ảnh or vice versa.
     @State private var photoTarget: LibraryKind = .picture
     @State private var videoPick = false
-    @State private var videoItem: PhotosPickerItem?
+    @State private var showPlayout = false
+    @State private var videoItems: [PhotosPickerItem] = []
+    /// Where videos picked from Photos go: Video, or only their sound into Nhạc / Hiệu ứng âm thanh.
+    @State private var videoTarget: LibraryKind = .movie
+    /// "Đang nhập 2/5…" while items picked from Photos are copied (iCloud videos download first).
+    @State private var importStatus: String?
     @State private var fileTarget: LibraryKind = .picture
     /// Background picture for PiP layouts, picked straight from Photos / Files and applied at once.
     @State private var bgPhoto: PhotosPickerItem?
@@ -112,6 +117,7 @@ struct CategoryContent: View {
     @State private var showOutputs = false
     /// Title category: HTML5 graphics · classic titles · scoreboard, each on its own tab.
     @AppStorage("ui.titleTab") private var titleTab = 0
+    @State private var editingTitle: UUID?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -121,6 +127,12 @@ struct CategoryContent: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: compact ? 8 : 12) {
                         if hasToolbar { header }
+                        if let st = importStatus {
+                            HStack(spacing: 8) {
+                                ProgressView().controlSize(.small)
+                                Text(verbatim: st).font(DS.fBody).foregroundStyle(DS.text2)
+                            }
+                        }
                         content
                     }
                     .font(DS.fBody)              // one text size for every category page
@@ -153,28 +165,23 @@ struct CategoryContent: View {
             }
             importing = nil
         }
+        .sheet(isPresented: $showPlayout) {
+            PlayoutSheet(playout: engine.playout, engine: engine, library: library)
+        }
         .photosPicker(isPresented: Binding(get: { photoKind != nil }, set: { if !$0 { photoKind = nil } }),
-                      selection: $photoItems, matching: .images)
-        .photosPicker(isPresented: $videoPick, selection: $videoItem, matching: .videos)
-        .onChange(of: videoItem) { _, item in
-            guard let item else { return }
-            Task {
-                if let mv = try? await item.loadTransferable(type: PickedMovie.self) {
-                    if let err = library.importFiles([mv.url], into: .movie) { engine.message = err }
-                    try? FileManager.default.removeItem(at: mv.url)
-                } else {
-                    engine.message = L("Không đọc được video từ Thư viện ảnh")
-                }
-                videoItem = nil
-            }
+                      selection: $photoItems, matching: .images, preferredItemEncoding: .current)
+        // .current: the video as stored (no re-encode to H.264 before it is handed over — much faster for 4K / HEVC)
+        .photosPicker(isPresented: $videoPick, selection: $videoItems, maxSelectionCount: 20,
+                      matching: .videos, preferredItemEncoding: .current)
+        .onChange(of: videoItems) { _, items in
+            guard !items.isEmpty else { return }
+            let k = videoTarget
+            Task { await importVideos(items, into: k); videoItems = [] }
         }
         .onChange(of: photoItems) { _, items in
             guard !items.isEmpty else { return }
             let k = photoTarget
-            Task {
-                for i in items { if let d = try? await i.loadTransferable(type: Data.self) { library.importImage(d, into: k, name: k == .logo ? "Logo" : k == .overlay ? "SuperFG" : "Ảnh") } }
-                photoItems = []
-            }
+            Task { await importPictures(items, into: k); photoItems = [] }
         }
         .sheet(item: Binding(get: { adjustingSource.map(IDBox.init) }, set: { adjustingSource = $0?.id })) { box in
             NavigationStack {
@@ -215,18 +222,30 @@ struct CategoryContent: View {
                 }
                 headerButton("Thêm nguồn", "plus") { showAddSource = true }
             case .movie:
-                Menu {
-                    Button { videoPick = true } label: { Label("Thư viện ảnh", systemImage: "photo.on.rectangle") }
-                    Button { fileTarget = .movie; importing = .movie } label: { Label("Tệp", systemImage: "folder") }
-                } label: { toolbarLabel("Nhập video", "square.and.arrow.down") }
+                headerButton("Video từ Ảnh", "photo.on.rectangle") { videoTarget = .movie; videoPick = true }
+                headerButton("Từ Tệp", "folder") { fileTarget = .movie; importing = .movie }
+                headerButton("Danh sách phát", "list.and.film") { showPlayout = true }
             case .picture, .overlay, .logo:
                 importImageMenu(category == .picture ? .picture : category == .overlay ? .overlay : .logo)
             case .audio:
-                headerButton("Nhập nhạc", "square.and.arrow.down") { fileTarget = .music; importing = .music }
-                headerButton("Nhập hiệu ứng", "sparkles") { fileTarget = .sound; importing = .sound }
+                // Photos holds no audio files: from Ảnh, the sound of the chosen videos is taken out as .m4a
+                Menu {
+                    Button { videoTarget = .music; videoPick = true } label: { Label("Âm thanh của video trong Ảnh", systemImage: "photo.on.rectangle") }
+                    Button { fileTarget = .music; importing = .music } label: { Label("Tệp", systemImage: "folder") }
+                } label: { toolbarLabel("Nhập nhạc", "square.and.arrow.down") }
+                Menu {
+                    Button { videoTarget = .sound; videoPick = true } label: { Label("Âm thanh của video trong Ảnh", systemImage: "photo.on.rectangle") }
+                    Button { fileTarget = .sound; importing = .sound } label: { Label("Tệp", systemImage: "folder") }
+                } label: { toolbarLabel("Nhập hiệu ứng", "sparkles") }
             case .title where titleTab == 1:
                 Menu {
-                    ForEach(TitleStyle.allCases) { s in
+                    Button {
+                        var t = TitleItem(style: .custom)
+                        t.layers = TitleLayer.starter(accent: t.accentHex)
+                        engine.upsertTitle(t); editingTitle = t.id
+                    } label: { Label("Tùy chỉnh (nhiều lớp)…", systemImage: "square.3.layers.3d") }
+                    Divider()
+                    ForEach(TitleStyle.allCases.filter { $0 != .custom }) { s in
                         Button(s.label) {
                             var t = TitleItem(style: s, line1: s == .clock ? "" : s.label)
                             if s == .logoStrap {   // template: logo + header + name + role, logo = the loaded logo
@@ -234,6 +253,7 @@ struct CategoryContent: View {
                                 t.logoFile = engine.currentLogoURL?.lastPathComponent
                             }
                             engine.upsertTitle(t)
+                            editingTitle = t.id      // step 2: edit the new title straight away
                         }
                     }
                 } label: { toolbarLabel("Thêm title", "plus") }
@@ -263,13 +283,65 @@ struct CategoryContent: View {
             .accessibilityLabel(label)
     }
 
-    /// One "Nhập ảnh" button; the source (Photos or Files) is chosen from its menu.
-    private func importImageMenu(_ k: LibraryKind) -> some View {
-        Menu {
-            Button { photoTarget = k; photoKind = k } label: { Label("Thư viện ảnh", systemImage: "photo.on.rectangle") }
-            Button { fileTarget = k; importing = k } label: { Label("Tệp", systemImage: "folder") }
-        } label: { toolbarLabel("Nhập ảnh", "square.and.arrow.down") }
-        .id(k)
+    /// Import buttons for pictures: straight from the iPad's Photos (several at once) or from Files.
+    @ViewBuilder private func importImageMenu(_ k: LibraryKind) -> some View {
+        headerButton("Ảnh từ Thư viện", "photo.on.rectangle") { photoTarget = k; photoKind = k }.id("p" + k.rawValue)
+        headerButton("Từ Tệp", "folder") { fileTarget = k; importing = k }.id("f" + k.rawValue)
+    }
+
+    /// Pictures picked in Photos: three at a time (Photos hands them over in parallel), each decoded,
+    /// scaled and saved off the main thread; the library refreshes once at the end.
+    private func importPictures(_ items: [PhotosPickerItem], into k: LibraryKind) async {
+        let name = k == .logo ? "Logo" : k == .overlay ? "SuperFG" : L("Ảnh")
+        let stamp = MediaLibrary.stamp(), total = items.count
+        var done = 0, failed = 0
+        importStatus = LF("Đang nhập từ Ảnh %@/%@…", "0", "\(total)")
+        await withTaskGroup(of: Bool.self) { g in
+            func finished(_ ok: Bool) {
+                done += 1; if !ok { failed += 1 }
+                importStatus = LF("Đang nhập từ Ảnh %@/%@…", "\(done)", "\(total)")
+            }
+            for (i, item) in items.enumerated() {
+                if i >= 3, let ok = await g.next() { finished(ok) }
+                let base = total > 1 ? "\(name)-\(stamp)-\(i + 1)" : "\(name)-\(stamp)"
+                g.addTask {
+                    guard let d = try? await item.loadTransferable(type: Data.self) else { return false }
+                    return MediaLibrary.storeImage(d, into: k, base: base) != nil
+                }
+            }
+            for await ok in g { finished(ok) }
+        }
+        library.refresh()
+        importStatus = nil
+        if failed > 0 { engine.message = LF("Không nhập được %@ mục từ Ảnh", "\(failed)") }
+    }
+
+    /// Videos picked in Photos → the Video library, or only their sound → Nhạc / Hiệu ứng âm thanh.
+    /// Shows the download percentage (videos kept in iCloud are fetched first).
+    private func importVideos(_ items: [PhotosPickerItem], into k: LibraryKind) async {
+        var failed = 0, silent = 0
+        for (n, item) in items.enumerated() {
+            let head = LF("Đang nhập từ Ảnh %@/%@…", "\(n + 1)", "\(items.count)")
+            importStatus = head
+            let mv = await PhotosLoad.movie(item) { f in
+                importStatus = f > 0 && f < 1 ? head + " \(Int(f * 100))%" : head
+            }
+            guard let mv else { failed += 1; continue }
+            if k == .movie {
+                let u = mv.url
+                if await Task.detached(operation: { MediaLibrary.adoptMovie(u) }).value == nil { failed += 1 }
+            } else {
+                if await library.importAudio(fromMovie: mv.url, into: k, name: mv.url.deletingPathExtension().lastPathComponent) == nil {
+                    silent += 1
+                }
+                try? FileManager.default.removeItem(at: mv.url)
+                MediaLibrary.removeTempFolder(of: mv.url)
+            }
+        }
+        library.refresh()
+        importStatus = nil
+        if failed > 0 { engine.message = LF("Không nhập được %@ mục từ Ảnh", "\(failed)") }
+        else if silent > 0 { engine.message = LF("%@ video không có âm thanh", "\(silent)") }
     }
 
     private func headerButton(_ title: String, _ icon: String, action: @escaping () -> Void) -> some View {
@@ -305,7 +377,9 @@ struct CategoryContent: View {
             sourceGrid(favs)
         case .camera:
             let local = engine.sources.filter { $0 is CameraSource }
-            let net = engine.sources.filter { !($0 is CameraSource) && !($0 is FileSource) && !($0 is ImageSource) && $0.id != engine.replay.id }
+            let net = engine.sources.filter {
+                !($0 is CameraSource) && !($0 is FileSource) && !($0 is PlaylistSource) && !($0 is ImageSource) && $0.id != engine.replay.id
+            }
             sectionHeader("Camera trong máy & USB")
             sourceGrid(local)
             sectionHeader("Camera mạng (SRT · RTSP · RTMP · DTDLive)")
@@ -317,8 +391,9 @@ struct CategoryContent: View {
         case .pip:
             pipContent
         case .movie:
+            PlayoutStatusBar(playout: engine.playout) { showPlayout = true }
             libraryGrid(.movie) { engine.cueMovie($0) }
-            let playing = engine.sources.compactMap { $0 as? FileSource }
+            let playing: [any VideoSource] = engine.sources.filter { $0 is FileSource || $0 is PlaylistSource }
             if !playing.isEmpty {
                 sectionHeader("Video đang dùng làm nguồn")
                 sourceGrid(playing)
@@ -340,15 +415,15 @@ struct CategoryContent: View {
             .pickerStyle(.segmented)
             switch titleTab {
             case 1:
-                TitlesPanel(engine: engine)
+                TitlesPanel(engine: engine, editing: $editingTitle)
                 if engine.titles.enumerated().allSatisfy({ $0.offset == engine.scoreboardIndex }) {
                     emptyHint("Chưa có title — bấm Thêm title ở góc trên")
                 }
+                NTitlePanel(engine: engine)
             case 2:
                 ScoreboardControl(engine: engine, compact: true)
             default:
                 HTMLGraphicsPanel(html: engine.html, repo: engine.graphicsRepo, compact: true,
-                                  background: engine.switcher.previewMonitor,
                                   aspect: CGFloat(engine.format.width) / CGFloat(max(engine.format.height, 1)))
             }
         case .logo:
@@ -356,15 +431,8 @@ struct CategoryContent: View {
                 Label(engine.logo == nil ? "Chưa nạp logo" : (engine.logoOn ? "Logo đang trên PGM" : "Logo đã nạp — bấm Logo On"),
                       systemImage: "seal").font(DS.fBody).foregroundStyle(engine.logoOn ? DS.pgm : DS.text2)
                 Spacer()
-                Picker("Vị trí", selection: $engine.logoCorner) { ForEach(StudioEngine.Corner.allCases) { Text($0.label).tag($0) } }
-                    .pickerStyle(.segmented).frame(maxWidth: 380)
             }
-            HStack(spacing: 16) {
-                LabeledSlider(title: "Cỡ logo", value: $engine.logoSize, range: 0.03...0.4) { "\(Int($0 * 100))%" }
-                LabeledSlider(title: "Độ trong", value: $engine.logoOpacity, range: 0.1...1) { "\(Int($0 * 100))%" }
-            }
-            .frame(maxWidth: 560)
-            .disabled(engine.logo == nil)
+            if engine.logo != nil { LogoEditor(engine: engine, compact: compact) }
             libraryGrid(.logo, selected: engine.currentLogoURL) { engine.useLogo($0) }
         case .audio:
             AudioMixerView(engine: engine, library: library, compact: compact)
@@ -418,7 +486,7 @@ struct CategoryContent: View {
                     .font(DS.fBodyBold).buttonStyle(.bordered)
             }
             Spacer()
-            PhotosPicker(selection: $bgPhoto, matching: .images) { toolbarLabel("Ảnh nền từ Thư viện", "photo.on.rectangle") }
+            PhotosPicker(selection: $bgPhoto, matching: .images, preferredItemEncoding: .current) { toolbarLabel("Ảnh nền từ Thư viện", "photo.on.rectangle") }
                 .buttonStyle(.plain)
             toolbarButton("Tệp", "folder") { bgFile = true }
         }
@@ -426,7 +494,7 @@ struct CategoryContent: View {
             guard let item else { return }
             Task {
                 if let d = try? await item.loadTransferable(type: Data.self),
-                   let url = library.importImage(d, into: .picture, name: "Nen") {
+                   let url = await library.importImage(d, into: .picture, name: "Nen") {
                     engine.layoutBackground = .picture(url.lastPathComponent)
                 }
                 bgPhoto = nil
@@ -436,8 +504,8 @@ struct CategoryContent: View {
             if case .success(let u) = r {
                 let scoped = u.startAccessingSecurityScopedResource()
                 defer { if scoped { u.stopAccessingSecurityScopedResource() } }
-                if let d = try? Data(contentsOf: u), let url = library.importImage(d, into: .picture, name: "Nen") {
-                    engine.layoutBackground = .picture(url.lastPathComponent)
+                if let d = try? Data(contentsOf: u) {
+                    Task { if let url = await library.importImage(d, into: .picture, name: "Nen") { engine.layoutBackground = .picture(url.lastPathComponent) } }
                 }
             }
         }
@@ -648,6 +716,41 @@ struct CategoryContent: View {
                 .buttonStyle(.plain)
             }
         }
+        imageStingers
+    }
+
+    /// Image stinger: a still picture (PNG with transparency works best) that sweeps over the frame with the
+    /// chosen motion; the cameras switch while it covers the screen. Uses the SuperFG library.
+    @ViewBuilder private var imageStingers: some View {
+        let images = library.list(.overlay).filter { ["png", "jpg", "jpeg", "heic", "webp"].contains($0.pathExtension.lowercased()) }
+        let active = engine.superFGStingerReady ? engine.libraryCardURL : nil
+        sectionHeader("Stinger ảnh")
+        HStack(spacing: 10) {
+            Picker("Chuyển động", selection: $engine.superFG.libraryMotion) {
+                ForEach(SuperFGMotion.allCases) { Text($0.label).tag($0.rawValue) }
+            }
+            .pickerStyle(.menu)
+            if active != nil {
+                Button("Bỏ stinger") { engine.superFG.asTransition = false }.font(DS.fBodyBold).buttonStyle(.bordered)
+            }
+            Spacer()
+            importImageMenu(.overlay)
+        }
+        if images.isEmpty {
+            emptyHint("Nhập ảnh PNG (nền trong suốt) làm stinger — nó quét qua khung hình, camera chuyển khi ảnh che kín.")
+        } else {
+            Text("Chạm một ảnh để dùng làm chuyển cảnh cho Cut / Auto / T-bar").font(.caption2).foregroundStyle(DS.text3)
+            LazyVGrid(columns: columns, spacing: compact ? 6 : 10) {
+                ForEach(images, id: \.self) { url in
+                    LibraryCell(url: url, kind: .overlay, selected: url == active)
+                        .onTapGesture {
+                            engine.useForeground(url)
+                            if !engine.superFG.asTransition { engine.superFG.asTransition = true }
+                        }
+                        .contextMenu { Button("Xoá khỏi thư viện", role: .destructive) { library.delete(url) } }
+                }
+            }
+        }
     }
 
     // MARK: Media library grids
@@ -753,11 +856,13 @@ struct SourceCell: View {
                 .buttonStyle(.plain)
                 Menu {
                     Button { engine.select(source.id) } label: { Label("Đưa lên Preview", systemImage: "rectangle.on.rectangle") }
-                    Button { engine.take(source.id) } label: { Label("Lên sóng ngay", systemImage: "dot.radiowaves.left.and.right") }
                     Button { engine.setPiP(source.id) } label: { Label("Dùng làm PiP", systemImage: "pip") }
                     Button(action: onAdjust) { Label("Màu, key, PTZ…", systemImage: "slider.horizontal.3") }
                     if let f = source as? FileSource {
-                        Button { f.isPlaying ? f.pause() : f.play(); engine.objectWillChange.send() } label: {
+                        Button {
+                            if f.isPlaying { f.pause(); f.heldByUser = true } else { f.heldByUser = false; f.play() }
+                            engine.objectWillChange.send()
+                        } label: {
                             Label(f.isPlaying ? "Tạm dừng" : "Phát", systemImage: f.isPlaying ? "pause" : "play")
                         }
                         Button { f.restart() } label: { Label("Phát lại từ đầu", systemImage: "backward.end") }
@@ -885,30 +990,17 @@ struct TransitionColumn: View {
                     .buttonStyle(.plain)
                     .background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
                 }
+                AutoSwitchBadge(auto: engine.autoSwitcher, compact: compact)
                 key("PiP Trans", enabled: engine.layoutSlots.count > 0) { engine.layoutTransition() }
-                // AUTO key named after the selected transition (Dissolve, Wipe…)
-                if engine.superFGStingerReady {
-                    // A selected SuperFG card is the transition: tap to go back to the normal one.
-                    Button { engine.superFG.asTransition = false } label: {
-                        HStack(spacing: 4) {
-                            Image(systemName: "sparkles.rectangle.stack").font(.caption2)
-                            Text("SuperFG").font(.caption2.weight(.bold))
-                            Image(systemName: "xmark").font(.system(size: 8, weight: .bold))
-                        }
-                        .foregroundStyle(.black).frame(maxWidth: .infinity, minHeight: 22)
-                        .background(Color.orange, in: RoundedRectangle(cornerRadius: DS.radius))
-                    }
-                    .buttonStyle(.plain)
-                }
-                key(engine.superFGStingerReady ? "SUPERFG" : engine.transition.label, color: engine.superFGStingerReady ? .orange : DS.accent, text: .black) { engine.autoTransition() }.keyboardShortcut(.return, modifiers: [])
-                key("Cut") { engine.cut() }.keyboardShortcut(.space, modifiers: [])
+                key("AUTO", color: DS.accent, text: .black) { engine.autoTransition() }.keyboardShortcut(.return, modifiers: [])
+                key("CUT") { engine.cut() }.keyboardShortcut(.space, modifiers: [])
                 HStack(spacing: 6) {
                     TBarLEDs(value: tbarValue, pip: pipTBar)
                     TBar(value: $tbarValue) { v in if pipTBar { pipT(v) } else { engine.tbar(v) } }
                         .frame(width: compact ? 30 : 38, height: compact ? 86 : 124)
                 }
                 .padding(.vertical, 4)
-                onKey("SuperFG", on: engine.foregroundOn, enabled: engine.superFGArmed) { engine.foregroundOn.toggle() }
+                onKey("SuperFG", on: engine.foregroundOn, armed: engine.superFGArmed, enabled: engine.superFGArmed) { engine.foregroundOn.toggle() }
                 onKey("Title", on: engine.armedTitleVisible, enabled: !engine.titles.isEmpty) { engine.toggleArmedTitle() }
                 onKey("HTML", on: engine.html.onAir, enabled: engine.html.loadedID != nil) { engine.html.toggle() }
                 onKey("Title 2", on: engine.secondTitle?.visible ?? false, enabled: engine.secondTitle != nil) { engine.toggleSecondTitle() }
@@ -922,15 +1014,18 @@ struct TransitionColumn: View {
         .background(DS.surface)
     }
 
-    /// Layer keys styled like hardware: "<name> On", lit white while the layer is on air.
-    private func onKey(_ t: String, on: Bool, enabled: Bool = true, suffix: Bool = true, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
+    /// Layer keys styled like hardware: "<name> On", lit white while the layer is on air;
+    /// `armed` (something selected, ready to go) lights it amber.
+    private func onKey(_ t: String, on: Bool, armed: Bool = false, enabled: Bool = true, suffix: Bool = true, action: @escaping () -> Void) -> some View {
+        let lit = !on && armed
+        let amber = Color(red: 1, green: 0.66, blue: 0.1)
+        return Button(action: action) {
             Text(LocalizedStringKey(suffix ? "\(t) On" : t)).font(.system(size: compact ? 11 : 13, weight: .semibold)).lineLimit(1).minimumScaleFactor(0.7)
                 .frame(maxWidth: .infinity, minHeight: compact ? 29 : 37)
-                .foregroundStyle(on ? .black : DS.text2)
-                .background(on ? Color.white : DS.surface2, in: RoundedRectangle(cornerRadius: 4))
-                .overlay(RoundedRectangle(cornerRadius: 4).stroke(Color.white.opacity(on ? 0 : 0.12)))
-                .shadow(color: on ? .white.opacity(0.35) : .clear, radius: 6)
+                .foregroundStyle(on || lit ? .black : DS.text2)
+                .background(on ? Color.white : (lit ? amber : DS.surface2), in: RoundedRectangle(cornerRadius: 4))
+                .overlay(RoundedRectangle(cornerRadius: 4).stroke(Color.white.opacity(on || lit ? 0 : 0.12)))
+                .shadow(color: on ? .white.opacity(0.35) : (lit ? amber.opacity(0.45) : .clear), radius: 6)
         }
         .buttonStyle(.plain)
         .disabled(!enabled).opacity(enabled ? 1 : 0.4)
@@ -1218,7 +1313,7 @@ struct MediaInputPicker: View {
             if !hint.isEmpty {
                 Text(hint).font(DS.fBody).foregroundStyle(DS.text3).lineLimit(1)
             }
-            PhotosPicker(selection: $item, matching: .any(of: [.images, .videos])) {
+            PhotosPicker(selection: $item, matching: .any(of: [.images, .videos]), preferredItemEncoding: .current) {
                 label(loading ? L("Đang tải…") : L("Ảnh / video từ Thư viện ảnh"), loading ? "hourglass" : "photo.on.rectangle")
             }
             .buttonStyle(.plain).disabled(loading)
@@ -1256,13 +1351,14 @@ struct MediaInputPicker: View {
         loading = true
         defer { loading = false }
         if it.supportedContentTypes.contains(where: { $0.conforms(to: .movie) }) {
-            if let mv = try? await it.loadTransferable(type: PickedMovie.self) {
-                let dest = library.importFile(mv.url, into: .movie)
-                try? FileManager.default.removeItem(at: mv.url)
+            if let mv = await PhotosLoad.movie(it, progress: { _ in }) {
+                let u = mv.url
+                let dest = await Task.detached(operation: { MediaLibrary.adoptMovie(u) }).value
+                library.refresh()
                 if let dest { use(dest, movie: true); return }
             }
             engine.message = L("Không đọc được video từ Thư viện ảnh")
-        } else if let d = try? await it.loadTransferable(type: Data.self), let url = library.importImage(d, into: .picture) {
+        } else if let d = try? await it.loadTransferable(type: Data.self), let url = await library.importImage(d, into: .picture) {
             use(url, movie: false)
         } else {
             engine.message = L("Không đọc được ảnh từ Thư viện ảnh")
@@ -1284,14 +1380,196 @@ struct MediaInputPicker: View {
 }
 
 /// A video picked from Photos, copied to a temp file the library then imports.
-struct PickedMovie: Transferable {
+/// Loading from Photos with the transfer progress (iCloud downloads can take a while for long videos).
+enum PhotosLoad {
+    @MainActor
+    static func movie(_ item: PhotosPickerItem, progress: @escaping @MainActor (Double) -> Void) async -> PickedMovie? {
+        var obs: NSKeyValueObservation?
+        defer { obs?.invalidate() }
+        return await withCheckedContinuation { (cont: CheckedContinuation<PickedMovie?, Never>) in
+            let p = item.loadTransferable(type: PickedMovie.self) { r in cont.resume(returning: (try? r.get()) ?? nil) }
+            obs = p.observe(\.fractionCompleted) { p, _ in
+                let f = p.fractionCompleted
+                Task { @MainActor in progress(f) }
+            }
+        }
+    }
+}
+
+struct PickedMovie: Transferable, Sendable {
     let url: URL
     static var transferRepresentation: some TransferRepresentation {
         FileRepresentation(contentType: .movie) { m in SentTransferredFile(m.url) } importing: { r in
-            let dst = FileManager.default.temporaryDirectory.appendingPathComponent(r.file.lastPathComponent)
-            try? FileManager.default.removeItem(at: dst)
+            // Own folder per video (same names from Photos never collide); on the app's volume this copy is an
+            // APFS clone, and the library then takes the file by renaming it — no full copies of the video.
+            let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+            try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+            let dst = dir.appendingPathComponent(r.file.lastPathComponent)
             try FileManager.default.copyItem(at: r.file, to: dst)
             return PickedMovie(url: dst)
+        }
+    }
+}
+
+/// Shown above the keys while automatic switching runs (it changes PGM by itself): tap to turn it off.
+struct AutoSwitchBadge: View {
+    @ObservedObject var auto: AutoSwitcher
+    var compact = false
+
+    var body: some View {
+        if auto.enabled {
+            Button { auto.enabled = false } label: {
+                HStack(spacing: 4) {
+                    Image(systemName: "arrow.triangle.2.circlepath").font(.caption2.weight(.bold))
+                    Text("Tự động").font(.caption2.weight(.bold)).lineLimit(1).minimumScaleFactor(0.7)
+                    Image(systemName: "xmark").font(.system(size: 8, weight: .bold))
+                }
+                .foregroundStyle(.black).frame(maxWidth: .infinity, minHeight: compact ? 22 : 26)
+                .background(Color.orange, in: RoundedRectangle(cornerRadius: DS.radius))
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(Text("Tắt tự động chuyển cảnh"))
+        }
+    }
+}
+
+/// Logo: drag it on the preview to move it, drag the corner handle to resize it, or pick one of the 9 positions;
+/// margin, size and opacity sliders and a 2 px nudge pad for fine placement. Works whether or not it is on air.
+struct LogoEditor: View {
+    @ObservedObject var engine: StudioEngine
+    var compact = false
+    @State private var moveStart: CGRect?
+    @State private var sizeStart: CGRect?
+
+    private var aspect: CGFloat { CGFloat(engine.format.width) / CGFloat(max(engine.format.height, 1)) }
+    private var image: UIImage? { engine.currentLogoURL.flatMap { UIImage(contentsOfFile: $0.path) } }
+
+    var body: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(alignment: .top, spacing: 14) {
+                canvas.frame(width: compact ? 300 : 380)
+                controls.frame(minWidth: 300, maxWidth: 460)
+            }
+            VStack(alignment: .leading, spacing: 10) {
+                canvas.frame(maxWidth: 380)
+                controls
+            }
+        }
+    }
+
+    private var canvas: some View {
+        GeometryReader { g in
+            let W = g.size.width, H = g.size.height
+            ZStack(alignment: .topLeading) {
+                MonitorView(store: engine.logoOn ? engine.switcher.programMonitor : engine.switcher.previewMonitor, maxFPS: 10)
+                // title-safe guide
+                Rectangle().stroke(Color.white.opacity(0.2), style: StrokeStyle(lineWidth: 1, dash: [4, 4]))
+                    .frame(width: W * 0.9, height: H * 0.9).offset(x: W * 0.05, y: H * 0.05)
+                if let r = engine.logo?.rect {
+                    let box = CGRect(x: r.minX * W, y: r.minY * H, width: r.width * W, height: r.height * H)
+                    Group {
+                        // while on air the logo is already in the PGM picture underneath: only the frame is drawn
+                        if let image, !engine.logoOn {
+                            Image(uiImage: image).resizable().opacity(engine.logoOpacity)
+                        } else { Color.clear }
+                    }
+                    .frame(width: box.width, height: box.height)
+                    .overlay(Rectangle().stroke(DS.accent, style: StrokeStyle(lineWidth: 1.5, dash: [5, 3])))
+                    .contentShape(Rectangle())
+                    .offset(x: box.minX, y: box.minY)
+                    .gesture(DragGesture(minimumDistance: 1)
+                        .onChanged { v in
+                            let s = moveStart ?? r
+                            if moveStart == nil { moveStart = r }
+                            engine.moveLogo(to: CGPoint(x: s.minX + v.translation.width / W, y: s.minY + v.translation.height / H))
+                        }
+                        .onEnded { _ in moveStart = nil })
+                    // resize handle (bottom-right corner)
+                    Circle().fill(DS.accent).frame(width: 18, height: 18)
+                        .overlay(Image(systemName: "arrow.up.left.and.arrow.down.right").font(.system(size: 8, weight: .bold)).foregroundStyle(.black))
+                        .offset(x: box.maxX - 9, y: box.maxY - 9)
+                        .gesture(DragGesture(minimumDistance: 0)
+                            .onChanged { v in
+                                let s = sizeStart ?? r
+                                if sizeStart == nil { sizeStart = r }
+                                // diagonal drag: follow whichever direction moved more (keeps the logo's own aspect)
+                                let dy = max(v.translation.height / H, v.translation.width / W * s.height / max(s.width, 0.001))
+                                engine.resizeLogo(height: Double(s.height + dy))
+                            }
+                            .onEnded { _ in sizeStart = nil })
+                }
+            }
+            .frame(width: W, height: H).clipped()
+        }
+        .aspectRatio(aspect, contentMode: .fit)
+        .background(Color.black)
+        .clipShape(RoundedRectangle(cornerRadius: DS.radius))
+        .overlay(alignment: .topLeading) {
+            Text(engine.logoOn ? "PGM" : "PVW").font(.system(size: 10, weight: .bold)).padding(.horizontal, 5).padding(.vertical, 2)
+                .background(engine.logoOn ? DS.pgm : DS.pvw, in: RoundedRectangle(cornerRadius: 3)).padding(4)
+        }
+    }
+
+    private var controls: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(alignment: .top, spacing: 12) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Vị trí đặt").font(DS.fBodyBold).foregroundStyle(DS.text2)
+                    LazyVGrid(columns: Array(repeating: GridItem(.fixed(34), spacing: 4), count: 3), spacing: 4) {
+                        ForEach(StudioEngine.Corner.allCases) { c in
+                            Button { engine.logoCorner = c } label: {
+                                RoundedRectangle(cornerRadius: 4).fill(DS.surface2).frame(width: 34, height: 24)
+                                    .overlay(alignment: alignment(c)) {
+                                        RoundedRectangle(cornerRadius: 1.5).fill(engine.logoCorner == c ? DS.accent : DS.text3)
+                                            .frame(width: 10, height: 7).padding(3)
+                                    }
+                                    .overlay(RoundedRectangle(cornerRadius: 4).stroke(engine.logoCorner == c ? DS.accent : .clear, lineWidth: 1.5))
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel(Text(c.label))
+                        }
+                    }
+                    .frame(width: 112)
+                }
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Chỉnh nhích").font(DS.fBodyBold).foregroundStyle(DS.text2)
+                    HStack(spacing: 4) {
+                        nudge("arrow.left", -1, 0); nudge("arrow.right", 1, 0); nudge("arrow.up", 0, -1); nudge("arrow.down", 0, 1)
+                    }
+                    Text("Kéo logo trên khung để di chuyển, kéo chấm ở góc để đổi cỡ.")
+                        .font(.caption2).foregroundStyle(DS.text3).fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            LabeledSlider(title: "Cỡ logo", value: Binding(get: { engine.logoSize }, set: { engine.resizeLogo(height: $0) }),
+                          range: 0.03...0.4) { "\(Int($0 * 100))%" }
+            LabeledSlider(title: "Cách mép", value: $engine.logoMargin, range: 0...0.12) { "\(Int(($0 * 100).rounded()))%" }
+            LabeledSlider(title: "Độ trong", value: $engine.logoOpacity, range: 0.1...1) { "\(Int($0 * 100))%" }
+        }
+    }
+
+    private func nudge(_ icon: String, _ dx: CGFloat, _ dy: CGFloat) -> some View {
+        Button {
+            guard let r = engine.logo?.rect else { return }
+            // 2 px at 1080p
+            engine.moveLogo(to: CGPoint(x: r.minX + dx * 2 / 1920, y: r.minY + dy * 2 / 1080))
+        } label: {
+            Image(systemName: icon).font(.system(size: 12, weight: .bold)).frame(width: 32, height: 26)
+                .background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func alignment(_ c: StudioEngine.Corner) -> Alignment {
+        switch c {
+        case .topLeft: return .topLeading
+        case .topCenter: return .top
+        case .topRight: return .topTrailing
+        case .middleLeft: return .leading
+        case .center: return .center
+        case .middleRight: return .trailing
+        case .bottomLeft: return .bottomLeading
+        case .bottomCenter: return .bottom
+        case .bottomRight: return .bottomTrailing
         }
     }
 }

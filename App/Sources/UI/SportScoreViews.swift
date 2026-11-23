@@ -7,24 +7,19 @@ struct SportPickerMenu: View {
     @ObservedObject var engine: StudioEngine
     var compact = false
     @State private var pendingTemplate: SportTemplate?? = nil
+    @State private var showList = false
 
-    private var currentTitle: String {
-        guard let i = engine.scoreboardIndex, let raw = engine.titles[i].sb.sportTemplate,
-              let t = SportTemplate(rawValue: raw) else { return L("Tự do") }
-        return t.title(.current)
+    private var currentTemplate: SportTemplate? {
+        guard let i = engine.scoreboardIndex, let raw = engine.titles[i].sb.sportTemplate else { return nil }
+        return SportTemplate(rawValue: raw)
     }
 
+    private var currentTitle: String { currentTemplate?.title(.current) ?? L("Tự do") }
+
     var body: some View {
-        Menu {
-            Button { choose(nil) } label: { Label("Tự do (+/−)", systemImage: "plusminus") }
-            ForEach(SportTemplate.groups, id: \.0) { group in
-                Section(group.0) {
-                    ForEach(group.1) { t in
-                        Button(t.title(.current)) { choose(t) }
-                    }
-                }
-            }
-        } label: {
+        // A list in a popover, not a Menu: the engine refreshes many times a second and every refresh
+        // rebuilt the Menu, which jumped it back to the top, so sports low in the list could not be picked.
+        Button { showList = true } label: {
             HStack(spacing: 4) {
                 Text(verbatim: currentTitle).lineLimit(1)
                 Image(systemName: "chevron.down").font(.system(size: 9, weight: .bold))
@@ -33,6 +28,16 @@ struct SportPickerMenu: View {
             .padding(.horizontal, 8).padding(.vertical, 4)
             .foregroundStyle(.black)
             .background(DS.accent, in: Capsule())
+        }
+        .buttonStyle(.plain)
+        .popover(isPresented: $showList) {
+            SportPickerList(current: currentTemplate?.rawValue) { t in
+                showList = false
+                // let the popover close before a confirmation dialog can appear
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) { choose(t) }
+            }
+            .frame(minWidth: 300, idealWidth: 340, minHeight: 420, idealHeight: 560)
+            .presentationDetents([.medium, .large])
         }
         .confirmationDialog("Đổi môn sẽ bắt đầu trận mới (tỉ số hiện tại bị xoá).",
                             isPresented: Binding(get: { pendingTemplate != nil }, set: { if !$0 { pendingTemplate = nil } }),
@@ -51,6 +56,42 @@ struct SportPickerMenu: View {
     }
 }
 
+/// Sports grouped by kind. Takes plain values (no engine), so engine refreshes don't touch its scroll position.
+private struct SportPickerList: View {
+    let current: String?
+    let pick: (SportTemplate?) -> Void
+
+    var body: some View {
+        ScrollViewReader { proxy in
+            List {
+                row(L("Tự do (+/−)"), icon: "plusminus", on: current == nil) { pick(nil) }
+                ForEach(SportTemplate.groups, id: \.0) { group in
+                    Section(group.0) {
+                        ForEach(group.1) { t in
+                            row(t.title(.current), icon: nil, on: current == t.rawValue) { pick(t) }.id(t.rawValue)
+                        }
+                    }
+                }
+            }
+            .listStyle(.insetGrouped)
+            .onAppear { if let c = current { proxy.scrollTo(c, anchor: .center) } }
+        }
+    }
+
+    private func row(_ title: String, icon: String?, on: Bool, _ act: @escaping () -> Void) -> some View {
+        Button(action: act) {
+            HStack {
+                if let icon { Image(systemName: icon) }
+                Text(verbatim: title)
+                Spacer()
+                if on { Image(systemName: "checkmark").foregroundStyle(DS.accent) }
+            }
+            .contentShape(Rectangle())
+        }
+        .foregroundStyle(.primary)
+    }
+}
+
 // MARK: - Quick buttons in the scoreboard bar (sport mode)
 
 struct SportQuickBar: View {
@@ -61,15 +102,29 @@ struct SportQuickBar: View {
         if let i = engine.scoreboardIndex, let sp = engine.titles[i].sportBoard {
             let t = engine.titles[i]
             let d = sp.display(lang: .current, at: Date())
-            let cs = sp.controls(lang: .current).filter { $0.role == .primary }
+            let all = sp.controls(lang: .current)
+            let cs = all.filter { $0.role == .primary }
             HStack(spacing: 8) {
                 ForEach(Side.allCases, id: \.self) { s in
                     let row = d.rows[s.rawValue]
                     let c = cs.first { $0.side == s } ?? cs.first { $0.side == nil }
+                    // [ − ] when the sport can take a point back (football: goal −1)
+                    if let c, let minus = all.first(where: { $0.minusOf == c.id }) {
+                        Button {
+                            guard minus.enabled else { return }
+                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                            engine.sportApply(minus.make(nil))
+                        } label: {
+                            Image(systemName: "minus").font(.system(size: 11, weight: .bold)).frame(width: 30, height: 36)
+                                .background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
+                        }
+                        .buttonStyle(.plain).disabled(!minus.enabled)
+                        .accessibilityLabel(Text(verbatim: minus.title))
+                    }
                     Button {
                         guard let c, c.enabled else { return }
                         UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                        if c.inputPrompt != nil { engine.sportApply(c.make(nil)) } else { engine.sportApply(c.make(nil)) }
+                        engine.sportApply(c.make(nil))
                     } label: {
                         HStack(spacing: 6) {
                             Circle().fill(DS.accent).frame(width: 7, height: 7).opacity(row.isServing ? 1 : 0)
@@ -152,6 +207,13 @@ struct SportScorePad: View {
             }
             .alert(Text(verbatim: pending?.inputPrompt ?? ""), isPresented: Binding(get: { pending != nil }, set: { if !$0 { pending = nil } })) {
                 TextField("", text: $input)
+                // quick picks (e.g. players who already have a card, when removing one)
+                ForEach(pending?.choices.prefix(6).map { $0 } ?? [], id: \.self) { name in
+                    Button(name) {
+                        if let p = pending { engine.sportApply(p.make(name)) }
+                        pending = nil
+                    }
+                }
                 Button("OK") {
                     if let p = pending { engine.sportApply(p.make(input)) }
                     pending = nil
@@ -169,7 +231,11 @@ struct SportScorePad: View {
         let shared = cs.filter { $0.side == nil }
         if !shared.isEmpty {
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 130), spacing: 8)], spacing: 8) {
-                ForEach(shared) { button($0) }
+                ForEach(shared.filter { c in c.minusOf == nil && !shared.contains(where: { $0.minusOf == c.id }) }) { button($0) }
+            }
+            // counted shared items (football added time): [ − ] Bù giờ +3' [ + ]
+            ForEach(shared.filter { $0.minusOf == nil }) { c in
+                if let m = shared.first(where: { $0.minusOf == c.id }) { stepper(c, minus: m) }
             }
         }
         HStack(alignment: .top, spacing: 12) {
@@ -180,7 +246,10 @@ struct SportScorePad: View {
                             .frame(width: 10, height: 10)
                         Text(verbatim: s == .home ? t.line1 : t.line2).font(.headline).lineLimit(1)
                     }
-                    ForEach(cs.filter { $0.side == s }) { button($0) }
+                    let mine = cs.filter { $0.side == s }
+                    ForEach(mine.filter { $0.minusOf == nil }) { c in
+                        if let m = mine.first(where: { $0.minusOf == c.id }) { stepper(c, minus: m) } else { button(c) }
+                    }
                 }
                 .frame(maxWidth: .infinity)
             }
@@ -214,11 +283,42 @@ struct SportScorePad: View {
         }
     }
 
+    private func tap(_ c: SportControlItem) {
+        UIImpactFeedbackGenerator(style: c.role == .primary ? .medium : .light).impactOccurred()
+        if c.inputPrompt != nil { input = ""; pending = c } else { engine.sportApply(c.make(nil)) }
+    }
+
+    /// Counted item (cards, fouls): [ − ]  Thẻ vàng 2  [ + ]
+    private func stepper(_ plus: SportControlItem, minus: SportControlItem) -> some View {
+        let tint: Color = plus.id.hasPrefix("yc-") ? Color(red: 1, green: 0.84, blue: 0.04)
+            : plus.id.hasPrefix("rc-") ? Color.red.opacity(0.85)
+            : plus.role == .primary ? DS.accent : Color.gray.opacity(0.45)
+        let ink: Color = plus.id.hasPrefix("yc-") || plus.role == .primary ? .black : .white
+        return HStack(spacing: 6) {
+            Button { tap(minus) } label: {
+                Image(systemName: "minus").font(.headline).frame(width: 40, height: 38)
+            }
+            .buttonStyle(.bordered).disabled(!minus.enabled)
+            .accessibilityLabel(Text(verbatim: minus.title))
+            HStack(spacing: 6) {
+                Text(verbatim: plus.title).font(.subheadline.weight(.semibold)).lineLimit(1).minimumScaleFactor(0.7)
+                if let v = plus.value {
+                    Text(verbatim: v).font(.headline.monospacedDigit())
+                }
+            }
+            .frame(maxWidth: .infinity, minHeight: 38)
+            .foregroundStyle(ink)
+            .background(tint, in: RoundedRectangle(cornerRadius: 8))
+            Button { tap(plus) } label: {
+                Image(systemName: "plus").font(.headline).frame(width: 40, height: 38)
+            }
+            .buttonStyle(.borderedProminent).tint(tint).foregroundStyle(ink).disabled(!plus.enabled)
+            .accessibilityLabel(Text(verbatim: plus.title))
+        }
+    }
+
     private func button(_ c: SportControlItem) -> some View {
-        Button {
-            UIImpactFeedbackGenerator(style: c.role == .primary ? .medium : .light).impactOccurred()
-            if c.inputPrompt != nil { input = ""; pending = c } else { engine.sportApply(c.make(nil)) }
-        } label: {
+        Button { tap(c) } label: {
             Text(verbatim: c.title)
                 .font(c.role == .primary ? .headline : .subheadline.weight(.semibold))
                 .multilineTextAlignment(.center)

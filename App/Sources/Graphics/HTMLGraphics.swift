@@ -537,9 +537,31 @@ enum HTMLGraphicsStore {
         let cfg = WKWebViewConfiguration()
         cfg.mediaTypesRequiringUserActionForPlayback = []
         cfg.allowsInlineMediaPlayback = true
+        cfg.userContentController.addUserScript(WKUserScript(source: busyJS, injectionTime: .atDocumentStart, forMainFrameOnly: true))
         cfg.userContentController.addUserScript(WKUserScript(source: shimJS, injectionTime: .atDocumentEnd, forMainFrameOnly: true))
         return cfg
     }
+
+    /// window.__dtdBusy(): true while something on the page moves (a CSS animation / transition running, or a
+    /// requestAnimationFrame loop such as GSAP in the last 0.4 s). The capture loop slows down to 2 fps when the
+    /// graphic stands still — a static lower third no longer costs 25 snapshots a second.
+    static let busyJS = """
+    (function(){
+      var last=0, raf=window.requestAnimationFrame.bind(window);
+      window.requestAnimationFrame=function(cb){ last=performance.now(); return raf(cb); };
+      window.__dtdBusy=function(){
+        try{
+          if(performance.now()-last<400) return true;
+          var a=document.getAnimations?document.getAnimations():null;
+          if(!a) return true;
+          for(var i=0;i<a.length;i++){ if(a[i].playState==='running') return true; }
+          var v=document.querySelectorAll('video');
+          for(var j=0;j<v.length;j++){ if(!v[j].paused) return true; }
+          return false;
+        }catch(e){ return true; }
+      };
+    })();
+    """
 
     // MARK: Design (layout, layers, effect), saved inside the template's HTML file
 
@@ -762,9 +784,19 @@ final class HTMLGraphics: NSObject, ObservableObject, WKNavigationDelegate {
     /// Field values per template (kept between launches).
     @Published var values: [String: [String: String]] = [:] {
         didSet {
-            if let d = try? JSONEncoder().encode(values) { UserDefaults.standard.set(d, forKey: "dtd.htmlvalues.v1") }
+            // saved once typing settles, not on every key stroke
+            valuesSave?.cancel()
+            valuesSave = Task { [values] in
+                try? await Task.sleep(nanoseconds: 600_000_000)
+                guard !Task.isCancelled else { return }
+                if let d = try? JSONEncoder().encode(values) { UserDefaults.standard.set(d, forKey: "dtd.htmlvalues.v1") }
+            }
         }
     }
+    private var valuesSave: Task<Void, Never>?
+    /// Preview frames live in their own object, so only the preview picture redraws ~12×/s —
+    /// not the whole panel (list, fields) that observes this class.
+    let feed = HTMLPreviewFeed()
 
     private var web: WKWebView?
     private var link: CADisplayLink?
@@ -828,7 +860,7 @@ final class HTMLGraphics: NSObject, ObservableObject, WKNavigationDelegate {
 
     func setDesign(_ t: HTMLTemplate, _ d: HTMLDesign) {
         designs[t.id] = d
-        if loadedID == t.id { web?.evaluateJavaScript(HTMLGraphicsStore.designJS(t, d)) }
+        if loadedID == t.id { web?.evaluateJavaScript(HTMLGraphicsStore.designJS(t, d)); wake() }
         // written into the HTML file once the control settles
         designSave[t.id]?.cancel()
         designSave[t.id] = Task { [t, d] in
@@ -870,6 +902,8 @@ final class HTMLGraphics: NSObject, ObservableObject, WKNavigationDelegate {
         // Read access to all of Documents so pages can show images from the Logo library.
         w.loadFileURL(HTMLGraphicsStore.entryURL(t), allowingReadAccessTo: HTMLGraphicsStore.documents)
         loadedID = id
+        feed.image = nil   // no picture of the previous template while the new one loads
+        wake()
     }
 
     func toggle() { onAir ? stop() : play() }
@@ -878,6 +912,7 @@ final class HTMLGraphics: NSObject, ObservableObject, WKNavigationDelegate {
         guard loadedID != nil, pageReady else { return }
         web?.evaluateJavaScript("window.dtdPlay?dtdPlay():play()")
         onAir = true; stopDeadline = nil
+        wake()
         startCapture()
     }
 
@@ -886,9 +921,10 @@ final class HTMLGraphics: NSObject, ObservableObject, WKNavigationDelegate {
         web?.evaluateJavaScript("window.dtdStop?dtdStop():stop()")
         onAir = false
         stopDeadline = Date().addingTimeInterval(1.2)   // let the out-animation finish on air
+        wake()
     }
 
-    func next() { web?.evaluateJavaScript("next()") }
+    func next() { web?.evaluateJavaScript("next()"); wake() }
 
     // WKNavigationDelegate
     nonisolated func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
@@ -904,7 +940,11 @@ final class HTMLGraphics: NSObject, ObservableObject, WKNavigationDelegate {
     private func pushData(_ t: HTMLTemplate) {
         guard let js = HTMLGraphicsStore.pushJS(t, values: values[t.id] ?? [:], design: design(t)) else { return }
         web?.evaluateJavaScript(js)
+        wake()
     }
+
+    /// Capture at full rate for a moment (new text, play / stop…), whatever the page reports.
+    private func wake() { wakeUntil = CACurrentMediaTime() + 1.5 }
 
     private func ensureWebView() -> WKWebView {
         if let w = web { return w }
@@ -932,6 +972,7 @@ final class HTMLGraphics: NSObject, ObservableObject, WKNavigationDelegate {
         guard link == nil else { return }
         let l = CADisplayLink(target: self, selector: #selector(tick))
         l.preferredFrameRateRange = CAFrameRateRange(minimum: 20, maximum: 30, preferred: 25)
+        linkFast = true; wake()
         l.add(to: .main, forMode: .common)
         link = l
     }
@@ -949,6 +990,25 @@ final class HTMLGraphics: NSObject, ObservableObject, WKNavigationDelegate {
             }
         }
         guard !capturing, let w = web else { return }
+        // Adaptive rate: 25 fps on air / 12 fps preview while the page moves, 2 fps while it stands still.
+        let now = CACurrentMediaTime()
+        if now - lastBusyPoll > 0.25 {
+            lastBusyPoll = now
+            w.evaluateJavaScript("window.__dtdBusy?__dtdBusy():true") { [weak self] r, _ in
+                let busy = (r as? Bool) ?? true
+                Task { @MainActor in self?.pageBusy = busy }
+            }
+        }
+        let active = pageBusy || now < wakeUntil
+        if active != linkFast {
+            linkFast = active
+            link?.preferredFrameRateRange = active ? CAFrameRateRange(minimum: 20, maximum: 30, preferred: 25)
+                                                   : CAFrameRateRange(minimum: 2, maximum: 10, preferred: 4)
+        }
+        let live = onAir || stopDeadline != nil
+        let interval: CFTimeInterval = active ? (live ? 1.0 / 25 : 1.0 / 12) : 0.5
+        guard now - lastCapture >= interval * 0.85 else { return }
+        lastCapture = now
         capturing = true
         let cfg = WKSnapshotConfiguration()
         cfg.afterScreenUpdates = false
@@ -959,11 +1019,11 @@ final class HTMLGraphics: NSObject, ObservableObject, WKNavigationDelegate {
                 guard let img, let cg = img.cgImage else { return }
                 // the picture that goes to PGM (only while on air / playing out)
                 if self.onAir || self.stopDeadline != nil { HTMLFrameBox.shared.set(CIImage(cgImage: cg)) }
-                // the same picture for the Design preview (~12 fps)
+                // the same picture for the Design preview (≤ 12 fps)
                 let now = CACurrentMediaTime()
                 if self.previewers > 0, now - self.lastPreviewPublish > 0.08 {
                     self.lastPreviewPublish = now
-                    self.previewImage = img
+                    self.feed.image = img
                 }
             }
         }
@@ -971,8 +1031,12 @@ final class HTMLGraphics: NSObject, ObservableObject, WKNavigationDelegate {
 
     // MARK: Design preview: the exact frames the PGM gets, shown while editing (without going on air)
 
-    @Published private(set) var previewImage: UIImage?
     private var previewers = 0
+    private var pageBusy = true
+    private var wakeUntil: CFTimeInterval = 0
+    private var lastCapture: CFTimeInterval = 0
+    private var lastBusyPoll: CFTimeInterval = 0
+    private var linkFast = true
     private var previewPlaying = false
     private var lastPreviewPublish: CFTimeInterval = 0
 
@@ -988,7 +1052,7 @@ final class HTMLGraphics: NSObject, ObservableObject, WKNavigationDelegate {
     func endPreview() {
         previewers = max(0, previewers - 1)
         guard previewers == 0 else { return }
-        previewImage = nil
+        feed.image = nil
         if previewPlaying, !onAir { web?.evaluateJavaScript("window.dtdStop?dtdStop():stop()") }
         previewPlaying = false
         if !onAir, stopDeadline == nil { link?.invalidate(); link = nil }
@@ -998,5 +1062,12 @@ final class HTMLGraphics: NSObject, ObservableObject, WKNavigationDelegate {
     func replayPreview() {
         web?.evaluateJavaScript("window.dtdPlay?dtdPlay():play()")
         if !onAir { previewPlaying = true }
+        wake()
     }
+}
+
+/// Latest preview frame of the armed HTML graphic (observed only by the preview picture).
+@MainActor
+final class HTMLPreviewFeed: ObservableObject {
+    @Published var image: UIImage?
 }

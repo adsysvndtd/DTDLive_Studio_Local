@@ -11,7 +11,8 @@ struct AudioChannelState: Identifiable, Equatable {
     var followVideo = false      // AFV: only audible while its source is on program
     var solo = false             // when any channel is soloed, only soloed channels are heard
     var trim: Float = 0          // input gain in dB (−12…+24), applied before the fader
-    var level: Float = -60       // dBFS peak (read-only for UI)
+    var level: Float = -60       // dBFS peak, left / mono (read-only for UI)
+    var levelR: Float = -60      // dBFS peak, right (= left for mono sources)
 }
 
 /// Program audio mixer: microphone / USB interface + every network source's audio
@@ -54,6 +55,18 @@ final class AudioCapture: @unchecked Sendable {
     var onBuffer: Handler?
     var masterGain: Float = 1 { didSet { bus.outputVolume = masterGain } }
     private(set) var peakDB: Float = -60
+    /// Pre-fader peaks per source (L, R, when) — see feed().
+    private var pfl: [UUID: (l: Float, r: Float, at: TimeInterval)] = [:]
+
+    /// Pre-fader L/R per source; a source that stopped sending reads −60 after 0.4 s.
+    func preFaderLevels() -> [UUID: (Float, Float)] {
+        let now = ProcessInfo.processInfo.systemUptime
+        os_unfair_lock_lock(&lock); defer { os_unfair_lock_unlock(&lock) }
+        var out: [UUID: (Float, Float)] = [:]
+        for (id, v) in pfl { out[id] = now - v.at < 0.4 ? (v.l, v.r) : (-60, -60) }
+        return out
+    }
+    private(set) var peakDBR: Float = -60
     let format = AVAudioFormat(standardFormatWithSampleRate: 48000, channels: 2)!
 
     func start() throws {
@@ -81,6 +94,15 @@ final class AudioCapture: @unchecked Sendable {
         let inFmt = engine.inputNode.outputFormat(forBus: 0)
         engine.connect(engine.inputNode, to: micDelay, format: inFmt)
         engine.connect(micDelay, to: mic, format: inFmt)
+        micDelay.installTap(onBus: 0, bufferSize: 2048, format: nil) { [weak self] b, _ in
+            guard let self else { return }
+            let (l, r) = Self.peaks(b)
+            let now = ProcessInfo.processInfo.systemUptime
+            os_unfair_lock_lock(&self.lock)
+            let trim = self.states[Self.micID]?.trim ?? 0
+            self.pfl[Self.micID] = (min(0, l + trim), min(0, r + trim), now)
+            os_unfair_lock_unlock(&self.lock)
+        }
 
         // Music channel
         let music = makeChannel(Self.musicID, name: "Nhạc nền")
@@ -88,10 +110,20 @@ final class AudioCapture: @unchecked Sendable {
         engine.attach(player)
         engine.connect(player, to: music, format: format)
         players[Self.musicID] = player
+        // music input level (pre-fader) for its mixer meter
+        player.installTap(onBus: 0, bufferSize: 2048, format: nil) { [weak self] b, _ in
+            guard let self else { return }
+            let (l, r) = Self.peaks(b)
+            let now = ProcessInfo.processInfo.systemUptime
+            os_unfair_lock_lock(&self.lock)
+            let trim = self.states[Self.musicID]?.trim ?? 0
+            self.pfl[Self.musicID] = (min(0, l + trim), min(0, r + trim), now)
+            os_unfair_lock_unlock(&self.lock)
+        }
 
         bus.installTap(onBus: 0, bufferSize: 1024, format: format) { [weak self] buffer, when in
             guard let self else { return }
-            self.peakDB = Self.peak(buffer)
+            (self.peakDB, self.peakDBR) = Self.peaks(buffer)
             let t = when.isHostTimeValid ? when : AVAudioTime(hostTime: mach_absolute_time())
             self.onBuffer?(buffer, t)
         }
@@ -133,6 +165,21 @@ final class AudioCapture: @unchecked Sendable {
         engine.stop()
     }
 
+    /// App in the background with nothing on air: stop the microphone / audio I/O and give the session up,
+    /// so iOS can suspend the app (an active play-and-record session keeps it running — and the mic on).
+    func suspend() {
+        guard engine.isRunning else { return }
+        engine.pause()
+        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+    }
+
+    /// Back in the foreground: the graph (channels, taps) is unchanged, only the I/O restarts.
+    func resume() throws {
+        guard !engine.isRunning else { return }
+        try AVAudioSession.sharedInstance().setActive(true)
+        try engine.start()
+    }
+
     @discardableResult
     private func makeChannel(_ id: UUID, name: String) -> AVAudioMixerNode {
         let m = AVAudioMixerNode()
@@ -147,11 +194,13 @@ final class AudioCapture: @unchecked Sendable {
         }
         m.installTap(onBus: 0, bufferSize: 2048, format: nil) { [weak self] b, _ in
             guard let self else { return }
-            let db = Self.peak(b)
-            os_unfair_lock_lock(&self.lock); self.states[id]?.level = db; os_unfair_lock_unlock(&self.lock)
+            let (l, r) = Self.peaks(b)
+            os_unfair_lock_lock(&self.lock); self.states[id]?.level = l; self.states[id]?.levelR = r; os_unfair_lock_unlock(&self.lock)
         }
         channelMixers[id] = m
-        os_unfair_lock_lock(&lock); states[id] = AudioChannelState(id: id, name: name); os_unfair_lock_unlock(&lock)
+        // Audio follows video by default: a source is heard only while it is on PGM (the Mic follows the
+        // iPad's own cameras, see micOnAir); background music never follows.
+        os_unfair_lock_lock(&lock); states[id] = AudioChannelState(id: id, name: name, followVideo: id != Self.musicID); os_unfair_lock_unlock(&lock)
         return m
     }
 
@@ -159,6 +208,14 @@ final class AudioCapture: @unchecked Sendable {
 
     /// Called with decoded PCM from an SRT/RTMP source. Creates its fader lazily.
     func feed(sourceID: UUID, name: String, buffer: AVAudioPCMBuffer) {
+        // Pre-fader level (PFL, after trim): what the source carries even while its fader / AFV keeps it
+        // out of the program — the PVW meter shows this so a source can be checked before it goes on air.
+        let (l, r) = Self.peaks(buffer)
+        let now = ProcessInfo.processInfo.systemUptime
+        os_unfair_lock_lock(&lock)
+        let trim = states[sourceID]?.trim ?? 0
+        pfl[sourceID] = (min(0, l + trim), min(0, r + trim), now)
+        os_unfair_lock_unlock(&lock)
         DispatchQueue.main.async { [self] in
             if channelMixers[sourceID] == nil { makeChannel(sourceID, name: name); applyGains() }
             if playerFormats[sourceID] != buffer.format {
@@ -179,7 +236,7 @@ final class AudioCapture: @unchecked Sendable {
             players[id].map { $0.stop(); engine.detach($0) }
             channelMixers[id].map { $0.removeTap(onBus: 0); engine.detach($0) }
             players[id] = nil; channelMixers[id] = nil; playerFormats[id] = nil
-            os_unfair_lock_lock(&lock); states[id] = nil; os_unfair_lock_unlock(&lock)
+            os_unfair_lock_lock(&lock); states[id] = nil; pfl[id] = nil; os_unfair_lock_unlock(&lock)
         }
     }
 
@@ -206,8 +263,12 @@ final class AudioCapture: @unchecked Sendable {
             let s = states[k]!
             let base: Float = s.muted ? -60 : -30 + 20 * Float(s.gain) / 2
             states[k]?.level = min(0, base + 8 * Float(sin(t * (1.3 + Double(i) * 0.4))))
+            states[k]?.levelR = min(0, base + 8 * Float(sin(t * (1.1 + Double(i) * 0.4))))
+            let p = -20 + 8 * Float(sin(t * (1.2 + Double(i) * 0.3)))
+            pfl[k] = (p, p - 1.5, ProcessInfo.processInfo.systemUptime)
         }
         peakDB = -14 + 4 * Float(sin(t * 1.7))
+        peakDBR = -15 + 4 * Float(sin(t * 1.4))
         os_unfair_lock_unlock(&lock)
     }
 
@@ -217,21 +278,32 @@ final class AudioCapture: @unchecked Sendable {
     }
 
     /// Called with the sources on program (audio-follow-video).
-    func setProgram(_ ids: Set<UUID>, main: UUID? = nil) {
+    /// The Mic counts as "on PGM" (for AFV) while an iPad camera is on air — or always when the show has no
+    /// iPad camera, so a commentary mic is never cut off.
+    private var micOnAir = true
+    /// Channels currently heard in the program (after mute / AFV / solo) — the mixer's ON AIR lamps.
+    private var audible: Set<UUID> = []
+    func onAirChannels() -> Set<UUID> { os_unfair_lock_lock(&lock); defer { os_unfair_lock_unlock(&lock) }; return audible }
+
+    func setProgram(_ ids: Set<UUID>, main: UUID? = nil, micOnAir mic: Bool = true) {
         os_unfair_lock_lock(&lock)
-        let changed = ids != programIDs || main != programMain
-        programIDs = ids; programMain = main
+        let changed = ids != programIDs || main != programMain || mic != micOnAir
+        programIDs = ids; programMain = main; micOnAir = mic
         os_unfair_lock_unlock(&lock)
         if changed { DispatchQueue.main.async { self.applyGains() } }
     }
 
     private func applyGains() {
-        os_unfair_lock_lock(&lock); let st = states; let all = programIDs; let main = programMain; os_unfair_lock_unlock(&lock)
+        os_unfair_lock_lock(&lock); let st = states; let all = programIDs; let main = programMain; let micLive = micOnAir; os_unfair_lock_unlock(&lock)
         let pgm: Set<UUID> = afvMode == .afv1 ? Set([main].compactMap { $0 }) : all
         let anySolo = st.values.contains { $0.solo }
+        var live: Set<UUID> = []
+        defer { os_unfair_lock_lock(&lock); audible = live; os_unfair_lock_unlock(&lock) }
         for (id, s) in st {
-            let audible = !s.muted && (!s.followVideo || pgm.contains(id)) && (!anySolo || s.solo)
+            let onAir = id == Self.micID ? micLive : pgm.contains(id)
+            let audible = !s.muted && (!s.followVideo || onAir) && (!anySolo || s.solo)
             channelMixers[id]?.outputVolume = audible ? s.gain * powf(10, s.trim / 20) : 0
+            if audible && s.gain > 0 { live.insert(id) }
         }
     }
 
@@ -265,6 +337,23 @@ final class AudioCapture: @unchecked Sendable {
         engine.connect(p, to: m, format: file.processingFormat)
         p.scheduleFile(file, at: nil) { [weak self] in DispatchQueue.main.async { self?.engine.detach(p) } }
         p.play()
+    }
+
+    /// Peak dBFS of the first two channels (L, R); mono gives the same value twice.
+    static func peaks(_ b: AVAudioPCMBuffer) -> (Float, Float) {
+        guard let ch = b.floatChannelData, b.frameLength > 0 else { return (-60, -60) }
+        let n = Int(b.frameLength), cc = Int(b.format.channelCount)
+        func db(_ c: Int) -> Float {
+            var p: Float = 0
+            if b.format.isInterleaved {
+                let s = ch[0]; for i in 0..<n { p = max(p, abs(s[i * cc + c])) }
+            } else {
+                let s = ch[c]; for i in 0..<n { p = max(p, abs(s[i])) }
+            }
+            return 20 * log10(max(p, 0.000_01))
+        }
+        let l = db(0)
+        return (l, cc > 1 ? db(1) : l)
     }
 
     static func peak(_ b: AVAudioPCMBuffer) -> Float {

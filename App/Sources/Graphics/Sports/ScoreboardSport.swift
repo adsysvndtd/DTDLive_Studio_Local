@@ -161,7 +161,14 @@ extension StudioEngine {
         var next = before
         next.apply(action, at: now)
         guard next != before else { return }
+        let flash = next.flash(before: before, lang: .current, at: now)
         pushSport(next)
+        // overlay of the event (goal, card, added time…); a correction (goal −1, card −1) takes the last one off air
+        if flash != nil || action.isCorrection { setSportFlash(flash) }
+    }
+
+    private func setSportFlash(_ f: SportFlash?) {
+        updateScoreboard { t in var b = t.sb; b.flash = f; t.sb = b }
     }
 
     /// Thực hiện một nút điều khiển (theo id) – dùng cho bảng nhập điểm, web remote, OSC.
@@ -192,6 +199,7 @@ extension StudioEngine {
         guard let i = scoreboardIndex, let cur = titles[i].sb.sport, let prev = SportHistory.shared.undo.popLast() else { return }
         SportHistory.shared.redo.append(cur)
         setSportState(prev)
+        setSportFlash(nil)
     }
 
     func sportRedo() {
@@ -224,8 +232,8 @@ extension StudioEngine {
 
     // MARK: Web remote JSON
 
-    func scoreboardJSON() async -> Data {
-        let lang = ScoreLang.current
+    func scoreboardJSON(lang code: String?) async -> Data {
+        let lang = code.flatMap(ScoreLang.init(rawValue:)) ?? ScoreLang.current
         var obj: [String: Any] = [
             "lang": lang.rawValue,
             "templates": SportTemplate.allCases.map { ["id": $0.rawValue, "title": $0.title(lang), "group": $0.sportGroup] },
@@ -258,7 +266,8 @@ extension StudioEngine {
                 ] as [String: Any]
                 obj["controls"] = sp.controls(lang: lang).map { c in
                     ["id": c.id, "title": c.title, "side": c.side.map { $0 == .home ? "home" : "away" } ?? "",
-                     "role": c.role.rawValue, "enabled": c.enabled, "prompt": c.inputPrompt ?? ""] as [String: Any]
+                     "role": c.role.rawValue, "enabled": c.enabled, "prompt": c.inputPrompt ?? "",
+                     "choices": c.choices, "minusOf": c.minusOf ?? "", "value": c.value ?? ""] as [String: Any]
                 }
             }
         } else {

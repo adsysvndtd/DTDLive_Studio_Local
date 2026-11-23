@@ -30,6 +30,8 @@ struct SourceProcessing: Equatable, Codable {
     var keySoftness: Float = 10
     var keyMinSaturation: Float = 0.25
     var keyBackgroundID: UUID?     // source/image composited behind the key
+    /// Solid colour behind the key ("#RRGGBB") when no background source is chosen.
+    var keyBackgroundHex: String?
 
     var isIdentity: Bool { self == SourceProcessing() }
 }
@@ -82,9 +84,26 @@ final class ProcessingRenderer: @unchecked Sendable {
             f.inputImage = img; f.cubeDimension = 64; f.cubeData = keyCube(p)
             f.colorSpace = CGColorSpace(name: CGColorSpace.sRGB)
             img = f.outputImage ?? img
-            if let background { img = img.composited(over: background) }
+            if let bg = background.map({ Self.fill($0, img.extent) }) ?? p.keyBackgroundHex.flatMap({ Self.color($0) })?.cropped(to: img.extent) {
+                img = img.composited(over: bg)
+            }
         }
         return img
+    }
+
+    /// Scale a background to cover the keyed picture (aspect fill, centred, cropped).
+    static func fill(_ b: CIImage, _ r: CGRect) -> CIImage {
+        guard b.extent.width > 0, b.extent.height > 0, !b.extent.isInfinite else { return b.cropped(to: r) }
+        let k = max(r.width / b.extent.width, r.height / b.extent.height)
+        let s = b.transformed(by: CGAffineTransform(scaleX: k, y: k))
+        let dx = r.midX - s.extent.midX, dy = r.midY - s.extent.midY
+        return s.transformed(by: CGAffineTransform(translationX: dx, y: dy)).cropped(to: r)
+    }
+
+    static func color(_ hex: String) -> CIImage? {
+        var v: UInt64 = 0
+        guard Scanner(string: hex.trimmingCharacters(in: CharacterSet(charactersIn: "#"))).scanHexInt64(&v) else { return nil }
+        return CIImage(color: CIColor(red: CGFloat((v >> 16) & 0xFF) / 255, green: CGFloat((v >> 8) & 0xFF) / 255, blue: CGFloat(v & 0xFF) / 255))
     }
 
     // MARK: LUT (.cube, Adobe/Resolve format)

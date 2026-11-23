@@ -100,7 +100,10 @@ extension StudioEngine {
             let source: (any VideoSource)?
             switch c.kind {
             case .camera:
-                source = c.deviceID.flatMap { AVCaptureDevice(uniqueID: $0) }.map { CameraSource(device: $0) }
+                // a USB-C camera that is not plugged in now keeps its input and starts when it is plugged in
+                source = c.deviceID.map { id in
+                    AVCaptureDevice(uniqueID: id).map { CameraSource(device: $0) } ?? CameraSource(deviceID: id, name: c.name)
+                }
             case .srt: source = c.url.flatMap(URL.init(string:)).map { SRTInputSource(name: c.name, url: $0) }
             case .rtmpPull: source = c.url.flatMap(URL.init(string:)).map { RTMPInputSource(name: c.name, url: $0) }
             case .rtsp: source = c.url.flatMap(URL.init(string:)).map { RTSPInputSource(name: c.name, url: $0) }
@@ -113,7 +116,7 @@ extension StudioEngine {
             if let z = c.ptz { setPTZ(source.id, z) }
             added.append(source)
         }
-        if let i = show.programIndex, i < added.count { take(added[i].id) }
-        if let i = show.previewIndex, i < added.count { select(added[i].id) }
+        // Opening a show cues its sources; the one that was on air goes to PVW and reaches PGM only with a transition.
+        if let i = show.programIndex ?? show.previewIndex, i < added.count { select(added[i].id) }
     }
 }

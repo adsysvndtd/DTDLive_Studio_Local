@@ -1,3 +1,4 @@
+import Combine
 import SwiftUI
 import UIKit
 
@@ -6,9 +7,12 @@ import UIKit
 @objc(ExternalDisplaySceneDelegate)   // plain class name, referenced from Info.plist (UISceneConfigurations)
 final class ExternalDisplaySceneDelegate: NSObject, UIWindowSceneDelegate {
     var window: UIWindow?
+    private weak var windowScene: UIWindowScene?
+    private var modeWatch: AnyCancellable?
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options: UIScene.ConnectionOptions) {
         guard let ws = scene as? UIWindowScene else { return }
+        windowScene = ws
         let w = UIWindow(windowScene: ws)
         w.backgroundColor = .black
         w.rootViewController = UIViewController()
@@ -18,6 +22,19 @@ final class ExternalDisplaySceneDelegate: NSObject, UIWindowSceneDelegate {
         attach(ws, attempt: 0)
     }
 
+    /// "Phản chiếu màn iPad": take the window off the external scene and iOS mirrors again; put it back
+    /// for PGM / Multiview. (On iOS 27 the scene accessory is also disabled for mirroring.)
+    private func apply(_ mode: StudioEngine.ExternalMode) {
+        guard let window else { return }
+        if mode == .mirror {
+            window.windowScene = nil
+        } else if window.windowScene == nil, let ws = windowScene {
+            window.windowScene = ws
+            window.isHidden = false
+        }
+        Task { @MainActor in StudioEngine.shared?.externalDisplayConnected = mode != .mirror }
+    }
+
     /// The HDMI screen can connect before the engine exists (cable in at launch): wait for it.
     private func attach(_ ws: UIWindowScene, attempt: Int) {
         guard let engine = StudioEngine.shared else {
@@ -25,10 +42,11 @@ final class ExternalDisplaySceneDelegate: NSObject, UIWindowSceneDelegate {
             return
         }
         window?.rootViewController = UIHostingController(rootView: ExternalProgramView(engine: engine))
-        Task { @MainActor in engine.externalDisplayConnected = true }
+        modeWatch = engine.$externalMode.receive(on: DispatchQueue.main).sink { [weak self] m in self?.apply(m) }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
+        modeWatch = nil
         window = nil
         Task { @MainActor in StudioEngine.shared?.externalDisplayConnected = false }
     }
@@ -65,33 +83,176 @@ struct ExternalProgramView: View {
                 MonitorView(store: engine.switcher.programMonitor, maxFPS: 60)
                     .aspectRatio(CGFloat(engine.format.width) / CGFloat(engine.format.height), contentMode: .fit)
                     .overlay { if engine.externalSafeGuides { SafeGuides() } }
+                    .overlay(alignment: .trailing) {
+                        if engine.externalVU {
+                            MonitorVU(meters: engine.meters, id: nil, marksOnLeading: true)
+                                .frame(width: 14)
+                                .padding(.trailing, 28).padding(.vertical, 60)
+                        }
+                    }
             case .multiview:
                 MultiviewGrid(engine: engine)
+            case .mirror:
+                EmptyView()
             }
         }
         .ignoresSafeArea()
     }
 }
 
-/// 2x2 / 3x3 multiview with PGM/PVW tally borders (external monitor or iPhone).
+/// Multiview: PVW | PGM on top, then a fixed number of input tiles (4, 8, 10 or 16 — empty slots stay
+/// black), every picture at the program aspect, the whole wall sized to fit the screen (no scrolling).
+/// Tap a tile = preview, double-tap = take (in the app; the external monitor is display only).
 struct MultiviewGrid: View {
     @ObservedObject var engine: StudioEngine
+    var interactive = false
+
+    private var aspect: CGFloat { CGFloat(engine.format.width) / CGFloat(max(engine.format.height, 1)) }
+
     var body: some View {
-        let cols = engine.sources.count <= 4 ? 2 : 3
-        VStack(spacing: 2) {
-            HStack(spacing: 2) {
-                MonitorView(store: engine.switcher.previewMonitor).border(.green, width: 3)
-                MonitorView(store: engine.switcher.programMonitor).border(.red, width: 3)
-            }
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 2), count: cols), spacing: 2) {
-                ForEach(Array(engine.sources.enumerated()), id: \.element.id) { i, s in
-                    MonitorView(store: s.frames, maxFPS: 15)
-                        .aspectRatio(16 / 9, contentMode: .fit)
-                        .border(engine.programID == s.id ? .red : engine.previewID == s.id ? .green : .gray,
-                                width: engine.programID == s.id || engine.previewID == s.id ? 3 : 1)
-                        .overlay(alignment: .bottomLeading) { Text("\(i + 1) \(s.name)").font(.caption).padding(3).background(.black.opacity(0.6)) }
+        let layout = engine.multiviewLayout
+        let slots = layout.slots, cols = layout.columns, rows = (slots + cols - 1) / cols
+        GeometryReader { g in
+            // width units: top row = 2 tiles of W/2, bottom = rows of W/cols; height = W/2/a + rows·W/cols/a
+            let gap: CGFloat = 2
+            let a = aspect
+            let wFit = g.size.width
+            let hFor = { (w: CGFloat) in w / 2 / a + CGFloat(rows) * (w / CGFloat(cols)) / a + gap * CGFloat(rows) }
+            let W = min(wFit, wFit * g.size.height / max(hFor(wFit), 1))
+            let big = (W - gap) / 2, small = (W - gap * CGFloat(cols - 1)) / CGFloat(cols)
+            VStack(spacing: gap) {
+                HStack(spacing: gap) {
+                    tile(store: engine.switcher.previewMonitor, label: "PVW", border: DS.pvw, width: big, fps: 30)
+                        .overlay(alignment: .leading) { vu(engine.audioChannelID(engine.previewID), preFader: true, leading: true, small: false) }
+                    tile(store: engine.switcher.programMonitor, label: "PGM", border: DS.pgm, width: big, fps: 30)
+                        .overlay(alignment: .trailing) { vu(nil, preFader: false, leading: false, small: false) }
+                }
+                ForEach(0..<rows, id: \.self) { r in
+                    HStack(spacing: gap) {
+                        ForEach(0..<cols, id: \.self) { c in
+                            let i = r * cols + c
+                            if i < slots { inputTile(i, width: small) }
+                        }
+                    }
                 }
             }
+            .frame(width: g.size.width, height: g.size.height)
+        }
+        .background(Color.black)
+    }
+
+    private func tile(store: FrameStore, label: String, border: Color, width: CGFloat, fps: Int) -> some View {
+        MonitorView(store: store, maxFPS: fps)
+            .frame(width: width, height: width / aspect)
+            .overlay { Rectangle().stroke(border, lineWidth: 3) }
+            .overlay(alignment: .bottomLeading) { tag(label, color: border) }
+    }
+
+    @ViewBuilder private func inputTile(_ i: Int, width: CGFloat) -> some View {
+        let h = width / aspect
+        if i < engine.sources.count {
+            let s = engine.sources[i]
+            let onPGM = engine.programID == s.id, onPVW = engine.previewID == s.id
+            MonitorView(store: s.frames, maxFPS: 12)
+                .frame(width: width, height: h)
+                .overlay { Rectangle().stroke(onPGM ? DS.pgm : onPVW ? DS.pvw : Color.white.opacity(0.25), lineWidth: onPGM || onPVW ? 3 : 1) }
+                .overlay(alignment: .bottomLeading) { tag("\(i + 1)  \(s.name)", color: onPGM ? DS.pgm : onPVW ? DS.pvw : .black.opacity(0.6)) }
+                .overlay(alignment: .trailing) { vu(engine.audioChannelID(s.id), preFader: true, leading: false, small: true) }
+                .contentShape(Rectangle())
+                .onTapGesture { if interactive { engine.select(s.id) } }     // PVW only: PGM changes with a transition
+        } else {
+            Color(white: 0.06)
+                .frame(width: width, height: h)
+                .overlay { Rectangle().stroke(Color.white.opacity(0.12), lineWidth: 1) }
+                .overlay(alignment: .bottomLeading) { tag("\(i + 1)", color: .black.opacity(0.6)) }
+        }
+    }
+
+    /// L/R meter over a tile (same as on the PVW/PGM monitors): PGM = program mix, PVW and inputs = the
+    /// source's own level before its fader. Follows the "VU meter" setting.
+    @ViewBuilder private func vu(_ id: UUID?, preFader: Bool, leading: Bool, small: Bool) -> some View {
+        if engine.showMonitorVU {
+            MonitorVU(meters: engine.meters, id: id, preFader: preFader, marksOnLeading: !leading, compact: small)
+                .padding(leading ? .leading : .trailing, small ? 5 : 22)
+                .padding(.top, small ? 8 : 18)
+                .padding(.bottom, small ? 22 : 30)
+        }
+    }
+
+    private func tag(_ t: String, color: Color) -> some View {
+        Text(verbatim: t).font(.system(size: 11, weight: .bold)).lineLimit(1)
+            .foregroundStyle(.white).padding(.horizontal, 5).padding(.vertical, 2)
+            .background(color, in: Rectangle()).padding(3)
+    }
+}
+
+/// Full-screen multiview inside the app.
+struct MultiviewScreen: View {
+    @ObservedObject var engine: StudioEngine
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        VStack(spacing: 0) {
+            // Controls in their own bar above the wall: an overlay could end up under the tiles / off screen.
+            HStack(spacing: 8) {
+                Text("Multiview").font(.system(size: 15, weight: .bold)).foregroundStyle(.white)
+                Spacer(minLength: 8)
+                Picker("Ô đầu vào", selection: $engine.multiviewLayout) {
+                    ForEach(StudioEngine.MultiviewLayout.allCases) { Text(verbatim: $0.label).tag($0) }
+                }
+                .pickerStyle(.segmented).frame(maxWidth: 260)
+                Button("Cut") { engine.cut() }.buttonStyle(.borderedProminent).tint(DS.pgm)
+                Button("Auto") { engine.autoTransition() }.buttonStyle(.bordered)
+                Button { dismiss() } label: { Image(systemName: "xmark").font(.headline) }.buttonStyle(.bordered)
+            }
+            .padding(.horizontal, 12).frame(height: 48)
+            .background(Color(white: 0.08))
+            MultiviewGrid(engine: engine, interactive: true)
+        }
+        .background(Color.black.ignoresSafeArea())
+        .preferredColorScheme(.dark)
+        .statusBarHidden()
+    }
+}
+
+// MARK: - iOS 27: external display through a scene accessory
+
+/// Apps built with the iOS 27 SDK are no longer offered the non-interactive external-display scene
+/// automatically: without a registered scene accessory the HDMI / USB‑C screen only mirrors the iPad.
+/// This invisible controller sits in the main interface and registers the accessory (same scene delegate
+/// as before); "Phản chiếu màn iPad" turns it off. Builds with an older SDK use the Info.plist scene config.
+struct ExternalDisplayAccessory: UIViewControllerRepresentable {
+    let engine: StudioEngine
+
+    func makeUIViewController(context: Context) -> UIViewController {
+        #if compiler(>=6.4)
+        if #available(iOS 27.0, *) { return ExternalAccessoryController(engine: engine) }
+        #endif
+        return UIViewController()
+    }
+    func updateUIViewController(_ vc: UIViewController, context: Context) {}
+}
+
+#if compiler(>=6.4)
+@available(iOS 27.0, *)
+final class ExternalAccessoryController: UIViewController {
+    private let engine: StudioEngine
+    private var registration: UISceneAccessoryRegistration?
+    private var modeWatch: AnyCancellable?
+
+    init(engine: StudioEngine) { self.engine = engine; super.init(nibName: nil, bundle: nil) }
+    required init?(coder: NSCoder) { fatalError() }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .clear
+        view.isUserInteractionEnabled = false
+        let configuration = UISceneConfiguration(name: "External", sessionRole: .windowExternalDisplayNonInteractive)
+        configuration.delegateClass = ExternalDisplaySceneDelegate.self
+        registration = registerSceneAccessory(UISceneAccessory.externalNonInteractive(sceneConfiguration: configuration))
+        modeWatch = engine.$externalMode.receive(on: DispatchQueue.main).sink { [weak self] m in
+            self?.registration?.isEnabled = m != .mirror
         }
     }
 }
+#endif

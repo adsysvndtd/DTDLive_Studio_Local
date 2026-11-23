@@ -10,19 +10,24 @@ struct MonitorView: UIViewRepresentable {
     let store: FrameStore
     var maxFPS = 30
 
+    /// Low Power Mode on: monitors redraw at most 15 times a second (the program itself is not affected).
+    static func fps(_ maxFPS: Int) -> Int {
+        ProcessInfo.processInfo.isLowPowerModeEnabled ? min(maxFPS, 15) : maxFPS
+    }
+
     #if targetEnvironment(simulator)
     func makeUIView(context: Context) -> LayerMonitorView { LayerMonitorView(store: store, fps: min(maxFPS, DemoMode.isUITest ? 2 : 10)) }
     func updateUIView(_ v: LayerMonitorView, context: Context) { v.store = store }
     #else
     func makeUIView(context: Context) -> MonitorMTKView {
         let v = MonitorMTKView(store: store)
-        v.preferredFramesPerSecond = maxFPS
+        v.preferredFramesPerSecond = Self.fps(maxFPS)
         return v
     }
 
     func updateUIView(_ v: MonitorMTKView, context: Context) {
         v.store = store
-        v.preferredFramesPerSecond = maxFPS
+        v.preferredFramesPerSecond = Self.fps(maxFPS)
     }
     #endif
 }
@@ -65,34 +70,44 @@ final class LayerMonitorView: UIView {
 
 final class MonitorMTKView: MTKView {
     var store: FrameStore
-    private let ci: CIContext
-    private let queue: MTLCommandQueue
+    /// One Metal device / Core Image context / command queue for every monitor on screen. Each monitor used
+    /// to create its own context (with its own caches and GPU memory) — a full multiview held a dozen.
+    private static let device = MTLCreateSystemDefaultDevice()!
+    private static let sharedCI = CIContext(mtlDevice: device, options: [.cacheIntermediates: false])
+    private static let sharedQueue = device.makeCommandQueue()!
+    private var ci: CIContext { Self.sharedCI }
+    private var queue: MTLCommandQueue { Self.sharedQueue }
 
     init(store: FrameStore) {
         self.store = store
-        let dev = MTLCreateSystemDefaultDevice()!
-        ci = CIContext(mtlDevice: dev, options: [.cacheIntermediates: false])
-        queue = dev.makeCommandQueue()!
-        super.init(frame: .zero, device: dev)
+        super.init(frame: .zero, device: Self.device)
         framebufferOnly = false
         colorPixelFormat = .bgra8Unorm
         clearColor = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 1)
         autoResizeDrawable = true
+        // iOS may drop the layer's contents in the background: draw again when the app is back.
+        foreground = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { [weak self] _ in
+            self?.drawn = nil
+        }
     }
+    private var foreground: NSObjectProtocol?
+    deinit { foreground.map { NotificationCenter.default.removeObserver($0) } }
 
     required init(coder: NSCoder) { fatalError() }
 
-    private weak var lastBuffer: CVPixelBuffer?
-    private var lastSize: CGSize = .zero
-    private var lastWasEmpty = false
+    /// What was drawn last: which store, its frame counter (nil = no signal) and the drawable size.
+    private var drawn: (store: ObjectIdentifier, seq: UInt64?, size: CGSize)?
 
     override func draw(_ rect: CGRect) {
-        // Battery: skip the GPU work when nothing changed (same frame, same size).
-        let pb = store.latest()
-        if let pb, pb === lastBuffer, drawableSize == lastSize { return }
-        if pb == nil, lastWasEmpty, drawableSize == lastSize { return }
-        lastBuffer = pb; lastSize = drawableSize; lastWasEmpty = pb == nil
+        // Battery: skip the GPU work when nothing changed (same store, same frame number, same size).
+        // Compared by the store's frame counter, not the buffer object: pools recycle buffer objects.
+        let frame = store.latestFrame()
+        let now = (store: ObjectIdentifier(store), seq: frame?.seq, size: drawableSize)
+        if let d = drawn, d.store == now.store, d.seq == now.seq, d.size == now.size { return }
+        let pb = frame?.buffer
+        // No drawable (app in the background, view off screen): leave `drawn` alone so the next pass draws.
         guard let drawable = currentDrawable, let cb = queue.makeCommandBuffer() else { return }
+        drawn = now
         let size = drawableSize
         let bounds = CGRect(origin: .zero, size: size)
         var img = CIImage(color: .black).cropped(to: bounds)

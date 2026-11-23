@@ -69,7 +69,7 @@ final class RTMPSession: @unchecked Sendable {
 
     private enum Phase { case c0c1, c2, chunks }
     private var phase = Phase.c0c1
-    private var buf = [UInt8]()
+    private var buf = ByteQueue()
     private var inChunkSize = 128
     private var windowAck: UInt32 = 2_500_000
     private var received: UInt64 = 0

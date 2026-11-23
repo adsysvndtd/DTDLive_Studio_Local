@@ -209,6 +209,8 @@ enum ScoreEvent: Codable, Equatable {
     case matchWon(Side)
     case draw
     case goal(Side)
+    case ownGoal(Side)           // phản lưới: bàn tính cho đội Side
+    case addedTime(Int)          // bù giờ n phút
     case card(Side, CardKind)
     case foulLimit(Side)         // đủ số lỗi tích lũy (futsal)
     case periodEnded
@@ -286,23 +288,33 @@ struct SportControl<A>: Identifiable {
     let enabled: Bool
     /// Nếu khác nil, UI hỏi thêm 1 chuỗi (tên cầu thủ) trước khi thực hiện.
     let inputPrompt: String?
+    /// Gợi ý chọn nhanh cho ô nhập (vd. cầu thủ đang có thẻ khi bớt thẻ).
+    let choices: [String]
+    /// Nút "−" của một nút khác (id của nút "+"): UI vẽ chung thành [ − ] Tên  số [ + ].
+    let minusOf: String?
+    /// Số đang đếm, hiện giữa nút − / + (vd. số thẻ vàng).
+    let value: String?
     let make: (String?) -> A
 
     init(id: String, title: String, side: Side?, role: SportControlRole = .secondary,
-                enabled: Bool = true, inputPrompt: String? = nil, make: @escaping (String?) -> A) {
+                enabled: Bool = true, inputPrompt: String? = nil, choices: [String] = [],
+                minusOf: String? = nil, value: String? = nil, make: @escaping (String?) -> A) {
         self.id = id
         self.title = title
         self.side = side
         self.role = role
         self.enabled = enabled
         self.inputPrompt = inputPrompt
+        self.choices = choices
+        self.minusOf = minusOf
+        self.value = value
         self.make = make
     }
 
     init(id: String, title: String, side: Side?, role: SportControlRole = .secondary,
-                enabled: Bool = true, action: A) {
+                enabled: Bool = true, minusOf: String? = nil, value: String? = nil, action: A) {
         self.init(id: id, title: title, side: side, role: role, enabled: enabled,
-                  inputPrompt: nil, make: { _ in action })
+                  inputPrompt: nil, minusOf: minusOf, value: value, make: { _ in action })
     }
 }
 
@@ -343,6 +355,8 @@ enum Callouts {
         case .matchWon(let s): return lang.t("\(teams[s].name) THẮNG CHUNG CUỘC", "\(teams[s].name) WINS")
         case .draw: return lang.t("HÒA", "DRAW")
         case .goal(let s): return lang.t("VÀO! · \(teams[s].shortName)", "GOAL! · \(teams[s].shortName)")
+        case .ownGoal(let s): return lang.t("PHẢN LƯỚI · +1 \(teams[s].shortName)", "OWN GOAL · +1 \(teams[s].shortName)")
+        case .addedTime(let m): return lang.t("BÙ GIỜ +\(m)'", "ADDED TIME +\(m)'")
         case .card(let s, let k):
             return k == .red ? lang.t("THẺ ĐỎ · \(teams[s].shortName)", "RED CARD · \(teams[s].shortName)")
                              : lang.t("THẺ VÀNG · \(teams[s].shortName)", "YELLOW CARD · \(teams[s].shortName)")

@@ -1,5 +1,6 @@
 import Foundation
 import Network
+import Security
 
 /// Commands accepted from the LAN (web remote, Bitfocus Companion / Stream Deck, OSC, DTDLive camera tally).
 enum ControlCommand {
@@ -17,20 +18,20 @@ protocol ControlTarget: AnyObject, Sendable {
     func handle(_ cmd: ControlCommand) async
     func stateJSON() async -> Data
     func tallyJSON(for name: String) async -> Data
-    func scoreboardJSON() async -> Data
+    func scoreboardJSON(lang: String?) async -> Data
     func pairRequest(_ body: Data) async -> Data
     func pairStatus(_ requestID: String) async -> Data
 }
 
 /// Tiny HTTP/1.1 server (port 8080) + OSC/UDP listener (port 8000).
 ///
-/// HTTP:
+/// HTTP (every page / API needs ?key=<access key> or header X-DTD-Key, except pairing and tally):
 ///   GET  /                       web remote (titles, switching, score)
 ///   GET  /api/state              JSON state
 ///   POST /api/cut | /api/auto | /api/ftb?on=1
 ///   POST /api/take?input=N | /api/preview?input=N         (1-based, multiview order)
 ///   POST /api/title  (JSON TitleItem)  | POST /api/title/show?id=UUID&on=1
-///   POST /api/score?a=N&b=N | /api/stream/start | /api/stream/stop | /api/record | /api/replay
+///   POST /api/score?a=N&b=N | /api/stream/start | /api/stream/stop | /api/record | /api/replay (1st: cue on PVW, 2nd: play to PGM)
 ///   POST /api/ptz?input=N&pan=-1..1&tilt=-1..1&zoom=-1..1 | /api/ptz/preset?input=N&preset=K[&store=1]
 ///   POST /api/pair/request  {deviceID,name,model,app,protocols,pullURL,nonce,token} -> {requestId, confirmCode}
 ///   GET  /api/pair/status?id=<requestId>  -> pending | rejected | expired | {status:"accepted", pushURL, token, ...}
@@ -68,6 +69,51 @@ final class ControlServer: @unchecked Sendable {
 
     func stop() { http?.cancel(); osc?.cancel() }
 
+    // MARK: Access key
+
+    /// Secret appended to the web remote link (…:8080/?key=…). Every page and API call must carry it
+    /// (query `key=` or header `X-DTD-Key`), so someone else on the same Wi‑Fi can't drive the show.
+    /// Camera pairing and tally (DTDLive) have their own handshake and stay open.
+    static var accessKey: String {
+        if let k = UserDefaults.standard.string(forKey: keyDefaults), k.count >= 8 { return k }
+        return newAccessKey()
+    }
+    private static let keyDefaults = "dtd.remote.key"
+
+    @discardableResult
+    static func newAccessKey() -> String {
+        let alphabet = Array("abcdefghjkmnpqrstuvwxyz23456789")
+        var bytes = [UInt8](repeating: 0, count: 12)
+        if SecRandomCopyBytes(kSecRandomDefault, bytes.count, &bytes) != errSecSuccess {
+            bytes = (0..<12).map { _ in UInt8.random(in: 0...255) }
+        }
+        let k = String(bytes.map { alphabet[Int($0) % alphabet.count] })
+        UserDefaults.standard.set(k, forKey: keyDefaults)
+        return k
+    }
+
+    /// Web pages follow ?lang=en|vi, else the app's language (Settings › Ngôn ngữ).
+    static func page(_ html: String, _ lang: String?) -> String {
+        html.replacingOccurrences(of: "__LANG__", with: uiLang(lang))
+    }
+    static func uiLang(_ asked: String?) -> String {
+        if asked == "en" || asked == "vi" { return asked! }
+        switch AppLanguage.current {
+        case "en", "vi": return AppLanguage.current
+        default: return (Locale.preferredLanguages.first ?? "vi").hasPrefix("vi") ? "vi" : "en"
+        }
+    }
+
+    private static let openPaths: Set<String> = ["/api/pair/request", "/api/pair/status", "/api/tally", "/favicon.ico"]
+
+    private static func authorized(_ r: HTTPRequest) -> Bool {
+        if openPaths.contains(r.path) { return true }
+        let given = r.query["key"] ?? r.headers["x-dtd-key"] ?? ""
+        let k = accessKey
+        guard given.utf8.count == k.utf8.count else { return false }
+        return zip(given.utf8, k.utf8).reduce(UInt8(0)) { $0 | ($1.0 ^ $1.1) } == 0   // constant time
+    }
+
     // MARK: HTTP
 
     private func serveHTTP(_ c: NWConnection) {
@@ -92,12 +138,24 @@ final class ControlServer: @unchecked Sendable {
 
     private func route(_ r: HTTPRequest) async -> Data {
         guard let target else { return HTTPRequest.response(503, "text/plain", Data("not ready".utf8)) }
+        guard Self.authorized(r) else {
+            if r.method == "GET", !r.path.hasPrefix("/api/") {
+                let page = "<!doctype html><meta charset=utf-8><meta name=viewport content='width=device-width'>"
+                    + "<body style='font:16px -apple-system,sans-serif;background:#111;color:#eee;padding:24px'>"
+                    + "<h3>DTDStudio</h3><p>Liên kết thiếu hoặc sai key bảo mật. Mở đúng đường link trong "
+                    + "DTDStudio › Cài đặt › Điều khiển từ xa (link có <code>?key=…</code>).</p>"
+                    + "<p style='color:#999'>The link is missing its security key or the key is wrong. Open the link from "
+                    + "DTDStudio › Settings › Remote control (it ends with <code>?key=…</code>).</p></body>"
+                return HTTPRequest.response(401, "text/html; charset=utf-8", Data(page.utf8))
+            }
+            return HTTPRequest.response(401, "application/json", Data("{\"error\":\"key required\"}".utf8))
+        }
         let q = r.query
         func int(_ k: String) -> Int? { q[k].flatMap(Int.init) }
         func dbl(_ k: String) -> Double { q[k].flatMap(Double.init) ?? 0 }
         let ok = HTTPRequest.response(200, "application/json", Data("{\"ok\":true}".utf8))
         switch (r.method, r.path) {
-        case ("GET", "/"): return HTTPRequest.response(200, "text/html; charset=utf-8", Data(RemotePage.html.utf8))
+        case ("GET", "/"): return HTTPRequest.response(200, "text/html; charset=utf-8", Data(Self.page(RemotePage.html, q["lang"]).utf8))
         case ("GET", "/api/state"): return HTTPRequest.response(200, "application/json", await target.stateJSON())
         case ("GET", "/api/tally"): return HTTPRequest.response(200, "application/json", await target.tallyJSON(for: q["name"] ?? ""))
         case ("POST", "/api/pair/request"): return HTTPRequest.response(200, "application/json", await target.pairRequest(r.body))
@@ -116,25 +174,25 @@ final class ControlServer: @unchecked Sendable {
         case ("POST", "/api/score"):
             if let a = int("a") { await target.handle(.scoreA(a)) }
             if let b = int("b") { await target.handle(.scoreB(b)) }
-        case ("GET", "/scoreboard"): return HTTPRequest.response(200, "text/html; charset=utf-8", Data(ScoreboardRemotePage.html.utf8))
-        case ("GET", "/api/scoreboard"): return HTTPRequest.response(200, "application/json", await target.scoreboardJSON())
+        case ("GET", "/scoreboard"): return HTTPRequest.response(200, "text/html; charset=utf-8", Data(Self.page(ScoreboardRemotePage.html, q["lang"]).utf8))
+        case ("GET", "/api/scoreboard"): return HTTPRequest.response(200, "application/json", await target.scoreboardJSON(lang: q["lang"]))
         case ("POST", "/api/scoreboard/action"):
             if let id = q["id"] { await target.handle(.sportAction(id, q["input"])) }
-            return HTTPRequest.response(200, "application/json", await target.scoreboardJSON())
+            return HTTPRequest.response(200, "application/json", await target.scoreboardJSON(lang: q["lang"]))
         case ("POST", "/api/scoreboard/template"):
             let t = q["t"] ?? ""
             await target.handle(.sportTemplate(t.isEmpty ? nil : t))
-            return HTTPRequest.response(200, "application/json", await target.scoreboardJSON())
+            return HTTPRequest.response(200, "application/json", await target.scoreboardJSON(lang: q["lang"]))
         case ("POST", "/api/scoreboard/undo"): await target.handle(.sportUndo)
-            return HTTPRequest.response(200, "application/json", await target.scoreboardJSON())
+            return HTTPRequest.response(200, "application/json", await target.scoreboardJSON(lang: q["lang"]))
         case ("POST", "/api/scoreboard/redo"): await target.handle(.sportRedo)
-            return HTTPRequest.response(200, "application/json", await target.scoreboardJSON())
+            return HTTPRequest.response(200, "application/json", await target.scoreboardJSON(lang: q["lang"]))
         case ("POST", "/api/scoreboard/restart"): await target.handle(.sportRestart)
-            return HTTPRequest.response(200, "application/json", await target.scoreboardJSON())
+            return HTTPRequest.response(200, "application/json", await target.scoreboardJSON(lang: q["lang"]))
         case ("POST", "/api/scoreboard/teams"): await target.handle(.scoreboardTeams(q["home"], q["away"]))
-            return HTTPRequest.response(200, "application/json", await target.scoreboardJSON())
+            return HTTPRequest.response(200, "application/json", await target.scoreboardJSON(lang: q["lang"]))
         case ("POST", "/api/scoreboard/show"): await target.handle(.scoreboardShow(q["on"] != "0"))
-            return HTTPRequest.response(200, "application/json", await target.scoreboardJSON())
+            return HTTPRequest.response(200, "application/json", await target.scoreboardJSON(lang: q["lang"]))
         case ("POST", "/api/stream/start"): await target.handle(.streamStart)
         case ("POST", "/api/stream/stop"): await target.handle(.streamStop)
         case ("POST", "/api/record"): await target.handle(.recordToggle)
@@ -186,6 +244,8 @@ struct HTTPRequest {
     var method: String
     var path: String
     var query: [String: String]
+    /// Header names lower-cased.
+    var headers: [String: String] = [:]
     var body: Data
 
     static func parse(_ d: Data) -> HTTPRequest? {
@@ -195,15 +255,18 @@ struct HTTPRequest {
         let first = lines[0].split(separator: " ")
         guard first.count >= 2 else { return nil }
         var length = 0
-        for l in lines.dropFirst() where l.lowercased().hasPrefix("content-length:") {
-            length = Int(l.split(separator: ":")[1].trimmingCharacters(in: .whitespaces)) ?? 0
+        var headers: [String: String] = [:]
+        for l in lines.dropFirst() {
+            guard let c = l.firstIndex(of: ":") else { continue }
+            headers[l[..<c].lowercased()] = l[l.index(after: c)...].trimmingCharacters(in: .whitespaces)
         }
+        length = Int(headers["content-length"] ?? "") ?? 0
         let bodyStart = headEnd.upperBound
         guard d.distance(from: bodyStart, to: d.endIndex) >= length else { return nil }
         let comps = URLComponents(string: String(first[1]))
         var q: [String: String] = [:]
         comps?.queryItems?.forEach { q[$0.name] = $0.value ?? "" }
-        return HTTPRequest(method: String(first[0]), path: comps?.path ?? "/", query: q,
+        return HTTPRequest(method: String(first[0]), path: comps?.path ?? "/", query: q, headers: headers,
                            body: Data(d[bodyStart..<d.index(bodyStart, offsetBy: length)]))
     }
 

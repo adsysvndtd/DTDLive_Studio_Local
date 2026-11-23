@@ -1,0 +1,5 @@
+module NDI {
+    header "Processing.NDI.Lib.h"
+    link "ndi_ios"
+    export *
+}

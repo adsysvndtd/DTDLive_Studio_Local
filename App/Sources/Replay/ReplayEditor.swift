@@ -193,6 +193,9 @@ final class ReplayEditor: ObservableObject {
             c.basePTS = basePTS
         }
         clips.insert(c, at: 0)
+        // Buffer clips hold their encoded frames in memory (~0.75 MB/s at 6 Mbps): keep the newest 30 of them.
+        let buffered = clips.indices.filter { !clips[$0].samples.isEmpty }
+        if buffered.count > 30 { for i in buffered.dropFirst(30).reversed() { clips.remove(at: i) } }
         message = LF("Đã lưu %@ (%@ s)", c.name, String(format: "%.1f", c.duration))
     }
 

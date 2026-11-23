@@ -59,7 +59,7 @@ final class RTSPIngestSession: @unchecked Sendable {
     private let events: RTMPServer.Events
     var onClose: (() -> Void)?
 
-    private var buf = [UInt8]()
+    private var buf = ByteQueue()
     private var closed = false
     private var key: String?
     private var recording = false

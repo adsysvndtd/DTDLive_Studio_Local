@@ -24,9 +24,9 @@ enum DemoMode {
     @MainActor
     static func populate(_ engine: StudioEngine) {
         let palette: [(String, CIColor, CIColor)] = [
-            ("CAM 1 · Sân khấu", CIColor(red: 0.10, green: 0.30, blue: 0.65), CIColor(red: 0.05, green: 0.10, blue: 0.25)),
+            (L("CAM 1 · Sân khấu"), CIColor(red: 0.10, green: 0.30, blue: 0.65), CIColor(red: 0.05, green: 0.10, blue: 0.25)),
             ("CAM 2 · MC", CIColor(red: 0.65, green: 0.25, blue: 0.10), CIColor(red: 0.25, green: 0.08, blue: 0.05)),
-            ("CAM 3 · Khán giả", CIColor(red: 0.10, green: 0.55, blue: 0.30), CIColor(red: 0.03, green: 0.20, blue: 0.10)),
+            (L("CAM 3 · Khán giả"), CIColor(red: 0.10, green: 0.55, blue: 0.30), CIColor(red: 0.03, green: 0.20, blue: 0.10)),
             ("SRT · DTDLive", CIColor(red: 0.50, green: 0.20, blue: 0.60), CIColor(red: 0.15, green: 0.05, blue: 0.20)),
             ("RTSP · IP Cam", CIColor(red: 0.55, green: 0.55, blue: 0.10), CIColor(red: 0.20, green: 0.20, blue: 0.03))
         ]
@@ -41,12 +41,12 @@ enum DemoMode {
             engine.pipOn = true
         }
         engine.titles = [
-            TitleItem(style: .lowerThird, line1: "Nguyễn Văn A", line2: "Giám đốc Trung tâm Truyền hình", visible: true),
+            TitleItem(style: .lowerThird, line1: "Nguyễn Văn A", line2: L("Giám đốc Trung tâm Truyền hình"), visible: true),
             TitleItem(style: .scoreBug, line1: "VNPT", line2: "FPT", scoreA: 2, scoreB: 1, period: "H2",
                       position: CGPoint(x: 0.03, y: 0.03), scale: 0.9, visible: true,
-                      board: { var b = ScoreboardData(); b.homeSub = "Hà Nội"; b.awaySub = "TP.HCM"; b.homeColor = "#0A5BD3"
+                      board: { var b = ScoreboardData(); b.homeSub = L("Hà Nội"); b.awaySub = "TP.HCM"; b.homeColor = "#0A5BD3"
                                b.awayColor = "#E8641E"; b.compact = true; b.clockBase = 23 * 60 + 41; return b }()),
-            TitleItem(style: .ticker, line1: "Tin nhanh: DTDStudio — bàn trộn hình nhiều camera và phát trực tiếp RTMP · SRT · RTSP",
+            TitleItem(style: .ticker, line1: L("Tin nhanh: DTDStudio — bàn trộn hình nhiều camera và phát trực tiếp RTMP · SRT · RTSP"),
                       visible: true),
             TitleItem(style: .clock, position: CGPoint(x: 0.86, y: 0.04), visible: true)
         ]
@@ -76,7 +76,7 @@ enum DemoMode {
             UIColor(red: 0.98, green: 0.45, blue: 0.13, alpha: 1).setStroke()
             let p = UIBezierPath(rect: CGRect(x: 20, y: 20, width: 1880, height: 1040)); p.lineWidth = 16; p.stroke()
             UIColor(white: 0, alpha: 0.6).setFill(); UIBezierPath(rect: CGRect(x: 0, y: 980, width: 1920, height: 100)).fill()
-            NSAttributedString(string: "Nhà tài trợ: DTD Solution", attributes: [.font: UIFont.systemFont(ofSize: 48, weight: .bold),
+            NSAttributedString(string: L("Nhà tài trợ: DTD Solution"), attributes: [.font: UIFont.systemFont(ofSize: 48, weight: .bold),
                 .foregroundColor: UIColor.white]).draw(at: CGPoint(x: 60, y: 1000))
         }
         write(frame, .overlay, "Khung nhà tài trợ.png")

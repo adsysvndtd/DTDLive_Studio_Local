@@ -15,11 +15,17 @@ struct SettingsSheet: View {
 
 /// Settings content, shown both as a sheet and inline in the "Cài đặt" sidebar category.
 struct SettingsForm: View {
+    /// Access key of the web remote (part of the link); renewing it locks out old links.
+    @State private var remoteKey = ControlServer.accessKey
+
     @ObservedObject var engine: StudioEngine
     var onOpenOutputs: (() -> Void)? = nil
 
     var body: some View {
             Form {
+                Section(header: SettingsHeader("Gói DTDStudio")) {
+                    PlanSettingsRows()
+                }
                 Section(header: SettingsHeader("Phát trực tiếp")) {
                     if engine.outputs.isEmpty {
                         Text("Chưa có đích phát").foregroundStyle(.secondary)
@@ -92,12 +98,18 @@ struct SettingsForm: View {
                     Toggle("Khung an toàn trên PVW/PGM", isOn: $engine.showSafeGuides)
                     Toggle("Khung an toàn trên màn hình ngoài", isOn: $engine.externalSafeGuides)
                     Toggle("Thông số trên PGM", isOn: $engine.showMonitorInfo)
-                    if engine.externalDisplayConnected {
-                        Picker("Màn hình ngoài", selection: $engine.externalMode) {
-                            Text("Program").tag(StudioEngine.ExternalMode.program)
-                            Text("Multiview").tag(StudioEngine.ExternalMode.multiview)
-                        }
+                    Toggle("VU meter âm thanh trên PVW / PGM", isOn: $engine.showMonitorVU)
+                    Toggle("Luôn giữ màn hình sáng", isOn: $engine.keepScreenOn)
+                    Text("Tắt (tiết kiệm pin): màn hình chỉ luôn sáng khi đang phát / ghi; lúc khác iPad tự khoá theo Tự động khoá. Khi app ở nền hoặc màn hình tắt mà không phát, sau 15 giây app dừng camera, micro, xử lý hình và kết nối để không tốn pin; mở lại app là chạy tiếp.")
+                        .font(.caption2).foregroundStyle(DS.text3)
+                    Picker("Màn hình ngoài (USB‑C / HDMI)", selection: $engine.externalMode) {
+                        Text("PGM (chỉ hình phát)").tag(StudioEngine.ExternalMode.program)
+                        Text("Multiview").tag(StudioEngine.ExternalMode.multiview)
+                        Text("Phản chiếu màn iPad").tag(StudioEngine.ExternalMode.mirror)
                     }
+                    Toggle("VU meter trên hình PGM ra màn ngoài", isOn: $engine.externalVU)
+                    Text("Cắm màn hình / bộ chuyển USB‑C sang HDMI: DTDStudio tự xuất hình đã chọn ra màn ngoài (không phản chiếu màn iPad). Nếu iPad dùng màn ngoài làm màn mở rộng (Stage Manager), mở menu Multiview › Mở cửa sổ xuất hình rồi kéo cửa sổ sang màn ngoài.")
+                        .font(.caption2).foregroundStyle(DS.text3)
                 }
                 Section(header: SettingsHeader("Nhận camera: SRT · RTMP · RTSP · DTDLive")) {
                     IngestSettingsRows(ingest: engine.ingest)
@@ -140,7 +152,12 @@ struct SettingsForm: View {
                 }
                 Section(header: SettingsHeader("Điều khiển từ xa & ghép nối")) {
                     let ip = NetworkInfo.wifiIPv4() ?? "—"
-                    LabeledContent("Web remote", value: "http://\(ip):\(engine.controlPort)")
+                    let base = "http://\(ip):\(engine.controlPort)"
+                    remoteLinkRow("Web remote", "\(base)/?key=\(remoteKey)")
+                    remoteLinkRow("Bảng tỉ số (web)", "\(base)/scoreboard?key=\(remoteKey)")
+                    Button("Đổi key bảo mật (link cũ hết hiệu lực)", role: .destructive) {
+                        remoteKey = ControlServer.newAccessKey()
+                    }
                     LabeledContent("OSC (UDP)", value: "\(ip):8000")
                     LabeledContent("Ghép nối camera", value: "Bonjour _dtdstudio._tcp")
                     Toggle("Tự kết nối thiết bị tin cậy", isOn: Binding(get: { engine.pairing.autoAcceptTrusted }, set: { engine.pairing.autoAcceptTrusted = $0 }))
@@ -280,6 +297,21 @@ struct FacebookTargetPicker: View {
                     .font(.caption).foregroundStyle(.secondary)
             }
             if let error { Text(verbatim: error).font(.caption).foregroundStyle(.red) }
+        }
+    }
+}
+
+extension SettingsForm {
+    /// A web remote link (with its access key): selectable, copyable.
+    func remoteLinkRow(_ title: LocalizedStringKey, _ link: String) -> some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                Text(verbatim: link).font(.caption.monospaced()).foregroundStyle(.secondary).lineLimit(2).textSelection(.enabled)
+            }
+            Spacer(minLength: 8)
+            Button { UIPasteboard.general.string = link } label: { Image(systemName: "doc.on.doc") }
+                .buttonStyle(.borderless)
         }
     }
 }
