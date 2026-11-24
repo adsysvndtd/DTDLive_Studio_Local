@@ -130,6 +130,7 @@ final class CameraSource: NSObject, VideoSource {
         var zoom: Double = 1
         var maxZoom: Double = 1
         var autoFocus = true
+        var lockFocusOnProgram = true
         var lensPosition: Float = 0.5
         var exposureBias: Float = 0
         var minBias: Float = -2, maxBias: Float = 2
@@ -140,6 +141,27 @@ final class CameraSource: NSObject, VideoSource {
     }
 
     private(set) var controls = Controls()
+    private var onProgram = false
+    private var focusBeforeProgram: AVCaptureDevice.FocusMode?
+
+    func setOnProgram(_ on: Bool) {
+        onProgram = on
+        configure { d in
+            if on && controls.lockFocusOnProgram {
+                guard focusBeforeProgram == nil, d.focusMode != .locked, d.isFocusModeSupported(.locked) else { return }
+                focusBeforeProgram = d.focusMode
+                d.focusMode = .locked
+            } else if let previous = focusBeforeProgram {
+                focusBeforeProgram = nil
+                if d.isFocusModeSupported(previous) { d.focusMode = previous }
+            }
+        }
+    }
+
+    func setLockFocusOnProgram(_ on: Bool) {
+        controls.lockFocusOnProgram = on
+        setOnProgram(onProgram)
+    }
 
     private var device: AVCaptureDevice? { AVCaptureDevice(uniqueID: deviceID) }
 
@@ -156,7 +178,7 @@ final class CameraSource: NSObject, VideoSource {
         controls.exposureBias = d.exposureTargetBias
         controls.hasTorch = d.hasTorch
         controls.torch = d.torchMode == .on
-        controls.autoFocus = d.focusMode == .continuousAutoFocus
+        controls.autoFocus = (focusBeforeProgram ?? d.focusMode) == .continuousAutoFocus
         controls.lensPosition = d.lensPosition
         controls.whiteBalanceLocked = d.whiteBalanceMode == .locked
     }
@@ -167,14 +189,17 @@ final class CameraSource: NSObject, VideoSource {
     }
 
     func setAutoFocus(_ on: Bool) {
+        focusBeforeProgram = nil
         configure { d in
             if on, d.isFocusModeSupported(.continuousAutoFocus) { d.focusMode = .continuousAutoFocus }
             else if !on, d.isLockingFocusWithCustomLensPositionSupported { d.setFocusModeLocked(lensPosition: d.lensPosition) }
         }
         controls.autoFocus = on
+        setOnProgram(onProgram)
     }
 
     func setLensPosition(_ p: Float) {
+        focusBeforeProgram = nil
         configure { d in if d.isLockingFocusWithCustomLensPositionSupported { d.setFocusModeLocked(lensPosition: max(0, min(1, p))) } }
         controls.lensPosition = p; controls.autoFocus = false
     }

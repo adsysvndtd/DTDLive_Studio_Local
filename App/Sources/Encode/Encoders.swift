@@ -232,6 +232,26 @@ extension CMSampleBuffer {
     }
 }
 
+/// Audio sample clock, re-anchored whenever capture skips or moves backwards.
+struct AudioCaptureClock {
+    private var firstSeconds: Double?
+    private var nextInputSeconds: Double?
+    private var samplesOut: Int64 = 0
+
+    mutating func accept(seconds: Double, frames: Int, sampleRate: Double) -> Bool {
+        let discontinuity = nextInputSeconds.map { abs(seconds - $0) > 0.1 } ?? false
+        if firstSeconds == nil || discontinuity { firstSeconds = seconds; samplesOut = 0 }
+        nextInputSeconds = seconds + Double(frames) / sampleRate
+        return discontinuity
+    }
+
+    mutating func nextPacket(sampleRate: Double) -> Double {
+        let seconds = (firstSeconds ?? 0) + Double(samplesOut) / sampleRate
+        samplesOut += 1024
+        return seconds
+    }
+}
+
 /// PCM -> AAC-LC (one shared encoder). Emits AVAudioCompressedBuffer with exactly one
 /// 1024-sample access unit each, stamped in host time.
 final class AudioEncoder: @unchecked Sendable {
@@ -240,8 +260,8 @@ final class AudioEncoder: @unchecked Sendable {
     let outputFormat: AVAudioFormat
     private let converter: AVAudioConverter
     private var pending: [AVAudioPCMBuffer] = []
-    private var firstHostSeconds: Double?
-    private var samplesOut: Int64 = 0
+    private var clock = AudioCaptureClock()
+    private let audioLock = NSLock()
 
     init(input: AVAudioFormat, bitrate: Int) {
         // mFormatFlags must carry the MPEG-4 object type (AAC-LC = 2): RTMP muxers build the AAC
@@ -257,7 +277,12 @@ final class AudioEncoder: @unchecked Sendable {
     }
 
     func append(_ pcm: AVAudioPCMBuffer, when: AVAudioTime) {
-        if firstHostSeconds == nil { firstHostSeconds = AVAudioTime.seconds(forHostTime: when.hostTime) }
+        audioLock.lock(); defer { audioLock.unlock() }
+        let inputSeconds = AVAudioTime.seconds(forHostTime: when.hostTime)
+        if clock.accept(seconds: inputSeconds, frames: Int(pcm.frameLength), sampleRate: pcm.format.sampleRate) {
+            converter.reset()
+            pending.removeAll()
+        }
         pending.append(pcm)
         while true {
             let out = AVAudioCompressedBuffer(format: outputFormat, packetCapacity: 1, maximumPacketSize: max(converter.maximumOutputPacketSize, 1536))
@@ -268,8 +293,7 @@ final class AudioEncoder: @unchecked Sendable {
                 return self.pending.removeFirst()
             }
             guard status == .haveData, out.packetCount > 0 else { return }
-            let seconds = (firstHostSeconds ?? 0) + Double(samplesOut) / outputFormat.sampleRate
-            samplesOut += 1024
+            let seconds = clock.nextPacket(sampleRate: outputFormat.sampleRate)
             onEncoded?(out, AVAudioTime(hostTime: AVAudioTime.hostTime(forSeconds: seconds)))
         }
     }

@@ -11,7 +11,7 @@ WORK="${WORK:-$ROOT/build-ios}"
 IOS_MIN="${IOS_MIN:-13.0}"
 SRT_TAG="${SRT_TAG:-v1.5.7}"
 MBEDTLS_TAG="${MBEDTLS_TAG:-v3.6.7}"
-JOBS="$(sysctl -n hw.ncpu)"
+JOBS="${SRTKIT_BUILD_JOBS:-$(sysctl -n hw.ncpu 2>/dev/null || printf '4')}"
 
 mkdir -p "$WORK/src"
 cd "$WORK/src"

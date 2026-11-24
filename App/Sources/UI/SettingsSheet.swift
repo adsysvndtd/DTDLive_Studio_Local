@@ -250,7 +250,17 @@ struct PlatformAccountRow: View {
                     Text(verbatim: account).foregroundStyle(.secondary).lineLimit(1)
                     Button("Đăng xuất", role: .destructive) { live.signOut(platform) }
                 } else {
-                    Button("Đăng nhập") { signIn() }
+                    Button { signIn() } label: {
+                        Text("Đăng nhập")
+                            .font(.subheadline.weight(.semibold))
+                            .lineLimit(1)
+                            .padding(.horizontal, 10)
+                            .frame(minHeight: 44)
+                            .background(Color.accentColor.opacity(0.12), in: RoundedRectangle(cornerRadius: 8))
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(Color.accentColor)
+                    .fixedSize(horizontal: true, vertical: false)
                 }
             }
             if platform == .facebook && signedIn { FacebookTargetPicker() }

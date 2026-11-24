@@ -28,10 +28,11 @@ enum OutputProtocol: String, Codable, CaseIterable, Identifiable {
 }
 
 enum OutputStatus: Equatable {
-    case idle, connecting, live, reconnecting(Int), error(String)
+    case idle, connecting, live, finishing, reconnecting(Int), error(String)
     var text: String {
         switch self {
         case .idle: return L("Dừng")
+        case .finishing: return L("Đang hoàn tất")
         case .connecting: return L("Đang kết nối")
         case .live: return "LIVE"
         case .reconnecting(let n): return L("Kết nối lại") + " (\(n))"
@@ -330,20 +331,28 @@ final class RTSPOutput: OutputTarget, @unchecked Sendable {
 
 // MARK: - Local MP4 recording (passthrough, no re-encode)
 
-final class RecordOutput: OutputTarget, @unchecked Sendable {
+actor RecordOutput: OutputTarget {
     let config: OutputConfig
     private var writer: AVAssetWriter?
     private var videoIn: AVAssetWriterInput?
     private var audioIn: AVAssetWriterInput?
     private var started = false
     private var audioFormat: CMAudioFormatDescription?
+    private var closing: Task<Void, Never>?
+    private var failure: String?
+    private var sessionStart: CMTime?
+    private(set) var savedURL: URL?
+
+    func recordingError() -> String? { failure }
+    func fail(_ reason: String) { if failure == nil { failure = reason } }
+    private func writerFailure(_ fallback: String) -> String { writer?.error?.localizedDescription ?? fallback }
 
     init(config: OutputConfig) { self.config = config }
 
     func connect(_ desc: StreamDescription) async throws {
         let dir = MediaLibrary.directory(.movie)
-        let df = DateFormatter(); df.dateFormat = "yyyyMMdd-HHmmss"
-        let url = dir.appendingPathComponent("DTD-\(df.string(from: Date())).mp4")
+        let url = RecordingFileName.next(in: dir)
+        closing = nil; failure = nil; savedURL = nil; started = false; sessionStart = nil
         let w = try AVAssetWriter(outputURL: url, fileType: .mp4)
         w.shouldOptimizeForNetworkUse = false
         w.movieFragmentInterval = CMTime(seconds: 2, preferredTimescale: 600) // crash-safe fragments
@@ -359,41 +368,80 @@ final class RecordOutput: OutputTarget, @unchecked Sendable {
         audioFormat = afd
         let a = AVAssetWriterInput(mediaType: .audio, outputSettings: nil, sourceFormatHint: afd)
         a.expectsMediaDataInRealTime = true
+        guard afd != nil, w.canAdd(v), w.canAdd(a) else {
+            throw NSError(domain: "DTDRecording", code: 1, userInfo: [NSLocalizedDescriptionKey: L("Không tạo được track ghi hình/âm thanh")])
+        }
         w.add(v); w.add(a)
-        w.startWriting()
+        guard w.startWriting() else {
+            throw w.error ?? NSError(domain: "DTDRecording", code: 2, userInfo: [NSLocalizedDescriptionKey: L("Không mở được file ghi")])
+        }
         writer = w; videoIn = v; audioIn = a
     }
 
     func disconnect() async {
-        videoIn?.markAsFinished(); audioIn?.markAsFinished()
-        await writer?.finishWriting()
-        writer = nil; started = false
+        if let closing { await closing.value; return }
+        guard let w = writer else { fail(L("Chưa có khung hình để lưu")); return }
+        // Detach inputs before the first await: no packet can reach a closing writer.
+        let v = videoIn, a = audioIn
+        writer = nil; videoIn = nil; audioIn = nil
+        let hadVideo = started
+        started = false
+        let task = Task { [weak self] in
+            if w.status == .writing, hadVideo {
+                v?.markAsFinished(); a?.markAsFinished()
+                await w.finishWriting()
+            } else if w.status == .writing {
+                w.cancelWriting()
+            }
+            await self?.finished(w, hadVideo: hadVideo)
+        }
+        closing = task
+        await task.value
     }
 
-    func isHealthy() async -> Bool { writer?.status == .writing }
+    private func finished(_ w: AVAssetWriter, hadVideo: Bool) {
+        if w.status == .completed {
+            savedURL = w.outputURL
+            OutputLog.shared.add(config.id, LF("Đã lưu: %@", w.outputURL.lastPathComponent))
+        } else {
+            fail(w.error?.localizedDescription ?? L(hadVideo ? "Không hoàn tất được file ghi" : "Chưa có khung hình để lưu"))
+        }
+    }
+
+    func isHealthy() async -> Bool { failure == nil && writer?.status == .writing }
 
     func send(video: CMSampleBuffer) async {
-        guard let w = writer, let v = videoIn else { return }
+        guard failure == nil, let w = writer, let v = videoIn else { return }
         if !started {
             guard video.isKeyframe else { return }
-            w.startSession(atSourceTime: video.presentationTimeStamp); started = true
+            w.startSession(atSourceTime: video.presentationTimeStamp); sessionStart = video.presentationTimeStamp; started = true
         }
-        if v.isReadyForMoreMediaData { v.append(video) }
+        guard v.isReadyForMoreMediaData else {
+            fail(L("Ổ lưu trữ không theo kịp: đã dừng REC để tránh ghi thiếu khung hình")); return
+        }
+        if !v.append(video) { fail(writerFailure(L("Không ghi được khung hình"))) }
     }
 
     func send(audio: AVAudioCompressedBuffer, when: AVAudioTime) async {
-        guard started, let a = audioIn, a.isReadyForMoreMediaData, let fd = audioFormat, audio.packetCount > 0 else { return }
+        guard failure == nil, started, let a = audioIn, let fd = audioFormat, audio.packetCount > 0 else { return }
+        guard a.isReadyForMoreMediaData else {
+            fail(L("Ổ lưu trữ không theo kịp: đã dừng REC để tránh mất âm thanh")); return
+        }
         let pts = CMTime(seconds: AVAudioTime.seconds(forHostTime: when.hostTime), preferredTimescale: 48000)
+        if let sessionStart, pts < sessionStart { return }
         var sb: CMSampleBuffer?
         var bb: CMBlockBuffer?
         let len = Int(audio.byteLength)
-        CMBlockBufferCreateWithMemoryBlock(allocator: nil, memoryBlock: nil, blockLength: len, blockAllocator: nil,
+        let blockStatus = CMBlockBufferCreateWithMemoryBlock(allocator: nil, memoryBlock: nil, blockLength: len, blockAllocator: nil,
                                            customBlockSource: nil, offsetToData: 0, dataLength: len, flags: 0, blockBufferOut: &bb)
-        guard let bb else { return }
-        CMBlockBufferReplaceDataBytes(with: audio.data, blockBuffer: bb, offsetIntoDestination: 0, dataLength: len)
-        CMAudioSampleBufferCreateReadyWithPacketDescriptions(allocator: nil, dataBuffer: bb, formatDescription: fd,
+        guard blockStatus == noErr, let bb else { fail(L("Không cấp được bộ đệm âm thanh để ghi")); return }
+        guard CMBlockBufferReplaceDataBytes(with: audio.data, blockBuffer: bb, offsetIntoDestination: 0, dataLength: len) == noErr else {
+            fail(L("Không sao chép được âm thanh để ghi")); return
+        }
+        let sampleStatus = CMAudioSampleBufferCreateReadyWithPacketDescriptions(allocator: nil, dataBuffer: bb, formatDescription: fd,
                                                              sampleCount: Int(audio.packetCount), presentationTimeStamp: pts,
                                                              packetDescriptions: audio.packetDescriptions, sampleBufferOut: &sb)
-        if let sb { a.append(sb) }
+        guard sampleStatus == noErr, let sb else { fail(L("Không tạo được gói âm thanh để ghi")); return }
+        if !a.append(sb) { fail(writerFailure(L("Không ghi được âm thanh"))) }
     }
 }

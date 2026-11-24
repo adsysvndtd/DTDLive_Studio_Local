@@ -69,66 +69,108 @@ final class IngestRouter: @unchecked Sendable {
 }
 
 
+enum DecodedFrameTiming {
+    static func presentationTime(_ buffer: CVPixelBuffer) -> Double? {
+        guard let value = CVBufferCopyAttachment(buffer, "SRTKit.DecodedPresentationTimeSeconds" as CFString, nil) as? NSNumber,
+              value.doubleValue.isFinite else { return nil }
+        return value.doubleValue
+    }
+}
+
 /// Plays decoded frames out at their stream timestamps (plus `delay`) instead of the moment they
 /// arrive, so network bursts don't show as stutter. Re-anchors on gaps, jumps or when it falls behind.
 final class FramePacer: @unchecked Sendable {
     let store: FrameStore
     var delay: Double = 0.15
     private let queue = DispatchQueue(label: "ingest.pacer", qos: .userInteractive)
-    private var anchorHost: Double?
-    private var anchorMedia: Double = 0
-    private var lastMedia: Double = -1
+    private var clock = FramePlayoutClock()
+    private var arrivalClock = FrameArrivalClock()
+    private var nextSequence: UInt64 = 0
+    private var displayedSequence: UInt64 = 0
 
     init(store: FrameStore) { self.store = store }
 
-    // Sources without timestamps (DTDLive / SRT callbacks): a steady clock rebuilt from arrival times.
-    private var lastArrival: Double = 0
-    private var synthMedia: Double = 0
-    private var interval: Double = 1.0 / 30
-    private var synthAnchorHost: Double = 0
-
-    /// For frames that arrive without a stream timestamp: estimates the camera's frame interval from the
-    /// average spacing of arrivals and plays frames on that even beat (a slow loop keeps it locked to the
-    /// real arrival rate), so Wi-Fi bursts don't show as stutter.
+    /// Prefer original decoder PTS. Arrival estimation is only for older bridges
+    /// without timestamp metadata; network bursts must not alter the camera clock.
     func pushArrival(_ pb: CVPixelBuffer) {
+        if let media = DecodedFrameTiming.presentationTime(pb) {
+            push(pb, media: media)
+            return
+        }
         let now = HostClock.now
         queue.async { [self] in
-            let d = now - lastArrival
-            if lastArrival == 0 || d > 1.0 {
-                synthMedia = 0; synthAnchorHost = now
-            } else {
-                if d > 0.004, d < 0.2 { interval = interval * 0.97 + d * 0.03 }
-                interval = min(1.0 / 12, max(1.0 / 61, interval))
-                synthMedia += interval
-                // phase-lock: nudge the synthetic clock toward real arrival time (1 % per frame)
-                let err = (now - synthAnchorHost) - synthMedia
-                synthMedia += err * 0.01
-            }
-            lastArrival = now
-            schedule(pb, media: synthMedia, arrived: now)
+            schedule(pb, media: arrivalClock.media(at: now), arrived: now)
         }
     }
 
-    /// `media` = stream time in seconds.
     func push(_ pb: CVPixelBuffer, media: Double) {
         let now = HostClock.now
         queue.async { [self] in schedule(pb, media: media, arrived: now) }
     }
 
     private func schedule(_ pb: CVPixelBuffer, media: Double, arrived now: Double) {
-        do {
-            // new stream / backwards / big jump → re-anchor on this frame
-            if anchorHost == nil || media < lastMedia || media - lastMedia > 1.0 {
-                anchorHost = now; anchorMedia = media
-            }
-            lastMedia = media
-            var due = anchorHost! + (media - anchorMedia) + delay
-            if due < now - 0.25 {           // fell behind (decoder stall): pull the clock in
-                anchorHost = now - (media - anchorMedia); due = now + delay
-            }
-            let wait = due - HostClock.now
-            if wait <= 0.002 { store.put(pb) }
-            else { queue.asyncAfter(deadline: .now() + wait) { [store] in store.put(pb) } }
+        guard let timing = clock.schedule(media: media, arrived: now, delay: delay) else { return }
+        nextSequence &+= 1
+        let sequence = nextSequence
+        let publish: @Sendable () -> Void = { [weak self] in
+            guard let self, self.clock.generation == timing.generation,
+                  sequence > self.displayedSequence else { return }
+            self.displayedSequence = sequence
+            self.store.put(pb)
         }
+        let wait = timing.due - HostClock.now
+        if wait <= 0 { publish() }
+        else { queue.asyncAfter(deadline: .now() + wait, execute: publish) }
+    }
+}
+
+/// Pure timing state, independent of buffers, so burst/reconnect behaviour can be tested.
+struct FrameArrivalClock {
+    private var lastArrival: Double?
+    private var windowStart = 0.0
+    private var count = 0
+    private var mediaTime = 0.0
+    private var interval = 1.0 / 30
+
+    mutating func media(at now: Double) -> Double {
+        guard let last = lastArrival, now >= last, now - last <= 1 else {
+            lastArrival = now; windowStart = now; count = 0; mediaTime = 0
+            interval = 1.0 / 30
+            return 0
+        }
+        lastArrival = now
+        count += 1
+        let elapsed = now - windowStart
+        if elapsed >= 0.5 {
+            let measured = min(1.0 / 12, max(1.0 / 61, elapsed / Double(count)))
+            interval = interval * 0.5 + measured * 0.5
+            windowStart = now; count = 0
+        }
+        mediaTime += interval
+        return mediaTime
+    }
+}
+
+struct FramePlayoutClock {
+    private var anchorHost: Double?
+    private var anchorMedia = 0.0
+    private var lastMedia: Double?
+    private(set) var generation: UInt64 = 0
+
+    mutating func schedule(media: Double, arrived now: Double, delay: Double) -> (due: Double, generation: UInt64)? {
+        guard media.isFinite, now.isFinite, delay.isFinite else { return nil }
+        let buffer = max(0, delay)
+        var reset = anchorHost == nil
+        if let lastMedia { reset = reset || media < lastMedia || media - lastMedia > 1 }
+        var due = (anchorHost ?? now) + media - anchorMedia + buffer
+        // Bound accumulated clock drift in both directions, not only late frames.
+        reset = reset || due < now - 0.1 || due > now + buffer + 0.1
+        if reset {
+            generation &+= 1
+            anchorHost = now; anchorMedia = media
+            due = now + buffer
+        }
+        lastMedia = media
+        return (due, generation)
     }
 }

@@ -1,6 +1,7 @@
 // DTD Studio: Objective-C bridge for SrtIngestServer — one SRT port, many cameras keyed by streamid.
 // Video (H.264 / HEVC) is decoded here with VideoToolbox; AAC is handed to Swift raw with its ASC.
 #import "SRTKit.h"
+#import "DecodedFrameTiming.h"
 #import <VideoToolbox/VideoToolbox.h>
 
 #include "srtkit/SrtIngestServer.h"
@@ -56,8 +57,11 @@ public:
         if (CMBlockBufferReplaceDataBytes(avcc.data(), block, 0, size) == noErr &&
             CMSampleBufferCreateReady(nullptr, block, format_, 1, 1, &timing, 1, &size, &sample) == noErr) {
             OSStatus st = VTDecompressionSessionDecodeFrameWithOutputHandler(session_, sample, 0, nullptr,
-                ^(OSStatus result, VTDecodeInfoFlags, CVImageBufferRef image, CMTime, CMTime) {
-                    if (result == noErr && image) onFrame(image);
+                ^(OSStatus result, VTDecodeInfoFlags, CVImageBufferRef image, CMTime presentationTime, CMTime) {
+                    if (result == noErr && image) {
+                        SRTKAttachPresentationTime(image, presentationTime);
+                        onFrame(image);
+                    }
                 });
             if (st != noErr) { VTDecompressionSessionInvalidate(session_); CFRelease(session_); session_ = nullptr; }
             CFRelease(sample);

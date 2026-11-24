@@ -13,6 +13,12 @@ final class FrameStore: @unchecked Sendable {
     private var seq: UInt64 = 0
     private var monitorTargets: [UUID: CGSize] = [:]
 
+    var hasVisibleMonitor: Bool {
+        os_unfair_lock_lock(&lock)
+        defer { os_unfair_lock_unlock(&lock) }
+        return !monitorTargets.isEmpty
+    }
+
     /// A view registers drawable pixels, not points; multiple displays share the largest request.
     func setMonitorTarget(_ size: CGSize?, for id: UUID) {
         os_unfair_lock_lock(&lock)

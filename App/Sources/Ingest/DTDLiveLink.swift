@@ -92,6 +92,9 @@ final class DTDLiveLink: NSObject, NetServiceDelegate, ObservableObject {
         control = nil
         for (_, cam) in cameras { let r = cam.receiver; DispatchQueue.global(qos: .utility).async { r.stop() } }
         cameras.removeAll()
+        pendingMedia.removeAll()
+        statsTimer?.invalidate(); statsTimer = nil
+        lastStats.removeAll()
         listening = false
         pairPort = 0; cameraPorts = []
     }
@@ -104,14 +107,20 @@ final class DTDLiveLink: NSObject, NetServiceDelegate, ObservableObject {
 
     private func authorize(request: String, bond: String, peer: String) {
         pairing?.removeExternal(dtdLiveRequest: request)
-        if let cam = cameras[bond], cam.port > 0 {
-            // known camera reconnecting: same receiver, same input
-            control?.mediaReady(request, port: cam.port)
+        if let cam = cameras[bond] {
+            // Reuse the input, but accept a camera name changed on DTDLive since pairing.
+            let name = Self.pretty(peer)
+            engine?.renameIngestSource(cam.source, name: name)
+            refreshPorts()
+            if cam.port > 0 { control?.mediaReady(request, port: cam.port) }
+            else { pendingMedia[bond] = request }
             return
         }
         guard let engine else { return }
         let key = "dtdlive:" + bond.prefix(12)
-        let source = IngestSource(name: Self.pretty(peer), kind: .srt, ingestKey: key)
+        let source = engine.sources.compactMap { $0 as? IngestSource }.first { $0.ingestKey == key }
+            ?? IngestSource(name: Self.pretty(peer), kind: .srt, ingestKey: key)
+        engine.renameIngestSource(source, name: Self.pretty(peer))
         // Audio from the phone's mic: AAC in the same SRT stream → decoder → its own mixer channel.
         let sink = IngestRouter.Sink(frames: source.frames, onAudio: engine.audioFeed(sourceID: source.id, name: source.name))
         router.set(key, sink)
@@ -120,23 +129,27 @@ final class DTDLiveLink: NSObject, NetServiceDelegate, ObservableObject {
         // Wi-Fi delivers frames in bursts: play them on an even beat (~0.1 s buffer) instead of on arrival.
         let pacer = FramePacer(store: frames)
         pacer.delay = 0.1
+        let receiverSession = session
         let rx = SRTKCameraReceiver(passphrase: String(bond.suffix(32)), latencyMs: Self.latencyMs, audioBufferMs: 100,
                                     onListening: { [weak self] port in
             DispatchQueue.main.async {
-                guard let self, var cam = self.cameras[bond] else { return }
+                guard let self, self.session == receiverSession, var cam = self.cameras[bond] else { return }
                 cam.port = port; self.cameras[bond] = cam
                 self.refreshPorts()
                 if !self.bonds.contains(bond) { self.bonds.append(bond) }
                 if let req = self.pendingMedia.removeValue(forKey: bond) { self.control?.mediaReady(req, port: port) }
             }
         }, onState: { state, _ in
-            if state != .connected { frames.clear() }
-            DispatchQueue.main.async { [weak self] in source.setOnline(state == .connected); self?.refreshPorts() }
+            DispatchQueue.main.async { [weak self] in
+                guard let self, self.session == receiverSession else { return }
+                source.setOnline(state == .connected)
+                self.refreshPorts()
+            }
         }, onFrame: { pb in pacer.pushArrival(pb) }, onAudio: { aac, asc, rate, channels, _ in
             sink.aac([UInt8](aac), asc: [UInt8](asc), sampleRate: rate, channels: channels)
         })
         cameras[bond] = Camera(receiver: rx, port: 0, source: source)
-        engine.add(source)
+        if !engine.sources.contains(where: { $0.id == source.id }) { engine.add(source) }
         rx.approved = true
         rx.start()
         startStats()
@@ -185,10 +198,35 @@ final class DTDLiveLink: NSObject, NetServiceDelegate, ObservableObject {
         Task { @MainActor in self.listening = false }
     }
 
-    /// "iPhone-DTDLive-1A2B3C4D" -> "DTDLive 1A2B"
+    /// Preserve operator labels (CAM1, CAM2, etc.). Only shorten the legacy generated device name.
     static func pretty(_ peer: String) -> String {
-        let tail = peer.split(separator: "-").last.map(String.init) ?? peer
-        return "DTDLive " + tail.prefix(4)
+        let name = peer.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !name.isEmpty else { return "DTDLive" }
+        // DTDLive sourceAlias is sent as n1.<unpadded base64url UTF-8>.
+        if name.hasPrefix("n1.") {
+            let payload = String(name.dropFirst(3))
+            let allowed = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"
+            if !payload.isEmpty, payload.count % 4 != 1,
+               payload.allSatisfy({ allowed.contains($0) }) {
+                var base64 = payload.replacingOccurrences(of: "-", with: "+").replacingOccurrences(of: "_", with: "/")
+                base64 += String(repeating: "=", count: (4 - base64.count % 4) % 4)
+                if let data = Data(base64Encoded: base64), let decoded = String(data: data, encoding: .utf8) {
+                    let alias = decoded.trimmingCharacters(in: .whitespacesAndNewlines)
+                    if !alias.isEmpty { return alias }
+                }
+            }
+            // Malformed/unknown payloads remain readable and never break pairing.
+            return name
+        }
+        let legacyPrefixes = ["iPhone-DTDLive-", "iPad-DTDLive-", "DTDLive-"]
+        for prefix in legacyPrefixes where name.hasPrefix(prefix) {
+            let suffix = String(name.dropFirst(prefix.count))
+            // Legacy instances use an eight-character hex ID, not an operator's camera label.
+            if suffix.count == 8 && suffix.allSatisfy({ $0.isHexDigit }) {
+                return "DTDLive " + suffix.prefix(4)
+            }
+        }
+        return name
     }
 }
 

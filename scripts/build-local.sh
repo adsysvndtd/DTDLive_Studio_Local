@@ -20,11 +20,15 @@ command -v brew >/dev/null || { echo "Cài Homebrew: https://brew.sh rồi chạ
 command -v cmake >/dev/null || brew install cmake
 command -v xcodegen >/dev/null || brew install xcodegen
 
-if [ ! -d Vendor/srtkit/SRTKit.xcframework ]; then
+SRTKIT_DEVICE_LIB=Vendor/srtkit/SRTKit.xcframework/ios-arm64/libSRTKit.a
+if [ ! -f "$SRTKIT_DEVICE_LIB" ] ||
+   [ -n "$(find Vendor/srtkit/ios Vendor/srtkit/src Vendor/srtkit/include -type f -newer "$SRTKIT_DEVICE_LIB" -print -quit 2>/dev/null)" ] ||
+   [ Vendor/srtkit/CMakeLists.txt -nt "$SRTKIT_DEVICE_LIB" ] ||
+   [ Vendor/srtkit/scripts/build-ios.sh -nt "$SRTKIT_DEVICE_LIB" ]; then
   say "Build SRTKit (libsrt + mbedTLS) — lần đầu mất khoảng 5–10 phút"
   IOS_MIN=17.0 SRTKIT_LINK_LIBSRT=0 ./Vendor/srtkit/scripts/build-ios.sh
 else
-  say "SRTKit.xcframework đã có — bỏ qua (xoá thư mục đó để build lại)"
+  say "SRTKit.xcframework đã khớp source — bỏ qua"
 fi
 
 say "Tạo chuỗi song ngữ (vi/en)"
@@ -41,10 +45,13 @@ fi
 if [ "${1:-}" = "ipa" ]; then
   say "Build bản unsigned (iOS device)"
   mkdir -p build
-  xcodebuild -project DTDStudio.xcodeproj -scheme DTDStudio -configuration Release \
+  if ! xcodebuild -project DTDStudio.xcodeproj -scheme DTDStudio -configuration Release \
     -destination 'generic/platform=iOS' -derivedDataPath build/dd \
     CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
-    build 2>&1 | tee build/build.log | grep -E "error:|warning: unre|BUILD (SUCCEEDED|FAILED)" || true
+    build 2>&1 | tee build/build.log | awk '/error:|warning: unre|BUILD (SUCCEEDED|FAILED)/'; then
+    echo "Build lỗi — xem build/build.log. Không đóng gói app cũ thành IPA mới." >&2
+    exit 1
+  fi
   APP=$(find build/dd/Build/Products/Release-iphoneos -maxdepth 1 -name "*.app" | head -1)
   if [ -n "$APP" ]; then
     rm -rf build/Payload && mkdir -p build/Payload && cp -R "$APP" build/Payload/

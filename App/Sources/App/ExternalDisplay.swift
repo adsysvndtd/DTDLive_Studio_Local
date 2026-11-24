@@ -80,7 +80,7 @@ struct ExternalProgramView: View {
             Color.black
             switch engine.externalMode {
             case .program:
-                MonitorView(store: engine.switcher.programMonitor, maxFPS: 60)
+                MonitorView(store: engine.switcher.programMonitor, maxFPS: engine.format.fps)
                     .aspectRatio(CGFloat(engine.format.width) / CGFloat(engine.format.height), contentMode: .fit)
                     .overlay { if engine.externalSafeGuides { SafeGuides() } }
                     .overlay(alignment: .trailing) {
@@ -122,9 +122,9 @@ struct MultiviewGrid: View {
             let big = (W - gap) / 2, small = (W - gap * CGFloat(cols - 1)) / CGFloat(cols)
             VStack(spacing: gap) {
                 HStack(spacing: gap) {
-                    tile(store: engine.switcher.previewMonitor, label: "PVW", border: DS.pvw, width: big, fps: 30)
+                    tile(store: engine.switcher.previewMonitor, label: "PVW", border: DS.pvw, width: big, fps: engine.format.fps)
                         .overlay(alignment: .leading) { vu(engine.audioChannelID(engine.previewID), preFader: true, leading: true, small: false) }
-                    tile(store: engine.switcher.programMonitor, label: "PGM", border: DS.pgm, width: big, fps: 30)
+                    tile(store: engine.switcher.programMonitor, label: "PGM", border: DS.pgm, width: big, fps: engine.format.fps)
                         .overlay(alignment: .trailing) { vu(nil, preFader: false, leading: false, small: false) }
                 }
                 ForEach(0..<rows, id: \.self) { r in

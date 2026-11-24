@@ -634,7 +634,7 @@ struct SourcePanel: View {
             : engine.sources.first { $0.id == id }?.frames
         return ZStack {
             Color.black
-            if let store { MonitorView(store: store, maxFPS: 15) }
+            if let store { MonitorView(store: store, maxFPS: engine.format.fps) }
         }
         .aspectRatio(CGFloat(engine.format.width) / CGFloat(max(engine.format.height, 1)), contentMode: .fit)
         .clipShape(RoundedRectangle(cornerRadius: DS.radius))
@@ -1000,12 +1000,20 @@ struct ReplayEditorView: View {
     private var recordingsList: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text("Bản ghi").textCase(.uppercase).font(DS.fHeader).foregroundStyle(DS.text2)
+            HStack {
+                Text("Tên bản ghi")
+                Spacer(minLength: 0)
+                Text("Ngày tạo").frame(width: 112, alignment: .leading)
+            }
+            .font(.system(size: 10, weight: .semibold)).foregroundStyle(DS.text2)
+            .padding(.horizontal, 6)
             ScrollView {
                 VStack(spacing: 3) {
                     recordRow(icon: "dot.radiowaves.left.and.right", title: L("Bộ đệm replay (Program)"),
                               selected: editor.material == .buffer) { editor.loadBuffer(engine.replayBuffer) }
                     ForEach(library.list(.movie), id: \.self) { u in
-                        recordRow(icon: "film", title: u.deletingPathExtension().lastPathComponent,
+                        recordRow(icon: "film", title: RecordingFileName.displayName(u),
+                                  createdAt: (try? u.resourceValues(forKeys: [.creationDateKey]))?.creationDate,
                                   selected: editor.material == .file(u)) { editor.loadFile(u) }
                     }
                 }
@@ -1016,12 +1024,21 @@ struct ReplayEditorView: View {
         .overlay(Rectangle().stroke(DS.stroke))
     }
 
-    private func recordRow(icon: String, title: String, selected: Bool, action: @escaping () -> Void) -> some View {
+    private static let recordDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd/MM/yy HH:mm:ss"
+        return formatter
+    }()
+
+    private func recordRow(icon: String, title: String, createdAt: Date? = nil, selected: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             HStack(spacing: 6) {
                 Image(systemName: icon).font(.system(size: 11)).frame(width: 14)
                 Text(verbatim: title).font(.system(size: 12, weight: .semibold)).lineLimit(1)
                 Spacer(minLength: 0)
+                Text(createdAt.map { Self.recordDateFormatter.string(from: $0) } ?? "—")
+                    .font(.system(size: 10, design: .monospaced)).lineLimit(1)
+                    .frame(width: 112, alignment: .leading)
             }
             .padding(.horizontal, 6).frame(height: 26)
             .foregroundStyle(selected ? .black : .white)
@@ -1136,6 +1153,7 @@ struct CameraControlRows: View {
                 LabeledSlider(title: "Zoom", value: Binding(get: { c.zoom }, set: { c.zoom = $0; camera.setZoom($0) }),
                               range: 1...c.maxZoom) { String(format: "%.1f×", $0) }
             }
+            Toggle("Khóa nét khi lên PGM", isOn: Binding(get: { c.lockFocusOnProgram }, set: { c.lockFocusOnProgram = $0; camera.setLockFocusOnProgram($0) }))
             Toggle("Lấy nét tự động", isOn: Binding(get: { c.autoFocus }, set: { c.autoFocus = $0; camera.setAutoFocus($0) }))
             if !c.autoFocus {
                 LabeledSlider(title: "Lấy nét (gần → xa)", value: Binding(get: { Double(c.lensPosition) }, set: { c.lensPosition = Float($0); camera.setLensPosition(Float($0)) }),

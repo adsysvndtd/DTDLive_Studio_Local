@@ -23,6 +23,36 @@ enum LibraryKind: String, CaseIterable, Identifiable {
     }
 }
 
+/// Short recording names with a process-wide reservation to cover simultaneous REC outputs.
+enum RecordingFileName {
+    private static let lock = NSLock()
+    private static var reserved: Set<URL> = []
+
+    static func next(in directory: URL, date: Date = Date()) -> URL {
+        lock.lock(); defer { lock.unlock() }
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyyMMdd-HHmmss"
+        let base = "DTD-" + formatter.string(from: date)
+        var number = 1
+        var url = directory.appendingPathComponent(base + ".mp4")
+        while reserved.contains(url) || FileManager.default.fileExists(atPath: url.path) {
+            number += 1
+            url = directory.appendingPathComponent(base + "-\(number).mp4")
+        }
+        reserved.insert(url)
+        return url
+    }
+
+    /// Older recordings retain their actual URL; only hide the generated UUID in the list.
+    static func displayName(_ url: URL) -> String {
+        let name = url.deletingPathExtension().lastPathComponent
+        guard name.hasPrefix("DTD-"), name.count == 56,
+              UUID(uuidString: String(name.suffix(36))) != nil else { return name }
+        return String(name.prefix(19))
+    }
+}
+
 @MainActor
 final class MediaLibrary: ObservableObject {
     @Published private(set) var items: [LibraryKind: [URL]] = [:]

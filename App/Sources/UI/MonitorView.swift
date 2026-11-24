@@ -10,9 +10,9 @@ struct MonitorView: UIViewRepresentable {
     let store: FrameStore
     var maxFPS = 30
 
-    /// Low Power Mode on: monitors redraw at most 15 times a second (the program itself is not affected).
+    /// Honour the requested cadence; power mode must not silently halve Preview FPS.
     static func fps(_ maxFPS: Int) -> Int {
-        ProcessInfo.processInfo.isLowPowerModeEnabled ? min(maxFPS, 15) : maxFPS
+        max(1, maxFPS)
     }
 
     #if targetEnvironment(simulator)

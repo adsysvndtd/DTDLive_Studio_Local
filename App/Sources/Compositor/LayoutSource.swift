@@ -17,6 +17,15 @@ struct LayoutTemplate: Identifiable, Equatable {
     let slots: [Slot]
     var background = CIColor(red: 0.04, green: 0.05, blue: 0.07)
 
+    /// Shared geometry for the renderer, editor handles and template thumbnails.
+    func applyingSingleScale(_ scale: Double) -> LayoutTemplate {
+        guard slots.count == 1, !slots[0].perspective else { return self }
+        let k = CGFloat(min(max(scale, 0.2), 1))
+        var slot = slots[0]
+        slot.rect = CGRect(x: (1 - k) / 2, y: (1 - k) / 2, width: k, height: k)
+        return LayoutTemplate(id: id, name: name, slots: [slot], background: background)
+    }
+
     /// Computed so names follow a live language switch.
     static var all: [LayoutTemplate] {
         func r(_ x: CGFloat, _ y: CGFloat, _ w: CGFloat, _ h: CGFloat) -> Slot { Slot(rect: CGRect(x: x, y: y, width: w, height: h)) }
@@ -87,29 +96,36 @@ final class LayoutSource: VideoSource {
 
     private let renderer = LayoutRenderer()
     private var timer: DispatchSourceTimer?
+    private var framesPerSecond = 30
     private let queue = DispatchQueue(label: "layout.render", qos: .userInteractive)
 
-    func configure(template: LayoutTemplate, inputs: [FrameStore?], size: CGSize, background: FrameStore?,
+    func configure(template: LayoutTemplate, inputs: [FrameStore?], size: CGSize, fps: Int = 30, background: FrameStore?,
                    still: CIImage? = nil, color: CIColor? = nil, frame: LayoutFrame = LayoutFrame(), frameImage: CIImage? = nil,
                    slotStills: [Int: CIImage] = [:]) {
         renderer.update(template: template, inputs: inputs, size: size, background: background, still: still, color: color,
                         frame: frame, frameImage: frameImage, slotStills: slotStills)
+        let rate = max(1, fps)
+        if rate != framesPerSecond {
+            framesPerSecond = rate
+            timer?.schedule(deadline: .now(), repeating: 1.0 / Double(rate), leeway: .milliseconds(1))
+        }
         name = "BỐ CỤC \(template.id)"
     }
 
-    /// On PGM / PVW / PiP: 30 fps. Otherwise only the multiview thumbnail and the layout panel watch it,
-    /// so it renders at 10 fps (blur, scaling and compositing of every window used to run at 30 fps forever).
+    /// On PGM / PVW / PiP or a visible monitor: program fps. Idle/offscreen work is throttled.
     func setActive(_ on: Bool) { renderer.setActive(on) }
 
     func start() async {
+        timer?.cancel()
         status = .live
         let r = renderer, store = frames
-        let t = DispatchSource.makeTimerSource(queue: queue)
-        t.schedule(deadline: .now(), repeating: 1.0 / 30)
-        var tick = 0
+        let t = DispatchSource.makeTimerSource(flags: .strict, queue: queue)
+        t.schedule(deadline: .now(), repeating: 1.0 / Double(framesPerSecond), leeway: .milliseconds(1))
+        var lastRender = 0.0
         t.setEventHandler {
-            tick &+= 1
-            guard r.isActive || tick % 3 == 0 else { return }
+            let now = HostClock.now
+            guard r.isActive || store.hasVisibleMonitor || now - lastRender >= 0.1 else { return }
+            lastRender = now
             if let pb = r.render() { store.put(pb) }
         }
         t.resume()
@@ -174,8 +190,7 @@ final class LayoutRenderer: @unchecked Sendable {
         if let img = stillImg {
             // picture fills the frame (aspect fill, centred), so uncovered areas never show bare colour
             let k = max(sz.width / img.extent.width, sz.height / img.extent.height)
-            let scaled = img.transformed(by: CGAffineTransform(translationX: -img.extent.minX, y: -img.extent.minY))
-                .transformed(by: CGAffineTransform(scaleX: k, y: k))
+            let scaled = MonitorRendering.resample(img.transformed(by: CGAffineTransform(translationX: -img.extent.minX, y: -img.extent.minY)), scale: k)
             out = scaled.transformed(by: CGAffineTransform(translationX: (sz.width - scaled.extent.width) / 2,
                                                             y: (sz.height - scaled.extent.height) / 2))
                 .cropped(to: extent)
@@ -198,7 +213,7 @@ final class LayoutRenderer: @unchecked Sendable {
                 let portraitInLandscape = img.extent.height > img.extent.width && r.width > r.height
                 let s = portraitInLandscape ? min(r.width / img.extent.width, r.height / img.extent.height)
                                             : max(r.width / img.extent.width, r.height / img.extent.height)
-                let scaled = img.transformed(by: CGAffineTransform(scaleX: s, y: s))
+                let scaled = MonitorRendering.resample(img, scale: s)
                 tile = scaled.transformed(by: CGAffineTransform(translationX: r.midX - scaled.extent.midX, y: r.midY - scaled.extent.midY)).cropped(to: r)
                 if portraitInLandscape { tile = tile.composited(over: CIImage(color: .black).cropped(to: r)) }
             } else {

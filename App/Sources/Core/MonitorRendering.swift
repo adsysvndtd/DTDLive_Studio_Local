@@ -17,21 +17,23 @@ enum MonitorRendering {
                       height: min(floor(maximum.height / 2) * 2, max(2, ceil(maximum.height * k / 2) * 2)))
     }
 
+    /// Shared spatial resampling for monitors, program and layout windows.
+    /// A near-1 resize must still happen: skipping it leaves seams at slot edges.
+    static func resample(_ source: CIImage, scale: CGFloat) -> CIImage {
+        guard scale.isFinite, scale > 0, scale != 1 else { return source }
+        let filter = CIFilter.lanczosScaleTransform()
+        filter.inputImage = source
+        filter.scale = Float(scale)
+        filter.aspectRatio = 1
+        return filter.outputImage ?? source.transformed(by: .init(scaleX: scale, y: scale))
+    }
+
     static func aspectFit(_ source: CIImage, in size: CGSize) -> CIImage {
         let bounds = CGRect(origin: .zero, size: size)
         let background = CIImage(color: .black).cropped(to: bounds)
         guard size.width > 0, size.height > 0, source.extent.width > 0, source.extent.height > 0 else { return background }
         let scale = min(size.width / source.extent.width, size.height / source.extent.height)
-        let scaled: CIImage
-        if abs(scale - 1) < 0.001 {
-            scaled = source
-        } else {
-            let filter = CIFilter.lanczosScaleTransform()
-            filter.inputImage = source
-            filter.scale = Float(scale)
-            filter.aspectRatio = 1
-            scaled = filter.outputImage ?? source.transformed(by: .init(scaleX: scale, y: scale))
-        }
+        let scaled = resample(source, scale: scale)
         return scaled.transformed(by: .init(translationX: (size.width - scaled.extent.width) / 2 - scaled.extent.minX,
                                            y: (size.height - scaled.extent.height) / 2 - scaled.extent.minY))
             .composited(over: background).cropped(to: bounds)

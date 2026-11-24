@@ -121,7 +121,8 @@ struct StudioView: View {
                 .keyboardShortcut("z", modifiers: .command)
             barButton("arrow.uturn.forward", "Làm lại") { engine.redo() }.disabled(!engine.canRedo).opacity(engine.canRedo ? 1 : 0.4)
                 .keyboardShortcut("z", modifiers: [.command, .shift])
-            barButton(engine.isRecording ? "record.circle.fill" : "record.circle", "Ghi", tint: engine.isRecording ? DS.pgm : .white) { engine.toggleRecording() }
+            barButton(engine.isRecording ? "record.circle.fill" : "record.circle", engine.isSavingRecording ? "Đang lưu" : "Ghi", tint: engine.isRecording ? DS.pgm : .white) { engine.toggleRecording() }
+                .disabled(engine.isSavingRecording)
             Menu {
                 Button { showMultiview = true } label: { Label("Multiview trên iPad", systemImage: "square.grid.3x3") }
                 Section(L("Màn hình ngoài (USB‑C / HDMI)")) {
@@ -266,7 +267,7 @@ struct StudioView: View {
             }
             .frame(height: chipH)
             ZStack {
-                MonitorView(store: store)
+                MonitorView(store: store, maxFPS: engine.format.fps)
                 if engine.showSafeGuides { SafeGuides() }
                 sourceCaption(isProgram ? engine.programID : engine.previewID, color: color)
                 if engine.showMonitorVU {
@@ -512,8 +513,6 @@ struct MonitorVU: View {
     /// dB marks on the side facing the picture
     var marksOnLeading = true
     var compact = false
-    @State private var hold: (Float, Float) = (-60, -60)
-    @State private var holdAt: (Date, Date) = (.distantPast, .distantPast)
 
     // Explicit: the memberwise init would be private (private @State) and unusable from the multiview file.
     init(meters: LiveMeters, id: UUID?, preFader: Bool = false, marksOnLeading: Bool = true, compact: Bool = false) {
@@ -523,7 +522,8 @@ struct MonitorVU: View {
 
     var body: some View {
         let (l, r) = preFader ? meters.preFader(id) : meters.stereo(id)
-        let w: CGFloat = compact ? 3 : 5
+        let hold = meters.peak(id, preFader: preFader)
+        let w: CGFloat = compact ? 4 : 6
         HStack(spacing: compact ? 1.5 : 2) {
             bar(l, hold.0, w)
             bar(r, hold.1, w)
@@ -531,8 +531,6 @@ struct MonitorVU: View {
         .overlay(alignment: marksOnLeading ? .leading : .trailing) { marks(leading: marksOnLeading) }
         .shadow(color: .black.opacity(0.6), radius: 1)
         .allowsHitTesting(false)
-        .onChange(of: l) { _, v in update(v, left: true) }
-        .onChange(of: r) { _, v in update(v, left: false) }
     }
 
     private func bar(_ db: Float, _ peak: Float, _ w: CGFloat) -> some View {
@@ -561,29 +559,29 @@ struct MonitorVU: View {
         }
     }
 
-    private func update(_ v: Float, left: Bool) {
-        let now = Date()
-        if left {
-            if v >= hold.0 || now.timeIntervalSince(holdAt.0) > 1.5 { hold.0 = v; holdAt.0 = now }
-        } else {
-            if v >= hold.1 || now.timeIntervalSince(holdAt.1) > 1.5 { hold.1 = v; holdAt.1 = now }
-        }
-    }
-
     /// −60…0 dBFS → 0…1
-    static func pos(_ db: Float) -> CGFloat { CGFloat(max(0, min(1, (db + 60) / 60))) }
+    static func pos(_ db: Float) -> CGFloat { db.isFinite ? CGFloat(max(0, min(1, (db + 60) / 60))) : 0 }
 }
 
 struct LevelMeter: View {
     let db: Float
     var body: some View {
-        GeometryReader { g in
-            let f = CGFloat(max(0, min(1, (db + 60) / 60)))
-            ZStack(alignment: .leading) {
-                Rectangle().fill(.gray.opacity(0.3))
-                Rectangle().fill(db > -6 ? .red : db > -18 ? .yellow : .green).frame(width: g.size.width * f)
+        Canvas { ctx, size in
+            ctx.fill(Path(CGRect(origin: .zero, size: size)), with: .color(.gray.opacity(0.3)))
+            let fill = size.width * MonitorVU.pos(db)
+            let zones: [(Float, Float, Color)] = [(-60, -18, .green), (-18, -6, .yellow), (-6, 0, .red)]
+            for (from, to, color) in zones {
+                let x = size.width * MonitorVU.pos(from)
+                let end = min(fill, size.width * MonitorVU.pos(to))
+                if end > x { ctx.fill(Path(CGRect(x: x, y: 0, width: end - x, height: size.height)), with: .color(color)) }
             }
-        }
+            // Five subdivisions per former 6 dB segment (1.2 dB each).
+            let gap = min(CGFloat(0.5), size.width / 50 * 0.25)
+            for index in 1..<50 {
+                let x = size.width * CGFloat(index) / 50
+                ctx.fill(Path(CGRect(x: x, y: 0, width: gap, height: size.height)), with: .color(.black.opacity(0.5)))
+            }
+        }.allowsHitTesting(false)
     }
 }
 
@@ -1028,6 +1026,13 @@ struct VUBarCanvas: View {
                 let lo = h * z.from, hi = min(h * z.to, top)
                 guard hi > lo else { continue }
                 ctx.fill(Path(CGRect(x: 0, y: h - hi, width: w, height: hi - lo)), with: .color(z.color))
+            }
+            // Five subdivisions per former segment: 0.6 dB large / 1.2 dB compact.
+            let segments = h >= 100 ? 100 : 50
+            let gap = min(CGFloat(0.5), h / CGFloat(segments) * 0.25)
+            for index in 1..<segments {
+                let y = h * CGFloat(index) / CGFloat(segments)
+                ctx.fill(Path(CGRect(x: 0, y: y, width: w, height: gap)), with: .color(.black.opacity(0.55)))
             }
             if peak > -59 {
                 let y = h - h * MonitorVU.pos(peak)

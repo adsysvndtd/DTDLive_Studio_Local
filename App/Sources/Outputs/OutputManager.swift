@@ -10,6 +10,11 @@ actor OutputSlot {
     let target: any OutputTarget
     private(set) var status: OutputStatus = .idle
     private var running = false
+    private var terminated = false
+    private var stopTask: Task<Void, Never>?
+    private var pumpFinished = false
+    private var pumpWaiters: [CheckedContinuation<Void, Never>] = []
+    private var drainingRecording = false
     private var waitingForIDR = true
     private var desc: StreamDescription?
     private var supervisor: Task<Void, Never>?
@@ -36,6 +41,14 @@ actor OutputSlot {
             case .audio(let b, let w): await audio(b, w)
             }
         }
+        pumpFinished = true
+        let waiters = pumpWaiters; pumpWaiters.removeAll()
+        for waiter in waiters { waiter.resume() }
+    }
+
+    private func waitForPump() async {
+        if pumpFinished { return }
+        await withCheckedContinuation { pumpWaiters.append($0) }
     }
 
     /// Frames queued but not yet handed to the target (lock-free read for ABR).
@@ -46,9 +59,13 @@ actor OutputSlot {
 
     nonisolated func enqueue(_ m: Media) {
         if case .video = m { backlog.add(1) }
-        if case .dropped = queue.yield(m) {
+        switch queue.yield(m) {
+        case .dropped:
             if case .video = m { backlog.add(-1) }
             Task { await self.resync() }
+        case .terminated:
+            if case .video = m { backlog.add(-1) }
+        default: break
         }
     }
 
@@ -58,6 +75,10 @@ actor OutputSlot {
         guard running else { return }
         OutputLog.shared.add(target.config.id, L("Bộ mã hoá đổi thông số (SPS/PPS) — kết nối lại"))
         waitingForIDR = true
+        if let record = target as? RecordOutput {
+            await record.fail(L("Thông số mã hóa thay đổi: đã dừng REC. Bắt đầu bản ghi mới để dùng thông số mới."))
+            return
+        }
         await target.disconnect() // supervisor notices !isHealthy and reconnects with `desc`
     }
 
@@ -67,23 +88,42 @@ actor OutputSlot {
         return Double(backlog.value) / fps + Double(pending) * 8 / Double(max(StreamStats.bitrateKbps, 500) * 1000)
     }
 
-    private func resync() { waitingForIDR = true; requestKeyframe() }
+    private func resync() async {
+        if let record = target as? RecordOutput {
+            await record.fail(L("Hàng đợi ghi quá tải: REC đã mất dữ liệu"))
+        } else { waitingForIDR = true; requestKeyframe() }
+    }
 
     func setStatusHandler(_ h: @escaping @Sendable (UUID, OutputStatus) -> Void) { onStatus = h }
 
     func start(_ d: StreamDescription) {
         desc = d
-        guard !running else { return }
+        guard !running, !terminated else { return }
         running = true
         supervisor = Task { await self.superviseLoop() }
     }
 
     func stop() async {
+        if let stopTask { await stopTask.value; return }
+        drainingRecording = target is RecordOutput && status == .live
+        terminated = true
         running = false
         queue.finish()
+        set(.finishing)
+        let supervisor = supervisor
         supervisor?.cancel()
-        await target.disconnect()
-        set(.idle)
+        let task = Task {
+            // A connect already in flight must finish before disconnect starts.
+            await supervisor?.value
+            await self.waitForPump()
+            self.drainingRecording = false
+            await self.target.disconnect()
+            if let record = self.target as? RecordOutput, let error = await record.recordingError() {
+                self.set(.error(error))
+            } else { self.set(.idle) }
+        }
+        stopTask = task
+        await task.value
     }
 
     private func superviseLoop() async {
@@ -93,6 +133,7 @@ actor OutputSlot {
             set(attempt == 0 ? .connecting : .reconnecting(attempt))
             do {
                 try await target.connect(desc)
+                guard running, !Task.isCancelled else { return }
                 waitingForIDR = true
                 requestKeyframe()
                 set(.live)
@@ -101,10 +142,21 @@ actor OutputSlot {
                     try? await Task.sleep(nanoseconds: 1_000_000_000)
                 }
             } catch {
+                guard running else { return }
+                if let record = target as? RecordOutput { await record.fail(error.localizedDescription) }
                 OutputLog.shared.add(target.config.id, LF("Lỗi: %@", "\(error)"))
                 set(.error(String(describing: error).prefix(80).description))
             }
-            if running { OutputLog.shared.add(target.config.id, L("Mất kết nối — thử lại")) }
+            guard running else { return }
+            if let record = target as? RecordOutput {
+                // Local recording errors are terminal; never silently create another file.
+                terminated = true; running = false; queue.finish()
+                set(.finishing)
+                await record.disconnect()
+                set(.error(await record.recordingError() ?? L("Ghi hình bị gián đoạn")))
+                return
+            }
+            OutputLog.shared.add(target.config.id, L("Mất kết nối — thử lại"))
             await target.disconnect()
             guard running else { return }
             attempt += 1
@@ -114,14 +166,14 @@ actor OutputSlot {
     }
 
     func video(_ sb: CMSampleBuffer) async {
-        guard status == .live else { return }
+        guard (running && status == .live) || drainingRecording else { return }
         if waitingForIDR { guard sb.isKeyframe else { return }; waitingForIDR = false }
         await target.send(video: sb)
         videoSent.add(1)
     }
 
     func audio(_ b: AVAudioCompressedBuffer, _ when: AVAudioTime) async {
-        guard status == .live, !waitingForIDR else { return }
+        guard ((running && status == .live) || drainingRecording), !waitingForIDR else { return }
         await target.send(audio: b, when: when)
         audioSent.add(1)
     }
@@ -173,8 +225,10 @@ final class OutputManager: @unchecked Sendable {
     var hasAudio: @Sendable () -> Bool = { true }
 
     func start(_ c: OutputConfig) {
+        lock.lock()
+        guard slots[c.id] == nil else { lock.unlock(); return }
         let slot = OutputSlot(target: makeTarget(c), requestKeyframe: requestKeyframe)
-        lock.lock(); slots[c.id] = slot; let d = description; lock.unlock()
+        slots[c.id] = slot; let d = description; lock.unlock()
         let h = onStatus
         Task {
             if let h { await slot.setStatusHandler(h) }
@@ -182,14 +236,25 @@ final class OutputManager: @unchecked Sendable {
         }
     }
 
-    func stop(_ id: UUID) {
-        lock.lock(); let s = slots.removeValue(forKey: id); lock.unlock()
-        Task { await s?.stop() }
+    @discardableResult
+    func stop(_ id: UUID) -> Task<Void, Never> {
+        lock.lock(); let s = slots[id]; lock.unlock()
+        return Task {
+            await s?.stop()
+            self.removeStopped(id, slot: s)
+        }
     }
 
-    func stopAll() {
-        lock.lock(); let all = Array(slots.values); slots.removeAll(); lock.unlock()
-        Task { for s in all { await s.stop() } }
+    private func removeStopped(_ id: UUID, slot: OutputSlot?) {
+        lock.lock(); defer { lock.unlock() }
+        if slots[id] === slot { slots[id] = nil }
+    }
+
+    @discardableResult
+    func stopAll() -> Task<Void, Never> {
+        lock.lock(); let ids = Array(slots.keys); lock.unlock()
+        let stops = ids.map { stop($0) }
+        return Task { for task in stops { await task.value } }
     }
 
     /// Worst congestion across live destinations, in seconds of video queued.

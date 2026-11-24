@@ -202,9 +202,14 @@ struct CategoryContent: View {
         }
     }
 
-    /// Panel actions, pinned to the top-right corner of the panel (no category title).
+    /// Panel actions; Camera shares its section title with the Add Source row.
     private var header: some View {
         HStack(spacing: 8) {
+            if category == .camera {
+                Text("Camera trong máy & USB")
+                    .font(DS.fHeader).foregroundStyle(DS.text2)
+                    .lineLimit(1).minimumScaleFactor(0.8)
+            }
             Spacer(minLength: 0)
             switch category {
             case .camera, .favorite:
@@ -225,8 +230,10 @@ struct CategoryContent: View {
                 headerButton("Video từ Ảnh", "photo.on.rectangle") { videoTarget = .movie; videoPick = true }
                 headerButton("Từ Tệp", "folder") { fileTarget = .movie; importing = .movie }
                 headerButton("Danh sách phát", "list.and.film") { showPlayout = true }
-            case .picture, .overlay, .logo:
-                importImageMenu(category == .picture ? .picture : category == .overlay ? .overlay : .logo)
+            case .picture:
+                EmptyView() // Picture import actions live beside the preview title.
+            case .overlay, .logo:
+                importImageMenu(category == .overlay ? .overlay : .logo)
             case .audio:
                 // Photos holds no audio files: from Ảnh, the sound of the chosen videos is taken out as .m4a
                 Menu {
@@ -380,7 +387,6 @@ struct CategoryContent: View {
             let net = engine.sources.filter {
                 !($0 is CameraSource) && !($0 is FileSource) && !($0 is PlaylistSource) && !($0 is ImageSource) && $0.id != engine.replay.id
             }
-            sectionHeader("Camera trong máy & USB")
             sourceGrid(local)
             sectionHeader("Camera mạng (SRT · RTSP · RTMP · DTDLive)")
             sourceGrid(net)
@@ -399,7 +405,12 @@ struct CategoryContent: View {
                 sourceGrid(playing)
             }
         case .picture:
-            libraryGrid(.picture) { engine.cuePicture($0) }
+            PictureOverlayPanel(engine: engine, library: library,
+                                fromPhotos: { photoTarget = .picture; photoKind = .picture },
+                                fromFiles: { fileTarget = .picture; importing = .picture })
+            DisclosureGroup("Ảnh làm nguồn Preview") {
+                libraryGrid(.picture) { engine.cuePicture($0) }
+            }
         case .transition:
             transitionContent
         case .overlay:
@@ -621,6 +632,7 @@ struct CategoryContent: View {
         }
         LayoutEditor(engine: engine)
             .frame(maxWidth: 640)
+            .onAppear { engine.prepareLayoutEditor() }
         if engine.layoutTemplate.slots.count == 1 && !engine.layoutEdited && !engine.layoutTemplate.slots[0].perspective {
             LabeledSlider(title: "Cỡ khung", value: $engine.layoutSingleScale, range: 0.2...1) { "\(Int($0 * 100))%" }
                 .frame(maxWidth: 420)
@@ -1073,10 +1085,7 @@ struct LayoutThumbnail: View {
     var singleScale: Double? = nil
 
     private var slots: [LayoutTemplate.Slot] {
-        guard template.slots.count == 1, let k = singleScale.map({ CGFloat($0) }) else { return template.slots }
-        var s = template.slots[0]
-        s.rect = CGRect(x: (1 - k) / 2, y: (1 - k) / 2, width: k, height: k)
-        return [s]
+        singleScale.map { template.applyingSingleScale($0).slots } ?? template.slots
     }
 
     var body: some View {
@@ -1186,8 +1195,9 @@ struct SourceInfoView: View {
                     LabeledContent("Trạng thái", value: String(describing: s.status))
                     if let pb = s.frames.latest() {
                         LabeledContent("Độ phân giải", value: "\(CVPixelBufferGetWidth(pb))×\(CVPixelBufferGetHeight(pb))")
-                        if CVPixelBufferGetHeight(pb) < min(engine.format.height, engine.format.width) * 9 / 10 {
-                            Text(LF("Nguồn nhỏ hơn chương trình (%@×%@): hình bị phóng to nên mềm trên YouTube/Facebook. Đặt camera/DTDLive cùng độ phân giải với chương trình.",
+                        if min(Double(engine.format.width) / Double(CVPixelBufferGetWidth(pb)),
+                               Double(engine.format.height) / Double(CVPixelBufferGetHeight(pb))) > 1.01 {
+                            Text(LF("Nguồn nhỏ hơn chương trình (%@×%@): khi hiển thị toàn khung, hình phải phóng lớn và có thể mềm. Đặt camera/DTDLive cùng độ phân giải với chương trình.",
                                     "\(engine.format.width)", "\(engine.format.height)"))
                                 .font(.caption).foregroundStyle(.orange)
                         }
@@ -1203,15 +1213,11 @@ struct SourceInfoView: View {
                             LabeledContent("Gói bị bỏ (đến trễ)", value: "\(l.droppedPkts) · " + LF("tổng %@", "\(l.totalDropped)"))
                             LabeledContent("Khung hình hỏng bị bỏ qua", value: "\(l.brokenFrames) · " + LF("tổng %@", "\(l.totalBroken)"))
                             LabeledContent("Độ trễ SRT / bộ đệm", value: "\(l.latencyMs) ms / \(l.bufferMs) ms")
-                            // The camera feed is decoded and encoded again for the platforms: below ~1.5× the
-                            // output bitrate the PGM inherits the camera's compression on top of its own.
-                            if l.mbps > 0.3, l.mbps < Double(engine.encoder.bitrate) / 1e6 * 1.5 {
-                                Text(LF("Camera gửi %@ Mbps — thấp so với bitrate phát %@ Mbps: hình bị nén hai lần nên mờ. Cập nhật DTDLive (tự gửi ~12 Mbps cho 1080p30 qua Wi‑Fi) hoặc tăng bitrate trên DTDLive.",
-                                        String(format: "%.1f", l.mbps), String(format: "%.1f", Double(engine.encoder.bitrate) / 1e6)))
-                                    .font(.caption).foregroundStyle(.orange)
-                            }
+                            LabeledContent("Lỗi giải mã (2 s gần nhất)", value: "\(l.decodeErrors)")
+                            Text("Tốc độ nhận gồm dữ liệu luồng, không phải bitrate video riêng. Nếu nguồn đã mờ hoặc có ô vuông, kiểm tra độ phân giải và bitrate gửi trên DTDLive. Tăng bitrate phát của Studio không khôi phục chi tiết đã mất ở nguồn.")
+                                .font(.caption).foregroundStyle(.secondary)
                             Text(l.grade == 0 ? "Đường truyền tốt." :
-                                 l.grade == 1 ? "Wi‑Fi chập chờn: SRT đang gửi lại gói, hình vẫn đủ." :
+                                 l.grade == 1 ? "Wi‑Fi có mất gói hoặc RTT cao. Kiểm tra số gói đến trễ và lỗi giải mã." :
                                  "Gói đến quá trễ bị bỏ → hình giật. Tăng độ trễ Wi‑Fi (Cài đặt › Kết nối), dùng Wi‑Fi 5 GHz, đặt máy gần router hoặc giảm bitrate trên DTDLive.")
                                 .font(.caption).foregroundStyle(l.grade == 2 ? .red : l.grade == 1 ? .orange : .green)
                         }
@@ -1237,14 +1243,14 @@ struct LayoutEditor: View {
         GeometryReader { g in
             let W = g.size.width, H = g.size.height
             ZStack(alignment: .topLeading) {
-                MonitorView(store: engine.layoutSource.frames, maxFPS: 15)
-                ForEach(Array(engine.layoutTemplate.slots.enumerated()), id: \.offset) { i, slot in
+                MonitorView(store: engine.layoutSource.frames, maxFPS: engine.format.fps)
+                ForEach(Array(engine.displayedLayoutTemplate.slots.enumerated()), id: \.offset) { i, slot in
                     window(i, slot.rect, W: W, H: H)
                 }
             }
             .clipped()
         }
-        .aspectRatio(16 / 9, contentMode: .fit)
+        .aspectRatio(CGFloat(engine.format.width) / CGFloat(max(1, engine.format.height)), contentMode: .fit)
         .overlay(Rectangle().stroke(DS.stroke))
     }
 
@@ -1571,5 +1577,200 @@ struct LogoEditor: View {
         case .bottomCenter: return .bottom
         case .bottomRight: return .bottomTrailing
         }
+    }
+}
+
+
+/// Two-column picture library and interactive overlay preview.
+private struct PictureOverlayPanel: View {
+    @ObservedObject var engine: StudioEngine
+    @ObservedObject var library: MediaLibrary
+    let fromPhotos: () -> Void
+    let fromFiles: () -> Void
+    @State private var selectedID: UUID?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 8) {
+                Text("Photos").font(.headline).frame(width: 172, alignment: .leading)
+                Text("Preview - Picture Overlay").font(.headline).lineLimit(1).minimumScaleFactor(0.8)
+                Spacer(minLength: 4)
+                Button(action: fromPhotos) { Label("From Photos", systemImage: "photo.on.rectangle") }
+                Button(action: fromFiles) { Label("From Files", systemImage: "folder") }
+            }
+            .font(.caption).buttonStyle(.bordered).controlSize(.small)
+            HStack(alignment: .top, spacing: 8) {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Chạm ảnh để thêm lớp").font(.caption).foregroundStyle(DS.text2)
+                ScrollView {
+                    LazyVStack(spacing: 6) {
+                        ForEach(library.list(.picture), id: \.self) { url in
+                            Button {
+                                engine.addPictureOverlay(url)
+                                selectedID = engine.pictureOverlays.last?.id
+                            } label: {
+                                HStack(spacing: 6) {
+                                    LibraryCell(url: url, kind: .picture, selected: false)
+                                        .frame(width: 44, height: 34).clipped()
+                                    Text(url.deletingPathExtension().lastPathComponent)
+                                        .font(.caption).lineLimit(2).frame(maxWidth: .infinity, alignment: .leading)
+                                    Image(systemName: "plus.circle")
+                                }
+                                .padding(4).background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
+                            }.buttonStyle(.plain)
+                        }
+                    }
+                }
+                .frame(height: 420)
+                if library.list(.picture).isEmpty {
+                    Text("Dùng Thêm ảnh phía trên để nhập từ Photos hoặc Files.").font(.caption)
+                }
+            }
+            .frame(width: 172)
+
+            VStack(alignment: .leading, spacing: 10) {
+                PictureOverlayCanvas(engine: engine, selectedID: $selectedID)
+                    .frame(height: 200)
+                    .frame(maxWidth: .infinity)
+                    .background(Color(white: 0.06))
+                    .clipped()
+                Text("Danh sách lớp · lớp cuối nằm trên").font(.subheadline.bold())
+                ScrollView {
+                    LazyVStack(spacing: 4) {
+                        // Value snapshots keep retiring rows safe; no binding to an array index.
+                        ForEach(engine.pictureOverlays) { layer in
+                            HStack(spacing: 8) {
+                                Button { selectedID = layer.id } label: {
+                                    HStack {
+                                        if let image = engine.pictureOverlayPreviews[layer.id] {
+                                            Image(uiImage: image).resizable().scaledToFit()
+                                                .frame(width: 32, height: 26)
+                                        }
+                                        Text(engine.pictureOverlayNames[layer.id] ?? L("Ảnh")).lineLimit(1)
+                                    }.frame(maxWidth: .infinity, alignment: .leading)
+                                }.buttonStyle(.plain)
+                                Toggle("PGM", isOn: Binding(
+                                    get: { engine.pictureOverlays.first(where: { $0.id == layer.id })?.visible ?? false },
+                                    set: { engine.setPictureOverlayVisible(layer.id, $0) }
+                                )).fixedSize()
+                                Button { engine.raisePictureOverlay(layer.id) } label: { Image(systemName: "arrow.up.square") }
+                                    .accessibilityLabel("Đưa lớp lên trên")
+                                Button(role: .destructive) {
+                                    let id = layer.id
+                                    if selectedID == id { selectedID = nil }
+                                    engine.removePictureOverlay(id)
+                                } label: { Image(systemName: "trash") }
+                            }
+                            .font(.caption).padding(.horizontal, 6).frame(height: 38)
+                            .background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
+                            .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(selectedID == layer.id ? DS.accent : Color.clear))
+                        }
+                    }
+                }.frame(height: 132)
+                .overlay {
+                    if engine.pictureOverlays.isEmpty {
+                        Text("Chọn ảnh bên trái để bắt đầu bố trí.").font(.caption).foregroundStyle(DS.text2)
+                    }
+                }
+                VStack(alignment: .leading, spacing: 4) {
+                if let layer = engine.pictureOverlays.first(where: { $0.id == selectedID }) {
+                    LabeledSlider(title: "Độ rõ", value: Binding(get: {
+                        Double(engine.pictureOverlays.first(where: { $0.id == layer.id })?.opacity ?? 1)
+                    }, set: { value in
+                        engine.setPictureOverlayOpacity(layer.id, CGFloat(value))
+                    }), range: 0...1) { String(format: "%.0f%%", $0 * 100) }
+                    if layer.visible {
+                        Text("Ảnh đang trên PGM: chỉnh sửa sẽ áp dụng ngay lên đầu ra.").font(.caption).foregroundStyle(DS.pgm)
+                    }
+                }
+                }.frame(height: 60, alignment: .top)
+            }.frame(maxWidth: .infinity)
+            }
+        }
+        .padding(8)
+        .onChange(of: engine.pictureOverlays.map(\.id)) { _, ids in
+            if let selectedID, !ids.contains(selectedID) { self.selectedID = nil }
+        }
+    }
+}
+
+private struct PictureOverlayCanvas: View {
+    @ObservedObject var engine: StudioEngine
+    @Binding var selectedID: UUID?
+    @State private var resizeStart: CGRect?
+
+    var body: some View {
+        GeometryReader { geometry in
+            let size = geometry.size
+            ZStack(alignment: .topLeading) {
+                // Static canvas: no video monitor/display timer while arranging pictures.
+                Color(white: 0.12).allowsHitTesting(false)
+                Rectangle().stroke(Color.white.opacity(0.15), style: StrokeStyle(lineWidth: 1, dash: [4, 4]))
+                    .frame(width: size.width * 0.9, height: size.height * 0.9)
+                    .offset(x: size.width * 0.05, y: size.height * 0.05)
+                    .allowsHitTesting(false)
+                if !engine.pictureOverlays.isEmpty {
+                    ForEach(engine.pictureOverlays) { layer in
+                        PictureOverlayCanvasItem(engine: engine, layer: layer, canvas: size,
+                                                 selectedID: $selectedID)
+                    }
+                    if let layer = engine.pictureOverlays.first(where: { $0.id == selectedID }) {
+                        Circle().fill(DS.accent).frame(width: 28, height: 28)
+                            .overlay(Image(systemName: "arrow.up.left.and.arrow.down.right").font(.system(size: 11)).foregroundStyle(.black))
+                            .contentShape(Rectangle())
+                            .offset(x: layer.rect.maxX * size.width - 28, y: layer.rect.maxY * size.height - 28)
+                            .gesture(DragGesture(minimumDistance: 0, coordinateSpace: .named("pictureOverlayCanvas"))
+                                .onChanged { value in
+                                    let start = resizeStart ?? layer.rect
+                                    if resizeStart == nil { resizeStart = start }
+                                    let dx = value.translation.width / max(size.width, 1)
+                                    let dy = value.translation.height / max(size.height, 1) * start.width / max(start.height, 0.001)
+                                    let delta = abs(dx) >= abs(dy) ? dx : dy
+                                    let width = min(start.width + delta, min(1 - start.minX, (1 - start.minY) * start.width / max(start.height, 0.001)))
+                                    engine.editPictureOverlay(layer.id, width: width)
+                                }
+                                .onEnded { _ in resizeStart = nil })
+                            .accessibilityLabel("Kéo để đổi kích thước ảnh")
+                    }
+                }
+            }
+            .frame(width: size.width, height: size.height).clipped()
+            .coordinateSpace(name: "pictureOverlayCanvas")
+        }
+        .aspectRatio(CGFloat(engine.format.width) / CGFloat(max(1, engine.format.height)), contentMode: .fit)
+        .background(Color.black)
+        .overlay(Rectangle().stroke(DS.stroke))
+        .onChange(of: selectedID) { _, _ in resizeStart = nil }
+    }
+}
+
+private struct PictureOverlayCanvasItem: View {
+    @ObservedObject var engine: StudioEngine
+    let layer: OverlayLayer
+    let canvas: CGSize
+    @Binding var selectedID: UUID?
+    @State private var moveStart: CGRect?
+
+    var body: some View {
+        Group {
+            if let image = engine.pictureOverlayPreviews[layer.id] {
+                Image(uiImage: image).resizable().opacity(Double(layer.opacity))
+            } else { Color.clear }
+        }
+        .frame(width: layer.rect.width * canvas.width, height: layer.rect.height * canvas.height)
+        .overlay(Rectangle().stroke(selectedID == layer.id ? DS.accent : Color.white.opacity(0.35), lineWidth: selectedID == layer.id ? 2 : 1))
+        .contentShape(Rectangle())
+        .offset(x: layer.rect.minX * canvas.width, y: layer.rect.minY * canvas.height)
+        .onTapGesture { selectedID = layer.id }
+        .gesture(DragGesture(minimumDistance: 2, coordinateSpace: .named("pictureOverlayCanvas"))
+            .onChanged { value in
+                selectedID = layer.id
+                let start = moveStart ?? layer.rect
+                if moveStart == nil { moveStart = start }
+                engine.editPictureOverlay(layer.id,
+                    x: start.minX + value.translation.width / max(canvas.width, 1),
+                    y: start.minY + value.translation.height / max(canvas.height, 1))
+            }
+            .onEnded { _ in moveStart = nil })
     }
 }

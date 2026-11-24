@@ -1,4 +1,5 @@
 #import "SRTKit.h"
+#import "DecodedFrameTiming.h"
 #import <VideoToolbox/VideoToolbox.h>
 
 #include "srtkit/TalkbackReceiver.h"
@@ -70,8 +71,11 @@ public:
             CMSampleBufferCreateReady(nullptr, block, format_, 1, 1, &timing, 1, &size, &sample) == noErr) {
             // Synchronous, no temporal processing: never queue stale preview frames.
             OSStatus status = VTDecompressionSessionDecodeFrameWithOutputHandler(session_, sample, 0, nullptr,
-                ^(OSStatus result, VTDecodeInfoFlags, CVImageBufferRef image, CMTime, CMTime) {
-                    if (result == noErr && image) onFrame(image);
+                ^(OSStatus result, VTDecodeInfoFlags, CVImageBufferRef image, CMTime presentationTime, CMTime) {
+                    if (result == noErr && image) {
+                        SRTKAttachPresentationTime(image, presentationTime);
+                        onFrame(image);
+                    }
                 });
             if (status != noErr) {
                 ++errors;

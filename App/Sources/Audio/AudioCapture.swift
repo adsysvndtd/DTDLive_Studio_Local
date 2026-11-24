@@ -54,6 +54,24 @@ final class AudioCapture: @unchecked Sendable {
 
     var onBuffer: Handler?
     var masterGain: Float = 1 { didSet { bus.outputVolume = masterGain } }
+    /// Latest receiver-side alias, including channels whose first audio packet has not arrived yet.
+    private var sourceNames: [UUID: String] = [:]
+    func renameChannel(_ id: UUID, name: String) {
+        os_unfair_lock_lock(&lock); defer { os_unfair_lock_unlock(&lock) }
+        sourceNames[id] = name
+        states[id]?.name = name
+    }
+
+    private var channelMeterAt: [UUID: TimeInterval] = [:]
+    private var pendingMasterPeak: (Float, Float) = (-60, -60)
+    /// Max across all audio buffers since the last UI poll, so short transients are retained.
+    func meterPeaks() -> (Float, Float) {
+        if DemoMode.isOn { return (peakDB, peakDBR) }
+        os_unfair_lock_lock(&lock); defer { os_unfair_lock_unlock(&lock) }
+        let result = pendingMasterPeak
+        pendingMasterPeak = (-60, -60)
+        return result
+    }
     private(set) var peakDB: Float = -60
     /// Pre-fader peaks per source (L, R, when) — see feed().
     private var pfl: [UUID: (l: Float, r: Float, at: TimeInterval)] = [:]
@@ -123,7 +141,11 @@ final class AudioCapture: @unchecked Sendable {
 
         bus.installTap(onBus: 0, bufferSize: 1024, format: format) { [weak self] buffer, when in
             guard let self else { return }
-            (self.peakDB, self.peakDBR) = Self.peaks(buffer)
+            let peaks = Self.peaks(buffer)
+            os_unfair_lock_lock(&self.lock)
+            (self.peakDB, self.peakDBR) = peaks
+            self.pendingMasterPeak = (max(self.pendingMasterPeak.0, peaks.0), max(self.pendingMasterPeak.1, peaks.1))
+            os_unfair_lock_unlock(&self.lock)
             let t = when.isHostTimeValid ? when : AVAudioTime(hostTime: mach_absolute_time())
             self.onBuffer?(buffer, t)
         }
@@ -195,12 +217,15 @@ final class AudioCapture: @unchecked Sendable {
         m.installTap(onBus: 0, bufferSize: 2048, format: nil) { [weak self] b, _ in
             guard let self else { return }
             let (l, r) = Self.peaks(b)
-            os_unfair_lock_lock(&self.lock); self.states[id]?.level = l; self.states[id]?.levelR = r; os_unfair_lock_unlock(&self.lock)
+            os_unfair_lock_lock(&self.lock)
+            self.states[id]?.level = l; self.states[id]?.levelR = r
+            self.channelMeterAt[id] = ProcessInfo.processInfo.systemUptime
+            os_unfair_lock_unlock(&self.lock)
         }
         channelMixers[id] = m
         // Audio follows video by default: a source is heard only while it is on PGM (the Mic follows the
         // iPad's own cameras, see micOnAir); background music never follows.
-        os_unfair_lock_lock(&lock); states[id] = AudioChannelState(id: id, name: name, followVideo: id != Self.musicID); os_unfair_lock_unlock(&lock)
+        os_unfair_lock_lock(&lock); states[id] = AudioChannelState(id: id, name: sourceNames[id] ?? name, followVideo: id != Self.musicID); os_unfair_lock_unlock(&lock)
         return m
     }
 
@@ -236,7 +261,7 @@ final class AudioCapture: @unchecked Sendable {
             players[id].map { $0.stop(); engine.detach($0) }
             channelMixers[id].map { $0.removeTap(onBus: 0); engine.detach($0) }
             players[id] = nil; channelMixers[id] = nil; playerFormats[id] = nil
-            os_unfair_lock_lock(&lock); states[id] = nil; pfl[id] = nil; os_unfair_lock_unlock(&lock)
+            os_unfair_lock_lock(&lock); states[id] = nil; pfl[id] = nil; channelMeterAt[id] = nil; sourceNames[id] = nil; os_unfair_lock_unlock(&lock)
         }
     }
 
@@ -244,7 +269,14 @@ final class AudioCapture: @unchecked Sendable {
 
     var channels: [AudioChannelState] {
         os_unfair_lock_lock(&lock); defer { os_unfair_lock_unlock(&lock) }
-        return states.values.sorted { a, b in
+        let now = ProcessInfo.processInfo.systemUptime
+        return states.values.map { state -> AudioChannelState in
+            var value = state
+            if !DemoMode.isOn && now - (channelMeterAt[state.id] ?? 0) >= 0.4 {
+                value.level = -60; value.levelR = -60
+            }
+            return value
+        }.sorted { a, b in
             if a.id == Self.micID { return true }
             if b.id == Self.micID { return false }
             if a.id == Self.musicID { return true }
@@ -273,7 +305,13 @@ final class AudioCapture: @unchecked Sendable {
     }
 
     func update(_ s: AudioChannelState) {
-        os_unfair_lock_lock(&lock); let level = states[s.id]?.level ?? -60; states[s.id] = s; states[s.id]?.level = level; os_unfair_lock_unlock(&lock)
+        os_unfair_lock_lock(&lock)
+        let level = states[s.id]?.level ?? -60
+        let levelR = states[s.id]?.levelR ?? -60
+        states[s.id] = s
+        states[s.id]?.level = level; states[s.id]?.levelR = levelR
+        if let name = sourceNames[s.id] { states[s.id]?.name = name }
+        os_unfair_lock_unlock(&lock)
         applyGains()
     }
 

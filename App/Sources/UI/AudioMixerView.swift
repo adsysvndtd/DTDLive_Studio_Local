@@ -17,11 +17,11 @@ struct AudioMixerView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(alignment: .top, spacing: compact ? 2 : 3) {
                     ForEach(engine.audioChannels) { c in
-                        MixerMeters(meters: engine.meters, id: c.id) { lr, onAir in
+                        MixerMeters(meters: engine.meters, id: c.id) { lr, onAir, peak in
                             ChannelStrip(name: c.name,
                                          note: c.id == AudioCapture.micID && c.followVideo ? L("theo Cam iPad") : nil,
                                          gain: Double(c.gain), trim: Double(c.trim),
-                                         gainMode: gainMode, level: lr, onAir: onAir,
+                                         gainMode: gainMode, level: lr, peak: peak, onAir: onAir,
                                          muted: c.muted, solo: c.solo, afv: c.followVideo, compact: compact,
                                          delayMs: c.id == AudioCapture.micID ? engine.micDelayMs : nil,
                                          onDB: { v in
@@ -37,9 +37,9 @@ struct AudioMixerView: View {
                         }
                     }
                     Rectangle().fill(DS.stroke).frame(width: 1).padding(.vertical, 4)
-                    MixerMeters(meters: engine.meters, id: nil) { lr, _ in
+                    MixerMeters(meters: engine.meters, id: nil) { lr, _, peak in
                         ChannelStrip(name: "PGM", note: nil, gain: Double(engine.masterGain), trim: 0, gainMode: false,
-                                     level: lr, onAir: engine.isAnyLive || engine.isRecording,
+                                     level: lr, peak: peak, onAir: engine.isAnyLive || engine.isRecording,
                                      muted: false, solo: false, afv: false, compact: compact, isMaster: true,
                                      onDB: { v in engine.masterGain = v <= -59 ? 0 : Float(pow(10, v / 20)) },
                                      onNudge: { engine.masterNudge(Float($0)) },
@@ -88,14 +88,14 @@ struct AudioMixerView: View {
     }
 }
 
-/// Only the strips re-render ten times a second (not the whole production view): levels + ON AIR.
+/// Only the strips re-render up to twenty times a second (not the whole production view): levels + ON AIR.
 struct MixerMeters<Content: View>: View {
     @ObservedObject var meters: LiveMeters
     let id: UUID?
-    @ViewBuilder var content: ((Float, Float), Bool) -> Content
+    @ViewBuilder var content: ((Float, Float), Bool, (Float, Float)) -> Content
     var body: some View {
-        if let id { content(meters.input(id), meters.onAir.contains(id)) }
-        else { content(meters.stereo(nil), false) }
+        if let id { content(meters.input(id), meters.onAir.contains(id), meters.peak(id, preFader: true)) }
+        else { content(meters.stereo(nil), false, meters.peak(nil)) }
     }
 }
 
@@ -106,6 +106,7 @@ struct ChannelStrip: View {
     let trim: Double          // input trim dB
     let gainMode: Bool
     let level: (Float, Float) // L/R dBFS
+    var peak: (Float, Float) = (-60, -60)
     let onAir: Bool
     let muted: Bool
     let solo: Bool
@@ -120,12 +121,10 @@ struct ChannelStrip: View {
     let onAFV: () -> Void
     let onDelay: (Double) -> Void
 
-    @State private var peak: (Float, Float) = (-60, -60)
-    @State private var peakAt = Date.distantPast
 
     private static let faderBlue = Color(red: 0.30, green: 0.55, blue: 0.98)
     private var height: CGFloat { compact ? 110 : 170 }
-    private var width: CGFloat { compact ? 56 : 70 }
+    private var width: CGFloat { compact ? 68 : 84 }
     /// Fader value shown on the scale: dB of the fader (or trim in Gain mode).
     private var db: Double { gainMode ? trim : 20 * log10(max(gain, 0.0001)) }
     private var faderMarks: [Double] { gainMode ? [24, 18, 12, 6, 0, -6, -12] : [6, 0, -6, -12, -18, -24, -30, -40, -50, -60] }
@@ -192,8 +191,6 @@ struct ChannelStrip: View {
         .frame(width: width)
         .padding(.vertical, 3)
         .background(Color(white: 0.11), in: RoundedRectangle(cornerRadius: 4))
-        .onChange(of: level.0) { _, _ in updatePeak() }
-        .onChange(of: level.1) { _, _ in updatePeak() }
     }
 
     private func key(_ t: String, on: Bool, color: Color, action: @escaping () -> Void) -> some View {
@@ -213,14 +210,6 @@ struct ChannelStrip: View {
                 .background(DS.surface2, in: RoundedRectangle(cornerRadius: DS.radius))
         }
         .buttonStyle(.plain).foregroundStyle(DS.text2)
-    }
-
-    private func updatePeak() {
-        let now = Date()
-        if level.0 >= peak.0 || level.1 >= peak.1 || now.timeIntervalSince(peakAt) > 1.5 {
-            peak = (max(level.0, now.timeIntervalSince(peakAt) > 1.5 ? -60 : peak.0), max(level.1, now.timeIntervalSince(peakAt) > 1.5 ? -60 : peak.1))
-            peakAt = now
-        }
     }
 
     // MARK: Fader
@@ -289,6 +278,16 @@ struct ChannelStrip: View {
             bar(level.0, peak.0)
             bar(level.1, peak.1)
         }
+        .overlay(alignment: .trailing) {
+            GeometryReader { g in
+                ForEach([0, -6, -18, -30, -60], id: \.self) { db in
+                    Text(verbatim: "\(db)").font(.system(size: 6, design: .monospaced))
+                        .foregroundStyle(DS.text2).fixedSize()
+                        .position(x: g.size.width + 9, y: min(max(4, g.size.height * (1 - MonitorVU.pos(Float(db)))), max(4, g.size.height - 4)))
+                }
+            }.allowsHitTesting(false)
+        }
+        .padding(.trailing, 17)
         .padding(.vertical, cap / 2)
     }
 

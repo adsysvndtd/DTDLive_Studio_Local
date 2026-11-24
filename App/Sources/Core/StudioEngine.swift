@@ -27,6 +27,7 @@ final class StudioEngine: ObservableObject {
             switcher.setFormat(format)
             videoEncoder.fps = Double(format.fps)
             UserDefaults.standard.set(try? JSONEncoder().encode(format), forKey: "dtd.format.v1")
+            refreshLayout()
         }
     }
     @Published var logo: OverlayLayer? { didSet { pushOverlays() } }
@@ -351,39 +352,27 @@ final class StudioEngine: ObservableObject {
         // key column / remote follow the HTML graphics state
         htmlChange = html.objectWillChange.sink { [weak self] _ in self?.objectWillChange.send() }
         if !DemoMode.isOn { ingest.start() }
-        timers.append(Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
+        let meterTimer = Timer(timeInterval: 0.05, repeats: true) { [weak self] _ in
             Task { @MainActor in
-                guard let self else { return }
-                // Assign only on change: every @Published write re-renders the whole studio view.
-                let m = self.meters
-                let level = (self.audio.peakDB * 2).rounded() / 2
-                if level != m.level { m.level = level }
-                let levelR = (self.audio.peakDBR * 2).rounded() / 2
-                if levelR != m.levelR { m.levelR = levelR }
-                var levels: [UUID: Float] = [:], levelsR: [UUID: Float] = [:]
-                let ch = self.audio.channels.map { c -> AudioChannelState in
-                    levels[c.id] = (c.level * 2).rounded() / 2
-                    levelsR[c.id] = (c.levelR * 2).rounded() / 2
-                    var s = c; s.level = -60; s.levelR = -60; return s
+                guard let self, !self.suspendedInBackground else { return }
+                let channels = self.audio.channels
+                self.meters.update(master: self.audio.meterPeaks(), channels: channels,
+                                   input: self.audio.preFaderLevels(), onAir: self.audio.onAirChannels(),
+                                   now: ProcessInfo.processInfo.systemUptime)
+                let settings = channels.map { channel -> AudioChannelState in
+                    var value = channel; value.level = -60; value.levelR = -60; return value
                 }
-                if levels != m.levels { m.levels = levels }
-                if levelsR != m.levelsR { m.levelsR = levelsR }
-                var pL: [UUID: Float] = [:], pR: [UUID: Float] = [:]
-                for (id, v) in self.audio.preFaderLevels() { pL[id] = (v.0 * 2).rounded() / 2; pR[id] = (v.1 * 2).rounded() / 2 }
-                if pL != m.pflL { m.pflL = pL }
-                if pR != m.pflR { m.pflR = pR }
-                let air = self.audio.onAirChannels()
-                if air != m.onAir { m.onAir = air }
-                // the channel list itself only changes when a source, gain, mute… changes
-                if ch != self.audioChannels { self.audioChannels = ch }
+                if settings != self.audioChannels { self.audioChannels = settings }
             }
-        })
+        }
+        RunLoop.main.add(meterTimer, forMode: .common) // meters keep moving while a fader is dragged
+        timers.append(meterTimer)
         timers.append(Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { [weak self] _ in
             Task { @MainActor in self?.updateScopes() }
         })
         timers.append(Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
             Task { @MainActor in
-                guard let self else { return }
+                guard let self, !self.suspendedInBackground else { return }
                 self.renderWatchdog()
                 StreamStats.bitrateKbps = self.currentBitrate / 1000
                 StreamStats.fps = self.format.fps
@@ -462,6 +451,11 @@ final class StudioEngine: ObservableObject {
         audio.removeChannel(source.id)
         ptzControllers[source.id] = nil
         Task { await source.stop() }
+        if case .source(let id) = layoutBackground, id == source.id {
+            layoutBackground = .color("#0A0D12")
+        } else {
+            refreshLayout()
+        }
         syncState()
     }
 
@@ -554,6 +548,9 @@ final class StudioEngine: ObservableObject {
     private func updateTally(program: Set<UUID>, preview: Set<UUID>) {
         guard program != tally.program || preview != tally.preview else { return }
         let old = tally.program
+        var cameraProgram = program
+        if program.contains(layoutSource.id) { cameraProgram.formUnion(layoutSlots.compactMap { $0 }) }
+        for case let camera as CameraSource in sources { camera.setOnProgram(cameraProgram.contains(camera.id)) }
         tally = (program, preview)
         layoutSource.setActive(program.contains(layoutSource.id) || preview.contains(layoutSource.id))
         updateMediaPlayback()
@@ -577,7 +574,10 @@ final class StudioEngine: ObservableObject {
     /// it plays; the other videos in "Video đang dùng" wait paused where they were (no sound, no decoding).
     func updateMediaPlayback() {
         var active = tally.program.union(tally.preview)
-        if active.contains(layoutSource.id) { active.formUnion(layoutSlots.compactMap { $0 }) }
+        if active.contains(layoutSource.id) {
+            active.formUnion(layoutSlots.compactMap { $0 })
+            if case .source(let id) = layoutBackground, id != layoutSource.id { active.insert(id) }
+        }
         for id in active { if let bg = processing[id]?.keyBackgroundID { active.insert(bg) } }
         for case let f as FileSource in sources {
             let on = active.contains(f.id)
@@ -591,7 +591,70 @@ final class StudioEngine: ObservableObject {
 
     // MARK: Graphics
 
-    private func pushOverlays() { switcher.setOverlays([pip, foreground, logo].compactMap { $0 }) }
+    @Published private(set) var pictureOverlays: [OverlayLayer] = [] { didSet { pushOverlays() } }
+    private(set) var pictureOverlayNames: [UUID: String] = [:]
+    private(set) var pictureOverlayPreviews: [UUID: UIImage] = [:]
+
+    func addPictureOverlay(_ url: URL) {
+        guard let (image, pixels) = Self.loadOverlayImage(url),
+              let source = CGImageSourceCreateWithURL(url as CFURL, nil),
+              let thumbnail = CGImageSourceCreateThumbnailAtIndex(source, 0, [
+                kCGImageSourceCreateThumbnailFromImageAlways: true,
+                kCGImageSourceCreateThumbnailWithTransform: true,
+                kCGImageSourceThumbnailMaxPixelSize: 1024
+              ] as CFDictionary) else {
+            message = L("Không đọc được ảnh overlay"); return
+        }
+        let canvasAspect = CGFloat(format.width) / CGFloat(max(1, format.height))
+        let width: CGFloat = min(0.3, 0.3 * pixels.width / pixels.height / canvasAspect)
+        let height = width * canvasAspect * pixels.height / pixels.width
+        var layer = OverlayLayer(image: image, rect: CGRect(x: 0.05, y: 0.05, width: width, height: height))
+        layer.visible = false
+        pictureOverlayNames[layer.id] = url.deletingPathExtension().lastPathComponent
+        // SwiftUI preview uses a CGImage-backed thumbnail, decoded once, not a lazy CIImage.
+        pictureOverlayPreviews[layer.id] = UIImage(cgImage: thumbnail)
+        pictureOverlays.append(layer)
+    }
+
+    func editPictureOverlay(_ id: UUID, x: CGFloat? = nil, y: CGFloat? = nil, width: CGFloat? = nil) {
+        guard let i = pictureOverlays.firstIndex(where: { $0.id == id }) else { return }
+        var rect = pictureOverlays[i].rect
+        if let width, let image = pictureOverlays[i].image {
+            let ratio = CGFloat(format.width) / CGFloat(max(1, format.height)) * image.extent.height / image.extent.width
+            rect.size.width = min(max(width, 0.02), min(1, 1 / ratio))
+            rect.size.height = rect.width * ratio
+        }
+        rect.origin.x = min(max(x ?? rect.minX, 0), max(0, 1 - rect.width))
+        rect.origin.y = min(max(y ?? rect.minY, 0), max(0, 1 - rect.height))
+        pictureOverlays[i].rect = rect
+    }
+
+    /// UI callbacks may outlive a deleted/reordered row. Always resolve its stable ID
+    /// at the time of the action; a removed layer is a harmless no-op.
+    func setPictureOverlayVisible(_ id: UUID, _ visible: Bool) {
+        guard let i = pictureOverlays.firstIndex(where: { $0.id == id }) else { return }
+        pictureOverlays[i].visible = visible
+    }
+
+    func setPictureOverlayOpacity(_ id: UUID, _ opacity: CGFloat) {
+        guard opacity.isFinite, let i = pictureOverlays.firstIndex(where: { $0.id == id }) else { return }
+        pictureOverlays[i].opacity = min(max(opacity, 0), 1)
+    }
+
+    func removePictureOverlay(_ id: UUID) {
+        pictureOverlays.removeAll { $0.id == id }
+        pictureOverlayNames[id] = nil
+        pictureOverlayPreviews[id] = nil
+    }
+
+    func raisePictureOverlay(_ id: UUID) {
+        guard let i = pictureOverlays.firstIndex(where: { $0.id == id }), i + 1 < pictureOverlays.count else { return }
+        pictureOverlays.swapAt(i, i + 1)
+    }
+
+    private func pushOverlays() {
+        switcher.setOverlays([pip, foreground].compactMap { $0 } + pictureOverlays + [logo].compactMap { $0 })
+    }
 
     // MARK: Library actions
 
@@ -887,7 +950,22 @@ final class StudioEngine: ObservableObject {
         return CGRect(x: x, y: y, width: w, height: h)
     }
 
-    private var editableRects: [CGRect] { layoutTemplate.slots.map(\.rect) }
+    var displayedLayoutTemplate: LayoutTemplate {
+        layoutEdited ? layoutTemplate : layoutTemplate.applyingSingleScale(layoutSingleScale)
+    }
+
+    private var editableRects: [CGRect] { displayedLayoutTemplate.slots.map(\.rect) }
+
+    /// Initialise the editor's renderer without changing PVW or PGM.
+    func prepareLayoutEditor() {
+        guard !replayInLayout else { return }
+        if !sources.contains(where: { $0.id == layoutSource.id }) {
+            sources.append(layoutSource)
+            switcher.register(layoutSource.id, store: layoutSource.frames)
+            Task { await layoutSource.start() }
+        }
+        refreshLayout()
+    }
 
     func setLayoutWindow(_ i: Int, _ r: CGRect) {
         var rects = editableRects
@@ -899,7 +977,10 @@ final class StudioEngine: ObservableObject {
 
     /// Inserts a new window (centre, 32%) and fills it with the next unused input.
     func insertLayoutWindow() {
+        prepareLayoutEditor()
         var rects = editableRects
+        // The editor can be opened before any template/source has been assigned.
+        layoutSlots = Array(layoutSlots.prefix(rects.count)) + Array(repeating: nil, count: max(0, rects.count - layoutSlots.count))
         let off = CGFloat(rects.count % 5) * 0.04
         rects.append(Self.clampWindow(CGRect(x: 0.34 + off, y: 0.34 + off, width: 0.32, height: 0.32)))
         layoutEdits[layoutTemplateID] = rects
@@ -945,7 +1026,7 @@ final class StudioEngine: ObservableObject {
     }
 
     func assignLayoutSlot(_ slot: Int, source: UUID) {
-        guard slot < layoutSlots.count else { return }
+        guard layoutSlots.indices.contains(slot), source != layoutSource.id else { return }
         layoutSlots[slot] = source
         layoutSelectedSlot = min(slot + 1, layoutSlots.count - 1)
         refreshLayout()
@@ -963,20 +1044,13 @@ final class StudioEngine: ObservableObject {
         case .source(let id): live = sources.first { $0.id == id }?.frames
         }
         }
-        var tpl = replayLayoutOverride?.template ?? layoutTemplate
-        if replayLayoutOverride == nil, tpl.slots.count == 1 && !layoutEdited && !tpl.slots[0].perspective {
-            // one-window layout: shrink around the centre so the background shows around it
-            let k = CGFloat(min(max(layoutSingleScale, 0.2), 1))
-            var slot = tpl.slots[0]
-            slot.rect = CGRect(x: (1 - k) / 2, y: (1 - k) / 2, width: k, height: k)
-            tpl = LayoutTemplate(id: tpl.id, name: tpl.name, slots: [slot], background: tpl.background)
-        }
+        let tpl = replayLayoutOverride?.template ?? displayedLayoutTemplate
         var frameImg: CIImage?
         if layoutFrame.style == .image, let n = layoutFrame.imageName {
             frameImg = Self.loadOverlayImage(MediaLibrary.directory(.overlay).appendingPathComponent(n))?.0
         }
         layoutSource.configure(template: tpl, inputs: stores,
-                               size: CGSize(width: format.width, height: format.height), background: live,
+                               size: CGSize(width: format.width, height: format.height), fps: format.fps, background: live,
                                still: still, color: color, frame: layoutFrame, frameImage: frameImg,
                                slotStills: replayLayoutOverride?.stills ?? [:])
     }
@@ -991,6 +1065,7 @@ final class StudioEngine: ObservableObject {
         didSet {
             UserDefaults.standard.set(try? JSONEncoder().encode(layoutBackground), forKey: "dtd.layoutbg.v1")
             refreshLayout()
+            updateMediaPlayback()
         }
     }
 
@@ -1164,6 +1239,7 @@ final class StudioEngine: ObservableObject {
     }
 
     private func updateScopes() {
+        guard !suspendedInBackground else { return }
         guard scopesEnabled, let pb = switcher.programMonitor.latest() else { return }
         let s = scopes
         Task.detached(priority: .utility) {
@@ -1305,6 +1381,15 @@ final class StudioEngine: ObservableObject {
 
     // MARK: Audio
 
+    func renameIngestSource(_ source: IngestSource, name: String) {
+        objectWillChange.send()
+        source.name = name
+        audio.renameChannel(source.id, name: name)
+        audioChannels = audio.channels.map { channel in
+            var value = channel; value.level = -60; value.levelR = -60; return value
+        }
+    }
+
     func updateAudioChannel(_ c: AudioChannelState) { audio.update(c) }
 
     // MARK: Power: encode gating, thermal throttling, per-output send rates
@@ -1316,9 +1401,9 @@ final class StudioEngine: ObservableObject {
         didSet { UserDefaults.standard.set(replayArmed, forKey: "dtd.replayArmed"); updateEncodeGate() }
     }
     private func updateEncodeGate() {
-        let active = replayArmed || outputStatus.values.contains { s in
-            if case .idle = s { return false }; if case .error = s { return false }; return true
-        }
+        let active = !suspendedInBackground && (replayArmed || outputStatus.values.contains { s in
+            if case .idle = s { return false }; if case .error = s { return false }; if case .finishing = s { return false }; return true
+        })
         let want = active ? 1 : 0
         let cur = encodeGate.value
         if want != cur {
@@ -1426,7 +1511,7 @@ final class StudioEngine: ObservableObject {
         }
     }
 
-    /// Heat: lower the program frame rate when iOS reports the device getting hot, restore when it cools.
+    /// Report thermal pressure and reduce live bitrate, while preserving the configured frame rate.
     @Published private(set) var thermalThrottled = false
     private func applyThermalState() {
         let hot = ProcessInfo.processInfo.thermalState.rawValue >= ProcessInfo.ThermalState.serious.rawValue
@@ -1441,11 +1526,7 @@ final class StudioEngine: ObservableObject {
             logToLiveOutputs(hot ? LF("Máy nóng: giảm bitrate còn %@ kbps", "\(target / 1000)") : L("Máy đã nguội: trả lại bitrate đầy đủ"))
             return
         }
-        let fps = hot ? min(format.fps, 25) : format.fps
-        var f = format; f.fps = fps
-        switcher.setFormat(f)
-        videoEncoder.fps = Double(fps)
-        if hot { message = LF("Máy đang nóng — tạm giảm còn %@ hình/giây để hạ nhiệt", "\(fps)") }
+        if hot { message = L("Máy đang nóng — FPS vẫn giữ theo cấu hình") }
     }
 
     private var silenceTimer: DispatchSourceTimer?
@@ -1947,8 +2028,43 @@ final class StudioEngine: ObservableObject {
 
     // MARK: Outputs
 
-    func startOutput(_ c: OutputConfig) { outputManager.start(c); outputStatus[c.id] = .connecting; updateEncodeGate() }
-    func stopOutput(_ c: OutputConfig) { outputManager.stop(c.id); outputStatus[c.id] = .idle }
+    func startOutput(_ c: OutputConfig) {
+        guard !suspendedInBackground, !finishingOutputs.contains(c.id), outputs.contains(where: { $0.id == c.id }) else { return }
+        let status = outputStatus[c.id] ?? .idle
+        if case .error = status {
+            finishingOutputs.insert(c.id)
+            let stop = outputManager.stop(c.id)
+            Task { @MainActor [weak self] in
+                await stop.value
+                guard let self else { return }
+                self.finishingOutputs.remove(c.id)
+                self.outputStatus[c.id] = .idle
+                self.startOutput(c)
+            }
+            return
+        }
+        guard status == .idle else { return }
+        outputStatus[c.id] = .connecting
+        outputManager.start(c)
+        updateEncodeGate()
+        updateIdleTimer()
+    }
+    @Published private(set) var finishingOutputs: Set<UUID> = []
+    var isSavingRecording: Bool { outputs.contains { $0.proto == .record && (finishingOutputs.contains($0.id) || outputStatus[$0.id] == .finishing) } }
+
+    func stopOutput(_ c: OutputConfig) {
+        guard !finishingOutputs.contains(c.id), (outputStatus[c.id] ?? .idle) != .idle else { return }
+        finishingOutputs.insert(c.id)
+        outputStatus[c.id] = .finishing
+        let stop = outputManager.stop(c.id)
+        Task { @MainActor [weak self] in
+            await stop.value
+            guard let self else { return }
+            self.finishingOutputs.remove(c.id)
+            self.updateEncodeGate()
+            self.updateIdleTimer()
+        }
+    }
 
     /// Stops the destinations first, then removes them (deleting a live row must not leave a slot running).
     func deleteOutputs(at offsets: IndexSet) {
@@ -1970,9 +2086,16 @@ final class StudioEngine: ObservableObject {
     /// When an output to YouTube / Facebook goes LIVE (created in the app or a pasted stream key),
     /// the Bình luận panel starts following that platform's comments, likes and viewers — if signed in.
     private func setOutputStatus(_ id: UUID, _ st: OutputStatus) {
+        guard outputs.contains(where: { $0.id == id }) else { return }
+        if suspendedInBackground, st == .live || st == .connecting { return }
         let was = outputStatus[id]
         outputStatus[id] = st
-        if (st == .live) != (was == .live) { updateIdleTimer() }
+        if let output = outputs.first(where: { $0.id == id }), output.proto == .record {
+            if case .error(let error) = st { message = LF("Lỗi ghi hình: %@", error); library.refresh() }
+            if st == .idle, was == .finishing { message = L("Đã hoàn tất lưu bản ghi vào thư viện video"); library.refresh() }
+        }
+        updateEncodeGate()
+        updateIdleTimer()
         guard st == .live, was != .live, let o = outputs.first(where: { $0.id == id }), o.proto != .record else { return }
         let u = o.url.lowercased()
         let live = PlatformLive.shared
@@ -1991,54 +2114,96 @@ final class StudioEngine: ObservableObject {
     @Published var keepScreenOn = UserDefaults.standard.bool(forKey: "dtd.keepScreenOn") {
         didSet { UserDefaults.standard.set(keepScreenOn, forKey: "dtd.keepScreenOn"); updateIdleTimer() }
     }
-    /// Work stopped because the app went to the background with nothing on air.
+    /// Includes live/recording sessions: background activity is limited to five minutes.
     private(set) var suspendedInBackground = false
-    private var wentBackgroundWhileLive = false
+    private static let backgroundGrace: TimeInterval = 5 * 60
+    private var backgroundSince: Date?
     private var backgroundTask: Task<Void, Never>?
+    private var sourceShutdown: Task<Void, Never>?
+    private var sourceResume: Task<Void, Never>?
+    private var recordingBackgroundTask: UIBackgroundTaskIdentifier = .invalid
+    private func endRecordingBackgroundTask() {
+        guard recordingBackgroundTask != .invalid else { return }
+        UIApplication.shared.endBackgroundTask(recordingBackgroundTask)
+        recordingBackgroundTask = .invalid
+    }
+    private var backgroundSources: [any VideoSource] = []
 
     func updateIdleTimer() {
-        let on = keepScreenOn || isAnyLive || isRecording || playout.keepsScreenOn
+        let on = !suspendedInBackground && (keepScreenOn || isAnyLive || isRecording || isSavingRecording || playout.keepsScreenOn)
         if UIApplication.shared.isIdleTimerDisabled != on { UIApplication.shared.isIdleTimerDisabled = on }
     }
 
-    /// Home button, app switch or screen locked. Nothing on air → after a short grace period (a quick look at
-    /// another app keeps everything connected) the render clock, microphone, media players and network
-    /// listeners stop and iOS suspends the app: no battery use while it is not in front.
-    /// Streaming / recording → keep running: the sound goes on, but iOS stops the cameras and the GPU for apps
-    /// in the background, so the picture holds until the app is back in front.
     func appDidEnterBackground() {
-        guard !DemoMode.isOn else { return }
-        if isAnyLive || isRecording { wentBackgroundWhileLive = true; return }
+        guard backgroundSince == nil else { return }
+        backgroundSince = Date()
         backgroundTask?.cancel()
         backgroundTask = Task { @MainActor [weak self] in
-            try? await Task.sleep(nanoseconds: 15_000_000_000)
-            guard let self, !Task.isCancelled, !self.isAnyLive, !self.isRecording else { return }
+            do { try await Task.sleep(nanoseconds: UInt64(Self.backgroundGrace * 1_000_000_000)) }
+            catch { return }
+            guard let self, !Task.isCancelled, self.backgroundSince != nil else { return }
             self.suspendForBackground()
         }
     }
 
     func appDidBecomeActive() {
         backgroundTask?.cancel(); backgroundTask = nil
-        if suspendedInBackground { resumeFromBackground() }
-        // cameras iOS stopped while the app was away (interruption, media services reset) start again
-        for case let c as CameraSource in sources { c.ensureRunning() }
-        stalledSeconds = 0
-        if wentBackgroundWhileLive {
-            wentBackgroundWhileLive = false
-            message = L("Ứng dụng đã chạy nền trong lúc phát: iPad dừng camera và xử lý hình khi app không ở phía trước, chỉ âm thanh tiếp tục. Hãy giữ DTDStudio mở khi đang phát.")
+        // iOS can suspend the process before its timer fires. Apply the expired deadline
+        // before restoring preview; never resume an expired broadcast or recording.
+        if let since = backgroundSince, Date().timeIntervalSince(since) >= Self.backgroundGrace {
+            suspendForBackground()
         }
+        backgroundSince = nil
+        if suspendedInBackground {
+            resumeFromBackground()
+        } else {
+            for case let c as CameraSource in sources { c.ensureRunning() }
+        }
+        stalledSeconds = 0
         updateIdleTimer()
     }
 
     private func suspendForBackground() {
         guard !suspendedInBackground else { return }
         suspendedInBackground = true
+        // Stop all slots, including recording, connecting and reconnecting destinations.
+        recordingBackgroundTask = UIApplication.shared.beginBackgroundTask(withName: "Finish recordings", expirationHandler: { [weak self] in
+            Task { @MainActor in self?.endRecordingBackgroundTask() }
+        })
+        let outputShutdown = outputManager.stopAll()
+        for id in Array(outputStatus.keys) where outputStatus[id] != .idle {
+            outputStatus[id] = .finishing
+        }
+        updateEncodeGate()
+        playout.scheduleOn = false
+        playout.stop()
+        replay.cancel()
+        replayOnAir = false; replayHeld = false; cuedReplayID = nil
+        replayFileID = nil; preReplayProgram = nil
+        replayInLayout = false
+        if let saved = preReplayLayout {
+            replayLayoutOverride = nil
+            layoutTemplateID = saved.id
+            layoutSlots = saved.slots
+            refreshLayout()
+        }
+        preReplayLayout = nil
         switcher.stop()
-        for case let f as FileSource in sources where f.isPlaying { f.pause() }
-        for case let p as PlaylistSource in sources where p.isPlaying { p.pause() }
-        audio.suspend()
+        silenceTimer?.cancel(); silenceTimer = nil
+        for case let f as FileSource in sources { f.pause() }
+        for case let p as PlaylistSource in sources { p.pause() }
+        backgroundSources = sources.filter { !($0 is FileSource) && !($0 is PlaylistSource) }
+        let stopped = backgroundSources
+        sourceShutdown = Task { @MainActor [weak self] in
+            for source in stopped { await source.stop() }
+            await outputShutdown.value
+            self?.audio.suspend()
+            self?.endRecordingBackgroundTask()
+        }
         control.stop()
         ingest.stop()
+        updateIdleTimer()
+        message = L("Đã nghỉ sau 5 phút ở nền hoặc khóa màn hình. Phát sóng, ghi hình và lịch phát đã dừng. Bấm bắt đầu để phát lại.")
     }
 
     /// Program frames stopped while the app is in front (render clock lost, pool stuck): restart the
@@ -2056,19 +2221,41 @@ final class StudioEngine: ObservableObject {
     }
 
     private func resumeFromBackground() {
-        suspendedInBackground = false
-        try? audio.resume()
-        control.stop()
-        try? control.start()
-        ingest.start()
-        switcher.start()
-        updateMediaPlayback()
-        if playout.state == .playing && !playout.offAir { playout.source?.resume() }
+        guard sourceResume == nil else { return }
+        let shutdown = sourceShutdown
+        sourceResume = Task { @MainActor [weak self] in
+            await shutdown?.value
+            guard let self else { return }
+            defer { self.sourceResume = nil }
+            guard self.backgroundSince == nil, self.suspendedInBackground else { return }
+            let restore = self.backgroundSources
+            for source in restore where self.sources.contains(where: { $0.id == source.id }) {
+                if self.backgroundSince != nil { break }
+                await source.start()
+            }
+            if self.backgroundSince != nil {
+                for source in restore { await source.stop() }
+                return
+            }
+            self.backgroundSources = []
+            self.suspendedInBackground = false
+            try? self.audio.resume()
+            try? self.control.start()
+            self.ingest.start()
+            self.switcher.start()
+            self.updateEncodeGate()
+            self.updateIdleTimer()
+        }
     }
 
     func toggleRecording() {
+        guard !isSavingRecording else { return }
         if let r = outputs.first(where: { $0.proto == .record }) {
-            (outputStatus[r.id] ?? .idle) == .idle ? startOutput(r) : stopOutput(r)
+            if case .error = outputStatus[r.id] {
+                startOutput(r)
+            } else {
+                (outputStatus[r.id] ?? .idle) == .idle ? startOutput(r) : stopOutput(r)
+            }
         } else {
             let r = OutputConfig(name: "Ghi file", proto: .record, url: "")
             outputs.append(r); startOutput(r)
@@ -2154,19 +2341,80 @@ extension StudioEngine: ControlTarget {
     }
 }
 
+/// Sample-peak display ballistics in dBFS, driven by the shared meter clock.
+struct MeterEnvelope {
+    private(set) var level: Float = -60
+    private(set) var peak: Float = -60
+    private var previousTime: TimeInterval?
+    private var heldUntil: TimeInterval = 0
+
+    mutating func update(_ raw: Float, now: TimeInterval) {
+        let value: Float = raw.isFinite ? min(0, max(-60, raw)) : -60
+        let previous = previousTime ?? now
+        let dt = max(0, now - previous)
+        previousTime = now
+        level = max(value, level - Float(dt) * 24) // instant attack, 24 dB/s release
+        if value >= peak {
+            peak = value; heldUntil = now + 1.5
+        } else if now > heldUntil {
+            let decay = max(0, now - max(previous, heldUntil))
+            peak = max(level, peak - Float(decay) * 12)
+        }
+    }
+}
+
 /// Values that change many times a second (audio peaks, scopes). Observed only by the small views that
 /// draw them, so the rest of the interface does not redraw with every meter tick.
 @MainActor
 final class LiveMeters: ObservableObject {
-    @Published var level: Float = -60
-    @Published var levels: [UUID: Float] = [:]
-    @Published var levelR: Float = -60
-    @Published var levelsR: [UUID: Float] = [:]
+    private(set) var level: Float = -60
+    private(set) var levels: [UUID: Float] = [:]
+    private(set) var levelR: Float = -60
+    private(set) var levelsR: [UUID: Float] = [:]
     /// Pre-fader (PFL) L/R per source — the PVW meter.
-    @Published var pflL: [UUID: Float] = [:]
-    @Published var pflR: [UUID: Float] = [:]
+    private(set) var pflL: [UUID: Float] = [:]
+    private(set) var pflR: [UUID: Float] = [:]
     /// Mixer channels heard in the program right now.
-    @Published var onAir: Set<UUID> = []
+    private(set) var onAir: Set<UUID> = []
+    private struct Key: Hashable { var id: UUID?; var input: Bool; var right: Bool }
+    private var envelopes: [Key: MeterEnvelope] = [:]
+    private var peaks: [Key: Float] = [:]
+
+    func update(master: (Float, Float), channels: [AudioChannelState], input: [UUID: (Float, Float)], onAir: Set<UUID>, now: TimeInterval) {
+        var nextPeaks: [Key: Float] = [:]
+        func sample(_ value: Float, id: UUID?, input: Bool = false, right: Bool = false) -> Float {
+            let key = Key(id: id, input: input, right: right)
+            var envelope = envelopes[key] ?? MeterEnvelope()
+            envelope.update(value, now: now)
+            envelopes[key] = envelope
+            nextPeaks[key] = envelope.peak
+            return envelope.level
+        }
+        let l = sample(master.0, id: nil), r = sample(master.1, id: nil, right: true)
+        var postL: [UUID: Float] = [:], postR: [UUID: Float] = [:]
+        var preL: [UUID: Float] = [:], preR: [UUID: Float] = [:]
+        for channel in channels {
+            postL[channel.id] = sample(channel.level, id: channel.id)
+            postR[channel.id] = sample(channel.levelR, id: channel.id, right: true)
+        }
+        for (id, value) in input {
+            preL[id] = sample(value.0, id: id, input: true)
+            preR[id] = sample(value.1, id: id, input: true, right: true)
+        }
+        envelopes = envelopes.filter { nextPeaks[$0.key] != nil }
+        guard l != level || r != levelR || postL != levels || postR != levelsR || preL != pflL || preR != pflR || peaks != nextPeaks || self.onAir != onAir else { return }
+        objectWillChange.send() // one UI notification for the entire sample, not one per field
+        level = l; levelR = r; levels = postL; levelsR = postR
+        pflL = preL; pflR = preR; peaks = nextPeaks; self.onAir = onAir
+    }
+
+    func peak(_ id: UUID?, preFader: Bool = false) -> (Float, Float) {
+        if preFader && id == nil { return (-60, -60) }
+        let input = preFader && id.map { pflL[$0] != nil } == true
+        return (peaks[Key(id: id, input: input, right: false)] ?? -60,
+                peaks[Key(id: id, input: input, right: true)] ?? -60)
+    }
+
     /// Input level of a mixer channel (after trim, before fader); falls back to the post-fader level.
     func input(_ id: UUID) -> (Float, Float) {
         if let l = pflL[id] { return (l, pflR[id] ?? l) }

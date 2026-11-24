@@ -347,17 +347,15 @@ final class Switcher: @unchecked Sendable {
         onProgramFrame?(out, cadencePTS(now, fps: Double(snap.5.fps)))
 
         // Preserve detail at the actual monitor pixel size instead of always halving the source.
-        // Keep the existing cadence budget and avoid rendering a PVW nobody is displaying.
-        previewTick &+= 1
-        if previewTick % 2 == 0 {
-            if let size = previewMonitor.monitorRenderSize(maximum: extent.size) {
-                let previewExtent = CGRect(origin: .zero, size: size)
-                let pv = image(from: snap.1, fitting: previewExtent)
-                if let pb = renderPreview(pv, extent: previewExtent) { previewMonitor.put(pb) }
-            } else {
-                previewMonitor.clear()
-                previewPool = nil
-            }
+        // Match program cadence (30 fps must not become 15 fps on Preview).
+        // Render only the pixels requested by visible monitors; no offscreen PVW work.
+        if let size = previewMonitor.monitorRenderSize(maximum: extent.size) {
+            let previewExtent = CGRect(origin: .zero, size: size)
+            let pv = image(from: snap.1, fitting: previewExtent)
+            if let pb = renderPreview(pv, extent: previewExtent) { previewMonitor.put(pb) }
+        } else {
+            previewMonitor.clear()
+            previewPool = nil
         }
         let ms = (HostClock.now - now) * 1000
         renderStats.record(ms, budget: 1000 / Double(snap.5.fps))
@@ -365,7 +363,6 @@ final class Switcher: @unchecked Sendable {
 
     // MARK: Timing
 
-    private var previewTick = 0
     private var previewPool: (CGSize, CVPixelBufferPool)?
     private var ptsBase: CFTimeInterval = 0
     private var ptsIndex: Int64 = 0
@@ -679,7 +676,7 @@ final class Switcher: @unchecked Sendable {
         else { src = o.image }
         guard var img = src else { return base }
         let s = min(r.width / img.extent.width, r.height / img.extent.height)
-        img = img.transformed(by: CGAffineTransform(scaleX: s, y: s))
+        img = Self.scaleSharp(img, s)
         if o.pipSourceID != nil {
             // PiP window: picture centred and whole (a 9:16 phone shot stays upright), black where it doesn't reach
             img = img.transformed(by: CGAffineTransform(translationX: r.midX - img.extent.midX, y: r.midY - img.extent.midY))
@@ -749,10 +746,7 @@ final class Switcher: @unchecked Sendable {
     /// Resizes a source to the program frame. Lanczos keeps detail (720p cameras upscaled to 1080p,
     /// 4K cameras downscaled) instead of the soft bilinear default.
     private static func scaleSharp(_ img: CIImage, _ scale: CGFloat) -> CIImage {
-        guard abs(scale - 1) > 0.01 else { return img }
-        let f = CIFilter.lanczosScaleTransform()
-        f.inputImage = img; f.scale = Float(scale); f.aspectRatio = 1
-        return f.outputImage ?? img.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+        MonitorRendering.resample(img, scale: scale)
     }
 
     @discardableResult
