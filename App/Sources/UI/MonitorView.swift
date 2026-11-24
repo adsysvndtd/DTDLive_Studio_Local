@@ -18,6 +18,7 @@ struct MonitorView: UIViewRepresentable {
     #if targetEnvironment(simulator)
     func makeUIView(context: Context) -> LayerMonitorView { LayerMonitorView(store: store, fps: min(maxFPS, DemoMode.isUITest ? 2 : 10)) }
     func updateUIView(_ v: LayerMonitorView, context: Context) { v.store = store }
+    static func dismantleUIView(_ v: LayerMonitorView, coordinator: ()) { v.detachMonitor() }
     #else
     func makeUIView(context: Context) -> MonitorMTKView {
         let v = MonitorMTKView(store: store)
@@ -29,12 +30,21 @@ struct MonitorView: UIViewRepresentable {
         v.store = store
         v.preferredFramesPerSecond = Self.fps(maxFPS)
     }
+    static func dismantleUIView(_ v: MonitorMTKView, coordinator: ()) { v.detachMonitor() }
     #endif
 }
 
 /// Simulator monitor: CGImage rendered on a utility queue, assigned to layer.contents on main.
 final class LayerMonitorView: UIView {
-    var store: FrameStore
+    var store: FrameStore {
+        didSet {
+            guard oldValue !== store else { return }
+            oldValue.setMonitorTarget(nil, for: monitorID)
+            updateMonitorTarget()
+        }
+    }
+    private let monitorID = UUID()
+    func detachMonitor() { store.setMonitorTarget(nil, for: monitorID) }
     private static let ci = CIContext(options: [.useSoftwareRenderer: true, .cacheIntermediates: false])
     private static let queue = DispatchQueue(label: "monitor.sim", qos: .userInteractive)
     private var timer: Timer?
@@ -49,16 +59,24 @@ final class LayerMonitorView: UIView {
     }
 
     required init?(coder: NSCoder) { fatalError() }
-    deinit { timer?.invalidate() }
+    deinit { timer?.invalidate(); detachMonitor() }
+
+    override func didMoveToWindow() { super.didMoveToWindow(); updateMonitorTarget() }
+    override func layoutSubviews() { super.layoutSubviews(); updateMonitorTarget() }
+    private func updateMonitorTarget() {
+        guard let window, bounds.width > 0, bounds.height > 0 else { detachMonitor(); return }
+        contentScaleFactor = window.screen.scale
+        store.setMonitorTarget(CGSize(width: bounds.width * contentScaleFactor, height: bounds.height * contentScaleFactor), for: monitorID)
+    }
 
     private func refresh() {
         guard !busy, window != nil, let pb = store.latest() else { return }
         busy = true
-        let maxW = max(bounds.width * 2, 320)
+        let sourceSize = CGSize(width: CVPixelBufferGetWidth(pb), height: CVPixelBufferGetHeight(pb))
+        let target = CGSize(width: bounds.width * contentScaleFactor, height: bounds.height * contentScaleFactor)
+        guard let size = MonitorRendering.renderSize(maximum: sourceSize, targets: [target]) else { busy = false; return }
         Self.queue.async { [weak self] in
-            var img = CIImage(cvPixelBuffer: pb)
-            let s = min(1, maxW / img.extent.width)
-            img = img.transformed(by: CGAffineTransform(scaleX: s, y: s))
+            let img = MonitorRendering.aspectFit(CIImage(cvPixelBuffer: pb), in: size)
             let cg = Self.ci.createCGImage(img, from: img.extent)
             DispatchQueue.main.async {
                 self?.layer.contents = cg
@@ -69,7 +87,15 @@ final class LayerMonitorView: UIView {
 }
 
 final class MonitorMTKView: MTKView {
-    var store: FrameStore
+    var store: FrameStore {
+        didSet {
+            guard oldValue !== store else { return }
+            oldValue.setMonitorTarget(nil, for: monitorID)
+            updateMonitorTarget()
+        }
+    }
+    private let monitorID = UUID()
+    func detachMonitor() { store.setMonitorTarget(nil, for: monitorID) }
     /// One Metal device / Core Image context / command queue for every monitor on screen. Each monitor used
     /// to create its own context (with its own caches and GPU memory) — a full multiview held a dozen.
     private static let device = MTLCreateSystemDefaultDevice()!
@@ -84,14 +110,25 @@ final class MonitorMTKView: MTKView {
         framebufferOnly = false
         colorPixelFormat = .bgra8Unorm
         clearColor = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 1)
-        autoResizeDrawable = true
+        autoResizeDrawable = false
         // iOS may drop the layer's contents in the background: draw again when the app is back.
         foreground = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { [weak self] _ in
             self?.drawn = nil
         }
     }
     private var foreground: NSObjectProtocol?
-    deinit { foreground.map { NotificationCenter.default.removeObserver($0) } }
+    deinit { foreground.map { NotificationCenter.default.removeObserver($0) }; detachMonitor() }
+
+    override func didMoveToWindow() { super.didMoveToWindow(); updateMonitorTarget() }
+    override func layoutSubviews() { super.layoutSubviews(); updateMonitorTarget() }
+    private func updateMonitorTarget() {
+        guard let window, bounds.width > 0, bounds.height > 0 else { detachMonitor(); return }
+        contentScaleFactor = window.screen.scale
+        let pixels = CGSize(width: (bounds.width * contentScaleFactor).rounded(.up),
+                            height: (bounds.height * contentScaleFactor).rounded(.up))
+        if drawableSize != pixels { drawableSize = pixels }
+        store.setMonitorTarget(pixels, for: monitorID)
+    }
 
     required init(coder: NSCoder) { fatalError() }
 
@@ -112,12 +149,7 @@ final class MonitorMTKView: MTKView {
         let bounds = CGRect(origin: .zero, size: size)
         var img = CIImage(color: .black).cropped(to: bounds)
         if let pb {
-            let src = CIImage(cvPixelBuffer: pb)
-            let s = min(size.width / src.extent.width, size.height / src.extent.height)
-            let scaled = src.transformed(by: .init(scaleX: s, y: s))
-            img = scaled.transformed(by: .init(translationX: (size.width - scaled.extent.width) / 2,
-                                               y: (size.height - scaled.extent.height) / 2))
-                .composited(over: img)
+            img = MonitorRendering.aspectFit(CIImage(cvPixelBuffer: pb), in: size)
         }
         ci.render(img, to: drawable.texture, commandBuffer: cb, bounds: bounds, colorSpace: CGColorSpaceCreateDeviceRGB())
         cb.present(drawable)

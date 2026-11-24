@@ -11,6 +11,21 @@ final class FrameStore: @unchecked Sendable {
     private var buffer: CVPixelBuffer?
     private var updatedAt: CFTimeInterval = 0
     private var seq: UInt64 = 0
+    private var monitorTargets: [UUID: CGSize] = [:]
+
+    /// A view registers drawable pixels, not points; multiple displays share the largest request.
+    func setMonitorTarget(_ size: CGSize?, for id: UUID) {
+        os_unfair_lock_lock(&lock)
+        monitorTargets[id] = size
+        os_unfair_lock_unlock(&lock)
+    }
+
+    func monitorRenderSize(maximum: CGSize) -> CGSize? {
+        os_unfair_lock_lock(&lock)
+        let targets = Array(monitorTargets.values)
+        os_unfair_lock_unlock(&lock)
+        return MonitorRendering.renderSize(maximum: maximum, targets: targets)
+    }
 
     func put(_ pb: CVPixelBuffer) {
         os_unfair_lock_lock(&lock)

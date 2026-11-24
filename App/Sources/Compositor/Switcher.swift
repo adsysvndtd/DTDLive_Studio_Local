@@ -346,12 +346,18 @@ final class Switcher: @unchecked Sendable {
         programMonitor.put(out)
         onProgramFrame?(out, cadencePTS(now, fps: Double(snap.5.fps)))
 
-        // Preview monitor is only for the operator: half resolution, every other frame.
+        // Preserve detail at the actual monitor pixel size instead of always halving the source.
+        // Keep the existing cadence budget and avoid rendering a PVW nobody is displaying.
         previewTick &+= 1
         if previewTick % 2 == 0 {
-            let half = CGRect(x: 0, y: 0, width: (extent.width / 2).rounded(), height: (extent.height / 2).rounded())
-            let pv = image(from: snap.1, fitting: extent).transformed(by: CGAffineTransform(scaleX: 0.5, y: 0.5)).cropped(to: half)
-            if let pb = renderPreview(pv, extent: half) { previewMonitor.put(pb) }
+            if let size = previewMonitor.monitorRenderSize(maximum: extent.size) {
+                let previewExtent = CGRect(origin: .zero, size: size)
+                let pv = image(from: snap.1, fitting: previewExtent)
+                if let pb = renderPreview(pv, extent: previewExtent) { previewMonitor.put(pb) }
+            } else {
+                previewMonitor.clear()
+                previewPool = nil
+            }
         }
         let ms = (HostClock.now - now) * 1000
         renderStats.record(ms, budget: 1000 / Double(snap.5.fps))
